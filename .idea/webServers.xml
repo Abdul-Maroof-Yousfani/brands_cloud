@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="8c3132dc-4aa8-44c3-9502-677b8cd4eace" name="system.bsafesafety.ae" url="http://system.bsafesafety.ae">
+        <fileTransfer host="system.bsafesafety.ae" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="81bd4907-70fa-4d76-8555-5b2cda0f805b" name="system.urbansafetygroup.ae" url="http://system.urbansafetygroup.ae">
+        <fileTransfer host="system.urbansafetygroup.ae" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="4ab98b1b-eeb3-4c61-86f7-d3494e29d664" name="naveed@naveed.nilbox.net" url="http://naveed.nilbox.net">
+        <fileTransfer host="naveed.nilbox.net" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="f75bd3db-7e5f-41c9-81a4-47701daa7c0e" name="new.nilbox.net" url="http://new.nilbox.net">
+        <fileTransfer host="new.nilbox.net" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

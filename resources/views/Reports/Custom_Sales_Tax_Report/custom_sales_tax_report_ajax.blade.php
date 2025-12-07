@@ -1,0 +1,21 @@
+@foreach($sales_report_data as $data)
+    <tr>
+        <td class="text-center">{{ $loop->iteration }}</td>
+        <td>{{ \App\Helpers\CommonHelper::territory_name($data->territory_id) }}</td>
+        <td>{{ \App\Helpers\CommonHelper::get_city_name_by_id($data->city)->name ?? "N/A" }}</td>
+        <td>{{ \App\Helpers\CommonHelper::get_name_warehouse($data->warehouse_from) ?? "N/A" }}</td>
+        <td>{{ \App\Helpers\CommonHelper::get_buyer_detail($data->buyers_id)->name }}</td>
+        <td class="text-center">{{ $data->brand_name }}</td>
+        <td class="text-center">{{ $data->main_ic ?? "N/A" }}</td>
+        <td class="text-center">{{ $data->gi_no }}</td>
+        <td class="text-center">{{ \Carbon\Carbon::parse($data->despacth_document_date)->format("d-M-Y") }}</td>
+        <td></td>
+        <td>{{ $data->qty }}</td>
+        <td>{{ number_format($data->amount - $data->tax_amount + $data->discount_amount, 2) }}</td>
+        <td class="text-center">{{ number_format($data->discount_amount, 2) ?? 0 }}</td>
+        <td class="text-center">{{ number_format($data->tax_amount, 2) ?? 0 }}</td>
+        <td class="text-center">{{ $data->sales_tax_further ?? 0 }}</td>
+        <td class="text-center">{{ number_format($data->net_amount, 2) }}</td>
+        <td class="text-center">{{ $data->percentid ?? "N/A" }}</td>
+    </tr>
+@endforeach

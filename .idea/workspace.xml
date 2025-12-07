@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d07f84e4-523d-47ff-bd96-d7857ef3fffe" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../assets-aafm/app/Http/Controllers/WorkOrderController.php" beforeDir="false" afterPath="$PROJECT_DIR$/../assets-aafm/app/Http/Controllers/WorkOrderController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assets-aafm/public/Assetexample.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../assets-aafm/public/Assetexample.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assets-aafm/resources/views/workOrder/createWorkOrderForm.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/../assets-aafm/resources/views/workOrder/createWorkOrderForm.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assets-aafm/resources/views/workOrder/viewCorrectiveWorkOrderDetail.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/../assets-aafm/resources/views/workOrder/viewCorrectiveWorkOrderDetail.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assets-aafm/resources/views/workOrder/workOrderCompletedTab.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/../assets-aafm/resources/views/workOrder/workOrderCompletedTab.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assets-aafm/resources/views/workOrder/workOrderStatusForm.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/../assets-aafm/resources/views/workOrder/workOrderStatusForm.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerConfigs">
+    <option name="configs">
+      <option value="$PROJECT_DIR$/../assets-aafm/mailer/composer.json" />
+      <option value="$PROJECT_DIR$/../assets-aafm/composer.json" />
+    </option>
+  </component>
+  <component name="ComposerSettings">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\xampp74\php\php.exe">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/symfony/css-selector" />
+      <path value="$PROJECT_DIR$/vendor/symfony/event-dispatcher" />
+      <path value="$PROJECT_DIR$/vendor/symfony/var-dumper" />
+      <path value="$PROJECT_DIR$/vendor/erusev/parsedown" />
+      <path value="$PROJECT_DIR$/vendor/symfony/http-foundation" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
+      <path value="$PROJECT_DIR$/vendor/maennchen/zipstream-php" />
+      <path value="$PROJECT_DIR$/vendor/symfony/http-kernel" />
+      <path value="$PROJECT_DIR$/vendor/symfony/translation-contracts" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/vendor/ezyang/htmlpurifier" />
+      <path value="$PROJECT_DIR$/vendor/symfony/event-dispatcher-contracts" />
+      <path value="$PROJECT_DIR$/vendor/symfony/debug" />
+      <path value="$PROJECT_DIR$/vendor/illuminate/html" />
+      <path value="$PROJECT_DIR$/vendor/symfony/translation" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-idn" />
+      <path value="$PROJECT_DIR$/vendor/symfony/process" />
+      <path value="$PROJECT_DIR$/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/nesbot/carbon" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/resource-operations" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/vendor/laravel/tinker" />
+      <path value="$PROJECT_DIR$/vendor/laravel/framework" />
+      <path value="$PROJECT_DIR$/vendor/barryvdh/laravel-dompdf" />
+      <path value="$PROJECT_DIR$/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/vendor/markbaker/matrix" />
+      <path value="$PROJECT_DIR$/vendor/markbaker/complex" />
+      <path value="$PROJECT_DIR$/vendor/psr/simple-cache" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/vendor/monolog/monolog" />
+      <path value="$PROJECT_DIR$/vendor/maatwebsite/excel" />
+      <path value="$PROJECT_DIR$/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/vendor/phenx/php-font-lib" />
+      <path value="$PROJECT_DIR$/vendor/phenx/php-svg-lib" />
+      <path value="$PROJECT_DIR$/vendor/hamcrest/hamcrest-php" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/lexer" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/event-manager" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/inflector" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/dbal" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/cache" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/phpunit-mock-objects" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/vendor/mtdowling/cron-expression" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-token-stream" />
+      <path value="$PROJECT_DIR$/vendor/ramsey/uuid" />
+      <path value="$PROJECT_DIR$/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/vendor/phpspec/prophecy" />
+      <path value="$PROJECT_DIR$/vendor/simplesoftwareio/simple-qrcode" />
+      <path value="$PROJECT_DIR$/vendor/psy/psysh" />
+      <path value="$PROJECT_DIR$/vendor/phpoffice/phpspreadsheet" />
+      <path value="$PROJECT_DIR$/vendor/league/fractal" />
+      <path value="$PROJECT_DIR$/vendor/league/mime-type-detection" />
+      <path value="$PROJECT_DIR$/vendor/mockery/mockery" />
+      <path value="$PROJECT_DIR$/vendor/league/flysystem" />
+      <path value="$PROJECT_DIR$/vendor/filp/whoops" />
+      <path value="$PROJECT_DIR$/vendor/vlucas/phpdotenv" />
+      <path value="$PROJECT_DIR$/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/vendor/myclabs/php-enum" />
+      <path value="$PROJECT_DIR$/vendor/yajra/laravel-datatables-oracle" />
+      <path value="$PROJECT_DIR$/vendor/yajra/laravel-datatables-fractal" />
+      <path value="$PROJECT_DIR$/vendor/dnoegel/php-xdg-base-dir" />
+      <path value="$PROJECT_DIR$/vendor/yajra/laravel-datatables" />
+      <path value="$PROJECT_DIR$/vendor/yajra/laravel-datatables-editor" />
+      <path value="$PROJECT_DIR$/vendor/yajra/laravel-datatables-buttons" />
+      <path value="$PROJECT_DIR$/vendor/yajra/laravel-datatables-html" />
+      <path value="$PROJECT_DIR$/vendor/egulias/email-validator" />
+      <path value="$PROJECT_DIR$/vendor/kylekatarnls/update-helper" />
+      <path value="$PROJECT_DIR$/vendor/laravelcollective/html" />
+      <path value="$PROJECT_DIR$/vendor/tijsverkoyen/css-to-inline-styles" />
+      <path value="$PROJECT_DIR$/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/vendor/jakub-onderka/php-console-highlighter" />
+      <path value="$PROJECT_DIR$/vendor/jakub-onderka/php-console-color" />
+      <path value="$PROJECT_DIR$/vendor/fzaninotto/faker" />
+      <path value="$PROJECT_DIR$/vendor/bacon/bacon-qr-code" />
+      <path value="$PROJECT_DIR$/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/vendor/swiftmailer/swiftmailer" />
+      <path value="$PROJECT_DIR$/vendor/symfony/finder" />
+      <path value="$PROJECT_DIR$/vendor/phpstan/phpdoc-parser" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/vendor/symfony/console" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-iconv" />
+      <path value="$PROJECT_DIR$/vendor/fideloper/proxy" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
+      <path value="$PROJECT_DIR$/vendor/symfony/thanks" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/type-resolver" />
+      <path value="$PROJECT_DIR$/vendor/symfony/routing" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-common" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/mailer/vendor/composer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/mailer/vendor/phpmailer/phpmailer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/asm89/stack-cors" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/bacon/bacon-qr-code" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/barryvdh/laravel-cors" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/barryvdh/laravel-dompdf" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/composer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/dnoegel/php-xdg-base-dir" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/doctrine/inflector" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/doctrine/lexer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/egulias/email-validator" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/erusev/parsedown" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/fideloper/proxy" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/filp/whoops" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/fzaninotto/faker" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/hamcrest/hamcrest-php" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/illuminate/html" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/jakub-onderka/php-console-color" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/jakub-onderka/php-console-highlighter" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/kylekatarnls/update-helper" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/laravel/framework" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/laravel/tinker" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/laravelcollective/html" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/league/flysystem" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/league/mime-type-detection" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/mockery/mockery" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/monolog/monolog" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/mtdowling/cron-expression" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/nesbot/carbon" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phenx/php-font-lib" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phenx/php-svg-lib" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpdocumentor/reflection-common" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpdocumentor/reflection-docblock" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpdocumentor/type-resolver" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpmailer/phpmailer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpspec/prophecy" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpstan/phpdoc-parser" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpunit/php-token-stream" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/phpunit/phpunit-mock-objects" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/psr/simple-cache" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/psy/psysh" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/ramsey/uuid" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/resource-operations" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/simplesoftwareio/simple-qrcode" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/spatie/laravel-cors" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/swiftmailer/swiftmailer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/console" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/css-selector" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/debug" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/event-dispatcher" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/event-dispatcher-contracts" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/finder" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/http-foundation" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/http-kernel" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/polyfill-iconv" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/polyfill-intl-idn" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/polyfill-php80" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/process" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/routing" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/thanks" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/translation" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/translation-contracts" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/symfony/var-dumper" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/tijsverkoyen/css-to-inline-styles" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/vlucas/phpdotenv" />
+      <path value="$PROJECT_DIR$/../assets-aafm/vendor/webmozart/assert" />
+    </include_path>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2nHudkq33DvVaRcUDDKuGDIvqCW" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.mappings&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.symlinks&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.date&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/xampp74/htdocs/brands/resources/views/auth/users&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\xampp74\htdocs\brands\resources\views\auth\users" />
+      <recent name="C:\xampp74\htdocs\brands\resources\views\auth\roles" />
+      <recent name="C:\xampp74\htdocs\brands\resources\views\RolesAndPermissions\role" />
+      <recent name="C:\xampp74\htdocs\brands\resources\views\BA\BaTargets" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PS-242.23726.107" />
+        <option value="bundled-php-predefined-a98d8de5180a-90914f2295cb-com.jetbrains.php.sharedIndexes-PS-242.23726.107" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d07f84e4-523d-47ff-bd96-d7857ef3fffe" name="Changes" comment="" />
+      <created>1728642413629</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1728642413629</updated>
+      <workItem from="1728642414760" duration="79000" />
+      <workItem from="1728643006643" duration="3124000" />
+      <workItem from="1728648553917" duration="5211000" />
+      <workItem from="1728987700466" duration="4922000" />
+      <workItem from="1729152646181" duration="1241000" />
+      <workItem from="1730183476553" duration="2505000" />
+      <workItem from="1730192540274" duration="11278000" />
+      <workItem from="1730207903002" duration="249000" />
+      <workItem from="1730208742932" duration="70000" />
+      <workItem from="1730263850596" duration="29325000" />
+      <workItem from="1730372261674" duration="42315000" />
+      <workItem from="1731062972250" duration="15799000" />
+      <workItem from="1731399585484" duration="78892000" />
+      <workItem from="1733128809224" duration="9192000" />
+      <workItem from="1733746689299" duration="54000" />
+      <workItem from="1733747172291" duration="3441000" />
+      <workItem from="1737618411788" duration="3000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/resources/views/Store/createPurchaseRequestDetailForm.blade.php</url>
+          <line>601</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/resources/views/Purchase/customerDiscount/index.blade.php</url>
+          <line>289</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

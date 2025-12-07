@@ -1,0 +1,552 @@
+<?php
+use App\Helpers\CommonHelper;
+$total_amount = 0;
+
+$buyer_detail = CommonHelper::get_buyer_detail($sale_order->buyers_id);
+$m = Input::get('m');
+?>
+
+<style>
+ p{margin:0;padding:0;font-size:13px;font-weight:500;}
+input.form-control.form-control2{margin:0!important;}
+.table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
+.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
+.totlas p{font-weight:bold;}
+.psds{display:flex;justify-content:right;gap:88px;}
+.psds p{font-weight:bold;}
+.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
+.totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
+.totlass h2{font-size:13px !important;}
+.vomp{text-align:left;}
+</style>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="row" >
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12  ">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                @if($sale_order->status == 0)
+                                <div class="">
+                                    <?php echo Form::open(array('url' => 'selling/approveSaleReturn?m='.$m.'','id='.$sale_order->id.'','id'=>'approveSaleOrder','class'=>'stop'));?>
+                                    <!-- {{ Form::submit('Submit', ['class' => 'btn btn-success']) }} -->
+                                    <input type="hidden" name="id" value="{{$sale_order->id}}">
+                                    <input type="hidden" name="pageType"
+                                        value="<?php // echo $_GET['pageType']?>">
+                                    <input type="hidden" name="parentCode"
+                                        value="<?php // echo $_GET['parentCode']?>">
+                                    {{ Form::submit('Approve', ['class' => 'btn btn-success btn-xs btn-abc hidden-print']) }}
+                                </div>
+                                @endif
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-right hidden-print">
+                                <?php CommonHelper::newdisplayPrintButtonInView('printReport', '', 1);?>
+                            </div>
+                        </div>
+                        <div class="mt-top" id="printReport">
+                            <div class="sales_or2">
+                                <div class="contra">
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                            <div class="contr">
+                                                <h2 class="subHeadingLabelClass">Brands Unlimited (Pvt) Ltd</h2>
+                                                <p>301-305, 3rd Floor, Kavish Crown Plaza
+                                                    Sharah-e-Faisal, karachi.</p>
+                                                    <br>
+                                                <p>N.T.N #:5098058-8 </p>
+                                                <p>S.t #: 3277876156235</p>
+
+                                                <br>
+                                                <p>Bill To:</p>
+                                                <p>
+                                                    <strong>{{$buyer_detail->name}}</strong>
+                                                    <br>
+                                                    <br>
+                                                    {{$buyer_detail->address}}<br>
+                                                    {{ CommonHelper::get_all_country_by_id($buyer_detail->country)->name ?? '-'}}<br>
+                                                    {{$buyer_detail->phone_1}}<br>
+                                                    N.T.N #:
+                                                    {{isset($buyer_detail->cnic_ntn) ? $buyer_detail->cnic_ntn : "-" }}
+                                                    S.T #: {{isset($buyer_detail->strn) ? $buyer_detail->strn : "-"}}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6  text-right">
+                                            <div class="contr2">
+                                                <h2 class="subHeadingLabelClass">Sale Order</h2>
+                                                <br>
+                                                <p>Document # {{$sale_order->so_no}}</p>
+                                                <p>Date: {{$sale_order->so_date}}</p>
+                                                <br>
+                                                @if ($buyer_detail->display_pending_payment_invoice == 1)
+                                                @endif
+                                                <div class="table-responsive">
+                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border: 1px solid #000;">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Amount Limited</td>
+                                                                <td style="text-align: right;">
+                                                                    {{ $sale_order->credit_limit }}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Balance Amount</td>
+                                                                <td style="text-align: right;">
+                                                                    {{ $sale_order->balance_amount }}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Current Balance Due</td>
+                                                                <td style="text-align: right;">
+                                                                    {{ $sale_order->current_balance_due }}
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                @php
+                                                $buyers_warehouse_name = CommonHelper::buyers_id_with_warehouse_name($sale_order->buyers_id);
+                                                @endphp
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                        <div class="term">
+                                                            <p>Terms:</p>
+                                                            <p>SO Date: {{$sale_order->so_date}}</p>
+                                                            <p>Warehouse: {{$buyers_warehouse_name}}</p>
+                                                            <p>Payment Terms: 30 Days</p>
+                                                            <p>Salesperson Mobile #</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                        <div class="term">
+                                                            <p>SO #: {{$sale_order->so_no}}</p>
+                                                            <p>GDN #:</p>
+                                                            <p>Branch: {{$sale_order->branch}}</p>
+                                                            <p>Salesperson: {{$buyer_detail->SaleRep}}</p>
+                                                            <p><strong></strong></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <!-- <h2 class="subHeadingLabelClass">Item Details</h2> -->
+                                            <div class="table-responsive">
+                                                <table class="table sale_older_tab userlittab table table-bordered sf-table-list sale-list">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="background: #000 !important; color:#fff !important;width: 20% !important;">Product</th>
+                                                            {{--   <th style="background: #000 !important; color:#fff !important;">Item & Description</th>--}}
+                                                            <th style="background: #000 !important; color:#fff !important;">Barcode</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Qty</th>
+                                                            
+                                                            <th style="background: #000 !important; color:#fff !important;">FOC</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">MRP</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Rate</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Gross Amount</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Disc (%)</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Disc Amount</th>
+                                                            {{--  <th style="background: #000 !important; color:#fff !important;">Disc 2(%)</th>--}}
+                                                            {{--  <th style="background: #000 !important; color:#fff !important;">Disc 2 Amount</th>--}}
+                                                            <th style="background: #000 !important; color:#fff !important;">Tax (%)</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Tax Amount</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Total Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="data">
+                                                        @php $total_discount_amount = 0; @endphp
+                                                        @php $total_foc = 0; @endphp
+
+                                                        @foreach($sale_order_data as $sale_order_item)
+                                                        @php
+                                                    
+                                                        $product = CommonHelper::get_product_name($sale_order_item->item_id);
+                                                        $productid = CommonHelper::get_product_sku($sale_order_item->item_id);
+                                                        $productbarcode = CommonHelper::product_barcode($sale_order_item->item_id);
+                                                        
+                                                        @endphp
+                                                        <tr>
+                                                            <td style="width: 20%">
+                                                                ({{$productid ?? ""}})-{{$product ?? "----"}}
+                                                            </td>
+                                                            <td  style="text-align: center !important;" class="wsale2">
+                                                                <p>  {{$productbarcode ?? "--"}}</p>
+                                                            </td>
+                                                            <td  style="text-align: center !important;" class="wsale2">
+                                                                <p>{{number_format($sale_order_item->qty)}}</p>
+                                                            </td>
+                                                            
+                                                            <td  style="text-align: center !important;">
+                                                                {{number_format($sale_order_item->foc)}}
+                                                            </td>
+                                                            <td style="text-align: center !important;">
+                                                                {{number_format($sale_order_item->mrp_price)}}</td>
+                                                            <td  style="text-align: center !important;">
+                                                                {{number_format($sale_order_item->rate)}}</td>
+                                                            <td style="text-align: center !important;">
+                                                                {{number_format($sale_order_item->sub_total)}}</td>
+                                                            <td  style="text-align: center !important;">
+                                                                {{$sale_order_item->discount_percent_1}}%
+                                                            </td>
+                                                            <td style="text-align: center !important;">
+                                                                {{$sale_order_item->discount_amount_1}}
+
+                                                            @php $total_discount_amount += $sale_order_item->discount_amount_1; @endphp
+                                                            @php $total_foc += $sale_order_item->foc; @endphp
+
+                                                            </td>
+                                                        
+                                                            <td  style="text-align: center !important;">
+                                                                {{number_format($sale_order_item->tax)}}%</td>
+                                                            <td  style="text-align: center !important;">
+                                                                {{number_format($sale_order_item->tax_amount)}}</td>
+                                                            <td style="text-align: center !important;">
+                                                                {{number_format($sale_order_item->amount)}}</td>
+                                                        </tr>
+                                                        @endforeach
+                                                        <tr>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;font-size:13px!important;font-weight:400!important;">Sub Total</th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id=""></p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_qty">{{$sale_order->total_qty}}</p></th>
+
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"text-align: center !important;><p style="text-align: center !important;" id="total-fac">{{ number_format($total_foc) }}</p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p id="total_gross_amount">{{ $sale_order->total_amount }}</p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"><p></p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p  style="text-align: center !important;" id="disc">{{ number_format($total_discount_amount,2) }}</p></th></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_sales_tax">{{ $sale_order->sales_tax_rate }}</p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_amount_after_sale_tax">{{ $sale_order->total_amount_after_sale_tax }}</p></th>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row align-items-top">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                            <!-- <div class="totlas totlass">
+                                                <h2>Note</h2>
+                                                <p>{{ $sale_order->remark ?? 'N/A' }}</p>
+                                                
+                                            </div> -->
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                <br>
+                                                <br>
+                                                <br>
+                                            <div class="totals3">
+                                                <div class="psds">
+                                                    {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}
+                                                    <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{$sale_order->sale_taxes_amount_rate}}</p>
+                                                </div>
+                                                <div class="totlas">
+                                                    <p>Total</p>
+                                                    <p>{{ $sale_order->total_amount_after_sale_tax + $sale_order->sale_taxes_amount_rate }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row align-items-top">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                        <div class="totlas totlass">
+                                            <h2>Note</h2>
+                                            <p>{{ $sale_order->remark ?? 'N/A' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            
+                            <div class="sgnature2">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
+                                            <p><strong>{{$sale_order->username}}</strong> </p>
+                                            <p><strong>Prepared By</strong> </p>
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
+    
+                                            <p><strong>Approved By</strong> </p>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
+                                            <p><strong>Received By</strong> </p>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <div class="vomp">
+                                        <p><strong>Creation Time :{{ \Carbon\Carbon::parse($sale_order->so_date)->format('d-M-Y') }}</strong> </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="contra">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        <div class="contraA">
+                                            <h2>Date: </h2>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        <div class="con_rewB">
+                                            <h2>{{ date('d-M-Y', strtotime($sale_order->so_date)) }}</h2>
+
+                                        </div>    
+                                    </div>
+                                </div>
+                            </div> -->
+
+                    <!-- {{--    <div class="bro_src">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="secc">
+                                            <hr style="border:1px solid #000">
+                                                <h2>SECTION-B</h2>
+                                            <hr style="border:1px solid #000">
+                                        </div>
+                                        <div class="vomp">
+                                            <h2>To be completed by (1) Managing Director</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="tasetb">
+                                        <table class="userlittab3 table table-bordered sf-table-list3">
+                                            <tbody id="data">
+                                                <tr>
+                                                    <td class="text-left"></td>
+                                                    <td class="text-center">Yes</td>
+                                                    <td class="text-center">NO</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center">Capable of meeting specified requirements?</td>
+                                                    <td class="text-center">Y</td>
+                                                    <td class="text-center"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center">Any special problem(s)?</td>
+                                                    <td class="text-center"></td>
+                                                    <td class="text-center">N</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td class="text-center">Date</td>
+                                                    <td class="text-center"></td>
+                                                    <td class="text-center">2/3/2023</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="vomp">
+                                <h2>Report Execution :2/3/2023 6:41:08 PM</h2>
+                            </div>
+
+                            <div class="vomp">
+                                <h2>Premier Cables</h2>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="tasetb">
+                                        <table class="userlittab3 table table-bordered sf-table-list4">
+                                            <tbody id="data">
+                                                <tr class="text-center">
+                                                    <td colspan="6" class="secec text-center">SECTION-C</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">
+                                                        To be completed by the concerned Director Marketing<br>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    
+                                                </tr>
+
+                                                <tr>
+                                                    <td class="text-left">
+                                                        1) Decision: On the basis of answer given in Section-B, it is decided to:<br>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    
+                                                </tr>
+
+                                                <tr>
+                                                    <td class="text-left">
+                                                        Accept the order
+                                                    </td>
+                                                    <td>
+                                                        Y
+                                                    </td>
+                                                    <td>
+                                                        Reject the order
+                                                    </td>
+                                                    <td>
+
+                                                    </td>
+                                                    <td>
+                                                        Negotiate Amendment
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">
+                                                        2) Confirmation sent:
+                                                    </td>
+                                                    <td>
+                                                        Yes Y
+                                                    </td>
+                                                    <td>
+
+                                                    </td>
+                                                    <td>
+                                                        No
+                                                    </td>
+                                                    <td></td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">
+                                                        3) Obtain Customer's agrrement:
+                                                    </td>
+                                                    <td>
+                                                        Yes Y
+                                                    </td>
+                                                    <td>
+
+                                                    </td>
+                                                    <td>
+                                                        No
+                                                    </td>
+                                                    <td></td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left">
+                                                    4) Amendment required after acceptance of an order**:
+                                                    </td>
+                                                    <td>
+
+                                                    </td>
+                                                    <td>
+                                                        Yes Y
+                                                    </td>
+                                                    <td>
+
+                                                    </td>
+                                                    <td>
+                                                        No N
+                                                    </td>
+                                                    
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <td>**Please fill new contract review form and send it to Managing Director</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>This is a computer generated document and does not require any signature.</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                    </div> --}} -->
+                    <!-- <div class="col-md-12 padtb text-right printHide">
+                        <div class="col-md-9"></div>
+                        <div class="col-md-3 my-lab">
+                            <button type="submit" class="btn btn-primary mr-1" data-dismiss="modal">Approve</button>
+                            <a type="button" href="{{url('selling/listSaleOrder')}}"
+                                class="btnn btn-secondary" data-dismiss="modal">Close</a>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- printView sale order -->
+<script>
+    function printView(divId) {
+        var element = document.getElementById(divId);
+        if (!element) {
+            alert("Element with ID '" + divId + "' not found!");
+            return;
+        }
+
+        var content = element.innerHTML;
+        var mywindow = window.open('', 'PRINT', 'height=800,width=1200');
+
+        mywindow.document.write('<html><head><title>Print</title>');
+
+        // ✅ Bootstrap CSS include
+        mywindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">');
+
+
+        mywindow.document.write(`
+            <style>
+                @page{size:A4;margin:1em;}
+                .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
+                .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
+                .table-responsive{height:inherit !important;}
+                .sales_or{position:relative !important;height:100% !important;}
+                .sgnature{position:absolute !important;bottom:0px !important;}
+                p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
+                .mt-top{margin-top:-72px !important;}
+                .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
+                .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
+                input.form-control.form-control2{margin:0 !important;}
+                .totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
+                .totlas p{font-weight:bold !important;}
+                .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
+                .psds p{font-weight:bold !important;}
+                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;}
+                .totlass h2{font-size:13px !important;}
+                .col-lg-6{width:50% !important;}
+                .col-lg-12{width:100% !important;}
+                .col-lg-4{width:33.33333333% !important;}
+            </style>
+        `);
+        mywindow.document.write('</head><body>');
+        mywindow.document.write(content);
+        mywindow.document.write('</body></html>');
+        mywindow.document.close();
+        mywindow.focus();
+        mywindow.print();
+    }
+</script>

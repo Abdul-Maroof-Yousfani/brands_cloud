@@ -1,0 +1,4 @@
+product_id,product_code,mrp_price,sale_price
+1,P1001,500,450
+2,P1002,600,550
+3,P1003,700,650
