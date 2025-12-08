@@ -220,127 +220,267 @@ public function login(Request $request)
         ], 200);
     }
 
-    public function get_stock(Request $request)
+    // public function get_stock(Request $request)
+    // {
+
+    //     $user = $this->getAuthenticatedUser();
+
+    //     if ($user instanceof \Illuminate\Http\JsonResponse) {
+    //         return $user; // Return the error response if no authenticated user
+    //     }
+
+    //     // Validate that emp_id, from_date, and to_date are provided in the request
+    //     $rules = [
+    //         'distributor_id' => 'required|integer',
+    //         'product_id' => 'required|integer',
+    //     ];
+
+    //     // Create the validator instance
+    //     $validator = Validator::make($request->all(), $rules);
+
+    //     // Check if validation fails
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'errors' => $validator->errors()
+    //         ], 422); // 422 Unprocessable Entity
+    //     }
+
+    //     $distributor = $user->customers()->where('customers.id', $request->distributor_id)->first();
+    //     $available_qty = 0;
+    //     if ($distributor) {
+    //         $result = Stock::where([
+    //             'customer_id' => $distributor->id,
+    //             'warehouse_id' => $distributor->warehouse_to,
+    //             'sub_item_id' => $request->product_id
+    //         ])
+    //             ->selectRaw('
+    //             SUM(CASE WHEN voucher_type = 1 THEN qty ELSE 0 END) AS stock,
+    //             SUM(CASE WHEN voucher_type = 50 THEN qty ELSE 0 END) AS stock_sale,
+    //             SUM(CASE WHEN voucher_type = 51 THEN qty ELSE 0 END) AS stock_return
+    //         ')
+    //             ->first();
+
+    //         // Calculate available quantity
+    //         $available_qty = $result->stock + $result->stock_return - $result->stock_sale;
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'product wise available stock',
+    //         'available_qty' => $available_qty,
+    //     ], 200);
+    // }
+
+
+      public function get_stock(Request $request)
     {
-
         $user = $this->getAuthenticatedUser();
-
+ 
         if ($user instanceof \Illuminate\Http\JsonResponse) {
-            return $user; // Return the error response if no authenticated user
+            return $user;
         }
-
-        // Validate that emp_id, from_date, and to_date are provided in the request
+ 
         $rules = [
-            'distributor_id' => 'required|integer',
             'product_id' => 'required|integer',
         ];
-
-        // Create the validator instance
+ 
         $validator = Validator::make($request->all(), $rules);
-
-        // Check if validation fails
+ 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
-            ], 422); // 422 Unprocessable Entity
+            ], 422);
         }
-
-        $distributor = $user->customers()->where('customers.id', $request->distributor_id)->first();
-        $available_qty = 0;
-        if ($distributor) {
-            $result = Stock::where([
-                'customer_id' => $distributor->id,
-                'warehouse_id' => $distributor->warehouse_to,
-                'sub_item_id' => $request->product_id
-            ])
-                ->selectRaw('
-                SUM(CASE WHEN voucher_type = 1 THEN qty ELSE 0 END) AS stock,
-                SUM(CASE WHEN voucher_type = 50 THEN qty ELSE 0 END) AS stock_sale,
-                SUM(CASE WHEN voucher_type = 51 THEN qty ELSE 0 END) AS stock_return
-            ')
-                ->first();
-
-            // Calculate available quantity
-            $available_qty = $result->stock + $result->stock_return - $result->stock_sale;
-        }
-
+ 
+        $records = Stock::where('sub_item_id', $request->product_id)->get();
+ 
+        $total_stock   = $records->where('voucher_type', 1)->sum('qty');
+        $total_sale    = $records->where('voucher_type', 50)->sum('qty');
+        $total_return  = $records->where('voucher_type', 51)->sum('qty');
+ 
+        $available_qty = $total_stock + $total_return - $total_sale;
+ 
         return response()->json([
-            'message' => 'product wise available stock',
+            'message' => 'Total stock for product',
             'available_qty' => $available_qty,
         ], 200);
     }
+ 
 
 
-    
+// public function getSaleAmount(Request $request)
+// {
+//     // Validate inputs
+//     $validator = Validator::make($request->all(), [
+//         'emp_code' => 'required|integer|exists:mysql.users,emp_code',
+//         'year' => 'nullable|integer|min:2000|max:' . date('Y'),
+//         'month' => 'nullable|integer|min:1|max:12',
+//     ]);
+
+//     if ($validator->fails()) {
+//         return response()->json([
+//             'success' => false,
+//             'errors' => $validator->errors()
+//         ], 422);
+//     }
+
+//     try {
+//         // Get user from main DB
+//         $user = DB::connection('mysql')
+//             ->table('users')
+//             ->where('emp_code', $request->emp_code)
+//             ->first();
+
+//         if (!$user) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'Employee not found.'
+//             ], 404);
+//         }
+
+//         // Build query in mysql2
+//         $query = DB::connection('mysql2')
+//             ->table('retail_sale_orders as so')
+//             ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
+//             ->join('subitem as si', 'sod.product_id', '=', 'si.id') // join for rate
+//             ->where('so.user_id', $user->id);
+
+//         // Optional filters
+//         if ($request->year) {
+//             $query->whereYear('so.sale_order_date', $request->year);
+//         }
+
+//         if ($request->month) {
+//             $query->whereMonth('so.sale_order_date', $request->month);
+//         }
+
+//         // Calculate total sale amount (qty * rate)
+//         $totalAmount = $query->sum(DB::raw('sod.qty * si.rate'));
+
+//         return response()->json([
+//             'success' => true,
+//             'emp_code' => $request->emp_code,
+//             'year' => $request->year,
+//             'month' => $request->month,
+//             'total_sale_amount' => $totalAmount ?? 0,
+//         ], 200);
+
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Failed to fetch sale amount.',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// }
 
 
-public function getSaleAmount(Request $request)
-{
-    // Validate inputs
-    $validator = Validator::make($request->all(), [
-        'emp_code' => 'required|integer|exists:mysql.users,emp_code',
-        'year' => 'nullable|integer|min:2000|max:' . date('Y'),
-        'month' => 'nullable|integer|min:1|max:12',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'errors' => $validator->errors()
-        ], 422);
-    }
-
-    try {
-        // Get user from main DB
-        $user = DB::connection('mysql')
-            ->table('users')
-            ->where('emp_code', $request->emp_code)
-            ->first();
-
-        if (!$user) {
+    public function getSaleAmount(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'emp_code' => 'required|integer|exists:mysql.users,emp_code',
+            'year' => 'nullable|integer|min:2000|max:' . date('Y'),
+            'month' => 'nullable|integer|min:1|max:12',
+        ]);
+ 
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Employee not found.'
-            ], 404);
+                'errors' => $validator->errors()
+            ], 422);
         }
-
-        // Build query in mysql2
-        $query = DB::connection('mysql2')
-            ->table('retail_sale_orders as so')
-            ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
-            ->join('subitem as si', 'sod.product_id', '=', 'si.id') // join for rate
-            ->where('so.user_id', $user->id);
-
-        // Optional filters
-        if ($request->year) {
-            $query->whereYear('so.sale_order_date', $request->year);
+ 
+        try {
+            // Fetch employee (main DB)
+            $employee = DB::connection('mysql')
+                ->table('users')
+                ->where('emp_code', $request->emp_code)
+                ->first();
+ 
+            if (!$employee) {
+                return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
+            }
+ 
+            /*
+            |--------------------------------------------------------------------------
+            | 1. GET ALL CUSTOMERS ASSIGNED TO EMPLOYEE (BA FORMATION)
+            |--------------------------------------------------------------------------
+            */
+            $customers = DB::connection('mysql2')
+                ->table('b_a_formations')
+                ->where('employee_id', $employee->id)
+                ->pluck('customer_id');
+ 
+            /*
+            |--------------------------------------------------------------------------
+            | 2. SECONDARY SALE (SALE ORDER TABLE)
+            |--------------------------------------------------------------------------
+            */
+            $secondaryQuery = DB::connection('mysql2')
+                ->table('sales_order')
+                ->whereIn('buyers_id', $customers);
+ 
+            if ($request->year) {
+                $secondaryQuery->whereYear('so_date', $request->year);
+            }
+            if ($request->month) {
+                $secondaryQuery->whereMonth('so_date', $request->month);
+            }
+ 
+            $secondaryAmount = $secondaryQuery->sum('total_amount');
+            $secondaryQty = $secondaryQuery->sum('total_qty');
+ 
+            /*
+            |--------------------------------------------------------------------------
+            | 3. TERTIARY SALE (RETAIL SALE ORDERS)
+            |--------------------------------------------------------------------------
+            */
+            $tertiaryQuery = DB::connection('mysql2')
+                ->table('retail_sale_orders as so')
+                ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
+                ->join('subitem as si', 'sod.product_id', '=', 'si.id')
+                ->where('so.user_id', $employee->id); // employee created order
+ 
+            if ($request->year) {
+                $tertiaryQuery->whereYear('so.sale_order_date', $request->year);
+            }
+            if ($request->month) {
+                $tertiaryQuery->whereMonth('so.sale_order_date', $request->month);
+            }
+ 
+            $tertiaryAmount = $tertiaryQuery->sum(DB::raw('sod.qty * si.rate'));
+            $tertiaryQty = $tertiaryQuery->sum('sod.qty');
+ 
+            /*
+            |--------------------------------------------------------------------------
+            | 4. FINAL RESPONSE
+            |--------------------------------------------------------------------------
+            */
+            return response()->json([
+                'success' => true,
+                'emp_code' => $request->emp_code,
+                'year' => $request->year,
+                'month' => $request->month,
+ 
+                // Secondary sale (customer-wise)
+                'secondary_sale_amount' => $secondaryAmount ?? 0,
+                'secondary_sale_qty'    => $secondaryQty ?? 0,
+ 
+                // Tertiary sale (employee-created)
+                'tertiary_sale_amount' => $tertiaryAmount ?? 0,
+                'tertiary_sale_qty'    => $tertiaryQty ?? 0,
+ 
+            ], 200);
+ 
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch sales.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        if ($request->month) {
-            $query->whereMonth('so.sale_order_date', $request->month);
-        }
-
-        // Calculate total sale amount (qty * rate)
-        $totalAmount = $query->sum(DB::raw('sod.qty * si.rate'));
-
-        return response()->json([
-            'success' => true,
-            'emp_code' => $request->emp_code,
-            'year' => $request->year,
-            'month' => $request->month,
-            'total_sale_amount' => $totalAmount ?? 0,
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to fetch sale amount.',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
-
 
     public function CreateSaleOrder(Request $request)
     {
@@ -483,14 +623,17 @@ public function getSaleAmount(Request $request)
     // }
 
 
-   public function SaleOrderList(Request $request)
+//   
+
+
+ public function SaleOrderList(Request $request)
 {
     $user = $this->getAuthenticatedUser();
-
+ 
     if ($user instanceof \Illuminate\Http\JsonResponse) {
-        return $user; 
+        return $user;
     }
-
+ 
     // Start query
     $query = RetailSaleOrder::with([
         'details' => function ($query) {
@@ -498,20 +641,21 @@ public function getSaleAmount(Request $request)
         },
         'distributor:id,name'
     ])->where('user_id', $user->id);
-
-    // Apply date filter if provided
-    if ($request->has('start_date') && $request->has('end_date')) {
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-
+ 
+    // Apply date filter
+    if ($request->filled('start_date') && $request->filled('end_date')) {
+ 
+        $startDate = Carbon::parse($request->start_date)->startOfDay();
+        $endDate   = Carbon::parse($request->end_date)->endOfDay();
+ 
         $query->whereBetween('created_at', [$startDate, $endDate]);
     }
-
+ 
     $saleOrder = $query->get();
-
+ 
     // Calculate total count
     $totalCount = $saleOrder->count();
-
+ 
     if ($saleOrder->isEmpty()) {
         return response()->json([
             'success' => false,
@@ -519,7 +663,7 @@ public function getSaleAmount(Request $request)
             'total' => $totalCount
         ], 404);
     }
-
+ 
     return response()->json([
         'success' => true,
         'data' => $saleOrder,
