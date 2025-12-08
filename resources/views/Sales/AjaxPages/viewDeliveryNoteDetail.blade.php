@@ -142,7 +142,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <p>Date: {{$delivery_note->so_date}}</p>
                             <br>
                             <div class="table-responsive">
-                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:61% !important;float:right;">
+                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:68% !important;float:right;">
                                     <tbody>
                                         <tr>
                                             <td>Amount Limited</td>
