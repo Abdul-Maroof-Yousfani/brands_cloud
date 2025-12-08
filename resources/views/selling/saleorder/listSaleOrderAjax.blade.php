@@ -3,7 +3,7 @@
 .nowrap{white-space:nowrap;}
 .text-right-amount{text-align:right !important;}
 .table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td {
-    width: 1% !important;
+    width: 8% !important;
     padding: 8px 8px !important;
     background: #ddd;
 }
@@ -48,7 +48,7 @@
                         </td>
     
     
-                                            <td class="text-right-amount">
+                                            <td class="text-left-amount">
                             {{ number_format($sale_order->sale_taxes_amount_total, 0) }}
                         </td>
     
