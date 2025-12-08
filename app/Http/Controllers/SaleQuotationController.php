@@ -141,36 +141,86 @@ class SaleQuotationController extends Controller
     }
 
     
-    public function get_item_by_id(Request $request)
-    {
+//     public function get_item_by_id(Request $request)
+//     {
    
-        $specialPrice = DB::Connection('mysql2')->table('customer_special_prices')->where('customer_id',$request->customerId)->where('product_id',$request->id)->select('mrp_price','sale_price')->first();
-        $customer_discounts = DB::Connection('mysql2')->table('customer_discounts')->where('customer_id',$request->customerId)->where('product_id',$request->id)->select('discount_percentage')->first();
+//         $specialPrice = DB::Connection('mysql2')->table('customer_special_prices')->where('customer_id',$request->customerId)->where('product_id',$request->id)->select('mrp_price','sale_price')->first();
+//         $customer_discounts = DB::Connection('mysql2')->table('customer_discounts')->where('customer_id',$request->customerId)->where('product_id',$request->id)->select('discount_percentage')->first();
 
-        if($specialPrice){
-            $product = DB::Connection('mysql2')->table('subitem')->where('id',$request->id)->select('mrp_price','sale_price','tax','is_tax_apply','tax_type_id','tax_applied_on','tax_policy')->first();
-            $tax= $product->tax;
-            $sub_item = $specialPrice;
-//            return response()->json($sub_item);
-        }else{
-            $product = DB::Connection('mysql2')->table('subitem')->where('id',$request->id)->select('mrp_price','sale_price','tax','is_tax_apply','tax_type_id','tax_applied_on','tax_policy')->first();
-            $sub_item = $product;
-            $tax= $product->tax;
-        }
+//         if($specialPrice){
+//             $product = DB::Connection('mysql2')->table('subitem')->where('id',$request->id)->select('mrp_price','sale_price','tax','is_tax_apply','tax_type_id','tax_applied_on','tax_policy')->first();
+//             $tax= $product->tax;
+//             $sub_item = $specialPrice;
+// //            return response()->json($sub_item);
+//         }else{
+//             $product = DB::Connection('mysql2')->table('subitem')->where('id',$request->id)->select('mrp_price','sale_price','tax','is_tax_apply','tax_type_id','tax_applied_on','tax_policy')->first();
+//             $sub_item = $product;
+//             $tax= $product->tax;
+//         }
 
-        $data  = [
-            'tax'=>$tax,
-            'mrp_price'=>$sub_item->mrp_price,
-            'sale_price'=>$sub_item->sale_price,
-            'discount'=>$customer_discounts != null ? $customer_discounts->discount_percentage : null,
-             'is_tax_apply' => $product->is_tax_apply,
-        'tax_type_id' => $product->tax_type_id,
-        'tax_applied_on' => $product->tax_applied_on,
-        'tax_policy' => $product->tax_policy,
-        ];
-//            dd($data);
+//         $data  = [
+//             'tax'=>$tax,
+//             'mrp_price'=>$sub_item->mrp_price,
+//             'sale_price'=>$sub_item->sale_price,
+//             'discount'=>$customer_discounts != null ? $customer_discounts->discount_percentage : null,
+//              'is_tax_apply' => $product->is_tax_apply,
+//         'tax_type_id' => $product->tax_type_id,
+//         'tax_applied_on' => $product->tax_applied_on,
+//         'tax_policy' => $product->tax_policy,
+//         ];
+// //            dd($data);
 
-        return response()->json($data);
+//         return response()->json($data);
+//     }
+
+  public function get_item_by_id(Request $request)
+    {
+        $itemId = $request->id;
+        $customerId = $request->customerId;
+
+        $result = DB::connection('mysql2')
+            ->table('subitem')
+            ->leftJoin('customer_special_prices', function ($join) use ($customerId) {
+                $join->on('customer_special_prices.product_id', '=', 'subitem.id')
+                    ->where('customer_special_prices.customer_id', $customerId);
+            })
+            ->leftJoin('customer_discounts', function ($join) use ($customerId) {
+                $join->on('customer_discounts.product_id', '=', 'subitem.id')
+                    ->where('customer_discounts.customer_id', $customerId);
+            })
+            ->where('subitem.id', $itemId)
+            ->select(
+                'subitem.mrp_price',
+                'subitem.sale_price',
+                'subitem.tax',
+                'subitem.is_tax_apply',
+                'subitem.tax_type_id',
+                'subitem.tax_applied_on',
+                'subitem.tax_policy',
+
+                // Special Price override (NULL if not exists)
+                'customer_special_prices.mrp_price as special_mrp',
+                'customer_special_prices.sale_price as special_sale',
+
+                // Discount (NULL if not exists)
+                'customer_discounts.discount_percentage'
+            )
+            ->first();
+
+        // If special price exists → override product price
+        $finalMrp  = $result->special_mrp  ?? $result->mrp_price;
+        $finalSale = $result->special_sale ?? $result->sale_price;
+
+        return response()->json([
+            'tax'               => $result->tax,
+            'mrp_price'         => $finalMrp,
+            'sale_price'        => $finalSale,
+            'discount'          => $result->discount_percentage ?? null,
+            'is_tax_apply'      => $result->is_tax_apply,
+            'tax_type_id'       => $result->tax_type_id,
+            'tax_applied_on'    => $result->tax_applied_on,
+            'tax_policy'        => $result->tax_policy,
+        ]);
     }
     public function  get_quotation_data(Request $request)
     {
