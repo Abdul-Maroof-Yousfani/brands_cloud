@@ -1473,11 +1473,11 @@ class SalesAddDetailControler extends Controller
             SalesHelper::sales_activity($gd_no, $request->gd_date, $total_amount + $SalesTaxAmount, 2, 'Insert');
 
             $voucher_no = $gd_no;
-            $dept_and_type = NotificationHelper::get_dept_id('sales_order', 'id', $request->master_id)->select('department', 'p_type')->first();
-            $dept_id = $dept_and_type->department;
-            $p_type = $dept_and_type->p_type;
-            $subject = 'Delivery Note For ' . $request->so_no;
-            NotificationHelper::send_email('Delivery Note', 'Create', $dept_id, $voucher_no, $subject, $p_type);
+            // $dept_and_type = NotificationHelper::get_dept_id('sales_order', 'id', $request->master_id)->select('department', 'p_type')->first();
+            // $dept_id = $dept_and_type->department;
+            // $p_type = $dept_and_type->p_type;
+            // $subject = 'Delivery Note For ' . $request->so_no;
+            // NotificationHelper::send_email('Delivery Note', 'Create', $dept_id, $voucher_no, $subject, $p_type);
 
             DB::Connection('mysql2')->commit();
         } catch (Exception $ex) {
