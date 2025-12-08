@@ -154,11 +154,11 @@ input.form-control.form-control2{margin:0!important;}
                                                             <th style="background: #000 !important; color:#fff !important;">MRP</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Rate</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Gross Amount</th>
-                                                            <th style="background: #000 !important; color:#fff !important;">Disc (%)</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Disc</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Disc Amount</th>
                                                             {{--  <th style="background: #000 !important; color:#fff !important;">Disc 2(%)</th>--}}
                                                             {{--  <th style="background: #000 !important; color:#fff !important;">Disc 2 Amount</th>--}}
-                                                            <th style="background: #000 !important; color:#fff !important;">Tax (%)</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Tax</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Tax Amount</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Total Amount</th>
                                                         </tr>
@@ -230,7 +230,7 @@ input.form-control.form-control2{margin:0!important;}
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p id="total_gross_amount">{{number_format( $sale_order->total_amount,2) }}</p></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"><p></p></th>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p  style="text-align: center !important;" id="disc">{{ number_format($total_discount_amount,2) }}</p></th></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p  style="text-align: center !important;" id="disc">{{ number_format($total_discount_amount,2) }}</p></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_sales_tax">{{ number_format($sale_order->sales_tax_rate,2) }}</p></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_amount_after_sale_tax">{{ number_format($sale_order->total_amount_after_sale_tax,2) }}</p></th>
