@@ -120,7 +120,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                         
                             <p>S.t #: 3277876156235</p>
 
-
+                            <br>
                             <p>Bill To:</p>
                             <p>
                                 <strong>{{$buyers_detail->name}}</strong>
