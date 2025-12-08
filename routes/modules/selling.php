@@ -229,6 +229,14 @@ Route::get('listModeDelivery', 'ModeDeliveryController@listModeDelivery')->name(
 Route::get('craeteModeDelivery', 'ModeDeliveryController@craeteModeDelivery')->name('craeteModeDelivery');
 Route::post('storeModeDelivery', 'ModeDeliveryController@storeModeDelivery')->name('storeModeDelivery');
 
+// ---- --------------      ----- Products Principal Group CRUD   ----        --------------------//
+Route::get('listProductsPrincipalGroup', 'ProductsPrincipalGroupController@listProductsPrincipalGroup')->name('listProductsPrincipalGroup');
+Route::get('createProductsPrincipalGroup', 'ProductsPrincipalGroupController@createProductsPrincipalGroup')->name('createProductsPrincipalGroup');
+Route::post('storeProductsPrincipalGroup', 'ProductsPrincipalGroupController@storeProductsPrincipalGroup')->name('storeProductsPrincipalGroup');
+Route::get('editProductsPrincipalGroup/{id}', 'ProductsPrincipalGroupController@editProductsPrincipalGroup')->name('editProductsPrincipalGroup');
+Route::post('updateProductsPrincipalGroup/{id}', 'ProductsPrincipalGroupController@updateProductsPrincipalGroup')->name('updateProductsPrincipalGroup');
+Route::get('deleteProductsPrincipalGroup/{id}', 'ProductsPrincipalGroupController@deleteProductsPrincipalGroup')->name('deleteProductsPrincipalGroup');
+
 Route::get('rmplaningReport','ReportsController@rmplaningReport')->name('rmplaningReport');
 });
 
