@@ -51,6 +51,10 @@ table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, 
     /* background: none; */
 }
 
+th.so-width.text-center.col-sm-1.sorting_asc {
+    width: 33px !important;
+}
+
 </style>
 
     <div class="panel-body">
@@ -143,8 +147,8 @@ table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, 
                                     <div class="table-responsive">
                                         <table class="userlittab table table-bordered sf-table-list dataTable no-footer" id="EmpExitInterviewList">
                                             <thead>
-                                            <th style="width: 100px !important;" class="text-center col-sm-1">S.No</th>
-                                            <th class="text-center col-sm-1">SO No</th>
+                                            <th style="width: 100px !important;" class="so-width text-center col-sm-1">S.No</th>
+                                            <th class="text-center col-sm-1">SO Nos</th>
                                             <th class="text-center col-sm-1">DN No</th>
                                             <th class="text-center col-sm-1">DN Date</th>
                                             <!-- <th class="text-center col-sm-1">Order No</th> -->
@@ -214,7 +218,7 @@ table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, 
                                                 ?>
 
                                                 <tr @if($status=='Open') style="background-color: #fdc8c8" @elseif($status=='partial') style="background-color: #c9d6ec"  @endif title="{{$row->id}}" id="{{$row->id}}">
-                                                    <td class="text-center">{{$counter++}}</td>
+                                                    <td  style="width: 100px !important;" class="text-center">{{$counter++}}</td>
                                                     <td class="text-center"><?php echo  strtoupper($row->so_no) ?></td>
                                                     <td title="{{$row->id}}" class="text-center">{{strtoupper($row->gd_no)}}</td>
                                                     <td class="text-center"> <?php echo  $row->gd_date ? \Carbon\Carbon::parse($row->gd_date)->format("d-M-Y") : '' ?></td>
