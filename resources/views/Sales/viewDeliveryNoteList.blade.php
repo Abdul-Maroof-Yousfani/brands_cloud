@@ -30,9 +30,13 @@ $AccYearTo = $AccYearDate->accyearto;
     @include('select2')
 
 <style>
-.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:1% !important;padding:8px 8px !important;background:#ddd;white-space:nowrap;font-size:11px !important;}
-table.dataTable tbody th,table.dataTable tbody td{white-space:nowrap;}
-
+/* .table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:1% !important;padding:8px 8px !important;background:#ddd;white-space:nowrap;font-size:11px !important;}
+table.dataTable tbody th,table.dataTable tbody td{white-space:nowrap;} */
+.pagination{float:right;}
+.nowrap{white-space:nowrap;}
+.text-right-amount{text-align:right !important;}
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:22% !important;padding:8px 4px !important;background:#ddd;white-space: nowrap;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
 </style>
 
     <div class="panel-body">
@@ -123,7 +127,7 @@ table.dataTable tbody th,table.dataTable tbody td{white-space:nowrap;}
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12col-xs-12">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered sf-table-list" id="EmpExitInterviewList">
+                                        <table class="userlittab table table-bordered sf-table-list dataTable no-footer" id="EmpExitInterviewList">
                                             <thead>
                                             <th class="text-center col-sm-1">S.No</th>
                                             <th class="text-center col-sm-1">SO No</th>
