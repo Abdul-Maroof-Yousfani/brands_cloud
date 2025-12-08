@@ -154,8 +154,8 @@ th.so-width.text-center.col-sm-1.sorting_asc {
                                             <!-- <th class="text-center col-sm-1">Order No</th> -->
                                             <th class="text-center col-sm-1">Order Date</th>
                                             <th class="text-center">Customer</th>
-                                            <th class="text-center">Qty.</th>
-                                            <th class="text-center">Total</th>
+                                            <th style="text-align: center !important;"class="text-center">Qty.</th>
+                                            <th style="text-align: center !important;"class="text-center">Amount</th>
                                             <th class="text-center">Document <br>Status</th>
                                             <th class="text-center">Status</th>
                                             <th class="text-center">Username</th>
