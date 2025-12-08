@@ -133,17 +133,14 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                             <th class="text-center col-sm-1">SO No</th>
                                             <th class="text-center col-sm-1">DN No</th>
                                             <th class="text-center col-sm-1">DN Date</th>
-
                                             <!-- <th class="text-center col-sm-1">Order No</th> -->
                                             <th class="text-center col-sm-1">Order Date</th>
                                             <th class="text-center">Customer</th>
-
                                             <th class="text-center">Total Qty.</th>
                                             <th class="text-center">Total Amount.</th>
-                                            <th class="text-center">Document Status</th>
-                                            <th class="text-center">Approval Status</th>
+                                            <th class="text-center">Document <br>Status</th>
+                                            <th class="text-center">Status</th>
                                             <th class="text-center">Username</th>
-
                                             <th class="text-center">Action</th>
                                             {{--<th class="text-center">Delete</th>--}}
                                             </thead>
@@ -226,20 +223,39 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <td class="text-center">
 
 
+                                                        <div class="dropdown">
+                                                                            <button class="drop-bt dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                                                ...
+                                                                            </button>
+
+
+
+                                                    <ul class="dropdown-menu">       
+                                                        
+                                                    <li>
                                                         <?php if($view == true):?>
-                                                        <button onclick="showDetailModelOneParamerter('sales/viewDeliveryNoteDetail/<?php echo $row->id ?>','','View Delivery Note')"
+                                                        <button style="width: 100%;"onclick="showDetailModelOneParamerter('sales/viewDeliveryNoteDetail/<?php echo $row->id ?>','','View Delivery Note')"
                                                                 type="button" class="btn btn-success btn-xs">View</button>
 
                                                         <?php endif;?>
+
+                                                    </li>
                                                         
-                                                        <button onclick="showDetailModelOneParamerter('sales/viewPerformaInvoice/<?php echo $row->id ?>','<?php echo $row->id ?>','View Performa Invoice Note')"
+
+                                                    <li>
+                                                        <button  style="width: 100%;" onclick="showDetailModelOneParamerter('sales/viewPerformaInvoice/<?php echo $row->id ?>','<?php echo $row->id ?>','View Performa Invoice Note')"
                                                                 type="button" class="btn btn-success btn-xs">Performa Invoice</button>
 
+                                                    </li>
+
                                                       
+                                                    <li>
                                                         <?php if($edit == true && $status!='Complete' && $row->status == 0):?>
-                                                        <button onclick="delivery_note('<?php echo $row->id?>','<?php echo $m ?>')"
+                                                        <button  style="width: 100%;" onclick="delivery_note('<?php echo $row->id?>','<?php echo $m ?>')"
                                                                 type="button" class="btn btn-primary btn-xs">Edit </button>
                                                         <?php endif;?>
+
+                                                    </li>
 
 
                                                         @if($checkifbarcodescanningproduct > 0)
@@ -247,10 +263,15 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                         @endif
 
 
+                                                        <li>
                                                             <?php if($delete == true && $status!='Complete'):?>
-                                                        <button onclick="delivery_note_delete('<?php echo $row->id?>','<?php echo $m ?>')"
+                                                        <button  style="width: 100%;" onclick="delivery_note_delete('<?php echo $row->id?>','<?php echo $m ?>')"
                                                                 type="button" class="btn btn-danger btn-xs">Delete</button>
                                                         <?php endif;?>
+
+                                                        </li>
+
+                                                     </ul>
 
                                                     </td>
                                                     {{--<td class="text-center"><a href="{{ URL::asset('purchase/editPurchaseVoucherForm/'.$row->id) }}" class="btn btn-success btn-xs">Edit </a></td>--}}
