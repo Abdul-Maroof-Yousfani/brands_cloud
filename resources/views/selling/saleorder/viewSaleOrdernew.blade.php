@@ -56,11 +56,11 @@ input.form-control.form-control2{margin:0!important;}
                                                     Sharah-e-Faisal, karachi.</p>
                                                 <p>N.T.N #:5098058-8 </p>
                                                 <p>S.t #: 3277876156235</p>
+                                                <br>
                                                 <p>Bill To:</p>
                                                 <p>
                                                     <strong>{{$buyer_detail->name}}</strong>
-                                                    <br>
-                                                    <br>
+                            
                                                     {{$buyer_detail->address}}<br>
                                                     {{ CommonHelper::get_all_country_by_id($buyer_detail->country)->name ?? '-'}}<br>
                                                     {{$buyer_detail->phone_1}}<br>
@@ -81,7 +81,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 @if ($buyer_detail->display_pending_payment_invoice == 1)
                                                 @endif
                                                 <div class="table-responsive">
- <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:84% !important;float:right;">
+                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:84% !important;float:right;">
                                                         <tbody>
                                                             <tr>
                                                                 <td>Amount Limited</td>
