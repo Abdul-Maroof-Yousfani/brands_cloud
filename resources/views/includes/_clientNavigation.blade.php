@@ -308,7 +308,8 @@ CommonHelper::reconnectMasterDatabase();
                   <div class="davtar">
                   <span class="avatar">
                <img style="width: 100px;" class="round" src="{{ App\Helpers\CommonHelper::get_profile_pic() }}" alt="avatar" >
-              </span>
+              
+            </span>
                   </div>
                   <div class="main-heading">
                      <h5>{{ Auth::user()->name }}</h5>
