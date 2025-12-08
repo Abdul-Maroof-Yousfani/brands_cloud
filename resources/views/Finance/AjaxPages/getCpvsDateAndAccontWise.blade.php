@@ -11,6 +11,11 @@ $counter = 1;
 $makeTotalAmount = 0;
 foreach ($pvs as $row1) {
 ?>
+<style>
+ .dropdown-menu > li > a{color:#ffffff !important;}
+</style>
+
+
 <tr @if ($row1->type==2) style="background-color: darkgray" @endif
 class="tr<?php echo $row1->id ?>" title="<?php echo $row1->id ?>" id="1row<?php echo $counter ?>" <?php if($row1->pv_status == 1):?>  onclick="checkUncheck('1chk<?php echo $counter ?>','1row<?php echo $counter ?>')"<?php endif;?>>
    
@@ -45,7 +50,7 @@ class="tr<?php echo $row1->id ?>" title="<?php echo $row1->id ?>" id="1row<?php 
 
 
                         <?php if($delete == true):?>
-                        <input class="btn btn-xs btn-danger BtnHide<?php echo $row1->pv_no?>" type="button"
+                        <input style="width: 100%; text-align: left;"class="btn btn-xs btn-danger BtnHide<?php echo $row1->pv_no?>" type="button"
                             onclick="DeletePvActivity('<?php echo $row1->id;?>','<?php echo $row1->pv_no?>','<?php echo $row1->pv_date?>','<?php echo CommonHelper::GetAmount('new_pv_data',$row1->id)?>')"
                             value="Delete" />
                         <?php endif;?>
