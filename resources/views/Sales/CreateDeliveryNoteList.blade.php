@@ -165,12 +165,10 @@ $AccYearTo = $AccYearDate->accyearto;
                                                         </tr>
                                                     @endforeach
 
-
                                                     <tr>
                                                         <td class="text-center" colspan="6" style="font-size: 20px;">
                                                             Total</td>
-                                                        <td class="text-right" colspan="1"
-                                                            style="font-size: 20px;color: white">
+                                                        <td class="text-right" colspan="1"style="font-size: 20px;color: white">
                                                             {{ number_format($total, 2) }}</td>
                                                         <td class="text-center" colspan="1" style="font-size: 20px;">
                                                         </td>
@@ -191,19 +189,19 @@ $AccYearTo = $AccYearDate->accyearto;
     </div>
 
     <script>
-        $(document).ready(function() {
-            viewRangeWiseDataFilter();
-            $('#BuyerId').select2();
-            $('.select2-container--default').css('width', '100%');
+        // $(document).ready(function() {
+        // });
+        
+        viewRangeWiseDataFilter();
+        $('#BuyerId').select2();
+        $('.select2-container--default').css('width', '100%');
 
-            $("#EmpExitInterviewList").DataTable({
-                ordering: true,
-                searching: true,
-                paging: true,
-                info: false // <-- hides "Showing X of Y entries"
-            });
+        $("#EmpExitInterviewList").DataTable({
+            ordering: true,
+            searching: true,
+            paging: true,
+            info: false // <-- hides "Showing X of Y entries"
         });
-
         function RadioChange() {
             var radioValue = $("input[name='FilterType']:checked").val();
 
