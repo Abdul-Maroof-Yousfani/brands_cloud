@@ -80,7 +80,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 @if ($buyer_detail->display_pending_payment_invoice == 1)
                                                 @endif
                                                 <div class="table-responsive">
-                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:51% !important;float:right;">
+                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:61% !important;float:right;">
                                                         <tbody>
                                                             <tr>
                                                                 <td>Amount Limited</td>
