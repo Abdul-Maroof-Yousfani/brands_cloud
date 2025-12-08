@@ -15,9 +15,8 @@ foreach ($pvs as $row1) {
  .dropdown-menu > li > a{color:#ffffff !important;}
 </style>
 
+<tr @if ($row1->type == 2) style="background-color: darkgray" @endif class="tr{{ $row1->id }}" title="{{ $row1->id }}" id="1row{{ $counter }}"@if($row1->pv_status == 1)onclick="checkUncheck('1chk{{ $counter }}','1row{{ $counter }}')" @endif >
 
-<tr @if ($row1->type==2) style="background-color: darkgray" @endif
-class="tr<?php echo $row1->id ?>" title="<?php echo $row1->id ?>" id="1row<?php echo $counter ?>" <?php if($row1->pv_status == 1):?>  onclick="checkUncheck('1chk<?php echo $counter ?>','1row<?php echo $counter ?>')"<?php endif;?>>
    
     <td class="text-center"><?php echo $counter++;?></td>
     <td class="text-center"><?php echo strtoupper($row1->pv_no);?></td>
