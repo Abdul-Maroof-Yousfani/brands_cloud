@@ -173,7 +173,6 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <div class="row">
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                     <div class="term">
-                                        <p>Terms:</p>
                                         <p>SO Date: {{$delivery_note->so_date}}</p>
                                         <p>Warehouse: {{$buyers_warehouse_name}}</p>
                                         <p>Payment Terms: 30 Days</p>
