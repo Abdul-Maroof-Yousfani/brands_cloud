@@ -54,11 +54,8 @@ input.form-control.form-control2{margin:0!important;}
                                                 <h2 class="subHeadingLabelClass">Brands Unlimited (Pvt) Ltd</h2>
                                                 <p>301-305, 3rd Floor, Kavish Crown Plaza
                                                     Sharah-e-Faisal, karachi.</p>
-                                                    <br>
                                                 <p>N.T.N #:5098058-8 </p>
                                                 <p>S.t #: 3277876156235</p>
-
-                                                <br>
                                                 <p>Bill To:</p>
                                                 <p>
                                                     <strong>{{$buyer_detail->name}}</strong>

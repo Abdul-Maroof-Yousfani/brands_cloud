@@ -54,11 +54,8 @@ input.form-control.form-control2{margin:0!important;}
                                                 <h2 class="subHeadingLabelClass">Brands Unlimited (Pvt) Ltd</h2>
                                                 <p>301-305, 3rd Floor, Kavish Crown Plaza
                                                     Sharah-e-Faisal, karachi.</p>
-                                                    <br>
                                                 <p>N.T.N #:5098058-8 </p>
                                                 <p>S.t #: 3277876156235</p>
-
-                                                <br>
                                                 <p>Bill To:</p>
                                                 <p>
                                                     <strong>{{$buyer_detail->name}}</strong>
@@ -84,7 +81,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 @if ($buyer_detail->display_pending_payment_invoice == 1)
                                                 @endif
                                                 <div class="table-responsive">
-                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border: 1px solid #000;">
+ <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:84%;float:right;">
                                                         <tbody>
                                                             <tr>
                                                                 <td>Amount Limited</td>
@@ -113,7 +110,6 @@ input.form-control.form-control2{margin:0!important;}
                                                 <div class="row">
                                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                                         <div class="term">
-                                                            <p>Terms:</p>
                                                             <p>SO Date: {{$sale_order->so_date}}</p>
                                                              @php
                                                                 $warehouse_name = null;
