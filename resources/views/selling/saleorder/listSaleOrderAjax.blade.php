@@ -3,7 +3,18 @@
 .nowrap{white-space:nowrap;}
 .text-right-amount{text-align:right !important;}
 .table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:22% !important;padding:8px 4px !important;background:#ddd;}
-
+table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, table.dataTable thead .sorting_desc:after {
+    background-image: url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 12px;
+    color: #6e6b7b;
+    width: 5% !important;
+    height: 14px;
+    content: '';
+    right: 0.3rem;
+    top: 1.3rem;
+}
  </style>
  <div class="table-responsive">
      <table class="userlittab table table-bordered sf-table-list" id="data-table">
