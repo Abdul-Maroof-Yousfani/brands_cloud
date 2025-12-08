@@ -346,6 +346,8 @@ foreach ($delivery_note_data as $sale_order_item) {
                                         <p><strong style="margin-left: 50px;">
                                             Creation Time :
                                             {{ \Carbon\Carbon::parse($delivery_note->timestamp)->format('d-M-Y h:i A') }}
+
+                                            
                                         </strong></p>
 
                                      
@@ -626,11 +628,11 @@ foreach ($delivery_note_data as $sale_order_item) {
 
 
                 </div>
-                <!--
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right hidden qrCodeDiv">
+                
+                    <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right hidden qrCodeDiv">
                         <img src="data:image/png;base64, { !! base64_encode(QrCode::format('png')->size(200)->generate('View Purchase Request Voucher Detail (Office Use)'))!!} ">
-                    </div>
-                    <!-->
+                    </div> -->
+                    
             </div>
         </div>
 
