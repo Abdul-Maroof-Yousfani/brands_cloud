@@ -46,11 +46,11 @@ class="tr<?php echo $row1->id ?>" title="<?php echo $row1->id ?>" id="1row<?php 
 
 
                                 <?php if($delete == true):?>
-                                <input  style="color: #fff !important; width:100% !important;" class="btn btn-xs btn-danger BtnHide<?php echo $row1->pv_no?>" type="button"
+                                <input  style="color: #fff !important; width:100% !important;text-align:left;" class="btn btn-xs btn-danger BtnHide<?php echo $row1->pv_no?>" type="button"
                                     onclick="DeletePvActivity('<?php echo $row1->id;?>','<?php echo $row1->pv_no?>','<?php echo $row1->pv_date?>','<?php echo CommonHelper::GetAmount('new_pv_data',$row1->id)?>')"
                                     value="Delete" />
                                 <?php endif;?>
-                                    <a target="_blank" href="<?php echo url('fdc/viewBankPaymentVoucherDetailPrint?id='.$row1->id.'&&m='.$m)?>" class="btn btn-xs btn-success">Print</a>
+                                    <a  style="color: #fff !important;" target="_blank" href="<?php echo url('fdc/viewBankPaymentVoucherDetailPrint?id='.$row1->id.'&&m='.$m)?>" class="btn btn-xs btn-success">Print</a>
 
                                 <?php
                                 /*
