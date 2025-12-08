@@ -117,15 +117,13 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <p>301-305, 3rd Floor, Kavish Crown Plaza
                                 Sharah-e-Faisal, karachi.</p>
 
-                            <p>N.T.N #:5098058-8 </p>
+                        
                             <p>S.t #: 3277876156235</p>
 
 
                             <p>Bill To:</p>
                             <p>
                                 <strong>{{$buyers_detail->name}}</strong>
-                                <br>
-                                <br>
                                 {{$buyers_detail->address}}<br>
                                 {{ CommonHelper::get_all_country_by_id($buyers_detail->country)->name ?? ''}}<br>
                                 {{$buyers_detail->phone_1}}<br>
@@ -133,6 +131,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 {{isset($buyers_detail->cnic_ntn) ? $buyers_detail->cnic_ntn : "-" }}
                                 S.T #: {{isset($buyers_detail->strn) ? $buyers_detail->strn : "-"}}
                             </p>
+                                <p>N.T.N #:5098058-8 </p>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6  text-right">
@@ -143,7 +142,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <p>Date: {{$delivery_note->so_date}}</p>
                             <br>
                             <div class="table-responsive">
-                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border: 1px solid #000;">
+                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:51% !important;float:right;">
                                     <tbody>
                                         <tr>
                                             <td>Amount Limited</td>
