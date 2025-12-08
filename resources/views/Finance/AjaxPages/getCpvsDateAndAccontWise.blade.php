@@ -31,7 +31,7 @@ foreach ($pvs as $row1) {
     <td></td>
     <td class="text-center hidden-print">
         <div class="dropdown">
-            <button class="drop-bt dropdown-toggle"type="button" data-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            <button class="drop-bt dropdown-toggle"type="button" data-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical"></i>
                 <ul class="dropdown-menu">
                     <li>
 
