@@ -130,7 +130,7 @@ table.dataTable tbody th,table.dataTable tbody td{white-space:nowrap;}
                                             <th class="text-center col-sm-1">DN No</th>
                                             <th class="text-center col-sm-1">DN Date</th>
 
-                                            <th class="text-center col-sm-1">Order No</th>
+                                            <!-- <th class="text-center col-sm-1">Order No</th> -->
                                             <th class="text-center col-sm-1">Order Date</th>
                                             <th class="text-center">Customer</th>
 
@@ -207,7 +207,7 @@ table.dataTable tbody th,table.dataTable tbody td{white-space:nowrap;}
                                                     @php
                                                         $sales_order = App\Models\Sales_Order::where("so_no", $row->so_no)->first();
                                                     @endphp
-                                                    <td class="text-center">{{$row->so_no}}</td>
+                                                    <!-- <td class="text-center">{{$row->so_no}}</td> -->
                                                   
                                                     <td class="text-center"><?php echo $sales_order->so_date ? \Carbon\Carbon::parse($row->so_date)->format("d-M-Y") : "";?></td>
                                                     <td class="text-center">{{$customer->name}}</td>
