@@ -230,9 +230,9 @@ th.so-width.text-center.col-sm-1.sorting_asc {
                                                   
                                                     <td class="text-center"><?php echo $sales_order->so_date ? \Carbon\Carbon::parse($row->so_date)->format("d-M-Y") : "";?></td>
                                                     <td class="text-center">{{$customer->name}}</td>
-                                                    <td class="text-right">{{number_format($data->qty,3)}}</td>
+                                                    <td style="text-align: center !important;" class="text-center">{{number_format($data->qty,3)}}</td>
                                                   
-                                                    <td class="text-right">{{number_format($data->amount + $row->sales_tax_amount + $sale_taxes_amount_rate, 0)}}</td>
+                                                    <td   style="text-align: center !important;" class="text-center">{{number_format($data->amount + $row->sales_tax_amount + $sale_taxes_amount_rate, 0)}}</td>
                                                     <td>{{$status}}</td>
                                                     <td>{{$approvalStatus}}</td>
                                                     <td class="text-center"><?php echo $row->username?></td>
