@@ -307,7 +307,7 @@ CommonHelper::reconnectMasterDatabase();
                <div class="account-inner d-flex">
                   <div class="davtar">
                   <span class="avatar">
-               <img class="round" src="{{ App\Helpers\CommonHelper::get_profile_pic() }}" alt="avatar" >
+               <img style="width: 100px;" class="round" src="{{ App\Helpers\CommonHelper::get_profile_pic() }}" alt="avatar" >
               </span>
                   </div>
                   <div class="main-heading">
