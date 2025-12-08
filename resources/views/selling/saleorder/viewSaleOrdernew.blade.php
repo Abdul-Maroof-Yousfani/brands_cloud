@@ -147,7 +147,7 @@ input.form-control.form-control2{margin:0!important;}
                                                             <th style="background: #000 !important; color:#fff !important;">S.No</th>
                                                             <th style="background: #000 !important; color:#fff !important;width: 20% !important;">Product</th>
                                                             {{--   <th style="background: #000 !important; color:#fff !important;">Item & Description</th>--}}
-                                                            <th style="background: #000 !important; color:#fff !important;">Barcode</th>
+                                                            <th style="background: #000 !important; color:#fff !important;    text-align: center !important;">Barcode</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Qty</th>
                                                             
                                                             <th style="background: #000 !important; color:#fff !important;">FOC</th>
@@ -186,7 +186,7 @@ input.form-control.form-control2{margin:0!important;}
                                                                 ({{$productid ?? ""}})-{{$product ?? "----"}}
                                                             </td>
                                                             <td  style="text-align: center !important;" class="wsale2">
-                                                                <p>  {{$productbarcode ?? "--"}}</p>
+                                                                <p> <strong> {{$productbarcode ?? "--"}}</strong></p>
                                                             </td>
                                                             <td  style="text-align: center !important;" class="wsale2">
                                                                 <p>{{number_format($sale_order_item->qty)}}</p>
