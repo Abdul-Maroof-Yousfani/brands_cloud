@@ -143,7 +143,7 @@ table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, 
                                     <div class="table-responsive">
                                         <table class="userlittab table table-bordered sf-table-list dataTable no-footer" id="EmpExitInterviewList">
                                             <thead>
-                                            <th style="width: 107px;width: 100px !important;" class="text-center col-sm-1">S.No</th>
+                                            <th style="width: 107px;width: 100px !important;" class="text-center col-sm-1">S.Nos</th>
                                             <th class="text-center col-sm-1">SO No</th>
                                             <th class="text-center col-sm-1">DN No</th>
                                             <th class="text-center col-sm-1">DN Date</th>
