@@ -2,17 +2,14 @@
  .pagination{float:right;}
 .nowrap{white-space:nowrap;}
 .text-right-amount{text-align:right !important;}
-.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td {
-    width: 8% !important;
-    padding: 8px 8px !important;
-    background: #ddd;
-}
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:22% !important;padding:8px 4px !important;background:#ddd;}
+
  </style>
  <div class="table-responsive">
      <table class="userlittab table table-bordered sf-table-list" id="data-table">
         <thead>
             <tr>
-                <th  class="text-center ">So No.</th>
+                <th style="width:5% !important;"  class="text-center ">So No</th>
                 <th  class="text-center ">Order No</th>
                 <th  class="text-center ">Customer Name</th>
                 <th  class="text-center ">Order Date</th>
