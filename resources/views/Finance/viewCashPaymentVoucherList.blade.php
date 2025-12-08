@@ -159,13 +159,13 @@ $AccYearTo = $AccYearDate->accyearto;
                                                                             <ul class="dropdown-menu">
                                                                                 <li>
 																						<?php if($view == true):?>
-																						<a onclick="showDetailModelOneParamerter('fdc/viewBankPaymentVoucherDetail','<?php echo $row1->id;?>','View Cash P.V Detail','<?php echo $_GET['m']?>')" class="btn btn-xs btn-success"> View</a>
+																						<a   style="color: #fff !important;" onclick="showDetailModelOneParamerter('fdc/viewBankPaymentVoucherDetail','<?php echo $row1->id;?>','View Cash P.V Detail','<?php echo $_GET['m']?>')" class="btn btn-xs btn-success"> View</a>
 																						<?php endif;?>
 																						<?php if($edit == true):?>
-																						<a href="<?php echo url('finance/editCashPVForm/'.$row1->id.'?m='.$m); ?>" type="button" class="btn btn-primary btn-xs BtnHide<?php echo $row1->pv_no?>">Edit</a>
+																						<a  style="color: #fff !important;" href="<?php echo url('finance/editCashPVForm/'.$row1->id.'?m='.$m); ?>" type="button" class="btn btn-primary btn-xs BtnHide<?php echo $row1->pv_no?>">Edit</a>
 																						<?php endif;?>
 																						<?php if($delete == true):?>
-																						<input style="width:100%; text-align:left;" class="btn btn-xs btn-danger BtnHide<?php echo $row1->pv_no?>" type="button" onclick="DeletePvActivity('<?php echo $row1->id;?>','<?php echo $row1->pv_no?>','<?php echo $row1->pv_date?>','<?php echo CommonHelper::GetAmount('new_pv_data',$row1->id)?>')" value="Delete" />
+																						<input style="width:100% !important; color:#fff; text-align:left;" class="btn btn-xs btn-danger BtnHide<?php echo $row1->pv_no?>" type="button" onclick="DeletePvActivity('<?php echo $row1->id;?>','<?php echo $row1->pv_no?>','<?php echo $row1->pv_date?>','<?php echo CommonHelper::GetAmount('new_pv_data',$row1->id)?>')" value="Delete" />
 																						<?php endif;?>
 																							<a target="_blank" href="<?php echo url('fdc/viewBankPaymentVoucherDetailPrint?id='.$row1->id.'&&m='.$m)?>" class="btn btn-xs btn-success">Print</a>
 																					<?php

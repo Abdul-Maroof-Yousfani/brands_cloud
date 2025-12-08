@@ -23,7 +23,9 @@ class="tr<?php echo $row1->id ?>" title="<?php echo $row1->id ?>" id="1row<?php 
 
     <td class="text-center status{{$row1->pv_no}}"><?php if($row1->pv_status == 2){echo "<span style='color:green;'>Approved</span>";} else{echo "<span style='color:red;'>Pending</span>";}?></td>
     <?php   $count=CommonHelper::check_amount_in_ledger($row1->pv_no,$row1->id,2) ?>
-        <td class="text-center hidden-print">
+    <td></td>
+    <td></td>    
+    <td class="text-center hidden-print">
             <div class="dropdown">
                 <button class="drop-bt dropdown-toggle"type="button" data-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                 <ul class="dropdown-menu">
@@ -31,20 +33,20 @@ class="tr<?php echo $row1->id ?>" title="<?php echo $row1->id ?>" id="1row<?php 
 
 
                                 <?php if($view == true):?>
-                                <a onclick="showDetailModelOneParamerter('fdc/viewBankPaymentVoucherDetail','<?php echo $row1->id;?>','View Bank P.V Detail','<?php echo $_GET['m']?>','')" class="btn btn-xs btn-success">
+                                <a style="color: #fff !important;" onclick="showDetailModelOneParamerter('fdc/viewBankPaymentVoucherDetail','<?php echo $row1->id;?>','View Bank P.V Detail','<?php echo $_GET['m']?>','')" class="btn btn-xs btn-success">
                                     View
                                 </a>
                                 <?php endif;?>
 
                                 <?php if($edit == true):?>
-                                <a  href="<?php echo  URL::to('/finance/editCashPVForm/'.$row1->id.'?m='.$m); ?>" type="button" class="btn btn-primary btn-xs BtnHide<?php echo $row1->pv_no?>">
+                                <a  style="color: #fff !important;" href="<?php echo  URL::to('/finance/editCashPVForm/'.$row1->id.'?m='.$m); ?>" type="button" class="btn btn-primary btn-xs BtnHide<?php echo $row1->pv_no?>">
                         Edit
                                 </a>
                                 <?php endif;?>
 
 
                                 <?php if($delete == true):?>
-                                <input class="btn btn-xs btn-danger BtnHide<?php echo $row1->pv_no?>" type="button"
+                                <input  style="color: #fff !important; width:100% !important;" class="btn btn-xs btn-danger BtnHide<?php echo $row1->pv_no?>" type="button"
                                     onclick="DeletePvActivity('<?php echo $row1->id;?>','<?php echo $row1->pv_no?>','<?php echo $row1->pv_date?>','<?php echo CommonHelper::GetAmount('new_pv_data',$row1->id)?>')"
                                     value="Delete" />
                                 <?php endif;?>
