@@ -111,7 +111,7 @@
                             } 
                             if(str_contains($voucher_no, "dn")) {
                                 $delivery_note = App\Models\DeliveryNote::select("id")->where("gd_no", $voucher_no)->first();
-                                $url = 'sales/viewDeliveryNoteDetail/' . $delivery_note->id;
+                                $url = 'sales/viewDeliveryNoteDetail/' . ($delivery_note ? $delivery_note->id : '');
                                 $text = "View Delivery Note";
                             }
                             if(str_contains($voucher_no, "SO")) {
