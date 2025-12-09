@@ -64,6 +64,19 @@
         @endphp
         <tbody id="<?php // echo $member_id;
         ?>">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Opening Balance</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ number_format($received_opening_bal) }}</td>
+                    <td>{{ number_format($issued_opening_bal) }}</td>
+                    <td></td>
+                </tr>
             @foreach($unit_activities as $index => $unit_activity)
                 <tr>
                     <td>{{ $index + 1 }}</td>
