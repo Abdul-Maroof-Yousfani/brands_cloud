@@ -11,3 +11,4 @@ class ProductsPrincipalGroup extends Model
     protected $fillable = ['products_principal_group', 'status'];
 }
 
+

@@ -70,6 +70,7 @@
                     <td>{{ $unit_activity->sub_item_id }}</td>
                     <td>{{ $unit_activity->voucher_date }}</td>
                     <td>{{ $unit_activity->product_name }}</td>
+                    <td>{{ $unit_activity->voucher_type }}</td>
                     @if($unit_activity->voucher_type == 1)
                         <td>GRN</td>
                     @elseif($unit_activity->voucher_type == 2)
