@@ -15,4 +15,12 @@ class Brand extends Model
     {
         return $this->hasMany(Subitem::class);
     }
+
+// Brand.php
+public function principalGroup()
+{
+    // Correct relation
+    return $this->belongsTo(ProductsPrincipalGroup::class, 'principal_group_id', 'id');
+}
+
 }

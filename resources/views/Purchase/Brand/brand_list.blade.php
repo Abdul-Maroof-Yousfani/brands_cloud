@@ -9,6 +9,7 @@
                 <th class="text-center">SR No</th>
                 <th class="text-center">Name</th>
                 <th class="text-center">Description</th>
+                <th>Principal Group</th>
                 <th class="text-center">Action</th>
             </tr>
         </thead>
@@ -18,6 +19,7 @@
                     <td>{{ ++$key }}</td>
                     <td>{{ $brand->name }}</td>
                     <td>{{ $brand->description }}</td>
+                      <td>{{ $brand->principalGroup->products_principal_group ?? '-' }}</td>
                     <td><a href="{{ route('brands.edit', $brand->id) }}">Edit</a></td>
                 </tr>
             @endforeach
