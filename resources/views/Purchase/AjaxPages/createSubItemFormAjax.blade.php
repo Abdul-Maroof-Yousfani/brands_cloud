@@ -150,7 +150,6 @@ use App\Helpers\CommonHelper;
 
 
 
-
             var category=$('#category_name').val();
             var subitem=$('#sub_item_name').val();
             var uomid=$('#uom_id').val();

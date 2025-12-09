@@ -72,9 +72,22 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
                                                             <label>Sub Category :</label>
                                                             <span class="rflabelsteric"><strong>*</strong></span>
                                                             <select style="width:100% !important;" autofocus name="SubCategoryId" id="SubCategoryId"
-                                                                class="form-control requiredField select2">
+                                                                class="form-control  select2">
                                                                 <option value="">Select Category</option>
 
+                                                            </select>
+                                                        </div>
+
+
+                                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                            <label>Principal Group :</label>
+                                                            <span class="rflabelsteric"><strong>*</strong></span>
+                                                            <select style="width:100% !important;" autofocus name="principal_group" id="principal_group"
+                                                                class="form-control  select2" onchange="get_brand_by_principal_group(this)">
+                                                                <option value="">Select Category</option>
+                                                                @foreach(App\Helpers\CommonHelper::get_all_principal_groups() as $principal) 
+                                                                    <option value="{{ $principal->id }}">{{ $principal->products_principal_group }}</option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
 
@@ -647,6 +660,23 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
     </div>
 </div>
 <script type="text/javascript">
+
+function get_brand_by_principal_group(element) {
+    var principal_group_id = $(element).val();
+    $.ajax({
+        url: '/purchase/get_brand_by_principal_group',
+        type: 'Get',
+        data: { principal_group_id: principal_group_id },
+        success: function(response) {
+            $('#brand').empty().select2({
+                data: response
+            });
+            $('#brand').select2('open');
+
+        }
+    });
+}
+
 function get_item_master() {
     var category = $('#CategoryId').val();
     var sub_category = $('#sub_category').val();

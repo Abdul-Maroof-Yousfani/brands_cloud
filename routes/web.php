@@ -810,6 +810,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
     Route::get('/deleteSubItemRecord', 'PurchaseDeleteController@deleteSubItemRecord');
     Route::get('/repostSubItemRecord', 'PurchaseDeleteController@repostSubItemRecord');
     Route::resource('brands', 'BrandController');
+    Route::get('/get_brand_by_principal_group', 'BrandController@get_brand_by_principal_group')->name('get_brand_by_principal_group');
 
     Route::get("/get_subitems_against_brand_id", function() {
         $brand_id = request()->brand_id;

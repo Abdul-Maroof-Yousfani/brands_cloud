@@ -2,6 +2,7 @@
 namespace App\Helpers;
 use App\Models\AdvancePayment;
 use App\Models\Countries;
+use App\Models\ProductsPrincipalGroup;
 use App\Models\Stock;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -97,6 +98,11 @@ class CommonHelper
     {
         Config::set('database.default', 'mysql');
         DB::reconnect('mysql');
+    }
+
+    public static function get_all_principal_groups() {
+        $principal_groups = ProductsPrincipalGroup::select("id", "products_principal_group")->where("status", 1)->get();
+        return $principal_groups;
     }
 
     public static function get_all_products()

@@ -33,3 +33,4 @@ class CreateProductsPrincipalGroupTable extends Migration
 }
 
 
+

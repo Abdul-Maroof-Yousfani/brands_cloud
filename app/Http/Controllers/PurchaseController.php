@@ -989,6 +989,7 @@ class PurchaseController extends Controller
             $sub_item->sub_category_id = $request->SubCategoryId;
             $sub_item->sys_no = $request->sys_code;
             $sub_item->main_ic_id = $request->CategoryId;
+            $sub_item->principal_group_id = $request->principal_group;
             $sub_item->sub_ic = $request->SubCategoryId;
             $sub_item->sku_code = $request->sku ?? $request->sub_item_name;
             $sub_item->uom = $request->uom_id;

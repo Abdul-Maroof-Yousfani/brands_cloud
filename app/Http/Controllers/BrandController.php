@@ -33,6 +33,21 @@ class BrandController extends Controller
         return view('Purchase.Brand.add_brand',compact('principalGroups'));
     }
 
+    public function get_brand_by_principal_group(Request $request) {
+        $principal_group_id = $request->principal_group_id;
+        $brands = Brand::where('principal_group_id', $principal_group_id)->where('status', 1)->get();
+        
+
+        $data = [];
+        foreach($brands as $brand) {
+            $data[] = [
+                'id' => $brand->id,
+                'text' => $brand->name
+            ];
+        }
+        return response()->json($data);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
