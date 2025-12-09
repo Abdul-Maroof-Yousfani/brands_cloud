@@ -98,7 +98,33 @@
                     @endif
                     <td>{{ $unit_activity->warehouse_name }}</td>
                     <td>{{ $unit_activity->username }}</td>
-                    <td>{{ $unit_activity->voucher_no }}</td>
+                    <td>
+                        @php
+                        
+                            $m = $_GET['m'];
+                            $url = "";
+                            $text = "";
+                            $voucher_no = $unit_activity->voucher_no;;
+                            if(str_contains($voucher_no, "tr")) {
+                                $url = "stdc/viewStockTransferDetail?m=".$m;
+                                $text = "View Stock Transfer Detail";
+                            } 
+                            if(str_contains($voucher_no, "dn")) {
+                                $delivery_note = App\Models\DeliveryNote::select("id")->where("gd_no", $voucher_no)->first();
+                                $url = 'sales/viewDeliveryNoteDetail/' . $delivery_note->id;
+                                $text = "View Delivery Note";
+                            }
+                            if(str_contains($voucher_no, "SO")) {
+                                $sale_order = App\Models\Sales_Order::select("id")->where("so_no", $voucher_no)->first();
+                                $url = 'selling/viewSaleOrderPrint/' . $voucher_no;
+                                $text = "View Sale Order";
+                            }
+                            // 'selling/viewSaleOrderPrint/{{ $sale_order->id }}'
+                            // 
+                        @endphp
+                        <a onclick="showDetailModelOneParamerter('{{ $url }}', '{{ $unit_activity->voucher_no }}','{{ $text }}')" target="_blank">{{ $unit_activity->voucher_no }}</a>
+
+                    </td>
                     @if($unit_activity->voucher_type == 2 || $unit_activity->voucher_type == 3 || $unit_activity->voucher_type == 4)
                         <td>{{ number_format($unit_activity->qty, 0) }}</td>
                         @php

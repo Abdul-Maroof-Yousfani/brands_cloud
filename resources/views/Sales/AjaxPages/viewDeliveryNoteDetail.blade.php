@@ -44,7 +44,10 @@ $total_amount_after_tax = 0;
 
 
 foreach ($delivery_note_data as $sale_order_item) {
-    $saleOrderDetail = CommonHelper::get_item_detials($sale_order_item->so_data_id);
+    // $saleOrderDetail = CommonHelper::get_item_detials($sale_order_item->so_data_id);
+    $saleOrderDetail = DB::Connection('mysql2')->table('sales_order_data')->where('status',1)->where('so_no',$delivery_note->so_no)->first();
+       
+    // $saleOrderDetail = App\Models\Sales_Order::where("so_no", $delivery_note->so_no)->first();
 
     $total_qty += $sale_order_item->qty;
     $total_foc += $sale_order_item->foc;
