@@ -85,7 +85,8 @@ use App\Helpers\SaleHelper;
                             <label class="control-label">From Date</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                <input type="date" name="from" class="form-control" id="from">
+                                <input type="date" name="from" class="form-control" id="from"
+                                    value="{{ date('Y-m-d') }}">
                             </div>
                         </div>
                     </div>
@@ -94,7 +95,7 @@ use App\Helpers\SaleHelper;
                             <label class="control-label">To Date</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                <input type="date" name="to" class="form-control" id="to">
+                                <input type="date" name="to" class="form-control" id="to" value="{{ date('Y-m-d') }}">
                             </div>
                         </div>
                     </div>
