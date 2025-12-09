@@ -64,13 +64,25 @@
         @endphp
         <tbody id="<?php // echo $member_id;
         ?>">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Opening Balance</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ number_format($received_opening_bal) }}</td>
+                    <td>{{ number_format($issued_opening_bal) }}</td>
+                    <td></td>
+                </tr>
             @foreach($unit_activities as $index => $unit_activity)
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $unit_activity->sub_item_id }}</td>
-                    <td>{{ $unit_activity->voucher_date }}</td>
+                    <td>{{ \Carbon\Carbon::parse($unit_activity->voucher_date)->format("d-M-Y") }}</td>
                     <td>{{ $unit_activity->product_name }}</td>
-                    <td>{{ $unit_activity->voucher_type }}</td>
                     @if($unit_activity->voucher_type == 1)
                         <td>GRN</td>
                     @elseif($unit_activity->voucher_type == 2)
@@ -79,7 +91,7 @@
                         <td>Stock Transfer</td>
                     @elseif($unit_activity->voucher_type == 4)
                         <td>Stock Received</td>
-                    @elseif($unit_activity->voucher_type == 5)
+                    @elseif($unit_activity->voucher_type == 5 || $unit_activity->voucher_type == 50)
                         <td>Sales</td>
                     @elseif($unit_activity->voucher_type == 7)
                         <td>Issuance</td>
@@ -98,7 +110,7 @@
                         @endphp
                         <td>0</td>
                     @endif
-                    @if($unit_activity->voucher_type == 1 || $unit_activity->voucher_type == 5 || $unit_activity->voucher_type == 7)
+                    @if($unit_activity->voucher_type == 1 || $unit_activity->voucher_type == 5 || $unit_activity->voucher_type == 7 || $unit_activity->voucher_type == 50)
                         @php
                             $issued_qty += $unit_activity->qty;
                         @endphp

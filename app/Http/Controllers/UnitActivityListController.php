@@ -16,6 +16,49 @@ class UnitActivityListController extends Controller
             $transaction_type = request()->transaction_type;
             $warehouse_id = request()->warehouse_id;
 
+            // @if($unit_activity->voucher_type == 2 || $unit_activity->voucher_type == 3 || $unit_activity->voucher_type == 4)
+            //             <td>{{ number_format($unit_activity->qty, 0) }}</td>
+            //             @php
+            //                 $received_qty += $unit_activity->qty;
+            //             @endphp
+            //         @else
+            //             @php
+            //                 $received_qty += 0;
+            //             @endphp
+            //             <td>0</td>
+            //         @endif
+            //         @if($unit_activity->voucher_type == 1 || $unit_activity->voucher_type == 5 || $unit_activity->voucher_type == 7 || $unit_activity->voucher_type == 50)
+            //             @php
+            //                 $issued_qty += $unit_activity->qty;
+            //             @endphp
+            //             <td>{{  number_format($unit_activity->qty, 0) }}</td>
+            //         @else
+            //             @php
+            //                 $issued_qty += 0;
+            //             @endphp
+            //             <td>0</td>
+            //         @endif
+
+           $received_opening_bal = DB::connection("mysql2")
+                ->table("stock")
+                ->whereIn("voucher_type", [2, 3, 4])
+                ->where("stock.qty", ">", 0)
+                ->when(isset($from), function ($query) use ($from) {
+                    $query->where("stock.voucher_date", "<", $from);
+                })
+                ->sum("stock.qty");
+
+
+            $issued_opening_bal = DB::connection("mysql2")
+                ->table("stock")
+                ->whereIn("voucher_type", [1, 5, 7, 50])
+                ->where("stock.qty", ">", 0)
+                ->when(isset($from), function ($query) use ($from) {
+                    $query->where("stock.voucher_date", "<", $from);
+                })
+                ->sum("stock.qty");
+                                        
+
             $unit_activities = DB::connection("mysql2")->table("stock")
                         ->select(
                             "stock.sub_item_id",
@@ -41,7 +84,7 @@ class UnitActivityListController extends Controller
                         })
                         ->get();
 
-            return view("Reports.unitLogReport.unitReportAjax", compact("unit_activities"));
+            return view("Reports.unitLogReport.unitReportAjax", compact("unit_activities", "received_opening_bal", "issued_opening_bal"));
         }
 
         return view("Reports.unitLogReport.unit_log");
