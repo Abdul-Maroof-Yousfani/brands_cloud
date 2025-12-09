@@ -16,7 +16,7 @@ $m = $_GET['m'];?>
                         <th class="text-center col-sm-1">S.No</th>
                         <th class="text-center col-sm-1">GD No</th>
                         <th class="text-center col-sm-1">GD Date</th>
-                        <th class="text-center col-sm-1">Mode / Terms Of Payment</th>
+                        <th class="text-center col-sm-1">Payment Terms</th>
                         <th class="text-center col-sm-1">Order Date</th>
                         <th class="text-center">Customer</th>
 

@@ -24,17 +24,25 @@ $export = ReuseableCode::check_rights(257);
 @section('content')
     @include('select2')
     <style>
-        .table-bordered {
-            border: 1px solid black;
-        }
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:22% !important;padding:8px 4px !important;background:#ddd;white-space:nowrap;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:0 !important;content:'';right:0.3rem;top:1.3rem;/* background:none;*/
+}
+table.dataTable tbody th,table.dataTable tbody td{padding:8px 4px !important;}
 
-        table.table-bordered>thead>tr>th {
-            border: 1px solid black !important;
-        }
+th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
+.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td {
+    width: initial !important;
+    padding: 8px 4px !important;
 
-        table.table-bordered>tbody>tr>td {
-            border: 1px solid black !important;
-        }
+}
+div.dataTables_wrapper div.dataTables_filter input {
+    margin-left: 0 !important;
+}
+.dataTables_wrapper .dataTables_filter {
+    float: left !important;
+    text-align: left !important;
+}
     </style>
     <div class="panel-body">
         <div class="row">
@@ -58,71 +66,7 @@ $export = ReuseableCode::check_rights(257);
                         </div>
 
                         <hr style="border-color: #ccc">
-
-                        <!-- <div class="row">
-
-                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                <label for="si_no" class="form-label">SI NO.</label>
-                                <input type="text" class="form-control" id="si_no" placeholder="Type here SI NO" name="si_no" value="">
-                            </div>
-
-                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                <label for="search" class="form-label">Search</label>
-                                <input type="text" class="form-control" id="search" placeholder="Type here Product Name, Item Code, SKU" name="search" value="">
-                            </div>
-
-                            <div class="col-md-2 mb-3">
-                                <label>From Date</label>
-                                <input type="Date" name="from" id="from" value="<?php echo $currentMonthStartDate; ?>" class="form-control" />
-                            </div>
-                            
-                            <div class="col-md-2 mb-3">
-                                <label>To Date</label>
-                                <input type="Date" name="to" id="to" max="<?php ?>" value="<?php echo $currentMonthEndDate; ?>" class="form-control" />
-                            </div>
-
-                            <div class="col-md-2 mb-3">
-                                <label>User </label>
-                                <select name="username" id="username" class="form-control select2">
-                                    <option value="0">All User</option>
-                                    @foreach ($username as $item)
-    <option value="{{ $item->username }}">{{ $item->username }}</option>
-    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-2 mb-3">
-                                <label>Status </label>
-                                <select name="si_status" id="si_status" class="form-control select2">
-                                    <option value="0">All Status</option>
-                                    <option value="1">Pending</option>
-                                    <option value="2">1st Approved</option>
-                                    <option value="3">Approved</option>
-                                </select>
-                            </div>
-
-                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                <label for="so_no" class="form-label">SO NO.</label>
-                                <input type="text" class="form-control" id="so_no" placeholder="Type here SO NO" name="so_no" value="">
-                            </div>
-
-                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                <label for="gdn_no" class="form-label">DN NO.</label>
-                                <input type="text" class="form-control" id="gdn_no" placeholder="Type here DN NO" name="gdn_no" value="">
-                            </div>
-
-                           
-
-                        
-
-                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 ">
-                                    <input type="button" value="View Filter Data" class="btn btn-sm btn-primary"
-                                        onclick="viewRangeWiseDataFilter();" style="margin-top: 32px;" />
-                                </div>
-
-                        </div> -->
-
-
+                
                         <div class="lineHeight">&nbsp;</div>
                         <div class="panel">
                             <div class="panel-body" id="PrintEmpExitInterviewList">
@@ -132,17 +76,17 @@ $export = ReuseableCode::check_rights(257);
                                          <div class="table-responsive">
                                             <table class="table table-bordered sf-table-list" id="EmpExitInterviewList">
                                                 <thead>
-                                                    <th class="text-center col-sm-1">S.No</th>
+                                                    <th  class="so-width text-center col-sm-1">S.No</th>
                                                     <th class="text-center col-sm-1">SO No</th>
                                                     <th class="text-center col-sm-1">SI No</th>
                                                     <!-- <th class="text-center col-sm-1">ST No</th> -->
                                                     <th class="text-center col-sm-1">Buyer's Unit</th>
-                                                    <th class="text-center col-sm-1">Order No</th>
+                                                    <!-- <th class="text-center col-sm-1">Order No</th> -->
                                                     <th class="text-center col-sm-1">SI Date</th>
-                                                    <th class="text-center col-sm-1">Model Terms Of Payment</th>
+                                                    <th class="text-center col-sm-1">Payment Terms</th>
                                                     <th class="text-center col-sm-1">Order Date</th>
                                                     <th class="text-center">Customer</th>
-                                                    <th class="text-center">Total Amount</th>
+                                                    <th class="text-center">Amount</th>
                                                     <th class="text-center">SI Status</th>
                                                     <th class="text-center">Status</th>
 
@@ -195,7 +139,7 @@ $export = ReuseableCode::check_rights(257);
                                                             $BuyerOrderNo = $SoData->so_no ?? 0;
                                                         endif;
                                                         ?>
-                                                        <tr @if ($status == 'Open') style="background-color: #fdc8c8"
+                                                        <tr @if ($status == 'Open')
                                                     @elseif($status == 'partial') style="background-color: #c9d6ec" @endif
                                                             title="{{ $row->id }}" id="{{ $row->id }}">
                                                             <td class="text-center">{{ $counter++ }}</td>
@@ -215,7 +159,7 @@ $export = ReuseableCode::check_rights(257);
                                                             <span id="ScNoError<?php echo $row->id; ?>"></span>
                                                         </td> -->
                                                             <td class="text-center"><?php echo $BuyersUnit; ?></td>
-                                                            <td class="text-center"><?php echo $BuyerOrderNo; ?></td>
+                                                            <!-- <td class="text-center"><?php echo $BuyerOrderNo; ?></td> -->
                                                             <td class="text-center">
                                                                 <?php echo \Carbon\Carbon::parse($row->gi_date)->format("d-M-Y"); ?>
                                                             </td>
@@ -235,38 +179,48 @@ $export = ReuseableCode::check_rights(257);
                                                             <?php $total += $data->amount + $row->sales_tax + $fright; ?>
 
                                                             <td class="text-center">
+                                                                <div class="dropdown">
+                                                                    <button class="drop-bt dropdown-toggle"type="button" data-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                                                    <ul class="dropdown-menu">
+                                                                        <li>
 
-                                                                <?php if($view == true):?>
-                                                                <button
-                                                                    onclick="showDetailModelOneParamerter('sales/viewSalesTaxInvoiceDetail','<?php echo $row->id; ?>','View Sales Tax Invoice')"
-                                                                    type="button"
-                                                                    class="btn btn-success btn-xs">View</button>
-                                                                <?php endif;?>
-                                                                <!-- <?php if($edit == true ):?>
-                                                            <button
-                                                                onclick="sales_tax('< ?php echo $row->id?>','< ?php echo $m ?>')"
-                                                                type="button" class="btn btn-primery btn-xs">Edit</button>
-                                                            <?php endif;?> -->
-                                                                
-                                                                <!-- <a target="_blank" class="btn btn-xs btn-info"
-                                                                href="<?php echo url('/'); ?>/sales/PrintSalesTaxInvoiceDirect?id=<?php echo $row->id; ?>">Print</a> -->
+                                                                                <?php if($view == true):?>
+                                                                                <button
+                                                                                    onclick="showDetailModelOneParamerter('sales/viewSalesTaxInvoiceDetail','<?php echo $row->id; ?>','View Sales Tax Invoice')"
+                                                                                    type="button"
+                                                                                    class="btn btn-success btn-xs" style="width:100% !important; text-align:left;">View</button>
+                                                                                <?php endif;?>
+                                                                                <!-- <?php if($edit == true ):?>
+                                                                                <button
+                                                                                    onclick="sales_tax('< ?php echo $row->id?>','< ?php echo $m ?>')"
+                                                                                    type="button" class="btn btn-primery btn-xs">Edit</button>
+                                                                                <?php endif;?> -->
+                                                                                
+                                                                                <!-- <a target="_blank" class="btn btn-xs btn-info"
+                                                                                href="<?php echo url('/'); ?>/sales/PrintSalesTaxInvoiceDirect?id=<?php echo $row->id; ?>">Print</a> -->
 
-                                                                @if ($row->si_status != 3 && (!empty($row->so_no) || empty($row->approve_user_1)))
+                                                                                @if ($row->si_status != 3 && (!empty($row->so_no) || empty($row->approve_user_1)))
 
-                                                                <?php if($delete == true):?>
-                                                                <button
-                                                                    onclick="sales_tax_delete('<?php echo $row->id; ?>','<?php echo $m; ?>')"
-                                                                    type="button"
-                                                                    class="btn btn-danger btn-xs">Delete</button>
-                                                                <?php endif;?>
-                                                                    <!-- <button
-                                                                onclick="sales_tax('< ?php echo $row->id?>','< ?php echo $m ?>')"
-                                                                type="button" class="btn btn-primery btn-xs">Edit</button> -->
-                                                                    <!-- <a target="_blank" class="btn btn-xs btn-primary"
-                                                                href="<?php echo url('/'); ?>/sales/EditSalesTaxInvoice?id=<?php echo $row->id; ?>?m=<?php echo $m; ?>">Edit</a> -->
-                                                                    <a target="_blank" class="btn btn-xs btn-primary"
-                                                                        href="{{ route('edit.sales.tax.invoice', ['id' => $row->id, 'm' => $row->id]) }}">Edit</a>
-                                                                @endif
+                                                                                <?php if($delete == true):?>
+                                                                                <button
+                                                                                    onclick="sales_tax_delete('<?php echo $row->id; ?>','<?php echo $m; ?>')"
+                                                                                    type="button"
+                                                                                    class="btn btn-danger btn-xs" style="width:100% !important; text-align:left;">Delete</button>
+                                                                                <?php endif;?>
+                                                                                    <!-- <button
+                                                                                onclick="sales_tax('< ?php echo $row->id?>','< ?php echo $m ?>')"
+                                                                                type="button" class="btn btn-primery btn-xs">Edit</button> -->
+                                                                                    <!-- <a target="_blank" class="btn btn-xs btn-primary"
+                                                                                href="<?php echo url('/'); ?>/sales/EditSalesTaxInvoice?id=<?php echo $row->id; ?>?m=<?php echo $m; ?>">Edit</a> -->
+                                                                                    <a target="_blank" class="btn btn-xs btn-primary"
+                                                                                        href="{{ route('edit.sales.tax.invoice', ['id' => $row->id, 'm' => $row->id]) }}">Edit</a>
+                                                                                @endif
+
+
+
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
 
                                                             </td>
                                                             {{-- <td class="text-center"><a href="{{ URL::asset('purchase/editPurchaseVoucherForm/'.$row->id) }}"

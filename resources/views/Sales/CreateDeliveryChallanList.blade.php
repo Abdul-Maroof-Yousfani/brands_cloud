@@ -108,7 +108,7 @@ $AccYearTo = $AccYearDate->accyearto;
                                             <th class="text-center col-sm-1">SO No</th>
                                             <th class="text-center col-sm-1">Packing List No</th>                                            
                                             <th class="text-center col-sm-1">SO Date</th>
-                                            <th class="text-center col-sm-1">Model Terms Of Payment</th>
+                                            <th class="text-center col-sm-1">Payment Terms</th>
                                             <th class="text-center">Customer</th>
 
                                             <th class="text-center">View</th>

@@ -154,11 +154,11 @@ input.form-control.form-control2{margin:0!important;}
                                                             <th style="background: #000 !important; color:#fff !important;">MRP</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Rate</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Gross Amount</th>
-                                                            <th style="background: #000 !important; color:#fff !important;">Disc</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Disc%</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Disc Amount</th>
                                                             {{--  <th style="background: #000 !important; color:#fff !important;">Disc 2(%)</th>--}}
                                                             {{--  <th style="background: #000 !important; color:#fff !important;">Disc 2 Amount</th>--}}
-                                                            <th style="background: #000 !important; color:#fff !important;">Tax</th>
+                                                            <th style="background: #000 !important; color:#fff !important;">Tax%</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Tax Amount</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Total Amount</th>
                                                         </tr>

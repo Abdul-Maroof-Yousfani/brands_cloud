@@ -100,7 +100,8 @@ table.table-bordered>tbody>tr>td {
                 <!-- OLD CODE SALE INVOICE-->
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hide">
                     <div class="table-responsive" style="width:50%; float:left; ">
-                        <table class="sale-list userlittab table table-bordered sf-table-list sales_Tax_Invoice_data" style="border: 1px solid #000;">
+                        <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;">
+
                             <tbody>
                                 <?php
                                 $customer_name = CommonHelper::byers_name($sales_tax_invoice->buyers_id);
@@ -194,13 +195,9 @@ table.table-bordered>tbody>tr>td {
                                 <h2 class="subHeadingLabelClass">Brands Unlimited (Pvt) Ltd</h2>
                                 <p>301-305, 3rd Floor, Kavish Crown Plaza
                                     Sharah-e-Faisal, karachi.</p>
-
-                                <p>N.T.N #:5098058-8 </p>
                                 <p>S.t #: 3277876156235</p>
-
-
+                                <br>
                                 <p>Bill To:</p>
-
                                 <p>
                                     <strong><?php echo ucwords($customer_data->name); ?></strong><br>
                                     <?php echo ucwords($customer_data->address); ?><br>
@@ -210,6 +207,7 @@ table.table-bordered>tbody>tr>td {
                                     N.T.N #: {{ $customer_data->cnic_ntn }}<br>
                                     S.T #: {{ $customer_data->strn }}
                                 </p>
+                                 <p>N.T.N #:5098058-8 </p>
                             </div>
                         </div>
 
@@ -220,7 +218,7 @@ table.table-bordered>tbody>tr>td {
                                 <!-- <p>Doc #: 27903</p> -->
                                 <p>Date: {{ $sales_tax_invoice->gi_date }}</p>
                                 <div class="table-responsive">
-                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border: 1px solid #000;">
+                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border: 1px solid #000;width:68% !important;float:right;">
                                         <tbody>
                                             <tr>
                                                 <td>Amount Limited</td>
@@ -246,7 +244,7 @@ table.table-bordered>tbody>tr>td {
 
                                 {{-- @if ($customer_data->display_pending_payment_invoice == 1)
                                 <div class="table-responsive">
-                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;">
+                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000; width:68% !important;float:right;">
                                         <tbody>
                                             <tr>
                                                 <td>Amount Limited </td>
@@ -269,7 +267,6 @@ table.table-bordered>tbody>tr>td {
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                         <div class="term">
-                                            <p>Terms</p>
                                             <p>SO Date: {{ $sales_tax_invoice->so_date }}</p>
                                             <!-- <p>Warehouse: </p> -->
                                             {{-- {{ $sales_order->current_balance_due }} --}}
@@ -302,8 +299,8 @@ table.table-bordered>tbody>tr>td {
                                             <tr>
                                                 <th class="text-center"style="background: #000 !important; color:#fff !important;">S.NO </th>
                                                 <th style="background: #000 !important; color:#fff !important;width: 20% !important;">Item</th>
-                                                <th style="background: #000 !important; color:#fff !important;">Uom</th>
-                                                <th style="background: #000 !important; color:#fff !important;">Barcode</th>
+                                                <!-- <th style="background: #000 !important; color:#fff !important;">Uom</th> -->
+                                                <th style="text-align: center !important;; background: #000 !important; color:#fff !important;">Barcode</th>
                                                 <th class="text-center"style="background: #000 !important; color:#fff !important;">QTY.</th>
                                                 {{-- <th style="background: #000 !important; color:#fff !important;">FOC</th> --}}
                                                 <th style="background: #000 !important; color:#fff !important;">MRP </th>
@@ -353,8 +350,8 @@ table.table-bordered>tbody>tr>td {
                                                 <tr>
                                                     <td style="text-align: center !important;">{{ $count++ }}</td>
                                                     <td style="width: 20%">{{ CommonHelper::get_product_sku($row->item_id) }}-{{ CommonHelper::get_product_name($row->item_id) }}</td>
-                                                    <td style="text-align: center !important;" class="wsale2">{{ CommonHelper::get_uom($row->item_id) }}</td>
-                                                    <td style="text-align: center !important;" class="wsale2"><p>{{ $productbarcode ?? '--' }}</p></td>
+                                                    <!-- <td style="text-align: center !important;" class="wsale2">{{ CommonHelper::get_uom($row->item_id) }}</td> -->
+                                                    <td style="text-align: center !important;" class="wsale2"><p><strong>{{ $productbarcode ?? '--' }}</strong></p></td>
                                                     <td style="text-align: center !important;" class="wsale2"><p>{{ number_format($row->qty) }}</p></td>
                                                     <td style="text-align: center !important;">{{ CommonHelper::get_product_mrp_price($row->item_id) }}</td>
                                                     <td style="text-align: center !important;">{{ number_format($row->rate, 2) }}</td>
@@ -630,12 +627,22 @@ table.table-bordered>tbody>tr>td {
                                 </div>
                             </div>
                             <?php }?>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 printHide">
+                            <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 printHide">
                                 <div class="row text-left">
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                         <?php echo 'Description:' . ' ' . strtoupper($sales_tax_invoice->description); ?>
                                     </div>
                                 </div>
+                            </div> -->
+
+                             <div class="row align-items-top">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <div class="totlass">
+                                        <h2>Note</h2>
+                                        <p>{{ $sale_order->remark ?? 'N/A' }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
                             </div>
                         </div>
                         <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right hidden qrCodeDiv">
