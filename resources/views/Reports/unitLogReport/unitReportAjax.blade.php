@@ -68,7 +68,7 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $unit_activity->sub_item_id }}</td>
-                    <td>{{ $unit_activity->voucher_date }}</td>
+                    <td>{{ \Carbon\Carbon::parse($unit_activity->voucher_date)->format("d-M-Y") }}</td>
                     <td>{{ $unit_activity->product_name }}</td>
                     @if($unit_activity->voucher_type == 1)
                         <td>GRN</td>
