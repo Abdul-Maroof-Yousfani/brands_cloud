@@ -2,89 +2,81 @@
 
 @section('content')
 
-    <div class="row well_N align-items-center">
-        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-            <ul class="cus-ul">
-                <li>
-                    <h1>Inventory Master</h1>
-                </li>
-                <li>
-                    <h3><span class="glyphicon glyphicon-chevron-right"></span> &nbsp; Edit Products Principal Group</h3>
-                </li>
-            </ul>
-        </div>
-        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 text-right">
-            <ul class="cus-ul2">
-                <li>
-                    <a href="{{ route('listProductsPrincipalGroup') }}" class="btn btn-secondary">Back to List</a>
-                </li>
-            </ul>
-        </div>
+<div class="row well_N align-items-center mb-3">
+    <div class="col-lg-6">
+        <ul class="cus-ul mb-0">
+            <li><h1 class="m-0">Inventory Master</h1></li>
+            <li>
+                <h3 class="mt-2">
+                    <span class="glyphicon glyphicon-chevron-right"></span>  
+                    Edit Products Principal Group
+                </h3>
+            </li>
+        </ul>
     </div>
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            @if(session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
-        </div>
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="well_N">
-            <div class="dp_sdw">    
-                <div class="row">
 
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="panel">
-                            <div class="panel-body">
-                            <div class="headquid">
-                           <h2 class="subHeadingLabelClass">Edit Products Principal Group</h2>
+    <div class="col-lg-6 text-right">
+        <a href="{{ route('listProductsPrincipalGroup') }}" class="btn btn-secondary">
+            Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        @if(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+    </div>
+
+    <div class="col-lg-12">
+        <div class="well_N p-4">
+            <div class="dp_sdw p-4">
+
+                <div class="panel">
+                    <div class="panel-body">
+
+                        <div class="headquid mb-4">
+                            <h2 class="subHeadingLabelClass">Edit Products Principal Group</h2>
                         </div>
-                                <form action="{{ route('updateProductsPrincipalGroup', $response->id) }}" method="POST">
+             <form action="{{ route('updateProductsPrincipalGroup', $response->id) }}" method="POST">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                                        <div class="row qout-h">
-                                            
-                                            
-                                            <div class="col-md-12 padt pos-r">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                    <label class="col-sm-4 control-label">Products Principal Group <span class="rflabelsteric"><strong>*</strong></span></label>
-                                                    <div class="col-sm-8">
-                                                      <input type="text" class="form-control" name="products_principal_group" id="products_principal_group" value="{{ $response->products_principal_group }}" required>
-                                                    </div>
-                                                    </div>  
-                                                </div>
-                                                <div class="col-md-2"></div>
-                                                <div class="col-md-4">
-                                                    
-                                                </div>
-                                            </div>
 
+                            <div class="row">
 
-                        
-                                            <div class="col-md-12  text-right">
-                                                <div class="col-md-9"></div>    
-                                                <div class="col-md-3 my-lab">
-                                                    <button type="submit" class="btn btn-primary mr-1">Update</button>
-                                                    <a href="{{ route('listProductsPrincipalGroup') }}" class="btnn btn-secondary">Cancel</a>
-                                                    
-                                                </div>    
-                                            </div>
-                                        </div>        
-                                    </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">Products Principal Group 
+                                        <span class="rflabelsteric"><strong>*</strong></span>
+                                    </label>
+                                    <input type="text" 
+                                           name="products_principal_group" 
+                                           class="form-control" 
+                                           value="{{ $response->products_principal_group }}" 
+                                           required>
                                 </div>
-                            </form>
+
+                                <div class="col-md-12 text-right mt-3">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        Update
+                                    </button>
+                                    <a href="{{ route('listProductsPrincipalGroup') }}" 
+                                       class="btn btn-secondary px-4 ml-2">
+                                        Cancel
+                                    </a>
+                                </div>
+
                             </div>
-                        </div>
+
+                        </form>
+
                     </div>
                 </div>
-            </div>
+
             </div>
         </div>
     </div>
+</div>
 
 @endsection
-
-
