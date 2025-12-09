@@ -70,7 +70,6 @@
                     <td>{{ $unit_activity->sub_item_id }}</td>
                     <td>{{ $unit_activity->voucher_date }}</td>
                     <td>{{ $unit_activity->product_name }}</td>
-                    <td>{{ $unit_activity->voucher_type }}</td>
                     @if($unit_activity->voucher_type == 1)
                         <td>GRN</td>
                     @elseif($unit_activity->voucher_type == 2)
@@ -79,7 +78,7 @@
                         <td>Stock Transfer</td>
                     @elseif($unit_activity->voucher_type == 4)
                         <td>Stock Received</td>
-                    @elseif($unit_activity->voucher_type == 5)
+                    @elseif($unit_activity->voucher_type == 5 || $unit_activity->voucher_type == 50)
                         <td>Sales</td>
                     @elseif($unit_activity->voucher_type == 7)
                         <td>Issuance</td>
@@ -98,7 +97,7 @@
                         @endphp
                         <td>0</td>
                     @endif
-                    @if($unit_activity->voucher_type == 1 || $unit_activity->voucher_type == 5 || $unit_activity->voucher_type == 7)
+                    @if($unit_activity->voucher_type == 1 || $unit_activity->voucher_type == 5 || $unit_activity->voucher_type == 7 || $unit_activity->voucher_type == 50)
                         @php
                             $issued_qty += $unit_activity->qty;
                         @endphp
