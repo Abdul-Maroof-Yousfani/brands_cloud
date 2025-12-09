@@ -17,6 +17,7 @@ class UnitActivityListController extends Controller
             $transaction_type = request()->transaction_type;
             $warehouse_id = request()->warehouse_id;
             $item_id = request()->item_id;
+            $brand_id = request()->brand_id;
 
             // @if($unit_activity->voucher_type == 2 || $unit_activity->voucher_type == 3 || $unit_activity->voucher_type == 4)
             //             <td>{{ number_format($unit_activity->qty, 0) }}</td>
@@ -48,12 +49,18 @@ class UnitActivityListController extends Controller
                 ->when(isset($transaction_type), function($query) use($transaction_type) {
                     $query->where("voucher_type", $transaction_type);
                 })
+                ->join("subitem", "subitem.id", "=", "stock.sub_item_id")
+                        
                 ->whereIn("voucher_type", [2, 3, 4])
                 ->when(isset($warehouse_id), function($query) use($warehouse_id) {
                     $query->where("warehouse_id", $warehouse_id);
                 })
                  ->when(isset($item_id), function($query) use($item_id) {
                     $query->where("stock.sub_item_id", $item_id);
+                })
+
+                ->when(isset($brand_id), function($query) use($brand_id) {
+                    $query->where("subitem.brand_id", $brand_id);
                 })
                 ->when(isset($from), function ($query) use ($from) {
                     $query->where("stock.voucher_date", "<", $from);
@@ -65,11 +72,17 @@ class UnitActivityListController extends Controller
                 ->table("stock")
                 ->whereIn("voucher_type", [1, 5, 7, 50])
                 ->where("stock.qty", ">", 0)
+                ->join("subitem", "subitem.id", "=", "stock.sub_item_id")
+                        
                 ->when(isset($warehouse_id), function($query) use($warehouse_id) {
                     $query->where("warehouse_id", $warehouse_id);
                 })
                 ->when(isset($item_id), function($query) use($item_id) {
                     $query->where("stock.sub_item_id", $item_id);
+                })
+
+                ->when(isset($brand_id), function($query) use($brand_id) {
+                    $query->where("subitem.brand_id", $brand_id);
                 })
                 ->when(isset($from), function ($query) use ($from) {
                     $query->where("stock.voucher_date", "<", $from);
@@ -87,6 +100,7 @@ class UnitActivityListController extends Controller
                             "stock.voucher_no",
                             "stock.qty",
                             "subitem.product_name",
+                            "subitem.brand_id",
                             "warehouse.name AS warehouse_name"
                         )
                         ->join("subitem", "subitem.id", "=", "stock.sub_item_id")
@@ -99,6 +113,9 @@ class UnitActivityListController extends Controller
                         })
                         ->when(isset($item_id), function($query) use($item_id) {
                             $query->where("stock.sub_item_id", $item_id);
+                        })
+                        ->when(isset($brand_id), function($query) use($brand_id) {
+                            $query->where("subitem.brand_id", $brand_id);
                         })
                         ->when(isset($warehouse_id), function($query) use($warehouse_id) {
                             $query->where("warehouse_id", $warehouse_id);

@@ -142,6 +142,19 @@ use App\Helpers\SaleHelper;
                     </div>
 
                     <div class="col-md-3">
+                        <div class="form-group">
+
+                            <label class="control-label">Brands</label>    
+                            <select class="form-control select2" id="brand_id">
+                                <option value="">Select Brands</option>
+                                @foreach(App\Helpers\CommonHelper::get_all_brand() as $brand)
+                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
                         <div class="form-group" style="margin-top: 25px;">
                             <button type="button" onclick="get_ajax_data()" class="btn btn-primary"
                                 style="margin-top: 11px;margin-left: 20px;">
@@ -204,7 +217,8 @@ use App\Helpers\SaleHelper;
                     customer_id: $("#customer_id").val(),
                     region_id: $("#region_id").val(),
                     warehouse_id: $("#warehouse_id").val(),
-                    item_id: $("#item_id").val()
+                    item_id: $("#item_id").val(),
+                    brand_id: $("#brand_id").val()
                 },
                 beforeSend: function() {
                     $("#table-responsive").empty();
