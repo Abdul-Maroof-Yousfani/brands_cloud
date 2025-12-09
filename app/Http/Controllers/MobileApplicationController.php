@@ -376,7 +376,7 @@ public function login(Request $request)
 // }
 
 
-    public function getSaleAmount(Request $request)
+  public function getSaleAmount(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'emp_code' => 'required|integer|exists:mysql.users,emp_code',
@@ -409,7 +409,7 @@ public function login(Request $request)
             */
             $customers = DB::connection('mysql2')
                 ->table('b_a_formations')
-                ->where('employee_id', $employee->id)
+                ->where('employee_id', $employee->emp_id)
                 ->pluck('customer_id');
  
             /*
@@ -440,7 +440,7 @@ public function login(Request $request)
                 ->table('retail_sale_orders as so')
                 ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
                 ->join('subitem as si', 'sod.product_id', '=', 'si.id')
-                ->where('so.user_id', $employee->id); // employee created order
+                ->where('so.user_id', $employee->id);
  
             if ($request->year) {
                 $tertiaryQuery->whereYear('so.sale_order_date', $request->year);
@@ -449,7 +449,7 @@ public function login(Request $request)
                 $tertiaryQuery->whereMonth('so.sale_order_date', $request->month);
             }
  
-            $tertiaryAmount = $tertiaryQuery->sum(DB::raw('sod.qty * si.rate'));
+            $tertiaryAmount = $tertiaryQuery->sum(DB::raw('sod.qty * si.sale_price'));
             $tertiaryQty = $tertiaryQuery->sum('sod.qty');
  
             /*
@@ -470,6 +470,10 @@ public function login(Request $request)
                 // Tertiary sale (employee-created)
                 'tertiary_sale_amount' => $tertiaryAmount ?? 0,
                 'tertiary_sale_qty'    => $tertiaryQty ?? 0,
+                // 'distributor_id'    => $tertiaryQuery->first()->distributor_id ?? null,
+                // 'data'    => $secondaryQuery->get(),
+                // 'customers'    => $customers,
+                // 'employee'    => $employee,
  
             ], 200);
  
