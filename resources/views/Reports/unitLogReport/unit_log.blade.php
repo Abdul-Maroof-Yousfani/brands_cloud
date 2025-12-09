@@ -128,7 +128,18 @@ use App\Helpers\SaleHelper;
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
 
+                            <label class="control-label">Items</label>    
+                            <select class="form-control select2" id="item_id">
+                                <option value="">Select Items List</option>
+                                @foreach($subitems as $item)
+                                    <option value="{{ $item->id }}">({{ $item->sku_code }}) {{ $item->product_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="col-md-3">
                         <div class="form-group" style="margin-top: 25px;">
@@ -192,7 +203,8 @@ use App\Helpers\SaleHelper;
                     transaction_type: $("#transaction_type").val(),
                     customer_id: $("#customer_id").val(),
                     region_id: $("#region_id").val(),
-                    warehouse_id: $("#warehouse_id").val()
+                    warehouse_id: $("#warehouse_id").val(),
+                    item_id: $("#item_id").val()
                 },
                 beforeSend: function() {
                     $("#table-responsive").empty();
