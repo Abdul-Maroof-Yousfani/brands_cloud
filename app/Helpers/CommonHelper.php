@@ -104,6 +104,14 @@ class CommonHelper
         $principal_groups = ProductsPrincipalGroup::select("id", "products_principal_group")->where("status", 1)->get();
         return $principal_groups;
     }
+   public static function get_all_principal_groups_name($id) {
+    $principal_group = ProductsPrincipalGroup::select("id", "products_principal_group")
+        ->where("status", 1)
+        ->where("id", $id)
+        ->first();
+
+    return $principal_group ? $principal_group->products_principal_group : '-';
+}
 
     public static function get_all_products()
     {
