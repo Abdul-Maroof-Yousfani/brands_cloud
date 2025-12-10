@@ -62,7 +62,7 @@
                         <div class="row">
 
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <img class="logo_m" src="{{ url('/logoo.png') }}">
+                                <img style=" width:200px !important;" class="logo_m" src="{{url('/logoo2.png')}}">
                                 <div class="ntn">
                                     <p>NTN# <strong>5098058-8</strong></p>
                                 </div>
