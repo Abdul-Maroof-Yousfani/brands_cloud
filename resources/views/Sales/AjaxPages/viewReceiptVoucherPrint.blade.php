@@ -62,7 +62,7 @@
                         <div class="row">
 
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <?php echo CommonHelper::get_company_logo(Session::get('run_company'));?>
+                                <img class="logo_m" src="{{ url('/logoo.png') }}">
                                 <div class="ntn">
                                     <p>NTN# <strong>5098058-8</strong></p>
                                 </div>
