@@ -84,7 +84,7 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
                                                             <span class="rflabelsteric"><strong>*</strong></span>
                                                             <select style="width:100% !important;" autofocus name="principal_group" id="principal_group"
                                                                 class="form-control  select2" onchange="get_brand_by_principal_group(this)">
-                                                                <option value="">Select Category</option>
+                                                                <option value="">Select Principal Group</option>
                                                                 @foreach(App\Helpers\CommonHelper::get_all_principal_groups() as $principal) 
                                                                     <option value="{{ $principal->id }}">{{ $principal->products_principal_group }}</option>
                                                                 @endforeach
@@ -499,7 +499,7 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
                             {{-- <button onclick="download_csv_file()" target="_self"
                                 class="btn btn-info btn-sm btn-block">Download example</button></div> --}}
                                 <!-- <a class="btn btn-info btn-sm btn-block" href="{{ asset("product_uploader_example.xlsx") }}">Download example</a> -->
-<a href="{{ asset('public/product_uploader_example.csv') }}" download>Download</a>
+<a href="{{ asset('product_uploader_example.csv') }}" download>Download</a>
 
                     </div>
                 </form>
