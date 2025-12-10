@@ -248,14 +248,14 @@ div.dataTables_wrapper div.dataTables_filter input {
                                                     </tr>
                                                     <tr>
                                                         <td colspan="10"></td>
-                                                        <td colspan="2" style="font-size: 18px;"><strong>Open</strong>
+                                                        <td colspan="1" style="font-size: 18px;"><strong>Open</strong>
                                                         </td>
                                                         <td style="font-size: 18px;"><strong><?php echo $open; ?></strong>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="10"></td>
-                                                        <td colspan="2" style="font-size: 18px;">
+                                                        <td colspan="1" style="font-size: 18px;">
                                                             <strong>Partial</strong>
                                                         </td>
                                                         <td style="font-size: 18px;"><strong><?php echo $parttial; ?></strong>
@@ -263,7 +263,7 @@ div.dataTables_wrapper div.dataTables_filter input {
                                                     </tr>
                                                     <tr>
                                                         <td colspan="10"></td>
-                                                        <td colspan="2" style="font-size: 18px;">
+                                                        <td colspan="1" style="font-size: 18px;">
                                                             <strong>Complete</strong>
                                                         </td>
                                                         <td style="font-size: 18px;"><strong><?php echo $complete; ?></strong>

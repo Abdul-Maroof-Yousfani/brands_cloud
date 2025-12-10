@@ -108,11 +108,11 @@
                                     <table  class="table table-bordered table-striped table-condensed tableMargin">
                                         <thead>
                                         <tr>
-                                            <th class="text-center" style="width:50px;">S.No</th>
-                                            <th class="text-center">Account</th>
+                                            <th style="background:#dfe5ec !important;" class="text-center" style="width:50px;">S.No</th>
+                                            <th style="background:#dfe5ec !important;" class="text-center">Account</th>
 
-                                            <th class="text-center" style="width:150px;">Debit</th>
-                                            <th class="text-center" style="width:150px;">Credit</th>
+                                            <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Debit</th>
+                                            <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Credit</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -189,14 +189,14 @@
                                         <table  class="table table-bordered table-striped table-condensed tableMargin">
                                             <thead>
                                             <tr>
-                                                <th class="text-center" style="width:50px;">S.No</th>
-                                                <th class="text-center">SI NO</th>
-                                                <th class="text-center" style="width:150px;">SO NO</th>
-                                                <th class="text-center" style="width:150px;">Invoice Amount</th>
-                                                <th class="text-center" style="width:150px;">Receivable</th>
-                                                <th class="text-center" style="width:150px;">Tax Amount</th>
-                                                <th class="text-center" style="width:150px;">Discount Amount</th>
-                                                <th class="text-center" style="width:150px;">Received Amount</th>
+                                                <th style="background:#dfe5ec !important;" class="text-center" style="width:50px;">S.No</th>
+                                                <th style="background:#dfe5ec !important;" class="text-center">SI NO</th>
+                                                <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">SO NO</th>
+                                                <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Invoice Amount</th>
+                                                <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Receivable</th>
+                                                <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Tax Amount</th>
+                                                <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Discount Amount</th>
+                                                <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Received Amount</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -256,14 +256,14 @@
                                             <table  class="table table-bordered table-striped table-condensed tableMargin">
                                                 <thead>
                                                 <tr>
-                                                    <th class="text-center" style="width:50px;">S.No</th>
-                                                    <th class="text-center">POS NO</th>
+                                                    <th style="background:#dfe5ec !important;" class="text-center" style="width:50px;">S.No</th>
+                                                    <th style="background:#dfe5ec !important;" class="text-center">POS NO</th>
 
-                                                    <th class="text-center" style="width:150px;">Invoice Amount</th>
-                                                    <th class="text-center" style="width:150px;">Receivable</th>
+                                                    <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Invoice Amount</th>
+                                                    <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Receivable</th>
 
-                                                    <th class="text-center" style="width:150px;">Discount Amount</th>
-                                                    <th class="text-center" style="width:150px;">Received Amount</th>
+                                                    <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Discount Amount</th>
+                                                    <th style="background:#dfe5ec !important;" class="text-center" style="width:150px;">Received Amount</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>

@@ -62,20 +62,23 @@ input.form-control.form-control2{margin:0 !important;}
 .userlittab>thead>tr>td,.userlittab>tbody>tr>td,.userlittab>tfoot>tr>td{padding:10px 5px !important;}
 .totlass{display:inline;background:transparent;margin-top:-25px;}
 .totlass h2{font-size:13px !important;}
-table.table-bordered>tbody>tr>td {
-    border: none !important;
-    border-bottom: 1px solid #000 !important;
-}.table-bordered>thead>tr>th,.table-bordered>tbody>tr>th,.table-bordered>tfoot>tr>th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;font-size:13px !important;}
+table.table-bordered>tbody>tr>td{border:none !important;border-bottom:1px solid #000 !important;}
+.table-bordered>thead>tr>th,.table-bordered>tbody>tr>th,.table-bordered>tfoot>tr>th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;font-size:13px !important;}
 .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{font-weight:400 !important;}
+
 </style>
 <?php
 ?>
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-        <button class="btn btn-sm btn-primary" onclick="printViewTwo('printPurchaseRequestVoucherDetail','','1')"
-            style="">
+        <!-- <button class="btn btn-sm btn-primary" onclick="printViewTwo('printPurchaseRequestVoucherDetail','','1')"style="">
             <span class="glyphicon glyphicon-print"> Print</span>
-        </button>
+        </button> -->
+             <!-- ✅ Normal Page -->
+            <div class="no-print">
+              <button class="btn btn-primary prinn pritns" onclick="printSection()">🖨️ Print</button>
+            </div>
+
         <?php //CommonHelper::displayPrintButtonInView('printPurchaseRequestVoucherDetail','','1');
         ?>
 
@@ -92,7 +95,7 @@ table.table-bordered>tbody>tr>td {
     </div>
 </div>
 <div style="line-height:5px;">&nbsp;</div>
-<div class="row" id="printPurchaseRequestVoucherDetail">
+<div class="row printPurchaseRequestVoucherDetail" id="po_detail">
     <div style="line-height:5px;">&nbsp;</div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="well sales_or">
@@ -301,7 +304,7 @@ table.table-bordered>tbody>tr>td {
                                                 <th style="background: #000 !important; color:#fff !important;width: 20% !important;">Item</th>
                                                 <!-- <th style="background: #000 !important; color:#fff !important;">Uom</th> -->
                                                 <th style="text-align: center !important;; background: #000 !important; color:#fff !important;">Barcode</th>
-                                                <th class="text-center"style="background: #000 !important; color:#fff !important;">QTY.</th>
+                                                <th class="text-center"style="background: #000 !important; color:#fff !important;text-align: center !important;">QTY.</th>
                                                 {{-- <th style="background: #000 !important; color:#fff !important;">FOC</th> --}}
                                                 <th style="background: #000 !important; color:#fff !important;">MRP </th>
                                                 <th style="background: #000 !important; color:#fff !important;">Rate</th>
@@ -394,7 +397,7 @@ table.table-bordered>tbody>tr>td {
                                                 @endforeach
                                             @endif
                                             <tr>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;font-size:13px!important;font-weight:400!important;" colspan="4">Sub Total</th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;font-size:13px!important;font-weight:400!important;" colspan="3">Sub Total</th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;">{{ number_format($total_qty, 2) }}</th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"  colspan="2"></th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;">{{ number_format($total_before_tax, 2) }}</p> </th>
@@ -845,3 +848,81 @@ table.table-bordered>tbody>tr>td {
         })
     }
 </script>
+<script>
+  function printSection() {
+    // ✅ Print CSS dynamically add karna
+    const printStyle = `
+      @media print {
+        @page{size:A4;margin:10mm 10mm 10mm 10mm !important;}
+        
+ .signature_bor{border-top:solid 1px #CCC;padding-top:7px;}
+textarea{border-style:none;border-color:Transparent;}
+.vomp{text-align:left;}
+p{margin:0;padding:0;font-size:13px;font-weight:500;}
+input.form-control.form-control2{margin:0 !important;}
+.table-bordered>thead>tr>th,.table-bordered>tbody>tr>th,.table-bordered>tfoot>tr>th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
+.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
+.totlas p{font-weight:bold;}
+.psds{display:flex;justify-content:right;gap:88px;}
+.psds p{font-weight:bold;}
+.userlittab>thead>tr>td,.userlittab>tbody>tr>td,.userlittab>tfoot>tr>td{padding:10px 5px !important;}
+.totlass{display:inline;background:transparent;margin-top:-25px;}
+.totlass h2{font-size:13px !important;}
+table.table-bordered>tbody>tr>td{border:none !important;border-bottom:1px solid #000 !important;}
+.table-bordered>thead>tr>th,.table-bordered>tbody>tr>th,.table-bordered>tfoot>tr>th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;font-size:13px !important;}
+.table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{font-weight:400 !important;}
+
+.table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
+.table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
+.table-responsive{height:inherit !important;}
+// .sgnature{position:absolute !important;bottom:20px !important;width:100% !important;}
+.sales_or{position:relative !important;}
+p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
+.mt-top{margin-top:-72px !important;}
+.sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
+.sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
+input.form-control.form-control2{margin:0 !important;}
+
+.totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
+.totlas p{font-weight:bold !important;}
+.psds{display:flex !important;justify-content:right !important;gap:88px !important;}
+.psds p{font-weight:bold !important;}
+.totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;}
+.totlass h2{font-size:13px !important;}
+.contr2 {
+    text-align: right;
+}
+.hide{
+ display:none; 
+}
+
+      }
+    `;
+
+    // ✅ Select element to print
+    const printContent = document.getElementById('po_detail').innerHTML;
+    // ✅ Open new window for print
+    const printWindow = window.open('', '', 'width=900,height=700');
+    // ✅ Bootstrap 5 CSS link
+    const bootstrapCSS = `<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">`;
+    // ✅ Write content to print window
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Print Preview</title>
+        ${bootstrapCSS}
+        <style>${printStyle}</style>
+      </head>
+      <body>
+        ${printContent}
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    // printWindow.close(); // optional
+  }
+</script>
+<!-- </head>
+<body> -->
