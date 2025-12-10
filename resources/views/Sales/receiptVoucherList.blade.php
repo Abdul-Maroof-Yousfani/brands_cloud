@@ -27,6 +27,13 @@ $AccYearTo = $AccYearDate->accyearto;
 @extends('layouts.default')
 @section('content')
     @include('select2')
+
+<style>
+.dropdown-menu > li > a{color:#ffffff !important;}
+
+
+</style>
+
     <div class="panel-body">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

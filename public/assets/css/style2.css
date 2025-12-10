@@ -381,6 +381,7 @@ nav.navbar.erp-menus{padding:10px 0;margin-bottom:10px;display:none;}
 section.footer-section{position:fixed;width:100%;bottom:-50px;background:#fff;padding:15px 0;opacity:0;transition:0.5s;}
 section.footer-section p{margin-bottom:0;}
 section.footer-section.active{opacity:1;bottom:0;}
+
 /*footer*/
 /*view-list*/
 .viewlist-wrap{background:#f5f5f5;padding:20px 15px;margin-bottom:15px;border-radius:6px;box-shadow:0 3px 13px 0 #e3d4d4;}
