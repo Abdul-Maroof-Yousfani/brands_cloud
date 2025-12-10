@@ -97,9 +97,9 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
                                                             <select style="width:100% !important;" autofocus name="brand" id="brand"
                                                                 class="form-control  select2">
                                                                 <option value="">Select Brand</option>
-                                                                <!-- @foreach($brand as $key => $row)
+                                                                @foreach($brand as $key => $row)
                                                                 <option value="{{ $row->id}}">{{ $row->name}}</option>
-                                                                @endforeach -->
+                                                                @endforeach
                                                             </select>
                                                         </div>
 
