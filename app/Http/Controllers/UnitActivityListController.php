@@ -50,7 +50,7 @@ class UnitActivityListController extends Controller
                     $query->where("voucher_type", $transaction_type);
                 })
                 ->join("subitem", "subitem.id", "=", "stock.sub_item_id")
-                        
+                
                 ->whereIn("voucher_type", [2, 3, 4])
                 ->when(isset($warehouse_id), function($query) use($warehouse_id) {
                     $query->where("warehouse_id", $warehouse_id);
@@ -73,7 +73,6 @@ class UnitActivityListController extends Controller
                 ->whereIn("voucher_type", [1, 5, 7, 50])
                 ->where("stock.qty", ">", 0)
                 ->join("subitem", "subitem.id", "=", "stock.sub_item_id")
-                        
                 ->when(isset($warehouse_id), function($query) use($warehouse_id) {
                     $query->where("warehouse_id", $warehouse_id);
                 })
@@ -88,6 +87,27 @@ class UnitActivityListController extends Controller
                     $query->where("stock.voucher_date", "<", $from);
                 })
                 ->sum("stock.qty");
+
+            $transit_bal = DB::connection("mysql2")
+                ->table("stock")
+                ->whereIn("voucher_type", [1, 5, 7, 50])
+                ->where("stock.qty", ">", 0)
+                ->join("subitem", "subitem.id", "=", "stock.sub_item_id")
+                ->join("stock_transfers_transit", "stock_transfers_transit.voucher_no", "=", "stock.voucher_no")
+                ->when(isset($warehouse_id), function($query) use($warehouse_id) {
+                    $query->where("warehouse_id", $warehouse_id);
+                })
+                ->when(isset($item_id), function($query) use($item_id) {
+                    $query->where("stock.sub_item_id", $item_id);
+                })
+
+                ->when(isset($brand_id), function($query) use($brand_id) {
+                    $query->where("subitem.brand_id", $brand_id);
+                })
+                ->when(isset($from), function ($query) use ($from) {
+                    $query->where("stock.voucher_date", "<", $from);
+                })
+                ->sum("stock_transfers_transit.quantity");
                                         
 
             $unit_activities = DB::connection("mysql2")->table("stock")
@@ -101,10 +121,12 @@ class UnitActivityListController extends Controller
                             "stock.qty",
                             "subitem.product_name",
                             "subitem.brand_id",
-                            "warehouse.name AS warehouse_name"
+                            "warehouse.name AS warehouse_name",
+                            // DB::raw("S("stUM(stock_transfers_transit.quantity) AS transit")
                         )
                         ->join("subitem", "subitem.id", "=", "stock.sub_item_id")
                         ->join("warehouse", "warehouse.id", "=", "stock.warehouse_id")
+                        // ->leftJoin("stock_transfers_transit", "stock_transfers_transit.voucher_no", "=", "stock.voucher_no")
                         ->when(isset($from) && isset($to), function ($query) use ($from, $to) {
                             $query->whereBetween("stock.voucher_date", [$from, $to]);
                         })
@@ -122,7 +144,7 @@ class UnitActivityListController extends Controller
                         })
                         ->get();
 
-            return view("Reports.unitLogReport.unitReportAjax", compact("unit_activities", "received_opening_bal", "issued_opening_bal"));
+            return view("Reports.unitLogReport.unitReportAjax", compact("unit_activities", "received_opening_bal", "issued_opening_bal", "transit_bal"));
         }
 
         $subitems = Subitem::select("id", "product_name", "sku_code")->get();
