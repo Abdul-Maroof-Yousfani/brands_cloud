@@ -377,7 +377,7 @@ ul.hm-list > li > a{padding:8px 43px 9px 12px;display:block;background:linear-gr
 ul.hm-list > li > a > i{color:#00aaff;}
 ul.tmenu-list > li{}
 ul.tmenu-list > li{}
-ul.tmenu-list > li > a{color:#fff;font-size:9px;padding:9px 11px;border-radius:6px;}
+ul.tmenu-list > li > a{color:#fff !important;font-size:9px;padding:9px 11px;border-radius:6px;}
 ul.tmenu-list > li > a:hover{background-color:#d3d3d3;}
 nav.navbar.erp-menus{padding:10px 0;margin-bottom:10px;display:none;}
 /*==Header==*/
