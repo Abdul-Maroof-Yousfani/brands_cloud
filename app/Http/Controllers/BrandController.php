@@ -91,6 +91,7 @@ class BrandController extends Controller
         $brand->update([
             'name' => $request->input('name'),
             'description' => $request->input('description'),
+             'principal_group_id' => $request->input('principal_group_id'), // new column
         ]);
 
         return redirect()->route('brands.index')->with('success', 'Brand updated successfully.');
