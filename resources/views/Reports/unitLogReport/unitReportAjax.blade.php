@@ -75,7 +75,7 @@
                     <td></td>
                     <td>{{ number_format($received_opening_bal) }}</td>
                     <td>{{ number_format($issued_opening_bal) }}</td>
-                    <td></td>
+                    <td>{{ number_format($transit_bal) }}</td>
                 </tr>
             @foreach($unit_activities as $index => $unit_activity)
                 <tr>
@@ -104,7 +104,7 @@
                             $m = $_GET['m'];
                             $url = "";
                             $text = "";
-                            $voucher_no = $unit_activity->voucher_no;;
+                            $voucher_no =  strtolower($unit_activity->voucher_no);
                             if(str_contains($voucher_no, "tr")) {
                                 $url = "stdc/viewStockTransferDetail?m=".$m;
                                 $text = "View Stock Transfer Detail";
@@ -163,6 +163,7 @@
                 <td></td>
                 <td>{{ $received_qty }}</td>
                 <td>{{ $issued_qty }}</td>
+                <td></td>
             </tr>
 
         </tbody>
