@@ -2319,10 +2319,21 @@ public static function get_all_subitems()
     }
 
 
+    // public static function get_principal_group_name($id) {
+    //     $principal_group = ProductsPrincipalGroup::select("id", "products_principal_group")->where("status", 1)->where("id", $id)->first();
+    //     return $principal_group->products_principal_group;
+    // }
+
     public static function get_principal_group_name($id) {
-        $principal_group = ProductsPrincipalGroup::select("id", "products_principal_group")->where("status", 1)->where("id", $id)->first();
-        return $principal_group->products_principal_group;
-    }
+    $principal_group = ProductsPrincipalGroup::select("id", "products_principal_group")
+        ->where("status", 1)
+        ->where("id", $id)
+        ->first();
+
+    // Agar record nahi milta to null ya default text return karo
+    return $principal_group ? $principal_group->products_principal_group : '-';
+}
+
 
     public static function get_city_id_by_name($name)
     {
