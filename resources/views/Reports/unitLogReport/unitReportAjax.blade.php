@@ -75,7 +75,7 @@
                     <td></td>
                     <td>{{ number_format($received_opening_bal) }}</td>
                     <td>{{ number_format($issued_opening_bal) }}</td>
-                    <td></td>
+                    <td>{{ number_format($transit_bal) }}</td>
                 </tr>
             @foreach($unit_activities as $index => $unit_activity)
                 <tr>
