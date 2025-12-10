@@ -58,7 +58,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 <br>
                                                 <p>Bill To:</p>
                                                 <p>
-                                                    <strong>{{$buyer_detail->name}}</strong>
+                                                    <strong>{{$buyer_detail->name}}</strong><br>
                                                     {{$buyer_detail->address}}<br>
                                                     {{ CommonHelper::get_all_country_by_id($buyer_detail->country)->name ?? '-'}}<br>
                                                     {{$buyer_detail->phone_1}}<br>
