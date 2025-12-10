@@ -1534,18 +1534,18 @@ public function add_opening_import_post(Request $request)
 
 
 
-//   $warehouse_quantities = [
-//                     10 => trim($row[8]),  // Make Up City North
-//                     29 => trim($row[9]), // Liquidation Stock RWL
-//                     28 => trim($row[10]), // Tariq Trader Warehouse PSH
-                   
-//                 ];
-
-
-                    $warehouse_quantities = [
-                    10 => trim($row[8]),  // Make Up City North
+                $warehouse_quantities = [
+                    15 => trim($row[8]),  // Make Up City North
+                    22 => trim($row[9]), // Liquidation Stock RWL
+                  
                    
                 ];
+
+
+                //     $warehouse_quantities = [
+                //     10 => trim($row[8]),  // Make Up City North
+                   
+                // ];
 
                 if ($product_name !== '' && $sku_code !== '') {
                     $subitem = Subitem::whereRaw('LOWER(product_name) = ?', [$product_name])
@@ -1566,7 +1566,7 @@ public function add_opening_import_post(Request $request)
                                     'created_date'  => date('Y-m-d'),
                                     'username'      => 'Amir Murshad',
                                     'status'        => 1,
-                                    'Territory'     => isset($row[9]) ? $row[9] : null,
+                                    'Territory'     => isset($row[10]) ? $row[10] : null,
                                 ];
 
 
