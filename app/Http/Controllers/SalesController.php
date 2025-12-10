@@ -1048,6 +1048,7 @@ public function uploadProduct(Request $request)
                 'color' => !empty($row[30]) ? trim($row[30]) : null,
                 'product_status' => !empty($row[31]) ? trim($row[31]) : null,
                 'is_barcode_scanning' => !empty($row[32]) ? (strtolower(trim($row[32])) == 'yes' ? 1 : 0) : null,
+                'principal_group_id' => !empty($row[33]) ? CommonHelper::get_id_from_db_by_name_for_product(trim($row[33]), 'products_principal_group') : 0,
                 'username' => Auth::user()->name,
                 'date' => date('Y-m-d'),
             ];

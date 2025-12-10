@@ -2305,6 +2305,10 @@ public static function get_all_subitems()
                 $data = DB::Connection('mysql2')->table($table)->where('hs_code',$name)->first();
                 return $data->id ?? 0;
             }
+            if($table == "products_principal_group"){
+                $data = DB::Connection('mysql2')->table($table)->where('products_principal_group',$name)->first();
+                return $data->id ?? 0;
+            }
             $data = DB::Connection('mysql2')->table($table)->where('name',$name)->first();
             return $data->id ?? 0;
         }
