@@ -1031,7 +1031,7 @@ Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/createSupplierAccount', 'PurchaseDataCallController@createSupplierAccount');
     Route::get('/get_sub_category', 'PurchaseDataCallController@get_sub_category');
     Route::get('/get_item_master', 'PurchaseDataCallController@get_item_master');
-    Route::get('/get_sub_category_by_id', 'PurchaseDataCallController@get_sub_category_by_id');
+    Route::get('/get_sub_category_by_id', 'PurchaseDataCallController@get_sub_category_by_id')->name('get_sub_category_by_id');
     Route::get('/get_currency_vendor_by_to_type', 'PurchaseDataCallController@get_currency_vendor_by_to_type');
     Route::get('/get_currency_vendor_by_to_type_direct', 'PurchaseDataCallController@get_currency_vendor_by_to_type_direct')->name('get_currency_vendor_by_to_type_direct');
     Route::get('/get_sub_item_code', 'PurchaseDataCallController@get_sub_item_code');

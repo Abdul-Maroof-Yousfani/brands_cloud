@@ -661,7 +661,8 @@ get_sub_category_by_id();
 function get_brand_by_principal_group(element) {
     var principal_group_id = $(element).val();
     $.ajax({
-        url: '/purchase/get_brand_by_principal_group',
+        // url: '/purchase/get_brand_by_principal_group',
+          url: "{{ route('get_brand_by_principal_group') }}",
         type: 'Get',
         data: { principal_group_id: principal_group_id },
         success: function(response) {

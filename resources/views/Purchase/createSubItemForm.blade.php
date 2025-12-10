@@ -97,9 +97,9 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
                                                             <select style="width:100% !important;" autofocus name="brand" id="brand"
                                                                 class="form-control  select2">
                                                                 <option value="">Select Brand</option>
-                                                                @foreach($brand as $key => $row)
+                                                                <!-- @foreach($brand as $key => $row)
                                                                 <option value="{{ $row->id}}">{{ $row->name}}</option>
-                                                                @endforeach
+                                                                @endforeach -->
                                                             </select>
                                                         </div>
 
@@ -664,7 +664,8 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
 function get_brand_by_principal_group(element) {
     var principal_group_id = $(element).val();
     $.ajax({
-        url: '/purchase/get_brand_by_principal_group',
+        // url: '/purchase/get_brand_by_principal_group',
+          url: "{{ route('get_brand_by_principal_group') }}",
         type: 'Get',
         data: { principal_group_id: principal_group_id },
         success: function(response) {
@@ -701,7 +702,8 @@ function get_sub_category_by_id() {
     var category = $('#CategoryId').val();
     if (category) {
         $.ajax({
-            url: '/pdc/get_sub_category_by_id',
+            // url: '/pdc/get_sub_category_by_id',
+              url: "{{ route('get_sub_category_by_id') }}",
             type: 'Get',
             data: {
                 category: category
