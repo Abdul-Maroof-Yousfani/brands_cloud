@@ -501,6 +501,7 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
                                 <!-- <a class="btn btn-info btn-sm btn-block" href="{{ asset("product_uploader_example.xlsx") }}">Download example</a> -->
 <a href="{{ asset('product_uploader_example.csv') }}" download>Download</a>
 
+
                     </div>
                 </form>
 
