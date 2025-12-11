@@ -126,11 +126,12 @@ class SubitemsExport implements FromCollection, WithHeadings
                     $item->flat_discount, // Product Flat Discount(%)
                     $item->min_qty, // Min Qty
                     $item->max_qty, // Max Qty
-                    '', // Image Link (empty as requested)
+                   
                     $item->hs_code_name, // HS Code
                     $item->locality, // Locality
                     $item->origin, // Origin
                     $item->color, // Color
+                     '', // Image Link (empty as requested)
                     $item->product_status, // Product Status
                     $item->is_barcode_scanning ? 'yes' : 'no' // Barcode Scanning
                 ];
