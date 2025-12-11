@@ -260,7 +260,7 @@
                                                 <div class="table-responsive dashTable mhe">
                                                     <div class="dashTableHeading printListBtn">
                                                         <h6>Sales Orders</h6>
-                                                        <a class="btn btn-primary" target="_blank" id="myBtn" href="{{url('/sales/viewSalesOrderList?pageType=view&&parentCode=89&&m=1#Rototec')}}">View All Sales Orders</a>
+                                                        <a class="btn btn-primary" target="_blank" id="myBtn" href="{{url('/selling/listSaleOrder?pageType=view&&parentCode=89&&m=1#Rototec')}}">View All Sales Orders</a>
                                                     </div>
                                                     <table class="userlittab table table-bordered sf-table-list"
                                                         id="TableExportToCsv">
