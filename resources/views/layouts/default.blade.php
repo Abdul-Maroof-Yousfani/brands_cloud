@@ -19,7 +19,8 @@
 
     <link href="{{ URL::asset('app-assets/vendors/css/vendors.min.css') }}" rel="stylesheet" />
     <link href="{{ URL::asset('assets/css/bootstrap.css') }}" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{{ URL::asset('app-assets/css/colors.css') }}">
+    <!-- <link rel="stylesheet" type="text/css" href="{{ URL::asset('app-assets/css/colors.css') }}"> -->
+     <link href="{{ URL::asset('assets/css/colors.css') }}" rel="stylesheet" />
     <link href="{{ URL::asset('assets/custom/css/loader.css') }}" rel="stylesheet" />
     <!-- FONT AWESOME STYLE  -->
     <!--<link href="{{ URL::asset('assets/css/font-awesome.css') }}" rel="stylesheet" />-->
