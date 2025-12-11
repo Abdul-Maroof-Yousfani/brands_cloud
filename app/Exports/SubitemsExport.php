@@ -28,6 +28,7 @@ class SubitemsExport implements FromCollection, WithHeadings
             ->leftJoin('product_trends', 'product_trends.id', 'subitem.product_trend_id')
             ->leftJoin('tax_types', 'tax_types.id', 'subitem.tax_type_id')
             ->leftJoin('hs_codes', 'hs_codes.id', 'subitem.hs_code')
+             ->leftJoin('products_principal_group', 'products_principal_group.id', 'subitem.principal_group_id') // New join
             ->where('subitem.status', 1);
 
         // Apply filters
@@ -95,7 +96,9 @@ class SubitemsExport implements FromCollection, WithHeadings
                 'subitem.origin',
                 'subitem.color',
                 'subitem.product_status',
-                'subitem.is_barcode_scanning'
+                'subitem.is_barcode_scanning',
+                'products_principal_group.products_principal_group as principal_group_name' // New column
+            
             )
             ->get()
             ->map(function ($item, $index) {
@@ -133,7 +136,8 @@ class SubitemsExport implements FromCollection, WithHeadings
                     $item->color, // Color
                      '', // Image Link (empty as requested)
                     $item->product_status, // Product Status
-                    $item->is_barcode_scanning ? 'yes' : 'no' // Barcode Scanning
+                    $item->is_barcode_scanning ? 'yes' : 'no' ,// Barcode Scanning
+                     $item->principal_group_name
                 ];
             });
 
@@ -175,7 +179,8 @@ class SubitemsExport implements FromCollection, WithHeadings
             'Origin',
             'Color',
             'Product Status',
-            'Barcode Scanning'
+            'Barcode Scanning',
+             'Principal Group'
         ];
     }
 }
