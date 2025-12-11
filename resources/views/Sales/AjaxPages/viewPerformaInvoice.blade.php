@@ -10,30 +10,45 @@ $buyers_detail= CommonHelper::get_buyer_detail($delivery_note->buyers_id);
 $sale_order = CommonHelper::get_so_by_SONO($delivery_note->so_no);
 ?>
 <style>
-      
-.signature_bor{border-top:solid 1px #CCC;padding-top:7px;}        
-textarea{border-style:none;border-color:Transparent;}
+
 @media print {
  .printHide{display:none !important;}
 .fa{font-size:small;!important;}
 .table-bordered{border:1px solid black;}
 table.table-bordered>thead>tr>th{border:1px solid black !important;}
+
 }
 table{border:solid 1px black;}
 tr{border:solid 1px black;}
 td{border:solid 1px black;}
 th{border:solid 1px black;}
+/* p{margin:0;padding:0;font-size:13px;font-weight:500;}
+input.form-control.form-control2{margin:0!important;}
+.table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
+.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
+.totlas p{font-weight:bold;}
+.psds{display:flex;justify-content:right;gap:88px;}
+.psds p{font-weight:bold;}
+.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
+.totlass{display:inline;background:transparent;margin-top:-25px;}
+.totlass h2{font-size:13px !important;} */
 
-    p{margin:0;padding:0;font-size:13px;font-weight:500;}
-    input.form-control.form-control2{margin:0!important;}
-    .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding: 7px 5px !important;}
-    .totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
-    .totlas p{font-weight:bold;}
-    .psds{display:flex;justify-content:right;gap:88px;}
-    .psds p{font-weight:bold;}
-    .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
-    .totlass{display:inline;background:transparent;margin-top:-25px;}
-    .totlass h2{font-size:13px !important;}
+      
+   .signature_bor{border-top:solid 1px #CCC;padding-top:7px;}
+textarea{border-style:none;border-color:Transparent;}
+p{margin:0;padding:0;font-size:13px;font-weight:500;}
+input.form-control.form-control2{margin:0!important;}
+.table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
+.totlas p{font-weight:bold;}
+.psds{display:flex;justify-content:right;gap:88px;}
+.totlas{display:flex;justify-content:right;gap:88px;}
+.psds p{font-weight:bold;}
+.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
+.totlass{display:inline;background:transparent;margin-top:-25px;}
+.totlass h2{font-size:13px !important;}
+.table-responsive2{scrollbar-width:thin;scrollbar-color:#333 #ccc;overflow:auto;}
+
+
 </style>
 <?php
 
@@ -123,11 +138,9 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 <h2 class="subHeadingLabelClass">Brands Unlimited (Pvt) Ltd</h2>
                                 <p>301-305, 3rd Floor, Kavish Crown Plaza
                                     Sharah-e-Faisal, karachi.</p>
-    
-                                <p>N.T.N #:5098058-8 </p>
                                 <p>S.t #: 3277876156235</p>
     
-    
+                                <br>
                                 <p>Bill To:</p>
                                 <?php $customer_data= CommonHelper::byers_name($delivery_note->buyers_id);?>
                                 <p>
@@ -136,9 +149,10 @@ foreach ($delivery_note_data as $sale_order_item) {
                                     <!-- bharia Twon Civic Center Islamabad<br> -->
                                     Pakistan<br>
                                     {{$customer_data->phone_1}}<br>
-                                    N.T.N #: {{isset($customer_data->cnic_ntn) ? $customer_data->cnic_ntn :'-'}}<br>
+                                    N.T.N #: {{isset($customer_data->cnic_ntn) ? $customer_data->cnic_ntn :'-'}}
                                     S.T #: {{isset($customer_data->strn) ? $customer_data->strn :'-'}}
                                 </p>
+                                <p>N.T.N #:5098058-8 </p>
                             </div>
                         </div>
     
@@ -147,24 +161,24 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 <h2 class="subHeadingLabelClass">Sale Invoice-P</h2>
                                 <p>Document # {{$delivery_note->so_no}}</p>
                                 <p>Date: {{$delivery_note->so_date}}</p>
-                                <div class="table-responsive">
-                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border: 1px solid #000;">
+                                <div class="table-responsive2">
+                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000 !important;width:68% !important;float:right;">
                                         <tbody>
                                             <tr>
-                                                <td>Amount Limited</td>
-                                                <td style="text-align: right;">
+                                                <td  style="border:1px solid #000 !important;border-right:none !important;">Amount Limited</td>
+                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                     {{ $sale_order->credit_limit }}
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Balance Amount</td>
-                                                <td style="text-align: right;">
+                                                <td  style="border:1px solid #000 !important;border-right:none !important;">Balance Amount</td>
+                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                     {{ $sale_order->balance_amount }}
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Current Balance Due</td>
-                                                <td style="text-align: right;">
+                                                <td  style="border:1px solid #000 !important;border-right:none !important;">Current Balance Due</td>
+                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                     {{ number_format($total_amount_after_tax, 2) }}
                                                 </td>
                                             </tr>
@@ -175,7 +189,6 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                         <div class="term">
-                                            <p>Terms:</p>
                                             <p>SO Date: {{$delivery_note->so_date}}</p>
                                             <p>Warehouse: {{$buyers_warehouse_name}}</p>
                                             <p>Payment Terms: 30 Days</p>
@@ -197,7 +210,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                     </div>
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <h2 class="subHeadingLabelClass">Item Details</h2>
+                            <h2 style="font-size:16px;" class="subHeadingLabelClass">Item Details</h2>
                             
                             <!-- <div style="text-align: left" class="printHide">
                                 <label class="text-left"><input type="checkbox" onclick="show_hide()" id="formats" />Printable
@@ -207,13 +220,13 @@ foreach ($delivery_note_data as $sale_order_item) {
                             </div> -->
     
                             <div id="actual">
-                                <div class="table-responsive">
-                                    <table class="table sale_older_tab userlittab table table-bordered sf-table-list">
+                                <div class="table-responsive2">
+                                    <table class="table sale_older_tab userlittab table table-bordered sf-table-list"  style="border:1px solid #000 !important;">
                                         <thead>
                                             {{-- <tr>
                                                 <th class="text-center" style="background: #000 !important; color:#fff !important;">S.NO</th>
                                                 <th class="text-center" style="background: #000 !important; color:#fff !important;">Item</th>
-                                                <th class="text-center" style="background: #000 !important; color:#fff !important;">Uom</th>
+                                                <!-- <th class="text-center" style="background: #000 !important; color:#fff !important;">Uom</th> -->
                                                 <th class="text-center" style="background: #000 !important; color:#fff !important;">QTY. <span class="rflabelsteric"><strong>*</strong></span></th>
                                                 <th class="text-center" style="background: #000 !important; color:#fff !important;">Rate</th>
                                                 <th class="text-center" style="background: #000 !important; color:#fff !important;">Amount</th>
@@ -227,11 +240,11 @@ foreach ($delivery_note_data as $sale_order_item) {
                                             <tr>
                                                 <th class="text-center" style="background: #000 !important; color:#fff !important;">S.NO</th>
                                                 <th style="background: #000 !important; color:#fff !important;width: 20% !important;">Item</th>
-                                                <th style="background: #000 !important; color:#fff !important;">Uom</th>
+                                                <!-- <th style="background: #000 !important; color:#fff !important;">Uom</th> -->
                                                 <th class="text-center" style="background: #000 !important; color:#fff !important;">QTY</span></th>
-                                                <th style="background: #000 !important; color:#fff !important;">Barcode</th>
+                                                <th style="background: #000 !important; color:#fff !important; text-align:center !important;">Barcode</th>
                                                 
-                                                <th style="background: #000 !important; color:#fff !important;">FOC</th>
+                                                <!-- <th style="background: #000 !important; color:#fff !important;">FOC</th> -->
                                                 <th style="background: #000 !important; color:#fff !important;">MRP</th>
                                                 <th style="background: #000 !important; color:#fff !important;">Rate</th>
                                                 <th style="background: #000 !important; color:#fff !important;">Gross Amount</th>
@@ -254,10 +267,10 @@ foreach ($delivery_note_data as $sale_order_item) {
                                             <tr>
                                                 <td  style="text-align: center !important;">{{ $count++ }}</td>
                                                 <td style="width: 20%">{{ CommonHelper::get_product_sku($sale_order_item->item_id) }}-{{  CommonHelper::get_product_name($sale_order_item->item_id) }}</td>
-                                                <td  style="text-align: center !important;" class="wsale2">{{ CommonHelper::get_uom($sale_order_item->item_id) }}</td>
-                                                <td  style="text-align: center !important;" class="wsale2"><p>{{ number_format($sale_order_item->qty) }}</p></td>
-                                                <td  style="text-align: center !important;" class="wsale2"><p>{{$productbarcode ?? "--"}}</p></td>
-                                                <td style="text-align: center !important;">{{number_format($sale_order_item->foc)}}</td>
+                                                <!-- <td  style="text-align: center !important;" class="wsale2">{{ CommonHelper::get_uom($sale_order_item->item_id) }}</td> -->
+                                                <td  style="text-align: center !important;" class="wsale2"><p><strong>{{ number_format($sale_order_item->qty) }}</strong></p></td>
+                                                <td  style="text-align: center !important;" class="wsale2"><p><strong>{{$productbarcode ?? "--"}}</strong></p></td>
+                                                <!-- <td style="text-align: center !important;">{{number_format($sale_order_item->foc)}}</td> -->
                                                 <td style="text-align: center !important;">{{number_format($sale_order_item->mrp_price)}}</td>
                                                 <td style="text-align: center !important;">{{number_format($sale_order_item->rate)}}</td>
                                                 <td style="text-align: center !important;">{{number_format($saleOrderDetail->sub_total,2)}}</td>
@@ -269,15 +282,12 @@ foreach ($delivery_note_data as $sale_order_item) {
                                             </tr>
                                             @endforeach
                                             <tr>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;font-size:13px!important;font-weight:400!important;">Sub Total</th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
+                                                <th colspan="2" style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;font-size:13px!important;font-weight:400!important;">Sub Total</th>
                                                  <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_qty">{{number_format($total_qty)}}</p></th>
-                                                
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
+
                                               <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format($total_gross_amount, 2) }}</p></th>
                                               <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
                                               <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format($total_discount_amount, 2) }}</p></th>
@@ -287,7 +297,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div class="table-responsive">
+                                    <div class="table-responsive2">
                                         <table style="display: none;" id="" class="table sale_older_tab userlittab table table-bordered sf-table-list">
 
     
@@ -336,29 +346,24 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 </div>
                             </div>
                             <div class="row align-items-top">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                    <!-- <div class="totlas totlass">
-                                        <h2>Note</h2>
-                                        <p>{{ $so_detail->remark ?? 'N/A' }}</p>
-                                        
-                                    </div> -->
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                        <br>
-                                        <br>
-                                        <br>
+                                    
                                     <div class="totals3">
                                         <div class="psds">
-                                            {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}
-                                            <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{$sale_order->sale_taxes_amount_rate}}</p>
+                                            <strong>{{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}</strong>
+                                            <strong><p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{$sale_order->sale_taxes_amount_rate}}</p></strong>
                                         </div>
                                         <div class="totlas">
-                                            <p>Total</p>
-                                            <p>{{ number_format((float)$total_amount_after_tax + (float)$sale_order->sale_taxes_amount_rate, 2) }}</p>
+                                            <strong><p>Total</p></strong>
+                                            <strong><p>{{ number_format((float)$total_amount_after_tax + (float)$sale_order->sale_taxes_amount_rate, 2) }}</p></strong>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                              <br>
+                             <br>
+                            <br>
                     </div>
                 </div>
             </div>
@@ -548,11 +553,11 @@ function checkk() {
         mywindow.document.write(`
             <style>
                 @page{size:A4;margin:1em;}
-                .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
-                .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
-                .table-responsive{height:inherit !important;}
+                .table-responsive2 .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
+                .table-responsive2 .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
+                .table-responsive2{height:inherit !important;}
                 .sales_or{position:relative !important;height:100% !important;}
-                .sgnature{position:absolute !important;bottom:0px !important;}
+                // .sgnature{position:absolute !important;bottom:0px !important;}
                 p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
                 .mt-top{margin-top:-72px !important;}
                 .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
@@ -562,13 +567,26 @@ function checkk() {
                 .totlas p{font-weight:bold !important;}
                 .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
                 .psds p{font-weight:bold !important;}
-                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;}
+                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;margin-bottom:30px;}
                 .totlass h2{font-size:13px !important;}
                 .col-lg-6{width:50% !important;}
                 .col-lg-12{width:100% !important;}
-                .contr h2{font-size:17px !important; font-weight:bold !important;color:#000 !important;}
-                .contr2 h2{font-size:17px !important; font-weight:bold !important;color:#000 !important;}
+                .contr h2{font-size:17px !important;font-weight:bold !important;color:#000 !important;}
+                .contr2 h2{font-size:17px !important;font-weight:bold !important;color:#000 !important;}
                 .col-lg-4{width:33.33333333% !important;}
+                .signature_bor{border-top:solid 1px #CCC;padding-top:7px;}
+                textarea{border-style:none;border-color:Transparent;}
+                p{margin:0;padding:0;font-size:13px;font-weight:500;}
+                input.form-control.form-control2{margin:0!important;}
+                .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
+                .totlas p{font-weight:bold;}
+                .psds{display:flex;justify-content:right;gap:88px;}
+                .totlas{display:flex;justify-content:right;gap:88px;}
+                .psds p{font-weight:bold;}
+                .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
+                .totlass{display:inline;background:transparent;margin-top:-25px;}
+                .totlass h2{font-size:13px !important;}
+                .table-responsive2{scrollbar-width:thin;scrollbar-color:#333 #ccc;overflow:auto;}
             </style>
         `);
         mywindow.document.write('</head><body>');

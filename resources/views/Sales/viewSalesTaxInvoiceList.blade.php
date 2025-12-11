@@ -22,28 +22,17 @@ $export = ReuseableCode::check_rights(257);
 ?>
 @extends('layouts.default')
 @section('content')
-    @include('select2')
-    <style>
-.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:22% !important;padding:8px 4px !important;background:#ddd;white-space:nowrap;}
-table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
-table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:0 !important;content:'';right:0.3rem;top:1.3rem;/* background:none;*/
-}
-table.dataTable tbody th,table.dataTable tbody td{padding:8px 4px !important;}
-
-th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
-.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td {
-    width: initial !important;
-    padding: 8px 4px !important;
-
-}
-div.dataTables_wrapper div.dataTables_filter input {
-    margin-left: 0 !important;
-}
-.dataTables_wrapper .dataTables_filter {
-    float: left !important;
-    text-align: left !important;
-}
-    </style>
+@include('select2')
+<style>
+    .table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:22% !important;padding:8px 4px !important;background:#ddd;white-space:nowrap;}
+    table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
+    table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:0 !important;content:'';right:0.3rem;top:1.3rem;}
+    table.dataTable tbody th,table.dataTable tbody td{padding:8px 4px !important;}
+    th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
+    .table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:initial !important;padding:8px 4px !important;}
+    div.dataTables_wrapper div.dataTables_filter input{margin-left:0 !important;}
+    .dataTables_wrapper .dataTables_filter{float:left !important;text-align:left !important;}
+</style>
     <div class="panel-body">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -289,12 +278,12 @@ div.dataTables_wrapper div.dataTables_filter input {
                 sheet: "sheet1"
             });
             return dl ?
-                XLSX.write(wb, {
-                    bookType: type,
-                    bookSST: true,
-                    type: 'base64'
-                }) :
-                XLSX.writeFile(wb, fn || ('Sales Tax Invoice <?php echo date('d-m-Y'); ?>.' + (type || 'xlsx')));
+            XLSX.write(wb, {
+                bookType: type,
+                bookSST: true,
+                type: 'base64'
+            }) :
+            XLSX.writeFile(wb, fn || ('Sales Tax Invoice <?php echo date('d-m-Y'); ?>.' + (type || 'xlsx')));
         }
     </script>
     <script>
@@ -480,8 +469,6 @@ div.dataTables_wrapper div.dataTables_filter input {
         }
     </script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
-
     <script>
         $(document).ready(function() {
             var table = $('#EmpExitInterviewList').DataTable({

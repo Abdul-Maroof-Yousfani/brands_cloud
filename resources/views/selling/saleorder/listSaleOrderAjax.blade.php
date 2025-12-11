@@ -17,7 +17,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                 <th  class="text-center sorting_asc">Order Date</th>
                 <th  class="text-center ">Amount</th>
                 <th  class="text-center ">Status</th>
-                <th  class="text-center ">Note</th>
+                <th style=" width:180px !important;" class="text-center ">Note</th>
                 <th  class="text-center ">Action</th>
             </tr>
         </thead>
@@ -70,33 +70,36 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                          </td> -->
                          <td>{{$sale_order->remark}}</td>
                          <td class="text-center">
-                             <div class="dropdown">
+                                  <div class="dropdown">
+                                        <button class="drop-bt dropdown-toggle"type="button" data-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                        <ul class="dropdown-menu">
+                                            <li>
     
-                                 {{-- <a class="btn btn-sm btn-success" href="{{route('viewSaleOrder', $sale_order->id)}}" target="_blank">
-                                <i class="fa fa-eye" aria-hidden="true"></i> View
-                            </a> --}}
-                                 <a class="btn btn-xs btn-success"
-                                     onclick="showDetailModelOneParamerter('selling/viewSaleOrderPrint/{{ $sale_order->id }}',{{ $sale_order->id }},'View Sale Order ')"
-                                     target="_blank">
-                                     <i class="fa fa-eye" aria-hidden="true"></i> View
-                                 </a>
-                                 {{-- <a class="btn btn-sm btn-infoo" href="{{route('saleOrderSectionA', $sale_order->id)}}" target="_blank">
-                                <i class="fa fa-eye" aria-hidden="true"></i> Section A / B
-                            </a> --}}
-                                 <a href="{{ route('editSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-warning "
-                                     target="_blank"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a>
+                                                    {{-- <a class="btn btn-sm btn-success" href="{{route('viewSaleOrder', $sale_order->id)}}" target="_blank">
+                                                    <i class="fa fa-eye" aria-hidden="true"></i> View
+                                                </a> --}}
+                                                    <a class="btn btn-xs btn-success"
+                                                        onclick="showDetailModelOneParamerter('selling/viewSaleOrderPrint/{{ $sale_order->id }}',{{ $sale_order->id }},'View Sale Order ')"
+                                                        target="_blank">
+                                                        <i class="fa fa-eye" aria-hidden="true"></i> View
+                                                    </a>
+                                                    {{-- <a class="btn btn-sm btn-infoo" href="{{route('saleOrderSectionA', $sale_order->id)}}" target="_blank">
+                                                    <i class="fa fa-eye" aria-hidden="true"></i> Section A / B
+                                                </a> --}}
+                                                    <a href="{{ route('editSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-warning "
+                                                        target="_blank"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a>
+                        
+                                                    <!-- <a href="{{ route('deleteSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-danger"><i class="fa fa-trash-o"
+                                                            aria-hidden="true"></i> Delete</a> -->
+                        
+                                                    <a href="{{ route('deleteSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-danger"
+                                                        onclick="return confirm('Are you sure you want to delete this sale order?')">
+                                                        <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                                                    </a>
     
-                                 <!-- <a href="{{ route('deleteSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-danger"><i class="fa fa-trash-o"
-                                         aria-hidden="true"></i> Delete</a> -->
-    
-                                 <a href="{{ route('deleteSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-danger"
-                                     onclick="return confirm('Are you sure you want to delete this sale order?')">
-                                     <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
-                                 </a>
-    
-                                 </li>
-                                 </ul>
-                             </div>
+                                            </li>
+                                        </ul>
+                                </div>
                          </td>
                      </tr>
                  @endforeach

@@ -30,17 +30,16 @@ $AccYearTo = $AccYearDate->accyearto;
     @include('select2')
 
 <style>
-/* .table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:1% !important;padding:8px 8px !important;background:#ddd;white-space:nowrap;font-size:11px !important;}
-table.dataTable tbody th,table.dataTable tbody td{white-space:nowrap;} */
-.pagination{float:right;}
+ .pagination{float:right;}
 .nowrap{white-space:nowrap;}
 .text-right-amount{text-align:right !important;}
-.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:22% !important;padding:8px 4px !important;background:#ddd;white-space:nowrap;}
-table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
-table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:0 !important;content:'';right:0.3rem;top:1.3rem;/* background:none;*/
-}
-th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
-.table-responsive{height:600px !important;}
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 8px !important;background:#ddd;text-align:center;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:inherit;height:0;content:'';right:0.3rem;top:1.3rem;}
+table.dataTable tbody th,table.dataTable tbody td{padding:8px 10px;text-align:center;}
+.table-responsive{height:600px;}
+.dataTables_wrapper .dataTables_filter{float:left;text-align:left;}
+div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
+
 </style>
 
     <div class="panel-body">
@@ -131,21 +130,22 @@ th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12col-xs-12">
                                     <div class="table-responsive">
-                                        <table class="userlittab table table-bordered sf-table-list dataTable no-footer" id="EmpExitInterviewList">
+                                        <!-- <table class="userlittab table table-bordered sf-table-list dataTable no-footer" id="EmpExitInterviewList"> -->
+                                        <table class="userlittab table table-bordered sf-table-list" id="EmpExitInterviewList">
                                             <thead>
-                                            <th style="width: 100px !important;" class="so-width text-center col-sm-1">S.No</th>
+                                            <th style="text-align:center;width: 5px;" class="text-center col-sm-1">S.No</th>
                                             <th class="text-center col-sm-1">SO Nos</th>
                                             <th class="text-center col-sm-1">DN No</th>
                                             <th class="text-center col-sm-1">DN Date</th>
                                             <!-- <th class="text-center col-sm-1">Order No</th> -->
                                             <th class="text-center col-sm-1">Order Date</th>
-                                            <th class="text-center">Customer</th>
+                                            <th style="text-align:left; width: 250px;" class="text-center">Customer</th>
                                             <th style="text-align: center !important;"class="text-center">Qty.</th>
                                             <th style="text-align: center !important;"class="text-center">Amount</th>
-                                            <th class="text-center">Document <br>Status</th>
+                                            <!-- <th class="text-center">Document <br>Status</th> -->
                                             <th class="text-center">Status</th>
                                             <th class="text-center">Username</th>
-                                            <th class="text-center">Action</th>
+                                            <th  style="text-align:left;" class="text-left">Action</th>
                                             {{--<th class="text-center">Delete</th>--}}
                                             </thead>
                                             <tbody id="data">
@@ -204,7 +204,7 @@ th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
                                                 ?>
 
                                                 <tr @if($status=='Open') style="background-color: #fdc8c8" @elseif($status=='partial') style="background-color: #c9d6ec"  @endif title="{{$row->id}}" id="{{$row->id}}">
-                                                    <td  style="width: 100px !important;" class="text-center">{{$counter++}}</td>
+                                                    <td style="text-align:center;" class="text-center">{{$counter++}}</td>
                                                     <td class="text-center"><?php echo  strtoupper($row->so_no) ?></td>
                                                     <td title="{{$row->id}}" class="text-center">{{strtoupper($row->gd_no)}}</td>
                                                     <td class="text-center"> <?php echo  $row->gd_date ? \Carbon\Carbon::parse($row->gd_date)->format("d-M-Y") : '' ?></td>
@@ -224,11 +224,11 @@ th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
 
 
                                                    
-                                                    <td class="text-center">{{$customer->name}}</td>
+                                                    <td style="text-align:left;" class="text-center">{{$customer->name}}</td>
                                                     <td style="text-align: center !important;" class="text-center">{{number_format($data->qty,0)}}</td>
                                                   
                                                     <td   style="text-align: center !important;" class="text-center">{{number_format($data->amount + $row->sales_tax_amount + $sale_taxes_amount_rate, 0)}}</td>
-                                                    <td>{{$status}}</td>
+                                                    <!-- <td>{{$status}}</td> -->
                                                     <td>{{$approvalStatus}}</td>
                                                     <td class="text-center"><?php echo $row->username?></td>
 
@@ -237,54 +237,43 @@ th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
 
 
                                                         <div class="dropdown">
-                                                                            <button class="drop-bt dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                                                                                ...
-                                                                            </button>
+                                                            <button class="drop-bt dropdown-toggle"type="button" data-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <?php if($view == true):?>
+                                                                    <button style="width: 100%;"onclick="showDetailModelOneParamerter('sales/viewDeliveryNoteDetail/<?php echo $row->id ?>','','View Delivery Note')"
+                                                                            type="button" class="btn btn-success btn-xs">View</button>
 
+                                                                    <?php endif;?>
 
-
-                                                    <ul class="dropdown-menu">       
                                                         
-                                                    <li>
-                                                        <?php if($view == true):?>
-                                                        <button style="width: 100%;"onclick="showDetailModelOneParamerter('sales/viewDeliveryNoteDetail/<?php echo $row->id ?>','','View Delivery Note')"
-                                                                type="button" class="btn btn-success btn-xs">View</button>
+                                                                    <button  style="width: 100%;" onclick="showDetailModelOneParamerter('sales/viewPerformaInvoice/<?php echo $row->id ?>','<?php echo $row->id ?>','View Performa Invoice Note')"
+                                                                            type="button" class="btn btn-success btn-xs">Performa Invoice</button>
 
-                                                        <?php endif;?>
+                                                            
+                                                                    <?php if($edit == true && $status!='Complete' && $row->status == 0):?>
+                                                                    <button  style="width: 100%;" onclick="delivery_note('<?php echo $row->id?>','<?php echo $m ?>')"
+                                                                            type="button" class="btn btn-primary btn-xs">Edit </button>
+                                                                    <?php endif;?>
 
-                                                    </li>
-                                                        
-
-                                                    <li>
-                                                        <button  style="width: 100%;" onclick="showDetailModelOneParamerter('sales/viewPerformaInvoice/<?php echo $row->id ?>','<?php echo $row->id ?>','View Performa Invoice Note')"
-                                                                type="button" class="btn btn-success btn-xs">Performa Invoice</button>
-
-                                                    </li>
-
-                                                      
-                                                    <li>
-                                                        <?php if($edit == true && $status!='Complete' && $row->status == 0):?>
-                                                        <button  style="width: 100%;" onclick="delivery_note('<?php echo $row->id?>','<?php echo $m ?>')"
-                                                                type="button" class="btn btn-primary btn-xs">Edit </button>
-                                                        <?php endif;?>
-
-                                                    </li>
+                                                            
 
 
-                                                        @if($checkifbarcodescanningproduct > 0)
-                                                       <a style="display: block" href="{{route('stockBarcode.show',$row->gd_no).'?type=gdn'}}" type="button" class="btn btn-warning btn-xs" target="_blank">Stock Barcodes</a>
-                                                        @endif
+                                                                    @if($checkifbarcodescanningproduct > 0)
+                                                                    <a style="display: block" href="{{route('stockBarcode.show',$row->gd_no).'?type=gdn'}}" type="button" class="btn btn-warning btn-xs" target="_blank">Stock Barcodes</a>
+                                                                    @endif
 
 
-                                                        <li>
-                                                            <?php if($delete == true && $status!='Complete'):?>
-                                                        <button  style="width: 100%;" onclick="delivery_note_delete('<?php echo $row->id?>','<?php echo $m ?>')"
-                                                                type="button" class="btn btn-danger btn-xs">Delete</button>
-                                                        <?php endif;?>
+                                                                    <li>
+                                                                        <?php if($delete == true && $status!='Complete'):?>
+                                                                    <button  style="width: 100%;" onclick="delivery_note_delete('<?php echo $row->id?>','<?php echo $m ?>')"
+                                                                            type="button" class="btn btn-danger btn-xs">Delete</button>
+                                                                    <?php endif;?>
 
-                                                        </li>
+                                                                </li>
 
-                                                     </ul>
+                                                             </ul>
+                                                        </div>
 
                                                     </td>
                                                     {{--<td class="text-center"><a href="{{ URL::asset('purchase/editPurchaseVoucherForm/'.$row->id) }}" class="btn btn-success btn-xs">Edit </a></td>--}}
@@ -519,11 +508,7 @@ th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
 
         }
 
-
-
-        
-
-    </script>
+</script>
 <script>
   $(document).ready(function() {
     $('#EmpExitInterviewList').DataTable({
@@ -531,12 +516,9 @@ th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
         ordering: true,     // off
         info: false,         // off (showing X of Y)
         lengthChange: false, // off (page length dropdown)
+        autoWidth: false,
         searching: true      // only searching ON
     });
 });
-
 </script>
-
-    
-
 @endsection

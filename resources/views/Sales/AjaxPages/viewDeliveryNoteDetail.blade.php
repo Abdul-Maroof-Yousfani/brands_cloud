@@ -61,13 +61,14 @@ foreach ($delivery_note_data as $sale_order_item) {
     p{margin:0;padding:0;font-size:13px;font-weight:500;}
     input.form-control.form-control2{margin:0!important;}
     .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding: 7px 5px !important;}
-    .totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
     .totlas p{font-weight:bold;}
     .psds{display:flex;justify-content:right;gap:88px;}
     .psds p{font-weight:bold;}
     .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
     .totlass{display:inline;background:transparent;margin-top:-25px;}
     .totlass h2{font-size:13px !important;}
+    .table-responsive2{scrollbar-width:thin;scrollbar-color:#333 #ccc;overflow:auto;}
+
 </style>
 <?php
 
@@ -144,24 +145,24 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <p>Document # {{$delivery_note->so_no}}</p>
                             <p>Date: {{$delivery_note->so_date}}</p>
                             <br>
-                            <div class="table-responsive">
-                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:68% !important;float:right;">
+                            <div class="table-responsive2">
+                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000 !important;width:68% !important;float:right;">
                                     <tbody>
                                         <tr>
-                                            <td>Amount Limited</td>
-                                            <td style="text-align: right;">
+                                            <td style="border:1px solid #000 !important;border-right:none !important;">Amount Limited</td>
+                                            <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                 {{ $so_detail->credit_limit }}
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Balance Amount</td>
-                                            <td style="text-align: right;">
+                                            <td style="border:1px solid #000 !important;border-right:none !important;">Balance Amount</td>
+                                            <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                 {{ $so_detail->balance_amount }}
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Current Balance Due</td>
-                                            <td style="text-align: right;">
+                                            <td style="border:1px solid #000 !important;border-right:none !important;">Current Balance Due</td>
+                                            <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                 {{ number_format($total_amount_after_tax, 2) }}
                                             </td>
                                         </tr>
@@ -198,7 +199,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <!-- <h2 class="subHeadingLabelClass">Item Details</h2> -->
-                        <div class="table-responsive">
+                        <div class="table-responsive2">
                             <table class="table sale_older_tab userlittab table table-bordered sf-table-list sale-list">
                                 <thead>
                                     <tr>
@@ -269,97 +270,49 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-
-                    <div class="row align-items-top">
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                            <!-- <div class="totlas totlass">
-                                <h2>Note</h2>
-                                <p>{{ $so_detail->remark ?? 'N/A' }}</p>
-                                
-                            </div> -->
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                <br>
-                                <br>
-                                <br>
-                            <!-- <div class="totals3">
-                                <div class="psds">
-                                    {{ CommonHelper::get_sale_tax_persentage_by_id($so_detail->sale_taxes_id)}}
-                                    <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{$so_detail->sale_taxes_amount_rate}}</p>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                 <div class="totlass">
+                                    <h2><strong>Note</strong></h2>
+                                    <p><strong>{{ $so_detail->remark ?? 'N/A' }}</strong></p>
                                 </div>
-                                <div class="totlas">
-                                    <p>Total</p>
-                                    <p>{{ number_format((float)$total_amount_after_tax + (float)$so_detail->sale_taxes_amount_rate, 2) }}</p>
-                                </div>
-                            </div> -->
-                             
-                    <div class="totlas totlass">
-                        <h2>Note</h2>
-                        <p>{{ $so_detail->remark ?? 'N/A' }}</p>
-                    </div>
-            
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row align-items-top">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                    
-                </div>
-                <!-- <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                    <div class="totlas totlass">
-                        <h2>Note</h2>
-                        <p>{{ $so_detail->remark ?? 'N/A' }}</p>
-                    </div>
-                </div> -->
-            </div>
-
-
+            <br>
+            <br>
+            <br>
             <div class="row">
                 <div class="sgnature">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
                         <div class="row">
-
                             <!-- <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
 
                                 <h2 class="subHeadingLabelClass"><?php echo strtoupper($delivery_note->username);?></h2>
                                 <p><strong>Prepared By</strong> </p>
                             </div> -->
-
                              <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
-                                                    <p><strong>{{$delivery_note->username}}</strong> </p>
-                                                    <p><strong>Prepared By</strong> </p>
-                                                </div>
+                                <p><strong>{{$delivery_note->username}}</strong> </p>
+                                <p><strong>Prepared By</strong> </p>
+                            </div>
                              <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
-                                                    <p><strong></strong> </p>
-            
-                                                    <p><strong>Approved By</strong> </p>
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
-                                                    <p><strong></strong> </p>
+                                <p><strong></strong> </p>
 
-                                                    <p><strong>Received By</strong> </p>
-                                                </div>
+                                <p><strong>Approved By</strong> </p>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
+                                <p><strong></strong> </p>
+
+                                <p><strong>Received By</strong> </p>
+                            </div>
                         </div>
-
                     </div>
                     <br><br>
-                      <div class="vomp">
-                                        <p><strong style="margin-left: 50px;">
-                                            Creation Time :
-                                            {{ \Carbon\Carbon::parse($delivery_note->timestamp)->format('d-M-Y h:i A') }}
-
-                                            
-                                        </strong></p>
-
-                                     
-                                    </div>
                 </div>
             </div>
-
-
-
             <div class="row hide">
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-left">
 
@@ -375,7 +328,6 @@ foreach ($delivery_note_data as $sale_order_item) {
 
                 </div>
             </div>
-            
             <div style="line-height:5px;">&nbsp;</div>
             <div class="row hide">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -474,7 +426,7 @@ foreach ($delivery_note_data as $sale_order_item) {
 
 
                 <div id="actual" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="table-responsive">
+                    <div class="table-responsive2">
                         <table id="tablee" class="table " style="border: solid 1px black;">
                             <thead>
                                 <tr>
@@ -638,11 +590,10 @@ foreach ($delivery_note_data as $sale_order_item) {
                     
             </div>
         </div>
-
-
-
     </div>
-
+    <div class="vomp">
+        <p><strong style="margin-left: 50px;">Creation Time :{{ \Carbon\Carbon::parse($delivery_note->timestamp)->format('d-M-Y h:i A') }}</strong></p>
+    </div>
 </div>
 
 <script>
@@ -736,11 +687,11 @@ function checkk() {
         mywindow.document.write(`
             <style>
                 @page{size:A4;margin:1em;}
-                .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
-                .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
-                .table-responsive{height:inherit !important;}
+                .table-responsive2 .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
+                .table-responsive2 .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
+                .table-responsive2{height:inherit !important;}
                 .sales_or{position:relative !important;height:100% !important;}
-                .sgnature{position:absolute !important;bottom:0px !important;}
+                // .sgnature{position:absolute !important;bottom:0px !important;}
                 p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
                 .mt-top{margin-top:-72px !important;}
                 .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
@@ -750,7 +701,7 @@ function checkk() {
                 .totlas p{font-weight:bold !important;}
                 .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
                 .psds p{font-weight:bold !important;}
-                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;}
+                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;margin-bottom:30px;}
                 .totlass h2{font-size:13px !important;}
                 .col-lg-6{width:50% !important;}
                 .col-lg-12{width:100% !important;}
