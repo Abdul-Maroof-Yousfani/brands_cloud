@@ -91,7 +91,7 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
                                                             <span class="rflabelsteric"><strong>*</strong></span>
                                                             <select style="width:100% !important;" autofocus name="principal_group" id="principal_group"
                                                                 class="form-control  select2" onchange="get_brand_by_principal_group(this)">
-                                                                <option value="">Select Category</option>
+                                                                <option value="">Select Principal Group</option>
                                                                 @foreach(App\Helpers\CommonHelper::get_all_principal_groups() as $principal) 
                                                                     <option value="{{ $principal->id }}" {{ $principal->id == $subitem->principal_group_id ? "selected" : "" }}>{{ $principal->products_principal_group }}</option>
                                                                 @endforeach
