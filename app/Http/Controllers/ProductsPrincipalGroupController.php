@@ -36,22 +36,57 @@ class ProductsPrincipalGroupController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function storeProductsPrincipalGroup(Request $request)
-    {
-        DB::Connection('mysql2')->beginTransaction();
-        try {
-            $productsPrincipalGroup = new ProductsPrincipalGroup;
-            $productsPrincipalGroup->products_principal_group = $request->products_principal_group;
-            $productsPrincipalGroup->status = "1";
-            $productsPrincipalGroup->save();
+    // public function storeProductsPrincipalGroup(Request $request)
+    // {
+    //     DB::Connection('mysql2')->beginTransaction();
+    //     try {
+    //         $productsPrincipalGroup = new ProductsPrincipalGroup;
+    //         $productsPrincipalGroup->products_principal_group = $request->products_principal_group;
+    //         $productsPrincipalGroup->status = "1";
+    //         $productsPrincipalGroup->save();
 
-            DB::Connection('mysql2')->commit();
-            return redirect()->route('listProductsPrincipalGroup')->with('dataInsert', 'Products Principal Group Created Successfully');
-        } catch (Exception $e) {
-            DB::Connection('mysql2')->rollBack();
-            return redirect()->route('createProductsPrincipalGroup')->with('error', $e->getMessage());
-        }
+    //         DB::Connection('mysql2')->commit();
+    //         return redirect()->route('listProductsPrincipalGroup')->with('dataInsert', 'Products Principal Group Created Successfully');
+    //     } catch (Exception $e) {
+    //         DB::Connection('mysql2')->rollBack();
+    //         return redirect()->route('createProductsPrincipalGroup')->with('error', $e->getMessage());
+    //     }
+    // }
+
+ public function storeProductsPrincipalGroup(Request $request)
+{
+    $request->validate([
+        'products_principal_group' => 'required'
+    ]);
+
+    // Check duplicate
+    $exists = ProductsPrincipalGroup::where('products_principal_group', $request->products_principal_group)
+        ->where('status', 1)
+        ->exists();
+
+    if ($exists) {
+        return back()->with('error', 'Principal Group name already exists!');
     }
+
+    DB::connection('mysql2')->beginTransaction();
+
+    try {
+        $productsPrincipalGroup = new ProductsPrincipalGroup;
+        $productsPrincipalGroup->products_principal_group = $request->products_principal_group;
+        $productsPrincipalGroup->status = "1";
+        $productsPrincipalGroup->save();
+
+        DB::connection('mysql2')->commit();
+
+        return back()->with('dataInsert', 'Products Principal Group Created Successfully');
+    } catch (Exception $e) {
+        DB::connection('mysql2')->rollBack();
+
+        return back()->with('error', $e->getMessage());
+    }
+}
+
+
 
     /**
      * Show the form for editing the specified resource.
