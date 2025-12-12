@@ -90,20 +90,20 @@ input.form-control.form-control2{margin:0!important;}
                                                     <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:56% !important;float:right;">
                                                         <tbody>
                                                             <tr>
-                                                                <td>Amount Limited</td>
-                                                                <td style="text-align: right;">
+                                                                <td style="border:1px solid #000 !important;border-right:none !important;">Amount Limited</td>
+                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                                     {{ number_format($sale_order->credit_limit, 0)  }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Balance Amount</td>
-                                                                <td style="text-align: right;">
+                                                                <td style="border:1px solid #000 !important;border-right:none !important;">Balance Amount</td>
+                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                                     {{ number_format($sale_order->balance_amount, 0)  }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Current Balance Due</td>
-                                                                <td style="text-align: right;">
+                                                                <td style="border:1px solid #000 !important;border-right:none !important;">Current Balance Due</td>
+                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                                     {{ number_format($sale_order->current_balance_due, 0)  }}
                                                                 </td>
                                                             </tr>
