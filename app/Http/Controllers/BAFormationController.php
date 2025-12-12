@@ -56,7 +56,7 @@ class BAFormationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->with(["error" => implode('<br>', $validator->errors()->all()), "status" => 404]);
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
         DB::beginTransaction();
@@ -129,7 +129,7 @@ class BAFormationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return redirect()->back()->with(["error" => implode('<br>', $validator->errors()->all()), "status" => 404]);
         }
 
         DB::beginTransaction();
