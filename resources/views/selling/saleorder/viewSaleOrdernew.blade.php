@@ -80,8 +80,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 <h2 class="subHeadingLabelClass">Sale Order</h2>
                                                 <br>
                                                 <p>Document # {{$sale_order->so_no}}</p>
-                                                <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($sale_order->so_date)->format('Y-M-d') }}
-</p>
+                                                <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($sale_order->so_date)->format('Y-M-d') }}</p>
                                                 <br>
                                                 @if ($buyer_detail->display_pending_payment_invoice == 1)
                                                 @endif
@@ -89,7 +88,7 @@ input.form-control.form-control2{margin:0!important;}
                                                     <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:56% !important;margin: 5px 0px;float:right;">
                                                         <tbody>
                                                             <tr>
-                                                                <td style="border:1px solid #000 !important;border-right:none !important;padding: 5px 8px !important;">Amount Limited</td>
+                                                                <td style="border:1px solid #000 !important;border-right:none !important;padding: 5px 8px !important;">Amount Limit</td>
                                                                 <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;padding: 5px 8px !important;">
                                                                     {{ number_format($sale_order->credit_limit, 0)  }}
                                                                 </td>
