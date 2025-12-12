@@ -127,6 +127,7 @@ $("#data-table").DataTable({
     paging: true,
     info: false,
     autoWidth: false, // prevent DataTables from auto-calculating width
+    order: [[0, "desc"]]
 });
 
 document.addEventListener("keydown", function(e) {
