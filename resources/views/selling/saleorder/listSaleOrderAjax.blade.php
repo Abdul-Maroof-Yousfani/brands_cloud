@@ -25,7 +25,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                 <th style="width: 100px !important;" class="text-center sorting_asc">Order Date</th>
                 <th  style="width: 82px !important;" class="text-center ">Amount</th>
                 <th   style="width: 92px !important;" class="text-center ">Status</th>
-                <th style=" width:180px !important;" class="text-center ">Note</th>
+                <th style=" width:130px !important;" class="text-center ">Note</th>
                 <th   style=" width:10px !important;" class="text-center ">Action</th>
             </tr>
         </thead>
