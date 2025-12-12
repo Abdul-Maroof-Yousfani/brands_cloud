@@ -98,19 +98,19 @@ input.form-control.form-control2{margin:0!important;}
                                                             <tr>
                                                                 <td>Amount Limited</td>
                                                                 <td style="text-align: right;">
-                                                                    {{ $sale_order->credit_limit }}
+                                                                    {{ number_format($sale_order->credit_limit, 0)  }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Balance Amount</td>
                                                                 <td style="text-align: right;">
-                                                                    {{ $sale_order->balance_amount }}
+                                                                    {{ number_format($sale_order->balance_amount, 0)  }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Current Balance Due</td>
                                                                 <td style="text-align: right;">
-                                                                    {{ $sale_order->current_balance_due }}
+                                                                    {{ number_format($sale_order->current_balance_due, 0)  }}
                                                                 </td>
                                                             </tr>
                                                         </tbody>
