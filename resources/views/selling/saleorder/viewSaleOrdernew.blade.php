@@ -60,17 +60,17 @@ input.form-control.form-control2{margin:0!important;}
                                                 <h2 class="subHeadingLabelClass">Brands Unlimited (Pvt) Ltd</h2>
                                                 <p>301-305, 3rd Floor, Kavish Crown Plaza
                                                     Sharah-e-Faisal, karachi.</p>
-                                                <p>Strn #: 3277876156235</p>
+                                                <p>S.T.R.N #: 3277876156235</p>
                                                 <p>N.T.N #:5098058-8 </p>
-                                                <p>Bill To:</p>
                                                 <br>
-                                                <p>
+                                                <p style="margin-top:-13px;">Bill To:</p>
+                                                <br>
+                                                <p style="margin-top:-12px;">
                                                     <strong>{{$buyer_detail->name}}</strong><br>
                                                     {{$buyer_detail->address}}<br>
                                                     {{ CommonHelper::get_all_country_by_id($buyer_detail->country)->name ?? '-'}}<br>
                                                     {{$buyer_detail->phone_1}}<br>
-                                                    N.T.N #:
-                                                    {{isset($buyer_detail->cnic_ntn) ? $buyer_detail->cnic_ntn : "-" }}
+                                                    N.T.N #:{{isset($buyer_detail->cnic_ntn) ? $buyer_detail->cnic_ntn : "-" }}<br>
                                                     S.T #: {{isset($buyer_detail->strn) ? $buyer_detail->strn : "-"}}
                                                 </p>
                                               
@@ -82,28 +82,28 @@ input.form-control.form-control2{margin:0!important;}
                                                 <h2 class="subHeadingLabelClass">Sale Order</h2>
                                                 <br>
                                                 <p>Document # {{$sale_order->so_no}}</p>
-                                                <p>Date: {{$sale_order->so_date}}</p>
+                                                <p style="margin-bottom: -23px !important;">Date: {{$sale_order->so_date}}</p>
                                                 <br>
                                                 @if ($buyer_detail->display_pending_payment_invoice == 1)
                                                 @endif
                                                 <div class="table-responsive">
-                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:56% !important;float:right;">
+                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:56% !important;margin: 5px 0px;float:right;">
                                                         <tbody>
                                                             <tr>
-                                                                <td style="border:1px solid #000 !important;border-right:none !important;">Amount Limited</td>
-                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
+                                                                <td style="border:1px solid #000 !important;border-right:none !important;padding: 5px 8px !important;">Amount Limited</td>
+                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;padding: 5px 8px !important;">
                                                                     {{ number_format($sale_order->credit_limit, 0)  }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td style="border:1px solid #000 !important;border-right:none !important;">Balance Amount</td>
-                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
+                                                                <td style="border:1px solid #000 !important;border-right:none !important;padding: 5px 8px !important;">Balance Amount</td>
+                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;padding: 5px 8px !important;">
                                                                     {{ number_format($sale_order->balance_amount, 0)  }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td style="border:1px solid #000 !important;border-right:none !important;">Current Balance Due</td>
-                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
+                                                                <td style="border:1px solid #000 !important;border-right:none !important;padding: 5px 8px !important;">Current Balance Due</td>
+                                                                <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;padding: 5px 8px !important;">
                                                                     {{ number_format($sale_order->current_balance_due, 0)  }}
                                                                 </td>
                                                             </tr>
@@ -114,7 +114,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 $buyers_warehouse_name = null;
                                                 @endphp
                                                 <div class="row">
-                                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
                                                         <div class="term">
                                                             <p>SO Date: {{$sale_order->so_date}}</p>
                                                              @php
@@ -130,7 +130,7 @@ input.form-control.form-control2{margin:0!important;}
                                                             <p>Salesperson Mobile #</p>
                                                         </div>
                                                     </div>
-                                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                                         <div class="term">
                                                             <p>SO #: {{$sale_order->so_no}}</p>
                                                             <p>GDN #:</p>
