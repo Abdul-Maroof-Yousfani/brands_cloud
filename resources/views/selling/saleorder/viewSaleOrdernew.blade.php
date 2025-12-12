@@ -18,12 +18,8 @@ input.form-control.form-control2{margin:0!important;}
 .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
 .totlass h2{font-size:13px !important;}
 .vomp{text-align:left;}
+.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
 
-
-.userlittab > thead > tr > td, .userlittab > tbody > tr > td, .userlittab > tfoot > tr > td {
-    font-weight: 300 !important;
-
-}
 </style>
 
 <div class="row">
@@ -151,13 +147,13 @@ input.form-control.form-control2{margin:0!important;}
                                                 <table class="table sale_older_tab userlittab table table-bordered sf-table-list sale-list">
                                                     <thead>
                                                         <tr>
-                                                            <th style="background: #000 !important; color:#fff !important;text-align: center !important;">S.No</th>
-                                                            <th style="background: #000 !important; color:#fff !important;width: 20% !important;">Product</th>
+                                                            <th style="background: #000 !important; color:#fff !important;text-align: center !important;width: 10px !important;">S.No</th>
+                                                            <th style="background: #000 !important; color:#fff !important;width: 27% !important;">Product</th>
                                                             {{--   <th style="background: #000 !important; color:#fff !important;">Item & Description</th>--}}
                                                             <th style="background: #000 !important; color:#fff !important;    text-align: center !important;">Barcode</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Qty</th>
-                                                            
-                                                            <th style="background: #000 !important; color:#fff !important;">FOC</th>
+<!--                                                             
+                                                            <th style="background: #000 !important; color:#fff !important;">FOC</th> -->
                                                             <th style="background: #000 !important; color:#fff !important;">MRP</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Rate</th>
                                                             <th style="background: #000 !important; color:#fff !important;">Gross Amount</th>
@@ -190,18 +186,18 @@ input.form-control.form-control2{margin:0!important;}
                                                             </td>
 
                                                             <td style="width: 20%;"  >
-                                                                ({{$productid ?? ""}})-{{$product ?? "----"}}
+                                                                <strong> ({{$productid ?? ""}})-{{$product ?? "----"}}</strong>
                                                             </td>
                                                             <td  style="text-align: center !important;" class="wsale2">
-                                                                <p> <strong> {{$productbarcode ?? "--"}}</strong></p>
+                                                                <p> {{$productbarcode ?? "--"}}</p>
                                                             </td>
                                                             <td  style="text-align: center !important;" class="wsale2">
                                                                 <p>{{number_format($sale_order_item->qty)}}</p>
                                                             </td>
                                                             
-                                                            <td  style="text-align: center !important;">
+                                                            <!-- <td  style="text-align: center !important;">
                                                                 {{number_format($sale_order_item->foc)}}
-                                                            </td>
+                                                            </td> -->
                                                             <td style="text-align: center !important;">
                                                                 {{number_format($sale_order_item->mrp_price)}}</td>
                                                             <td  style="text-align: center !important;">
@@ -228,11 +224,10 @@ input.form-control.form-control2{margin:0!important;}
                                                         </tr>
                                                         @endforeach
                                                         <tr>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;font-size:13px!important;font-weight:400!important;">Sub Total</th>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id=""></p></th>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id=""></p></th>
+                                                            <th colspan="2" style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;font-size:13px!important;font-weight:400!important;">Sub Total</th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_qty">{{$sale_order->total_qty}}</p></th>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"text-align: center !important;><p style="text-align: center !important;" id="total-fac">{{ number_format($total_foc,2) }}</p></th>
+                                                            <!-- <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"text-align: center !important;><p style="text-align: center !important;" id="total-fac">{{ number_format($total_foc,2) }}</p></th> -->
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p id="total_gross_amount">{{number_format( $sale_order->total_amount,2) }}</p></th>
@@ -556,8 +551,11 @@ input.form-control.form-control2{margin:0!important;}
                 .totlas p{font-weight:bold !important;}
                 .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
                 .psds p{font-weight:bold !important;}
-                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;}
                 .totlass h2{font-size:13px !important;}
+
+
+                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;width:68%;float:left;}
+
                 .col-lg-6{width:50% !important;}
                 .col-lg-12{width:100% !important;}
                 .col-lg-4{width:33.33333333% !important;}
