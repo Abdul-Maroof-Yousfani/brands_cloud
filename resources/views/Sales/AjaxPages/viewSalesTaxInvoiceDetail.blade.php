@@ -219,26 +219,26 @@ table.table-bordered>tbody>tr>td{border:none !important;border-bottom:1px solid 
                                 <h2 class="subHeadingLabelClass">Sale Invoice</h2>
                                 <p>Document # {{ $sales_tax_invoice->gi_no }}</p>
                                 <!-- <p>Doc #: 27903</p> -->
-                                <p>Date: {{ $sales_tax_invoice->gi_date }}</p>
+                                <p>Date: {{ \Carbon\Carbon::parse($sales_tax_invoice->gi_date )->format('Y-M-d') }}</p>
                                 <div class="table-responsive">
                                     <table class="sale-list userlittab table table-bordered sf-table-list" style="border: 1px solid #000;width:68% !important;float:right;">
                                         <tbody>
                                             <tr>
                                                 <td>Amount Limited</td>
                                                 <td style="text-align: right;">
-                                                    {{ $sale_order->credit_limit ?? "N/A" }}
+                                                    {{ number_format($sale_order->credit_limit, 0)  }}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Balance Amount</td>
                                                 <td style="text-align: right;">
-                                                    {{ $sale_order->balance_amount ?? "N/A" }}
+                                                    {{ number_format($sale_order->balance_amount, 0)  }}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Current Balance Due</td>
                                                 <td style="text-align: right;">
-                                                    {{ number_format($total_amount_after_tax, 2) }}
+                                                    {{ number_format($sale_order->current_balance_due, 0)  }}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -398,14 +398,14 @@ table.table-bordered>tbody>tr>td{border:none !important;border-bottom:1px solid 
                                             @endif
                                             <tr>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;font-size:13px!important;font-weight:400!important;" colspan="3">Sub Total</th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;">{{ number_format($total_qty, 2) }}</th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;">{{ number_format($total_qty, 0) }}</th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"  colspan="2"></th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;">{{ number_format($total_before_tax, 2) }}</p> </th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;">{{ number_format($total_discount_amount, 2) }}</th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;">{{number_format( round($total_discount_amount),0) }}</th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"> </th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"> <p style="text-align: center !important;">{{ number_format($total_tax, 2) }}</p></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"> <p style="text-align: center !important;">{{ number_format($total_amount_after_tax, 2) }}</p> </th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"> <p style="text-align: center !important;">{{ number_format(round($total_tax),0) }}</p></th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"> <p style="text-align: center !important;">{{number_format( round($total_amount_after_tax),0) }}</p> </th>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -501,7 +501,7 @@ table.table-bordered>tbody>tr>td{border:none !important;border-bottom:1px solid 
                             <div class="psds">
                                 {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id) }}
                                 <p id="sale_taxes_amount_rate"style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">
-                                    {{ $sale_order->sale_taxes_amount_rate }}</p>
+                                    {{number_format(round( $sale_order->sale_taxes_amount_rate ),0)}}</p>
                             </div>
                             <div class="totlas">
                                 <p>Total</p>
