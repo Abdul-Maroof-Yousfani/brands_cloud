@@ -78,7 +78,8 @@ input.form-control.form-control2{margin:0!important;}
                                                 <h2 class="subHeadingLabelClass">Sale Order</h2>
                                                 <br>
                                                 <p>Document # {{$sale_order->so_no}}</p>
-                                                <p style="margin-bottom: -23px !important;">Date: {{$sale_order->so_date}}</p>
+                                                <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($sale_order->so_date)->format('Y-M-d') }}
+</p>
                                                 <br>
                                                 @if ($buyer_detail->display_pending_payment_invoice == 1)
                                                 @endif
