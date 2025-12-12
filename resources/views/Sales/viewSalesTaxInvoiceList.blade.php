@@ -94,7 +94,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <th  style="width: 75px;"class="text-center">SI Status</th>
                                                     <th class="text-center">Status</th>
 
-                                                    <th class="text-center">Action</th>
+                                                    <th style="width: 60px;" class="text-center">Action</th>
 
                                                     {{-- <th class="text-center">Delete</th> --}}
                                                 </thead>
@@ -237,43 +237,42 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     
 
                                                 </tbody>
-                                                <tfoot>
+                                                <tbody>
                                                     <tr>
-                                                        <td class="text-center" colspan="10" style="font-size: 20px;">
+                                                        <td class="text-center" colspan="10" style="font-size: 13px;">
                                                             Total
                                                         </td>
-                                                        <td class="text-right" colspan="1"
-                                                            style="font-size: 20px;color: white">
+                                                        <td class="text-right" colspan="1" style="font-size:13px;color:#333;">
                                                             {{ number_format($total, 2) }}
                                                         </td>
-                                                        <td class="text-center" colspan="2" style="font-size: 20px;">
+                                                        <td class="text-center" colspan="2" style="font-size: 13px;">
                                                         </td>
 
                                                     </tr>
                                                     <tr>
                                                         <td colspan="10"></td>
-                                                        <td colspan="1" style="font-size: 18px;"><strong>Open</strong>
+                                                        <td colspan="1" style="font-size: 13px;"><strong>Open</strong>
                                                         </td>
-                                                        <td style="font-size: 18px;"><strong><?php echo $open; ?></strong>
+                                                        <td style="font-size: 13px;"><strong><?php echo $open; ?></strong>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="10"></td>
-                                                        <td colspan="1" style="font-size: 18px;">
+                                                        <td colspan="1" style="font-size: 13px;">
                                                             <strong>Partial</strong>
                                                         </td>
-                                                        <td style="font-size: 18px;"><strong><?php echo $parttial; ?></strong>
+                                                        <td style="font-size: 13px;"><strong><?php echo $parttial; ?></strong>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="10"></td>
-                                                        <td colspan="1" style="font-size: 18px;">
+                                                        <td colspan="1" style="font-size: 13px;">
                                                             <strong>Complete</strong>
                                                         </td>
-                                                        <td style="font-size: 18px;"><strong><?php echo $complete; ?></strong>
+                                                        <td style="font-size: 13px;"><strong><?php echo $complete; ?></strong>
                                                         </td>
                                                     </tr>
-                                                </tfoot>
+                                                </tbody>
                                             </table>
                                         </div>
                                     </div>
