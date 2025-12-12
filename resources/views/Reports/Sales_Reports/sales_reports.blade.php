@@ -21,8 +21,8 @@ use App\Helpers\SaleHelper;
 
 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="well_N">
-        <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Sale Report</h1>
         <div class="dp_sdw">
+            <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Sale Report</h1>
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
                 <?php echo CommonHelper::displayPrintButtonInBlade('printDemandVoucherList','','1');?>
                 <?php if(true):?>
