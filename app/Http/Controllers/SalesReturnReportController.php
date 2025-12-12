@@ -41,6 +41,7 @@ class SalesReturnReportController extends Controller
                     "credit_note_data.voucher_no", 
                     "subitem.product_name", 
                     "subitem.product_barcode", 
+                    'subitem.purchase_price AS cogs',
                     DB::raw("SUM(credit_note_data.qty) as qty"), 
                     DB::raw("SUM(credit_note_data.amount) as amount"),
                     DB::raw("SUM(credit_note_data.net_amount) as net_amount"),
