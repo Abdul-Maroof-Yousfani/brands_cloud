@@ -105,7 +105,11 @@ use App\Helpers\SaleHelper;
                                 <input type="text" name="to" class="form-control" id="so">
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    
+                </div>
+                    <div class="row">
+
+<div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label">Brands</label>
                             <select class="form-control select2" id="brand_id">
@@ -116,10 +120,6 @@ use App\Helpers\SaleHelper;
                             </select>
                         </div>
                     </div>
-                </div>
-                    <div class="row">
-
-
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Customers</label>
