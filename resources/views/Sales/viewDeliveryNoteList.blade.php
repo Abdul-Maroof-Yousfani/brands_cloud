@@ -217,8 +217,8 @@ div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
                                                   
                                                     <td class="text-center">
                                                         
-                                                    <?php echo $sales_order->timestamp ? \Carbon\Carbon::parse($row->timestamp)->format("d-M-Y") : "";?> <br>
-                                                <?php echo $sales_order->timestamp ? \Carbon\Carbon::parse($row->timestamp)->format("h:i:s A") : "";?> 
+                                                    <?php echo $sales_order->timestamp ? \Carbon\Carbon::parse($sales_order->timestamp)->format("d-M-Y") : "";?> <br>
+                                                <?php echo $sales_order->timestamp ? \Carbon\Carbon::parse($sales_order->timestamp)->format("h:i:s A") : "";?> 
                                                 
                                                 </td>
 
