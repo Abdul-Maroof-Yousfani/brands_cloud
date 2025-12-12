@@ -262,7 +262,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 </div>
                                                 <div class="totlas">
                                                     <p>Total</p>
-                                                    <p>{{ $sale_order->total_amount_after_sale_tax + $sale_order->sale_taxes_amount_rate }}</p>
+                                                    <p>{{ number_format($sale_order->total_amount_after_sale_tax + $sale_order->sale_taxes_amount_rate) }}</p>
                                                 </div>
                                             </div>
                                         </div>
