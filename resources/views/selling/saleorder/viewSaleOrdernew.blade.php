@@ -265,8 +265,8 @@ input.form-control.form-control2{margin:0!important;}
                                                     <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{number_format(round($sale_order->sale_taxes_amount_rate),0)}}</p>
                                                 </div>
                                                 <div class="totlas">
-                                                    <p>Total</p>
-                                                    <p>{{ number_format($sale_order->total_amount_after_sale_tax + $sale_order->sale_taxes_amount_rate) }}</p>
+                                                    <p><strong>Total</strong></p>
+                                                    <p><strong>{{ number_format($sale_order->total_amount_after_sale_tax + $sale_order->sale_taxes_amount_rate) }}</strong></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -292,8 +292,8 @@ input.form-control.form-control2{margin:0!important;}
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
                                     <div class="row">
                                         <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
-                                            <p><strong>{{$sale_order->username}}</strong> </p>
                                             <p><strong>Prepared By</strong> </p>
+                                            <p><strong>{{$sale_order->username}}</strong> </p>
                                         </div>
 
                                         <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">

@@ -86,9 +86,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     {{-- <a class="btn btn-sm btn-success" href="{{route('viewSaleOrder', $sale_order->id)}}" target="_blank">
                                                     <i class="fa fa-eye" aria-hidden="true"></i> View
                                                 </a> --}}
-                                                    <a class="btn btn-xs btn-success"
-                                                        onclick="showDetailModelOneParamerter('selling/viewSaleOrderPrint/{{ $sale_order->id }}',{{ $sale_order->id }},'View Sale Order ')"
-                                                        target="_blank">
+                                                    <a class="btn btn-xs btn-success" onclick="showDetailModelOneParamerter('selling/viewSaleOrderPrint/{{ $sale_order->id }}',{{ $sale_order->id }},'View Sale Order ')" target="_blank">
                                                         <i class="fa fa-eye" aria-hidden="true"></i> View
                                                     </a>
                                                     {{-- <a class="btn btn-sm btn-infoo" href="{{route('saleOrderSectionA', $sale_order->id)}}" target="_blank">
