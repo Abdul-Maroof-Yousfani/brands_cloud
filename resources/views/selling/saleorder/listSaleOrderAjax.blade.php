@@ -5,13 +5,17 @@
 .table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 4px !important;background:#ddd;}
 table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
 /* th.userlittab.text-center.col-sm-1.sorting_asc{width:33px !important;} */
- 
+ .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{width:0px !important;height:0px;}
+
+
+
  </style>
  <div class="table-responsive">
      <table class="userlittab table table-bordered sf-table-list" id="data-table">
         <thead>
             <tr>
-                 <th style="width:50px !important; text-align:center;" class="text-center sorting_asc">So No</th>
+                 <th style="width:20px !important; text-align:center;" class="text-center sorting_asc">So No</th>
                 <th  style="width: 80px !important;" class="text-center sorting_asc">Order No</th>
                 <th  class="text-center ">Customer Name</th>
                 <th  class="text-center sorting_asc">Order Date</th>
@@ -30,7 +34,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                      <tr>
                          <td style="width:50px !important; text-align:center;" class="text-center">{{ $counter++ }}</td>
                          <td class="text-center">{{ $sale_order->so_no }}</td>
-                         <td>{{ $sale_order->name }}</td>
+                         <td><strong>{{ $sale_order->name }}</strong></td>
                          <!-- <td class="text-center">{{ \Carbon\Carbon::parse($sale_order->so_date)->format('d-M-Y') }}
                          </td> -->
                         <!-- <td class="text-center">
@@ -47,7 +51,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                         </td>
     
     
-                                            <td class="text-left-amount">
+                        <td class="text-left-amount">
                             {{ number_format($sale_order->sale_taxes_amount_total, 0) }}
                         </td>
     
@@ -120,7 +124,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
 $("#data-table").DataTable({
     ordering: true,
     searching: true,
-    paging: false,
+    paging: true,
     info: false,
     autoWidth: false, // prevent DataTables from auto-calculating width
 });

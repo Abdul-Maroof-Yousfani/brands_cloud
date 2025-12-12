@@ -21,13 +21,7 @@ input.form-control.form-control2{margin:0!important;}
 
 
 .userlittab > thead > tr > td, .userlittab > tbody > tr > td, .userlittab > tfoot > tr > td {
-    padding: 10px 15px;
-    vertical-align: middle;
-    font-size: 14px;
-    color: #000;
-    font-family: "erp-regular";
-    font-style: normal;
-    font-weight: 400 !important;
+    font-weight: 300 !important;
 
 }
 </style>
