@@ -234,12 +234,12 @@ input.form-control.form-control2{margin:0!important;}
                                                             <!-- <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"text-align: center !important;><p style="text-align: center !important;" id="total-fac">{{ number_format($total_foc,2) }}</p></th> -->
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p id="total_gross_amount">{{number_format( $sale_order->total_amount,2) }}</p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p id="total_gross_amount">{{number_format( round($sale_order->total_amount),0) }}</p></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"><p></p></th>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p  style="text-align: center !important;" id="disc">{{ number_format($total_discount_amount,2) }}</p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important; text-align: center !important;"><p  style="text-align: center !important;" id="disc">{{ number_format(round($total_discount_amount),0) }}</p></th>
                                                             <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;"></th>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_sales_tax">{{ number_format($sale_order->sales_tax_rate,2) }}</p></th>
-                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_amount_after_sale_tax">{{ number_format($sale_order->total_amount_after_sale_tax,2) }}</p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_sales_tax">{{ number_format(round($sale_order->sales_tax_rate),0) }}</p></th>
+                                                            <th style="background: transparent; border-bottom: 1px solid #000 !important;  padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p id="total_amount_after_sale_tax">{{ number_format(round($sale_order->total_amount_after_sale_tax),0) }}</p></th>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -261,7 +261,7 @@ input.form-control.form-control2{margin:0!important;}
                                             <div class="totals3">
                                                 <div class="psds">
                                                     {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}
-                                                    <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{$sale_order->sale_taxes_amount_rate}}</p>
+                                                    <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{round($sale_order->sale_taxes_amount_rate)}}</p>
                                                 </div>
                                                 <div class="totlas">
                                                     <p>Total</p>
