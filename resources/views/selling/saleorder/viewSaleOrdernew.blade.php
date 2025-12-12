@@ -208,6 +208,7 @@ input.form-control.form-control2{margin:0!important;}
                                                                 {{number_format($sale_order_item->discount_percent_1,0)}}
 
                                                             </td>
+                                                            
                                                             <td style="text-align: center !important;">
                                                             {{ number_format(round($sale_order_item->discount_amount_1)) }}
 
