@@ -2,8 +2,6 @@
     <tr>
         <td class="text-center">{{ $data->product_name }}</td>
         <td>{{ $data->name }}</td>
-        <td>{{ $data->main_ic }}</td>
-        <td>{{ $data->main_ic }}</td>
         <td class="text-center">{{ $data->sku_code }}</td>
         <td class="text-center">{{ $data->product_barcode }}</td>
         <td class="text-center"></td>
