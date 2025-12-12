@@ -52,6 +52,7 @@ use App\Helpers\SaleHelper;
                 </div>
                 <div class="col-md-2">&nbsp;</div>
                 <div class="col-md-2">&nbsp;</div>
+                <div class="col-md-2">&nbsp;</div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Brands</label>
