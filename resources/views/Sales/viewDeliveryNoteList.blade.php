@@ -523,17 +523,6 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
 
 </script>
 <script>
-//   $(document).ready(function() {
-//     $('#EmpExitInterviewList').DataTable({
-//         paging: false,       // off
-//         ordering: true,     // off
-//         info: false,         // off (showing X of Y)
-//         lengthChange: false, // off (page length dropdown)
-//         autoWidth: false,
-//         searching: true      // only searching ON
-//     });
-// });
-
 $("#EmpExitInterviewList").DataTable({
     ordering: true,
     searching: true,
@@ -542,7 +531,66 @@ $("#EmpExitInterviewList").DataTable({
     autoWidth: false, // prevent DataTables from auto-calculating width
 });
 
-
-
 </script>
+    <script>
+    function printView(divId) {
+        var element = document.getElementById(divId);
+        if (!element) {
+            alert("Element with ID '" + divId + "' not found!");
+            return;
+        }
+
+        var content = element.innerHTML;
+        var mywindow = window.open('', 'PRINT', 'height=800,width=1200');
+
+        mywindow.document.write('<html><head><title>Print</title>');
+
+        // ✅ Bootstrap CSS include
+        mywindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">');
+
+
+        mywindow.document.write(`
+            <style>
+                @page{size:A4;margin:1em;}
+                .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
+                .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
+                .table-responsive{height:inherit !important;}
+                .sales_or{position:relative !important;height:100% !important;}
+                .sgnature{position:absolute !important;bottom:0px !important;}
+                p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
+                .mt-top{margin-top:-72px !important;}
+                .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
+                .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
+                input.form-control.form-control2{margin:0 !important;}
+                .totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
+                .totlas p{font-weight:bold !important;}
+                .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
+                .psds p{font-weight:bold !important;}
+                .totlass h2{font-size:13px !important;}
+
+
+                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;width:68%;float:left;}
+
+                .col-lg-6{width:50% !important;}
+                .col-lg-12{width:100% !important;}
+                .col-lg-4{width:33.33333333% !important;}
+            </style>
+        `);
+        mywindow.document.write('</head><body>');
+        mywindow.document.write(content);
+        mywindow.document.write('</body></html>');
+        mywindow.document.close();
+        mywindow.focus();
+        mywindow.print();
+    }
+
+    document.addEventListener("keydown", function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
+        e.preventDefault();   // Stop default Print
+        e.stopPropagation();  // Stop bubbling
+        printView("printReport");  // Apna DIV ID yahan likho
+    }
+}, true);  // <-- CAPTURE MODE ENABLED (very important)
+</script>
+
 @endsection
