@@ -165,7 +165,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000 !important;width:58% !important;float:right;">
                                         <tbody>
                                             <tr>
-                                                <td  style="border:1px solid #000 !important;border-right:none !important;">Amount Limited</td>
+                                                <td  style="border:1px solid #000 !important;border-right:none !important;">Account Limit</td>
                                                 <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
                                                     {{ $sale_order->credit_limit }}
                                                 </td>
