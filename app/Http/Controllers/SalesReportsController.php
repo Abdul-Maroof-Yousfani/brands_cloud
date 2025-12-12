@@ -29,6 +29,7 @@ class SalesReportsController extends Controller
                     "brands.name", 
                     "subitem.product_barcode", 
                     "subitem.purchase_price as cogs",
+                    "subitem.group_id",
                     DB::raw("SUM(sales_order_data.qty) as qty"), 
                     DB::raw("SUM(sales_order_data.sub_total) as sub_total"),
                     DB::raw("SUM(sales_order_data.discount_amount_2) as discount_amount_2"),
