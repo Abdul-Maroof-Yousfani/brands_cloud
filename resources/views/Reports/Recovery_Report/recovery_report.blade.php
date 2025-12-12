@@ -52,7 +52,7 @@ use App\Helpers\SaleHelper;
                 </div>
                 <div class="col-md-2">&nbsp;</div>
                 <div class="col-md-2">&nbsp;</div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Brands</label>
                         <select name="brand_id[]" id="brand_id" class="form-control select2">
@@ -63,7 +63,7 @@ use App\Helpers\SaleHelper;
                         </select>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Warehouses</label>
                         <select name="warehouse_id[]" id="warehouse_id" class="form-control select2">
@@ -74,7 +74,7 @@ use App\Helpers\SaleHelper;
                         </select>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">SI No</label>
                         <div class="input-group">
