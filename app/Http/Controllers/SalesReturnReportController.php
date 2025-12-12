@@ -21,12 +21,15 @@ class SalesReturnReportController extends Controller
             }
             $so_id = $sales_order ? $sales_order->id : "~";
             $sales_report_data = DB::connection("mysql2")->table("credit_note_data")
-                ->leftJoin("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
-                ->leftJoin("subitem", "subitem.id", "=", "credit_note_data.item")
-                ->leftJoin("category", "category.id", "=", "subitem.main_ic_id")
-                ->leftJoin("brands", "subitem.brand_id", "=","brands.id")
+                ->join("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
+                ->join("subitem", "subitem.id", "=", "credit_note_data.item")
+                ->join("category", "category.id", "=", "subitem.main_ic_id")
+                ->join("brands", "subitem.brand_id", "=","brands.id")
                 ->when($so, function ($q) use ($so_id) {
                     $q->where("credit_note.so_id", "like", "%{$so_id}%");
+                })
+                ->when(isset($request->from) && isset($request->to), function($query) {
+                    $query->whereBetween("credit_note.create_date", [$request->from, $request->to])
                 })
                 // ->whereBetween("credit_note_data.date", [$request->from, $request->to])
                 ->groupBy("subitem.product_barcode")
