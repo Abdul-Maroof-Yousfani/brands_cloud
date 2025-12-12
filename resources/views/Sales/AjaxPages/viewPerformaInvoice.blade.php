@@ -160,26 +160,26 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <div class="contr2">
                                 <h2 class="subHeadingLabelClass">Sale Invoice-P</h2>
                                 <p>Document # {{$delivery_note->so_no}}</p>
-                                <p>Date: {{$delivery_note->so_date}}</p>
+                                <p>Date: {{ \Carbon\Carbon::parse($delivery_note->so_date)->format('Y-M-d') }}</p>
                                 <div class="table-responsive2">
                                 <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000 !important;width:58% !important;float:right;">
                                         <tbody>
                                             <tr>
                                                 <td  style="border:1px solid #000 !important;border-right:none !important;">Account Limit</td>
                                                 <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
-                                                    {{ $sale_order->credit_limit }}
+                                                    {{ number_format($sale_order->credit_limit, 0)  }}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td  style="border:1px solid #000 !important;border-right:none !important;">Balance Amount</td>
                                                 <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
-                                                    {{ $sale_order->balance_amount }}
+                                                   {{ number_format($sale_order->balance_amount, 0)  }}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td  style="border:1px solid #000 !important;border-right:none !important;">Current Balance Due</td>
                                                 <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;">
-                                                    {{ number_format($total_amount_after_tax, 2) }}
+                                                      {{ number_format($sale_order->current_balance_due, 0)  }}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -276,7 +276,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                                 <td style="text-align: center !important;">{{number_format($saleOrderDetail->sub_total,0)}}</td>
                                                 <td style="text-align: center !important;">{{number_format($saleOrderDetail->discount_percent_1,0)}}%</td>
                                                 <td style="text-align: center !important;">{{number_format($saleOrderDetail->discount_amount_1,0)}}</td>
-                                                <td  style="text-align: center !important;">{{number_format($sale_order_item->tax)}}%</td>
+                                                <td  style="text-align: center !important;">{{number_format($sale_order_item->tax)}}</td>
                                                 <td  style="text-align: center !important;">{{number_format($sale_order_item->tax_amount,0)}}</td>
                                                 <td style="text-align: center !important;">{{number_format($saleOrderDetail->amount,0)}}</td>
                                             </tr>
@@ -288,12 +288,12 @@ foreach ($delivery_note_data as $sale_order_item) {
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
 
-                                              <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format($total_gross_amount, 0) }}</p></th>
+                                              <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{number_format( round($total_gross_amount),0) }}</p></th>
                                               <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
-                                              <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format($total_discount_amount, 0) }}</p></th>
+                                              <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_discount_amount), 0) }}</p></th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format($total_tax, 0) }}</p></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format($total_amount_after_tax, 0) }}</p></th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_tax),0) }}</p></th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_amount_after_tax),0) }}</p></th>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -352,7 +352,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                     <div class="totals3">
                                         <div class="psds">
                                             <strong>{{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}</strong>
-                                            <strong><p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{$sale_order->sale_taxes_amount_rate}}</p></strong>
+                                            <strong><p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{number_format(round($sale_order->sale_taxes_amount_rate),0)}}</p></strong>
                                         </div>
                                         <div class="totlas">
                                             <strong><p>Total</p></strong>
