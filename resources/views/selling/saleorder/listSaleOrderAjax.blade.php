@@ -133,7 +133,7 @@ document.addEventListener("keydown", function(e) {
 if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
     e.preventDefault();   // Stop default Print
     e.stopPropagation();  // Stop bubbling
-    printView("printDiv");  // Apna DIV ID yahan likho
+    printView("data-table");  // Apna DIV ID yahan likho
 }
 }, true);  // <-- CAPTURE MODE ENABLED (very important)
  </script>
