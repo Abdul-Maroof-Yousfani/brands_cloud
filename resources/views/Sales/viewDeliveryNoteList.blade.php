@@ -232,7 +232,7 @@ div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
                                                     <!-- <td>{{$status}}</td> -->
                                                     <td>{{$approvalStatus}}</td>
                                                     <!-- <td class="text-center"><?php echo $row->username?></td> -->
-                                                     <td  class="text-center">
+                                                     <td  style="text-align:left;"  class="text-center">
                                                         {{ !empty($sales_order->remark) ? $sales_order->remark : '-' }}
                                                     </td>
 

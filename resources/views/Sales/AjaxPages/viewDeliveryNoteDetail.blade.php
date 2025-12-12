@@ -146,7 +146,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <p>Date: {{$delivery_note->so_date}}</p>
                             <br>
                             <div class="table-responsive2">
-                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000 !important;width:68% !important;float:right;">
+                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000 !important;width:58% !important;float:right;">
                                     <tbody>
                                         <tr>
                                             <td style="border:1px solid #000 !important;border-right:none !important;">Amount Limited</td>
@@ -717,4 +717,12 @@ function checkk() {
         mywindow.focus();
         mywindow.print();
     }
+      // ✅ Ctrl + P shortcut listener
+        document.addEventListener("keydown", function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
+                e.preventDefault();   // Stop default Print
+                e.stopPropagation();  // Stop bubbling
+                printView("printReport");  // Apna DIV ID yahan likho
+            }
+        }, true);  // <-- CAPTURE MODE ENABLED (very important)
 </script>

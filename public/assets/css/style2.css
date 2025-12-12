@@ -1150,7 +1150,7 @@ input:focus ~ .bg-info{box-shadow:0 0 0 0.075rem #fff,0 0 0 0.21rem #00cfe8 !imp
 .badge.badge-light-warning{background-color:rgba(255,159,67,0.12);color:#ff9f43 !important;}
 .overlay-warning{background:#ff9f43;/* The Fallback */
  background:rgba(255,159,67,0.6);}
-.btn-warning{border-color:#ff9f43 !important;background-color:#ff9f43 !important;color:#fff !important;}
+.btn-warning{border-color:#35915e !important;background-color:#35915e !important;color:#fff !important;}
 .btn-warning:focus,.btn-warning:active,.btn-warning.active{color:#fff;background-color:#ff922a !important;}
 .btn-warning:hover:not(.disabled):not(:disabled){box-shadow:0 8px 25px -8px #ff9f43;}
 .btn-warning:not(:disabled):not(.disabled):active:focus{box-shadow:none;}
