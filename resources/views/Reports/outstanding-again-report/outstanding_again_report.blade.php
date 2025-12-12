@@ -32,7 +32,7 @@ use App\Helpers\SaleHelper;
                 <?php endif;?>
             </div>
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">From Date</label>
                         <div class="input-group">
@@ -41,7 +41,7 @@ use App\Helpers\SaleHelper;
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">To Date</label>
                         <div class="input-group">
@@ -50,7 +50,7 @@ use App\Helpers\SaleHelper;
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Voucher No</label>
                         <div class="input-group">
