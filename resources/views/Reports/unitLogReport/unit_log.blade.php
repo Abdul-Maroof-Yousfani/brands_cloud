@@ -99,6 +99,9 @@ use App\Helpers\SaleHelper;
                             </div>
                         </div>
                     </div>
+                    
+                </div>
+                <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
 
@@ -126,8 +129,6 @@ use App\Helpers\SaleHelper;
                                 </select>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
 
