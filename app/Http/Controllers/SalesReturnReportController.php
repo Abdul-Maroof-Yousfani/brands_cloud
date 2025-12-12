@@ -21,10 +21,10 @@ class SalesReturnReportController extends Controller
             }
             $so_id = $sales_order ? $sales_order->id : "~";
             $sales_report_data = DB::connection("mysql2")->table("credit_note_data")
-                ->join("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
-                ->join("subitem", "subitem.id", "=", "credit_note_data.item")
+                ->leftJoin("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
+                ->leftJoin("subitem", "subitem.id", "=", "credit_note_data.item")
                 ->leftJoin("category", "category.id", "=", "subitem.main_ic_id")
-                ->join("brands", "subitem.brand_id", "=","brands.id")
+                ->leftJoin("brands", "subitem.brand_id", "=","brands.id")
                 ->when($so, function ($q) use ($so_id) {
                     $q->where("credit_note.so_id", "like", "%{$so_id}%");
                 })
