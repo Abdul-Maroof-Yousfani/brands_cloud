@@ -19,6 +19,8 @@ input.form-control.form-control2{margin:0!important;}
 .totlass h2{font-size:13px !important;}
 .vomp{text-align:left;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
+
 
 </style>
 
@@ -275,8 +277,8 @@ input.form-control.form-control2{margin:0!important;}
                                 <div class="row align-items-top">
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                         <div class="totlas totlass">
-                                            <h2>Note</h2>
-                                            <p>{{ $sale_order->remark ?? 'N/A' }}</p>
+                                            <h2><strong>Note:</strong></h2>
+                                            <p><strong>{{ $sale_order->remark ?? 'N/A' }}</strong></p>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>

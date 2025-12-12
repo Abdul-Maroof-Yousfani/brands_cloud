@@ -30,15 +30,24 @@ $AccYearTo = $AccYearDate->accyearto;
     @include('select2')
 
 <style>
+/* 
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 8px !important;background:#ddd;text-align:center;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:inherit;height:0;content:'';right:0.3rem;top:1.3rem;}
+table.dataTable tbody th,table.dataTable tbody td{padding:8px 10px;text-align:center;} */
+
+
+
  .pagination{float:right;}
 .nowrap{white-space:nowrap;}
 .text-right-amount{text-align:right !important;}
-.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 8px !important;background:#ddd;text-align:center;}
-table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:inherit;height:0;content:'';right:0.3rem;top:1.3rem;}
-table.dataTable tbody th,table.dataTable tbody td{padding:8px 10px;text-align:center;}
-.table-responsive{height:600px;}
-.dataTables_wrapper .dataTables_filter{float:left;text-align:left;}
-div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 4px !important;background:#ddd;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
+table.dataTable tbody th,table.dataTable tbody td{padding:8px 4px !important;}
+.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{width:8px !important;height:20px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
+
 
 </style>
 
@@ -133,20 +142,20 @@ div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
                                         <!-- <table class="userlittab table table-bordered sf-table-list dataTable no-footer" id="EmpExitInterviewList"> -->
                                         <table class="userlittab table table-bordered sf-table-list" id="EmpExitInterviewList">
                                             <thead>
-                                            <th style="text-align:center;width: 5px;" class="text-center col-sm-1">S.No</th>
+                                            <th style="text-align:center;width: 50px;" class="text-center col-sm-1">S.No</th>
                                             <th class="text-center col-sm-1">SO Nos</th>
                                             <th class="text-center col-sm-1">DN No</th>
                                             <th class="text-center col-sm-1">DN Date</th>
                                             <!-- <th class="text-center col-sm-1">Order No</th> -->
                                             <th class="text-center col-sm-1">Order Date</th>
                                             <th style="text-align:left; width: 250px;" class="text-center">Customer</th>
-                                            <th style="text-align: center !important;"class="text-center">Qty.</th>
-                                            <th style="text-align: center !important;"class="text-center">Amount</th>
+                                            <th style="text-align: center !important;width: 60px;"class="text-center">Qty.</th>
+                                            <th style="text-align: center !important;width: 80px;"class="text-center">Amount</th>
                                             <!-- <th class="text-center">Document <br>Status</th> -->
                                             <th class="text-center">Status</th>
                                             <!-- <th class="text-center">Username</th> -->
                                             <th class="text-center">Note</th>
-                                            <th  style="text-align:left;" class="text-left">Action</th>
+                                            <th  style="text-align:left;width: 60px;" class="text-left">Action</th>
                                             {{--<th class="text-center">Delete</th>--}}
                                             </thead>
                                             <tbody id="data">
@@ -225,7 +234,7 @@ div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
 
 
                                                    
-                                                    <td style="text-align:left;" class="text-center">{{$customer->name}}</td>
+                                                    <td style="text-align:left;" class="text-center"><strong>{{$customer->name}}</strong></td>
                                                     <td style="text-align: center !important;" class="text-center">{{number_format($data->qty,0)}}</td>
                                                   
                                                     <td   style="text-align: center !important;" class="text-center">{{number_format($data->amount + $row->sales_tax_amount + $sale_taxes_amount_rate, 0)}}</td>
@@ -514,15 +523,26 @@ div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
 
 </script>
 <script>
-  $(document).ready(function() {
-    $('#EmpExitInterviewList').DataTable({
-        paging: false,       // off
-        ordering: true,     // off
-        info: false,         // off (showing X of Y)
-        lengthChange: false, // off (page length dropdown)
-        autoWidth: false,
-        searching: true      // only searching ON
-    });
+//   $(document).ready(function() {
+//     $('#EmpExitInterviewList').DataTable({
+//         paging: false,       // off
+//         ordering: true,     // off
+//         info: false,         // off (showing X of Y)
+//         lengthChange: false, // off (page length dropdown)
+//         autoWidth: false,
+//         searching: true      // only searching ON
+//     });
+// });
+
+$("#EmpExitInterviewList").DataTable({
+    ordering: true,
+    searching: true,
+    paging: true,
+    info: false,
+    autoWidth: false, // prevent DataTables from auto-calculating width
 });
+
+
+
 </script>
 @endsection

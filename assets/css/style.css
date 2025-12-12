@@ -51,6 +51,21 @@ a.cus-a{color:#000;font-size:17px;font-weight:900;padding:0px 0px 0px 32px;}
 .cus-ul h3 span{font-size:10px;}
 .modalWidth2{/* width:75%;*/
 }
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    color: #333 !important;
+    border: 1px solid #428bca!important;
+    background-color: white;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fff), color-stop(100%, #dcdcdc));
+    background: -webkit-linear-gradient(top, #fff 0%, #dcdcdc 100%);
+    background: -moz-linear-gradient(top, #fff 0%, #dcdcdc 100%);
+    background: -ms-linear-gradient(top, #fff 0%, #dcdcdc 100%);
+    background: -o-linear-gradient(top, #fff 0%, #dcdcdc 100%);
+    background: #428bca !important;
+    width: 25px !important;
+    height: 30px!important;
+    line-height: 15px;
+    color: #fff !important;
+}
 .head_flex{display:flex;align-items:center;justify-content:space-between;}
 .table-bordered.profit_Loss_Statement > thead > tr > td,.table-bordered.profit_Loss_Statement > tbody > tr > td,.table-bordered.profit_Loss_Statement > tfoot > tr > td{text-align:left !important;font-weight:bold;color:#000 !important;padding:12px 8px !important;font-size:13px !important;border:none !important;border-bottom:1px solid #ddd !important;}
 .table-bordered.profit_Loss_Statement > thead > tr > th,.table-bordered.profit_Loss_Statement > tbody > tr > th,.table-bordered.profit_Loss_Statement > tfoot > tr > th{border-bottom:1px solid #ffffff !important;padding:7px 0px !important;}

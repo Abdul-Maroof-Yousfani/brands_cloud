@@ -14,11 +14,7 @@ $AccYearDate = DB::table('company')->select('accyearfrom', 'accyearto')->where('
 $AccYearFrom = $AccYearDate->accyearfrom;
 $AccYearTo = $AccYearDate->accyearto;
 ?>
-<style>
-    table.dataTable tbody th, table.dataTable tbody td {
-    padding: 8px 20px !important;
-}
-</style>
+
 
 @extends('layouts.default')
 @section('content')
@@ -289,7 +285,5 @@ $AccYearTo = $AccYearDate->accyearto;
         }
     </script>
 
-    <script>
-        // EmpExitInterviewList
-    </script>
 @endsection
+
