@@ -144,7 +144,8 @@ div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
                                             <th style="text-align: center !important;"class="text-center">Amount</th>
                                             <!-- <th class="text-center">Document <br>Status</th> -->
                                             <th class="text-center">Status</th>
-                                            <th class="text-center">Username</th>
+                                            <!-- <th class="text-center">Username</th> -->
+                                            <th class="text-center">Note</th>
                                             <th  style="text-align:left;" class="text-left">Action</th>
                                             {{--<th class="text-center">Delete</th>--}}
                                             </thead>
@@ -230,7 +231,10 @@ div.dataTables_wrapper div.dataTables_filter input{margin-left:0;}
                                                     <td   style="text-align: center !important;" class="text-center">{{number_format($data->amount + $row->sales_tax_amount + $sale_taxes_amount_rate, 0)}}</td>
                                                     <!-- <td>{{$status}}</td> -->
                                                     <td>{{$approvalStatus}}</td>
-                                                    <td class="text-center"><?php echo $row->username?></td>
+                                                    <!-- <td class="text-center"><?php echo $row->username?></td> -->
+                                                     <td  class="text-center">
+                                                        {{ !empty($sales_order->remark) ? $sales_order->remark : '-' }}
+                                                    </td>
 
 
                                                     <td class="text-center">
