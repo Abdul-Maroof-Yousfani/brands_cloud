@@ -133,6 +133,7 @@ class SubitemsExport implements FromCollection, WithHeadings
                 $item->hs_code_name, // HS Code - यह पोजीशन 28 पर होना चाहिए
                 $item->locality, 
                
+                
                 $item->origin, // Origin - यह पोजीशन 30 पर होना चाहिए
                    '',// Locality - यह पोजीशन 29 पर होना चाहिए
                 $item->color, // Color - यह पोजीशन 31 पर होना चाहिए
