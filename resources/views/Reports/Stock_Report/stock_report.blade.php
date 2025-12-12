@@ -44,7 +44,7 @@ if(isset($_GET['item_id'])) {
                         <form method="get" action="{{ route('stock_report.view') }}" id="list_data" class="form-horizontal">
                             <?php csrf_token()?>
                             <div class="row">
-                                <div class="col-md-2">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="control-label">From Date</label>
                                         <div class="input-group">
@@ -54,7 +54,7 @@ if(isset($_GET['item_id'])) {
                                     </div>
                                 </div>
 
-                                <div class="col-md-2">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="control-label">To Date</label>
                                         <div class="input-group">
