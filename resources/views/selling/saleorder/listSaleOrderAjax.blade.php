@@ -11,8 +11,8 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
      <table class="userlittab table table-bordered sf-table-list" id="data-table">
         <thead>
             <tr>
-                 <th style=" width:62px !important;" class="text-center sorting_asc">So No</th>
-                <th  style="width: 100px !important;" class="text-center sorting_asc">Order No</th>
+                 <th style="width:50px !important; text-align:center;" class="text-center sorting_asc">So No</th>
+                <th  style="width: 80px !important;" class="text-center sorting_asc">Order No</th>
                 <th  class="text-center ">Customer Name</th>
                 <th  class="text-center sorting_asc">Order Date</th>
                 <th  class="text-center ">Amount</th>
@@ -28,7 +28,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
             <?php $counter = 1; ?>
                  @foreach ($sale_orders as $sale_order)
                      <tr>
-                         <td class="text-center">{{ $counter++ }}</td>
+                         <td style="width:50px !important; text-align:center;" class="text-center">{{ $counter++ }}</td>
                          <td class="text-center">{{ $sale_order->so_no }}</td>
                          <td>{{ $sale_order->name }}</td>
                          <!-- <td class="text-center">{{ \Carbon\Carbon::parse($sale_order->so_date)->format('d-M-Y') }}

@@ -120,12 +120,11 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <h2 class="subHeadingLabelClass">Brands Unlimited (Pvt) Ltd</h2>
                             <p>301-305, 3rd Floor, Kavish Crown Plaza
                                 Sharah-e-Faisal, karachi.</p>
-
-                        
-                            <p>S.t #: 3277876156235</p>
-
+                            <p>Strn #: 3277876156235</p>
+                            <p>N.T.N #:5098058-8 </p>
                             <br>
                             <p>Bill To:</p>
+                             <br>
                             <p>
                                 <strong>{{$buyers_detail->name}}</strong>
                                 {{$buyers_detail->address}}<br>
@@ -135,7 +134,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 {{isset($buyers_detail->cnic_ntn) ? $buyers_detail->cnic_ntn : "-" }}
                                 S.T #: {{isset($buyers_detail->strn) ? $buyers_detail->strn : "-"}}
                             </p>
-                                <p>N.T.N #:5098058-8 </p>
+                               
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6  text-right">
@@ -146,7 +145,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <p>Date: {{$delivery_note->so_date}}</p>
                             <br>
                             <div class="table-responsive2">
-                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000 !important;width:58% !important;float:right;">
+                                <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000 !important;width:56% !important;float:right;">
                                     <tbody>
                                         <tr>
                                             <td style="border:1px solid #000 !important;border-right:none !important;">Account Limit</td>

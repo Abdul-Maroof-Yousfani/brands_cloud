@@ -18,6 +18,18 @@ input.form-control.form-control2{margin:0!important;}
 .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
 .totlass h2{font-size:13px !important;}
 .vomp{text-align:left;}
+
+
+.userlittab > thead > tr > td, .userlittab > tbody > tr > td, .userlittab > tfoot > tr > td {
+    padding: 10px 15px;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #000;
+    font-family: "erp-regular";
+    font-style: normal;
+    font-weight: 400 !important;
+
+}
 </style>
 
 <div class="row">
@@ -54,9 +66,10 @@ input.form-control.form-control2{margin:0!important;}
                                                 <h2 class="subHeadingLabelClass">Brands Unlimited (Pvt) Ltd</h2>
                                                 <p>301-305, 3rd Floor, Kavish Crown Plaza
                                                     Sharah-e-Faisal, karachi.</p>
-                                                <p>S.t #: 3277876156235</p>
-                                                <br>
+                                                <p>Strn #: 3277876156235</p>
+                                                <p>N.T.N #:5098058-8 </p>
                                                 <p>Bill To:</p>
+                                                <br>
                                                 <p>
                                                     <strong>{{$buyer_detail->name}}</strong><br>
                                                     {{$buyer_detail->address}}<br>
@@ -66,7 +79,7 @@ input.form-control.form-control2{margin:0!important;}
                                                     {{isset($buyer_detail->cnic_ntn) ? $buyer_detail->cnic_ntn : "-" }}
                                                     S.T #: {{isset($buyer_detail->strn) ? $buyer_detail->strn : "-"}}
                                                 </p>
-                                                <p>N.T.N #:5098058-8 </p>
+                                              
                                             </div>
                                         </div>
 
@@ -80,7 +93,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 @if ($buyer_detail->display_pending_payment_invoice == 1)
                                                 @endif
                                                 <div class="table-responsive">
-                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:68% !important;float:right;">
+                                                    <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:56% !important;float:right;">
                                                         <tbody>
                                                             <tr>
                                                                 <td>Amount Limited</td>
@@ -144,7 +157,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 <table class="table sale_older_tab userlittab table table-bordered sf-table-list sale-list">
                                                     <thead>
                                                         <tr>
-                                                            <th style="background: #000 !important; color:#fff !important;">S.No</th>
+                                                            <th style="background: #000 !important; color:#fff !important;text-align: center !important;">S.No</th>
                                                             <th style="background: #000 !important; color:#fff !important;width: 20% !important;">Product</th>
                                                             {{--   <th style="background: #000 !important; color:#fff !important;">Item & Description</th>--}}
                                                             <th style="background: #000 !important; color:#fff !important;    text-align: center !important;">Barcode</th>
@@ -178,11 +191,11 @@ input.form-control.form-control2{margin:0!important;}
                                                         
                                                         @endphp
                                                         <tr>
-                                                           <td>
+                                                           <td style="text-align: center !important;">
                                                                 {{ $loop->iteration }}
                                                             </td>
 
-                                                            <td style="width: 20%">
+                                                            <td style="width: 20%;"  >
                                                                 ({{$productid ?? ""}})-{{$product ?? "----"}}
                                                             </td>
                                                             <td  style="text-align: center !important;" class="wsale2">
