@@ -4638,6 +4638,11 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     }
 
+    public static function get_group_by($group_id) {
+        $company_group = CompanyGroup::find($group_id);
+        return $company_group->name;
+    }
+
     public function get_stock_location_wise(Request $request)
     {
 

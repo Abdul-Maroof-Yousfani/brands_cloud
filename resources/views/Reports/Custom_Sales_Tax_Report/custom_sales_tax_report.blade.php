@@ -182,6 +182,8 @@ use App\Helpers\SaleHelper;
                                                     <th class="text-center" style="width:150px;">Brand Name</th>
                                                     <th class="text-center" style="width:150px;">Category</th>
                                                     <th class="text-center" style="width:150px;">Invoice No</th>
+                                                    <th class="text-center" style="width:150px;">Group</th>
+                                                    <th class="text-center" style="width:150px;">HS Code</th>
                                                     <th class="text-center" style="width:150px;">Doc Date</th>
                                                     <th class="text-center" style="width:150px;">Retail Value</th>
                                                     <th class="text-center" style="width:150px;">Total Pcs</th>
