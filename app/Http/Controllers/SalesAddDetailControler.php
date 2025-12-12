@@ -628,7 +628,8 @@ class SalesAddDetailControler extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return redirect()->back()->with(["error" => $validator->errors()]);
+            // return response()->json(['errors' => $validator->errors()], 422);
         }
 
         try {

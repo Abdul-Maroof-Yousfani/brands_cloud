@@ -1098,6 +1098,7 @@
 
         function jqueryValidationCustom() {
             var requiredField = document.getElementsByClassName('requiredField');
+            console.log(requiredField);
             var zerovalidate = document.getElementsByClassName('zerovalidate');
             for (i = 0; i < zerovalidate.length; i++) {
                 var rf = zerovalidate[i].id;

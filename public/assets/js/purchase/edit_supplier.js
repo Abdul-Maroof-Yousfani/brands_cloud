@@ -97,7 +97,8 @@ $(document).ready(function() {
         for (val of supplier) {
             jqueryValidationCustom();
             if(validate == 0){
-                //return false;
+                
+                return true;
             }else{
                 return false;
             }
