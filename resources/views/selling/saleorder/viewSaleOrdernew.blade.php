@@ -261,7 +261,7 @@ input.form-control.form-control2{margin:0!important;}
                                             <div class="totals3">
                                                 <div class="psds">
                                                     {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}
-                                                    <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{round($sale_order->sale_taxes_amount_rate)}}</p>
+                                                    <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{number_format(round($sale_order->sale_taxes_amount_rate),0)}}</p>
                                                 </div>
                                                 <div class="totlas">
                                                     <p>Total</p>
