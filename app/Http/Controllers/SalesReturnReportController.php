@@ -28,7 +28,7 @@ class SalesReturnReportController extends Controller
                 ->when($so, function ($q) use ($so_id) {
                     $q->where("credit_note.so_id", "like", "%{$so_id}%");
                 })
-                ->whereBetween("credit_note_data.date", [$request->from, $request->to])
+                // ->whereBetween("credit_note_data.date", [$request->from, $request->to])
                 ->groupBy("subitem.product_barcode")
                 ->select(
                     "category.main_ic",
