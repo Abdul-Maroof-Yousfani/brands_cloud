@@ -19,6 +19,25 @@ $AccYearTo = $AccYearDate->accyearto;
 @extends('layouts.default')
 @section('content')
     @include('select2')
+
+<style>
+
+    .pagination{float:right;}
+.nowrap{white-space:nowrap;}
+.text-right-amount{text-align:right !important;}
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 4px !important;background:#ddd;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
+/* th.userlittab.text-center.col-sm-1.sorting_asc{width:33px !important;}
+*/
+ .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
+table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{width:8px !important;height:20px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
+.strong{font-weight:600 !important;}
+
+
+</style>
+
+
     <div class="panel-body">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -40,15 +59,15 @@ $AccYearTo = $AccYearDate->accyearto;
                         <hr style="border-color: #ccc">
 
 
-                        <div class="row">
+                        <div class="row" style="display:none;">
 
                             {{-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <label style="border-radius: 7px;background-color: #000;padding: 10px 17px;color: #fff;box-shadow: 2px 2px 7px 0px #000;border: #0000;">(Search by Date) <input type="radio" class="" name="FilterType" value="1" onclick="RadioChange()"></label>
-                            <label for="" style="margin-left: 18px;">OR</label>
-                            <label style="border-radius: 7px;background-color: #000;padding: 10px 17px;color: #fff;box-shadow: 2px 2px 7px 0px #000;border: #0000;margin-left: 23px;">(Search By SO No) <input type="radio" class="" name="FilterType" value="2" onclick="RadioChange()"></label>
-                            <label for="" style="margin-left: 18px;">OR</label>
-                            <label style="border-radius: 7px;background-color: #000;padding: 10px 17px;color: #fff;box-shadow: 2px 2px 7px 0px #000;border: #0000;margin-left: 23px;">(Search By Buyer) <input type="radio" class="" name="FilterType" value="3" onclick="RadioChange()"></label>
-                        </div> --}}
+                                <label style="border-radius: 7px;background-color: #000;padding: 10px 17px;color: #fff;box-shadow: 2px 2px 7px 0px #000;border: #0000;">(Search by Date) <input type="radio" class="" name="FilterType" value="1" onclick="RadioChange()"></label>
+                                <label for="" style="margin-left: 18px;">OR</label>
+                                <label style="border-radius: 7px;background-color: #000;padding: 10px 17px;color: #fff;box-shadow: 2px 2px 7px 0px #000;border: #0000;margin-left: 23px;">(Search By SO No) <input type="radio" class="" name="FilterType" value="2" onclick="RadioChange()"></label>
+                                <label for="" style="margin-left: 18px;">OR</label>
+                                <label style="border-radius: 7px;background-color: #000;padding: 10px 17px;color: #fff;box-shadow: 2px 2px 7px 0px #000;border: #0000;margin-left: 23px;">(Search By Buyer) <input type="radio" class="" name="FilterType" value="3" onclick="RadioChange()"></label>
+                            </div> --}}
 
 
                             <span id="ShowHideDate" style="display: none">
@@ -111,22 +130,19 @@ $AccYearTo = $AccYearDate->accyearto;
                                 <?php echo CommonHelper::headerPrintSectionInPrintView($m); ?>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12col-xs-12">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered sf-table-list" id="EmpExitInterviewList">
+                                        <div class="table-responsive"id="EmpExitInterviewList">
+                                           <table class="userlittab table table-bordered sf-table-list" id="data-table">
                                                 <thead>
-                                                    <th class="text-center col-sm-1">S.No</th>
-                                                    <th class="text-center col-sm-1">Order No</th>
-                                                    <th class="text-center col-sm-1">SO Date</th>
+                                                    <th style="width:20px;" class="text-center col-sm-1">S.No</th>
+                                                    <th style="width:70px;" class="text-center col-sm-1">Order No</th>
+                                                    <th style="width:105px;" class="text-center col-sm-1">SO Date</th>
                                                     <!-- <th class="text-center col-sm-1">Model Terms Of Payment</th> -->
                                                     <!-- <th class="text-center col-sm-1">Order No</th> -->
-                                                    <th class="text-center col-sm-1">Order Date</th>
-                                                    <th class="text-center">Customer</th>
-
-                                                    <th class="text-center">Total Amount</th>
-                                                    <th class="text-center">View</th>
-                                                    <th class="text-center">Create Delivery Note</th>
-                                                    {{-- <th class="text-center">Edit</th> --}}
-                                                    {{-- <th class="text-center">Delete</th> --}}
+                                                    <th  style="width:105px;" class="text-center col-sm-1">Order Date</th>
+                                                    <th  style="width:400px;"class="text-center">Customer</th>
+                                                    <th style="width:60px;"class="text-center">Total Amount</th>
+                                                    <th style="width:60px;"class="text-center">Action</th>
+                                             
                                                 </thead>
                                                 <tbody id="data">
                                                     <?php $counter = 1;
@@ -152,29 +168,30 @@ $AccYearTo = $AccYearDate->accyearto;
                                                             </td>
                                                             <!-- <td class="text-center"><?php echo $row->order_no; ?></td> -->
                                                             <td class="text-center"><?php echo \Carbon\Carbon::parse($row->order_date)->format("d-M-Y"); ?></td>
-                                                            <td class="text-center">{{ $customer->name }}</td>
+                                                            <td class="text-center"><strong>{{ $customer->name }}</strong></td>
 
-
-                                                            <td class="text-center"><button
-                                                                    onclick="showDetailModelOneParamerter('sales/viewSalesOrderDetail','<?php echo $row->id; ?>','View Sales Order')"
-                                                                    type="button"
-                                                                    class="btn btn-success btn-xs">View</button></td>
-
-                                                            <td class="text-center"><button
-                                                                    onclick="delivery_note('<?php echo $row->id; ?>','<?php echo $m; ?>')"
-                                                                    type="button" class="btn btn-primery btn-xs">Create
-                                                                    Delivery Note</button></td>
+                                                            <td class="text-center">
+                                                                <div class="dropdown">
+                                                                    <button class="drop-bt dropdown-toggle"type="button" data-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                                                    <ul class="dropdown-menu">
+                                                                        <li>
+                                                                            <button onclick="showDetailModelOneParamerter('sales/viewSalesOrderDetail','<?php echo $row->id; ?>','View Sales Order')" type="button" class="btn btn-success btn-xs">View</button></td>
+                                                                            <button onclick="delivery_note('<?php echo $row->id; ?>','<?php echo $m; ?>')"type="button" class="btn btn-primery btn-xs">Create Delivery Note</button></td>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                     @endforeach
 
                                                     <tr>
-                                                        <td class="text-center" colspan="6" style="font-size: 20px;">
-                                                            Total</td>
-                                                        <td class="text-right" colspan="1"style="font-size: 20px;color: white">
-                                                            {{ number_format($total, 2) }}</td>
-                                                        <td class="text-center" colspan="1" style="font-size: 20px;">
+                                                        <td class="text-center" colspan="4" style="font-size: 13px;"> <strong>
+                                                            Total</strong></td>
+                                                        <td class="text-right" colspan="1"style="font-size: 13px;color: #333">
+                                                           <strong> {{ number_format($total, 2) }}</strong></td>
+                                                        <td class="text-center" colspan="1" style="font-size: 13px;">
                                                         </td>
-                                                        <td class="text-center" colspan="1" style="font-size: 20px;">
+                                                        <td class="text-center" colspan="1" style="font-size: 13px;">
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -191,19 +208,10 @@ $AccYearTo = $AccYearDate->accyearto;
     </div>
 
     <script>
-        // $(document).ready(function() {
-        // });
-        
         viewRangeWiseDataFilter();
         $('#BuyerId').select2();
         $('.select2-container--default').css('width', '100%');
 
-        $("#EmpExitInterviewList").DataTable({
-            ordering: true,
-            searching: true,
-            paging: true,
-            info: false // <-- hides "Showing X of Y entries"
-        });
         function RadioChange() {
             var radioValue = $("input[name='FilterType']:checked").val();
 
@@ -245,8 +253,6 @@ $AccYearTo = $AccYearDate->accyearto;
                 });
             } else {}
         }
-
-
         function viewRangeWiseDataFilter() {
 
             //var from= $('#from').val();
@@ -259,7 +265,6 @@ $AccYearTo = $AccYearDate->accyearto;
             $('#data').html(
                 '<tr><td colspan="13"><div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div></td><tr>'
                 );
-
             $.ajax({
                 url: '<?php echo url('/'); ?>/sdc/getSalesOrderDateWiseForDeliveryNote',
                 type: 'Get',
@@ -274,16 +279,89 @@ $AccYearTo = $AccYearDate->accyearto;
 
                 }
             });
-
-
         }
-
         function delivery_note(id, m) {
 
             var base_url = '<?php echo URL::to('/'); ?>';
             window.location.href = base_url + '/sales/CreateDeliveryNote?id=' + id + '&&' + 'm=' + m;
         }
     </script>
+
+
+
+ <!-- <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script> -->
+
+ <script>
+     // data-table
+    $("#data-table").DataTable({
+        ordering: true,
+        searching: true,
+        paging: true,
+        info: false,
+        autoWidth: false, // prevent DataTables from auto-calculating width
+    });
+
+ </script>
+<script>
+        function printView(divId) {
+            var element = document.getElementById(divId);
+            if (!element) {
+                alert("Element with ID '" + divId + "' not found!");
+                return;
+            }
+
+            var content = element.innerHTML;
+            var mywindow = window.open('', 'PRINT', 'height=800,width=1200');
+
+            mywindow.document.write('<html><head><title>Print</title>');
+
+            // ✅ Bootstrap CSS include
+            mywindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">');
+
+
+            mywindow.document.write(`
+                <style>
+                    @page{size:A4;margin:1em;}
+                    .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
+                    .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
+                    .table-responsive{height:inherit !important;}
+                    .sales_or{position:relative !important;height:100% !important;}
+                    .sgnature{position:absolute !important;bottom:0px !important;}
+                    p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
+                    .mt-top{margin-top:-72px !important;}
+                    .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
+                    .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
+                    input.form-control.form-control2{margin:0 !important;}
+                    .totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
+                    .totlas p{font-weight:bold !important;}
+                    .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
+                    .psds p{font-weight:bold !important;}
+                    .totlass h2{font-size:13px !important;}
+
+
+                    .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;width:68%;float:left;}
+
+                    .col-lg-6{width:50% !important;}
+                    .col-lg-12{width:100% !important;}
+                    .col-lg-4{width:33.33333333% !important;}
+                </style>
+            `);
+            mywindow.document.write('</head><body>');
+            mywindow.document.write(content);
+            mywindow.document.write('</body></html>');
+            mywindow.document.close();
+            mywindow.focus();
+            mywindow.print();
+        }
+
+        document.addEventListener("keydown", function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
+            e.preventDefault();   // Stop default Print
+            e.stopPropagation();  // Stop bubbling
+            printView("PrintEmpExitInterviewList");  // Apna DIV ID yahan likho
+        }
+    }, true);  // <-- CAPTURE MODE ENABLED (very important)
+</script>
 
 @endsection
 
