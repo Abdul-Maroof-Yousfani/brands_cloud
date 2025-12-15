@@ -10,9 +10,9 @@ $m = Input::get('m');
  p{margin:0;padding:0;font-size:13px;font-weight:500;}
 input.form-control.form-control2{margin:0!important;}
 .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-.totlas{display:flex;gap:70px;background:#ddd;width:35%;float:right;padding-right:8px;justify-content:space-between;}
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 8px !important;background:#ddd;}
+
 .totlas p{font-weight:bold;}
-.psds{display:flex;justify-content:right;gap:88px;font-weight:bold;}
 .psds p{font-weight:bold;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
 .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
@@ -20,7 +20,9 @@ input.form-control.form-control2{margin:0!important;}
 .vomp{text-align:left;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
-
+  .totals3{width:37%;float:right;}
+    .psds{display:flex;font-weight:bold;justify-content:space-between;}
+    .totlas{display:flex;background:#ddd;justify-content:space-between;}
 
 </style>
 
@@ -46,10 +48,15 @@ input.form-control.form-control2{margin:0!important;}
                                 @endif
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-right hidden-print">
-                                <?php CommonHelper::newdisplayPrintButtonInView('printReport', '', 1);?>
+                                <!-- <?php CommonHelper::newdisplayPrintButtonInView('printReport', '', 1);?> -->
+
+                                   <div class="no-print">
+                                    <button class="btn btn-primary prinn pritns" onclick="printSection()">🖨️ Print</button>
+                                    </div>
+
                             </div>
                         </div>
-                        <div class="mt-top" id="printReport">
+                        <div class="mt-top" id="printsale-order">
                             <div class="sales_or2">
                                 <div class="contra">
                                     <div class="row">
@@ -250,11 +257,14 @@ input.form-control.form-control2{margin:0!important;}
                                     </div>
                                     <div class="row align-items-top">
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                            <!-- <div class="totlas totlass">
-                                                <h2>Note</h2>
-                                                <p>{{ $sale_order->remark ?? 'N/A' }}</p>
-                                                
-                                            </div> -->
+                                               
+                                                <br>
+                                                <br>
+                                                <br>
+                                             <div class="totlass">
+                                                <h2><strong>Note:</strong></h2>
+                                                <p><strong>{{ $sale_order->remark ?? 'N/A' }}</strong></p>
+                                            </div>
                                         </div>
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                                 <br>
@@ -275,10 +285,7 @@ input.form-control.form-control2{margin:0!important;}
 
                                 <div class="row align-items-top">
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                        <div class="totlas totlass">
-                                            <h2><strong>Note:</strong></h2>
-                                            <p><strong>{{ $sale_order->remark ?? 'N/A' }}</strong></p>
-                                        </div>
+                                       
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
                                 </div>
@@ -522,7 +529,7 @@ input.form-control.form-control2{margin:0!important;}
 </div>
 
 <!-- printView sale order -->
-<script>
+<!-- <script>
     function printView(divId) {
         var element = document.getElementById(divId);
         if (!element) {
@@ -541,6 +548,29 @@ input.form-control.form-control2{margin:0!important;}
 
         mywindow.document.write(`
             <style>
+ 
+
+            </style>
+        `);
+        mywindow.document.write('</head><body>');
+        mywindow.document.write(content);
+        mywindow.document.write('</body></html>');
+        mywindow.document.close();
+        mywindow.focus();
+        mywindow.print();
+    }
+
+    
+</script> -->
+
+
+
+
+<script>
+  function printSection() {
+    // ✅ Print CSS dynamically add karna
+    const printStyle = `
+      @media print {
             @page{size:A4;margin:1em;}
             .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
             .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
@@ -559,26 +589,49 @@ input.form-control.form-control2{margin:0!important;}
             .col-lg-6{width:50% !important;}
             .col-lg-12{width:100% !important;}
             .col-lg-4{width:33.33333333% !important;}
-                    .totals3{width:37%;float:right;}
+            .totals3{width:37%;float:right;}
             .psds{display:flex;font-weight:bold;justify-content:space-between;}
             .totlas{display:flex;background:#ddd;justify-content:space-between;}
+            .term{text-align:right;}
+            .contr2{text-align:right;}
 
-            </style>
-        `);
-        mywindow.document.write('</head><body>');
-        mywindow.document.write(content);
-        mywindow.document.write('</body></html>');
-        mywindow.document.close();
-        mywindow.focus();
-        mywindow.print();
-    }
 
+      }
+    `;
+
+    // ✅ Select element to print
+    const printContent = document.getElementById('printsale-order').innerHTML;
+    // ✅ Open new window for print
+    const printWindow = window.open('', '', 'width=900,height=700');
+    // ✅ Bootstrap 5 CSS link
+    const bootstrapCSS = `<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">`;
+    // ✅ Write content to print window
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Print Preview</title>
+        ${bootstrapCSS}
+        <style>${printStyle}</style>
+      </head>
+      <body>
+        ${printContent}
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    // printWindow.close(); // optional
+  }
+
+  
     document.addEventListener("keydown", function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
         e.preventDefault();   // Stop default Print
         e.stopPropagation();  // Stop bubbling
-        printView("printReport");  // Apna DIV ID yahan likho
+        printView("printsale-order");  // Apna DIV ID yahan likho
     }
 }, true);  // <-- CAPTURE MODE ENABLED (very important)
-    
 </script>
+<!-- </head>
+<body> -->
