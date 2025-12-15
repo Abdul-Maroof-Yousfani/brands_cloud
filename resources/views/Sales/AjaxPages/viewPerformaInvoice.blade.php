@@ -548,7 +548,7 @@ function checkk() {
                 .col-lg-12{width:100% !important;}
                 .col-lg-4{width:33.33333333% !important;}
 
-                        .totals3{width:37%;float:right;}
+                 .totals3{width:37%;float:right;}
             .psds{display:flex;font-weight:bold;justify-content:space-between;}
             .totlas{display:flex;background:#ddd;justify-content:space-between;}
 
