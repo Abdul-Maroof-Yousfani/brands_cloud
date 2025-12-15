@@ -247,7 +247,7 @@ class ErpRoleController extends Controller
           //  $main_menu_id = implode(',', json_decode($erpRole->main));
            // $sub_menu_id = implode(',', json_decode($erpRole->sub));
             
-            dd($erpRole->rights);
+            dd($erpRole->sub);
             $rights = implode(',', json_decode($erpRole->rights, true));   // ✅ true for array
 $main_menu_id = implode(',', json_decode($erpRole->main, true));
 $sub_menu_id = implode(',', json_decode($erpRole->sub, true));
