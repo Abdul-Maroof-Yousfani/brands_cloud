@@ -2020,6 +2020,10 @@ public static function getSubItemByBrand($id, $item_id = null)
     return $html;
 }
 
+public static function get_additional_sales_tax($so_no) {
+    return DB::connection("mysql2")->table("sales_order")->select("id", "sale_taxes_amount_rate")->where("so_no", $so_no)->first();
+}
+
 
 
     public static function get_all_subitem()
