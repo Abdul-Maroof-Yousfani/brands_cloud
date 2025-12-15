@@ -78,10 +78,17 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                             @php
                                 $sale_order = App\Models\Sales_Order::where("so_no", $row->so_no)->first();
                             @endphp
-                            <td class="text-center"><?php  echo \Carbon\Carbon::parse($sale_order->so_date)->format("d-M-Y"); ?></td>
+                            <!-- <td class="text-center"><?php  echo \Carbon\Carbon::parse($sale_order->so_date)->format("d-M-Y"); ?></td> -->
+
+                              <td class="text-center">
+                                                        
+                                                    <?php echo $sale_order->timestamp ? \Carbon\Carbon::parse($sale_order->timestamp)->format("d-M-Y") : "";?> <br>
+                                                <?php echo $sale_order->timestamp ? \Carbon\Carbon::parse($sale_order->timestamp)->format("h:i:s A") : "";?> 
+                                                
+                                                </td>
                             <td class="text-center"><strong>{{$customer->name}}</strong></td>
-                            <td class="text-right">{{number_format($data->qty,3)}}</td>
-                            <td class="text-right">{{number_format($data->amount+$row->sales_tax_amount +  $sale_taxes_amount_rate,3)}}</td>
+                            <td class="text-right">{{number_format(round($data->qty),0)}}</td>
+                            <td class="text-right">{{number_format(round($data->amount+$row->sales_tax_amount +  $sale_taxes_amount_rate),0)}}</td>
                             <td class="text-center">
                                   <div class="dropdown">
 
