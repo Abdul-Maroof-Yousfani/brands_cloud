@@ -59,6 +59,10 @@ input.form-control.form-control2{margin:0!important;}
 .vomp{text-align:left;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
+
+.totals3{width:37%;float:right;}
+            .psds{display:flex;font-weight:bold;justify-content:space-between;}
+            .totlas{display:flex;background:#ddd !important;justify-content:space-between;}
 </style>
 <?php
 ?>
@@ -484,18 +488,16 @@ input.form-control.form-control2{margin:0!important;}
             </div>
             <div class="row align-items-top">
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                        <div class="totlass">
-                                <h2><strong>Note:</strong></h2>
-                            <p><strong>{{ $sale_order->remark ?? 'N/A' }}</strong></p>
-                        </div>
-
+                    <div class="totlass">
+                            <h2><strong>Note:</strong></h2>
+                        <p><strong>{{ $sale_order->remark ?? 'N/A' }}</strong></p>
+                    </div>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                     <div class="totals3">
                         <div class="psds">
                             {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id) }}
-                            <p id="sale_taxes_amount_rate"style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">
-                                {{number_format(round( $sale_order->sale_taxes_amount_rate ),0)}}</p>
+                            <p id="sale_taxes_amount_rate"style="margin:0 !important;padding:0 !important;font-size:13px !important;">{{number_format(round( $sale_order->sale_taxes_amount_rate ),0)}}</p>
                         </div>
                         <div class="totlas">
                             <p><strong>Total</strong></p>
@@ -877,7 +879,7 @@ input.form-control.form-control2{margin:0!important;}
 
             .totals3{width:37%;float:right;}
             .psds{display:flex;font-weight:bold;justify-content:space-between;}
-            .totlas{display:flex;background:#ddd;justify-content:space-between;}
+            .totlas{display:flex;background:#ddd !important;justify-content:space-between;}
 
 
             </style>
