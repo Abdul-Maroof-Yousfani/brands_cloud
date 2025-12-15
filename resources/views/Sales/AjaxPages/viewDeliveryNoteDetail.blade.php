@@ -158,19 +158,19 @@ input.form-control.form-control2{margin:0!important;}
                                         <tr>
                                                 <td style="border:1px solid #000 !important;border-right:none !important;padding: 5px 8px !important;">Amount Limit</td>
                                             <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;padding: 5px 8px !important;">
-                                                {{ $so_detail->credit_limit }}
+                                                {{ number_format(round($so_detail->credit_limit),0) }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="border:1px solid #000 !important;border-right:none !important;padding: 5px 8px !important;">Balance Amount</td>
                                             <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;padding: 5px 8px !important;">
-                                                {{ $so_detail->balance_amount }}
+                                                {{ number_format(round($so_detail->balance_amount),0) }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="border:1px solid #000 !important;border-right:none !important;padding: 5px 8px !important;">Current Balance Due</td>
                                             <td style="text-align: right; border:1px solid #000 !important;border-left:none !important;padding: 5px 8px !important;">
-                                                {{ number_format($total_amount_after_tax, 2) }}
+                                                {{ number_format(round($total_amount_after_tax), 0) }}
                                             </td>
                                         </tr>
                                     </tbody>
