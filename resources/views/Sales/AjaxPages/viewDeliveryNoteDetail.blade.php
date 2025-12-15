@@ -100,16 +100,19 @@ input.form-control.form-control2{margin:0!important;}
 
     @if($delivery_note->status == 0)
             @if($scannedqrcodeqty != $grnqty)
-                <input type="button" value="Approve" readonly  id="errorbutton" style="text-align:right !important;" class="btn btn-success btn-xs ">
+                <input type="button"  value="Approve" readonly  id="errorbutton" style="text-align:right !important;" class="btn btn-success btn-xs ">
             @else
                 <div class="">
                         <?php echo Form::open(array('url' => 'sad/approveDeliveryNote?m='.$delivery_note->id.'','id='.$delivery_note->id.'','id'=>'approveDeliveryNote','class'=>'stop'));?>
                             <!-- {{ Form::submit('Submit', ['class' => 'btn btn-success']) }} -->
                     <input type="hidden" name="pageType"
                            value="<?php // echo $_GET['pageType']?>">
-                    <input type="hidden" name="parentCode"
-                           value="<?php // echo $_GET['parentCode']?>">
-                    {{ Form::submit('Approve', ['class' => 'btn btn-success btn-xs btn-abc hidden-print']) }}
+                  <input type="hidden" name="parentCode" value="{{ request()->get('parentCode') }}">
+
+{{ Form::submit('Approve', [
+    'class' => 'btn btn-success btn-xs btn-abc hidden-print',
+    'style' => 'float: right !important;'
+]) }}
 
                 </div>
             @endif
