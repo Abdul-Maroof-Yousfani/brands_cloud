@@ -1042,7 +1042,7 @@ public function uploadProduct(Request $request)
                 'flat_discount' => !empty($row[23]) ? (float) str_replace(',', '', trim($row[23])) : 0,
                 'min_qty' => !empty($row[24]) ? (int) trim($row[24]) : 0,
                 'max_qty' => !empty($row[25]) ? (int) trim($row[25]) : 0,
-                  'hs_code' => !empty($row[27]) ? (int)trim($row[27]): 0,
+                  'hs_code' => !empty($row[27]) ? trim($row[27]): 0,
                 // 'hs_code' => !empty($row[27]) ? CommonHelper::get_id_from_db_by_name_for_product(trim($row[27]), 'hs_codes') : 0,
                 'locality' => !empty($row[28]) ? trim($row[28]) : null,
                 'origin' => !empty($row[29]) ? trim($row[29]) : null,
