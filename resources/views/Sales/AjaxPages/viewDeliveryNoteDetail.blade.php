@@ -119,7 +119,7 @@ input.form-control.form-control2{margin:0!important;}
 
     <div style="line-height:5px;">&nbsp;</div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="well sales_or">
+        <!-- <div class="well sales_or"> -->
 
             <div class="contra">
                 <div class="row">
@@ -599,7 +599,7 @@ input.form-control.form-control2{margin:0!important;}
                     </div> -->
                     
             </div>
-        </div>
+        <!-- </div> -->
     </div>
     <div class="vomp">
         <p><strong style="margin-left: 50px;">Creation Time :{{ \Carbon\Carbon::parse($delivery_note->timestamp)->format('d-M-Y h:i A') }}</strong></p>
