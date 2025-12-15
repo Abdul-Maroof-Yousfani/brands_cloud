@@ -105,7 +105,7 @@ use App\Helpers\SalesHelper;
                 data: {customer_id: customer_id},
 
                 success: function (response) {
-
+                    
                     $('#so_no').append(response);
 
                 }
@@ -127,7 +127,6 @@ use App\Helpers\SalesHelper;
             data: {so_no: so_no,m:m, customer_id: customer_id},
 
             success: function (response) {
-
                 $('#data').html(response);
 
 

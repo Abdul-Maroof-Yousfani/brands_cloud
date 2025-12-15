@@ -1998,7 +1998,17 @@ public function getDeliveryNoteDefaultData(Request $request)
     {
         $delivery_note = new DeliveryNote();
         $delivery_note = $delivery_note->SetConnection('mysql2');
-        $delivery_note = $delivery_note->where('status', 1)->where('sales_tax_invoice', 0)->orderBy('id', 'DESC')->get();
+            $user = auth()->user();
+    $territory_ids = json_decode($user->territory_id);     
+    $territory_ids = [100];
+        $delivery_note = $delivery_note
+                                ->join('customers', 'customers.id', '=', 'delivery_note.buyers_id')
+                                ->whereIn('customers.territory_id', $territory_ids)
+                                ->where('delivery_note.status', 1)
+                                ->where('delivery_note.sales_tax_invoice', 0)
+                                ->orderBy('delivery_note.id', 'DESC')
+                                ->get();
+
 
         $Customers = DB::Connection('mysql2')->table('customers')->where('status', 1)->get();
 
@@ -2297,22 +2307,26 @@ public function getDeliveryNoteDefaultData(Request $request)
         $currentMonthEndDate   = date('Y-m-t');
 
         $sales_tax_invoice = new SalesTaxInvoice();
-        $sales_tax_invoice = $sales_tax_invoice->SetConnection('mysql2');
-        $sales_tax_invoice = $sales_tax_invoice
-            ->where('status', 1)
-            ->where(function($q){
-                $q->where('pre_status', '!=', 1)
-                ->orWhereNull('pre_status');
-            })
-            ->get();
+        $sales_tax_invoice = $sales_tax_invoice->SetConnection('mysql2');            
+        $user = auth()->user();
+    $territory_ids = json_decode($user->territory_id);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+     $sales_tax_invoice = $sales_tax_invoice
+    ->join('customers', 'customers.id', '=', 'sales_tax_invoice.buyers_id')
+    ->whereIn('customers.territory_id', $territory_ids)
+    ->where('sales_tax_invoice.status', 1)
+    ->where(function ($q) {
+        $q->where('sales_tax_invoice.pre_status', '!=', 1)
+          ->orWhereNull('sales_tax_invoice.pre_status');
+    })
+    ->get();
         $Customer = DB::Connection('mysql2')->table('customers')->where('status', 1)->get();
         $username = SalesTaxInvoice::select('username')->groupBy('username')->get();
 
       
-        return view('Sales.viewSalesTaxInvoiceList', compact('sales_tax_invoice', 'Customer', 'username'));
+        return view('Sales.viewSalesTaxInvoiceList', compact('sales_tax_invoice', 'Customer', 'username'));                                                                                                             
     }
 
-    public function viewSalesTaxInvoiceDetailList()
+    public function viewSalesTaxInvoiceDetailList() 
     {
 
         $Customer = DB::Connection('mysql2')->table('customers')->where('status', 1)->get();
@@ -2942,14 +2956,18 @@ if (in_array($user->acc_type, ['user'])) {
 
         $delivery_note = new DeliveryNote();
         $delivery_note = $delivery_note->SetConnection('mysql2');
+
+        $territory_ids = json_decode(auth()->user()->territory_id);
         $delivery_note = $delivery_note
-                                ->where('status', 1)
-                                ->where('sales_tax_invoice', 0)
+                                ->join('customers', 'customers.id', '=', 'delivery_note.buyers_id')
+                                ->where('delivery_note.status', 1)
+                                ->where('delivery_note.sales_tax_invoice', 0)
+                                ->whereIn('customers.territory_id', $territory_ids)
                                 ->when(isset($customer_id), function($query) use ($customer_id) {
                                     $query->where("buyers_id", $customer_id);
                                 })
                                 ->when(isset($so_no), function($query) use($so_no) {
-                                    $query->where("so_no", $so_no);
+                                    $query->where("delivery_note.so_no", $so_no);
                                 })
                                 ->get();
 
