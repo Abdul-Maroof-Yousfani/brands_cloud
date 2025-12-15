@@ -174,7 +174,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 <div class="row">
                                     <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                                         <div class="term">
-                                            <p>SO Date: {{ \Carbon\Carbon::parse($delivery_note->so_date)->format('d-M-Y') }}</p>
+                                            <p>SO Date:  {{ \Carbon\Carbon::parse($delivery_note->so_date)->format('d-M-Y') }}</p>
                                             <p>Warehouse: {{$buyers_warehouse_name}}</p>
                                             <p>Payment Terms: 30 Days</p>
                                             <p>Salesperson Mobile #</p>
@@ -185,7 +185,8 @@ foreach ($delivery_note_data as $sale_order_item) {
                                             <p>SO #: {{$delivery_note->so_no}}</p>
                                             <p>GDN #: <?php echo strtoupper($delivery_note->gd_no);?></p>
                                             <!-- <p>Branch: {{$delivery_note->branch}}</p> -->
-                                            <p>Branch: {{ CommonHelper::getWarehouseName($delivery_note->id) }}</p>
+                                          <p>Branch: {{ CommonHelper::getWarehouseName($delivery_note->id) }}</p>
+
                                             <p>Salesperson: {{$buyers_detail->SaleRep}}</p>
                                             <p><strong></strong></p>
                                         </div>
@@ -274,87 +275,87 @@ foreach ($delivery_note_data as $sale_order_item) {
                                                     <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
                                                     <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
 
-                                            <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{number_format( round($total_gross_amount),0) }}</p></th>
-                                            <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
-                                            <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_discount_amount), 0) }}</p></th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{number_format( round($total_gross_amount),0) }}</p></th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_tax),0) }}</p></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_amount_after_tax),0) }}</p></th>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                <div class="table-responsive" style="display:none;">
-                                    <table  class="table sale_older_tab userlittab table table-bordered sf-table-list sale-list">
-
-
-                                        <tr class="">
-                                            <th class="text-center" style="width:50px;">S.No</th>
-                                            <th class="text-center">Account</th>
-                                            <th class="text-center" style="width:150px;">Debit</th>
-                                            <th class="text-center" style="width:150px;">Credit</th>
-                                        </tr>
-                                        </thead>
-                                            <tbody>
-                                            <?php
-                                                $data=  DB::Connection('mysql2')->table('transactions')->where('status',1)->where('voucher_no',$delivery_note->gd_no)->orderBy('id','DESC')->get();
-                                                $total_debit=0;
-                                                $total_credit=0;
-                                                $counter=1;
-                                                foreach ($data as $row1):
-                                            ?>
-                                                <tr>
-                                                    <td class="text-center"><?php echo $counter++;?></td>
-                                                    <td><?php echo FinanceHelper::getAccountNameByAccId($row1->acc_id,Session::get('run_company'));?>
-                                                    </td>
-                                                    <td class="debit_amount text-right">@if($row1->debit_credit ==
-                                                        1){{number_format($row1->amount,2)}} @php $total_debit+=$row1->amount @endphp
-                                                        @endif </td>
-                                                    <td class="debit_amount text-right">@if($row1->debit_credit ==
-                                                        0){{number_format($row1->amount,2)}} @php $total_credit+=$row1->amount @endphp
-                                                        @endif </td>
-    
-                                                </tr>
-                                                <?php endforeach;
-                                            ?>
-                                                <tr class="sf-table-total">
-                                                    <td colspan="2">
-                                                        <label for="field-1" class="sf-label"><b>Total</b></label>
-                                                    </td>
-                                                    <td class="text-right"><b><?php echo number_format($total_debit,2);?></b></td>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_discount_amount), 0) }}</p></th>
+                                                    <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
+                                                    <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_tax),0) }}</p></th>
+                                                    <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_amount_after_tax),0) }}</p></th>
                                                 </tr>
                                             </tbody>
-                                    </table>
-                                </div>
-                                <label class="check printHide hide">
-                                    Show Voucher
-                                    <input id="check" type="checkbox" onclick="checkk()" class="check">
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row align-items-top">
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                
-                                <div class="totals3">
-                                    <div class="psds">
-                                        {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}
-                                        <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;">{{number_format(round($sale_order->sale_taxes_amount_rate),0)}}</p>
-                                    </div>
-                                    <div class="totlas">
-                                        <p><strong>Total</strong></p>
-                                        <p><strong>{{ number_format((float)$total_amount_after_tax + (float)$sale_order->sale_taxes_amount_rate, 2) }}</strong></p>
-                                    </div>
-                                </div>
+                                        </table>
+                                    <div class="table-responsive" style="display:none;">
+                                        <table  class="table sale_older_tab userlittab table table-bordered sf-table-list sale-list">
 
+    
+                                            <tr class="">
+                                                <th class="text-center" style="width:50px;">S.No</th>
+                                                <th class="text-center">Account</th>
+                                                <th class="text-center" style="width:150px;">Debit</th>
+                                                <th class="text-center" style="width:150px;">Credit</th>
+                                            </tr>
+                                            </thead>
+                                                <tbody>
+                                                <?php
+                                                    $data=  DB::Connection('mysql2')->table('transactions')->where('status',1)->where('voucher_no',$delivery_note->gd_no)->orderBy('id','DESC')->get();
+                                                    $total_debit=0;
+                                                    $total_credit=0;
+                                                    $counter=1;
+                                                    foreach ($data as $row1):
+                                                ?>
+                                                    <tr>
+                                                        <td class="text-center"><?php echo $counter++;?></td>
+                                                        <td><?php echo FinanceHelper::getAccountNameByAccId($row1->acc_id,Session::get('run_company'));?>
+                                                        </td>
+                                                        <td class="debit_amount text-right">@if($row1->debit_credit ==
+                                                            1){{number_format($row1->amount,2)}} @php $total_debit+=$row1->amount @endphp
+                                                            @endif </td>
+                                                        <td class="debit_amount text-right">@if($row1->debit_credit ==
+                                                            0){{number_format($row1->amount,2)}} @php $total_credit+=$row1->amount @endphp
+                                                            @endif </td>
+        
+                                                    </tr>
+                                                    <?php endforeach;
+                                                ?>
+                                                    <tr class="sf-table-total">
+                                                        <td colspan="2">
+                                                            <label for="field-1" class="sf-label"><b>Total</b></label>
+                                                        </td>
+                                                        <td class="text-right"><b><?php echo number_format($total_debit,2);?></b></td>
+                                                    </tr>
+                                                </tbody>
+                                        </table>
+                                    </div>
+                                    <label class="check printHide hide">
+                                        Show Voucher
+                                        <input id="check" type="checkbox" onclick="checkk()" class="check">
+                                    </label>
+                                </div>
                             </div>
-                        </div>
+                            <div class="row align-items-top">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"></div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    
+                                    <div class="totals3">
+                                        <div class="psds">
+                                            {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}
+                                            <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;">{{number_format(round($sale_order->sale_taxes_amount_rate),0)}}</p>
+                                        </div>
+                                        <div class="totlas">
+                                            <p><strong>Total</strong></p>
+                                            <p><strong>{{ number_format((float)$total_amount_after_tax + (float)$sale_order->sale_taxes_amount_rate, 2) }}</strong></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                              <br>
+                             <br>
                             <br>
-                            <br>
-                        <br>
+                    </div>
                 </div>
             </div>
         </div>
-        
     </div>
     <!-- signature -->
     <div class="sgnature2">
@@ -547,9 +548,9 @@ function checkk() {
                 .col-lg-12{width:100% !important;}
                 .col-lg-4{width:33.33333333% !important;}
 
-                 .totals3{width:37% !important;;float:right!important;}
-                .psds{display:flex!important;font-weight:bold!important;justify-content:space-between!important;}
-                .totlas{display:flex!important;background:#ddd!important;justify-content:space-between!important;}
+                 .totals3{width:37%;float:right;}
+            .psds{display:flex;font-weight:bold;justify-content:space-between;}
+            .totlas{display:flex;background:#ddd;justify-content:space-between;}
 
             </style>
         `);
