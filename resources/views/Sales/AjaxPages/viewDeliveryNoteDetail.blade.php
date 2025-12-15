@@ -282,7 +282,7 @@ input.form-control.form-control2{margin:0!important;}
                         <br>
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                 <div class="totlas totlass">
+                                 <div class="totlass">
                                      <h2><strong>Note:</strong></h2>
                                     <p><strong>{{ $so_detail->remark ?? 'N/A' }}</strong></p>
                                 </div>
