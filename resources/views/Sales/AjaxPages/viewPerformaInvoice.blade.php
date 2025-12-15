@@ -66,7 +66,7 @@ foreach ($delivery_note_data as $sale_order_item) {
 <div class="row" id="printReport">
     <div style="line-height:5px;">&nbsp;</div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="well sales_or">
+        
             <div class="row">
                 <div class="contra">
                     <div class="row">
@@ -355,7 +355,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                     </div>
                 </div>
             </div>
-        </div>
+        
     </div>
     <!-- signature -->
     <div class="sgnature2">
@@ -548,9 +548,9 @@ function checkk() {
                 .col-lg-12{width:100% !important;}
                 .col-lg-4{width:33.33333333% !important;}
 
-                 .totals3{width:37%;float:right;}
-            .psds{display:flex;font-weight:bold;justify-content:space-between;}
-            .totlas{display:flex;background:#ddd;justify-content:space-between;}
+                 .totals3{width:37%!important;float:right !important;}
+            .psds{display:flex;font-weight:bold;justify-content:space-between !important;}
+            .totlas{display:flex;background:#ddd !important;justify-content:space-between;}
 
             </style>
         `);
