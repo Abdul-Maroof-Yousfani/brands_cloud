@@ -95,6 +95,7 @@ class SubitemsExport implements FromCollection, WithHeadings
                 'subitem.locality',
                 'subitem.origin',
                 'subitem.color',
+                'subitem.image',
                 'subitem.product_status',
                 'subitem.is_barcode_scanning',
                 'products_principal_group.products_principal_group as principal_group_name' // New column
@@ -103,44 +104,43 @@ class SubitemsExport implements FromCollection, WithHeadings
             ->get()
             ->map(function ($item, $index) {
                 return [
-                $index + 1, // S No (serial number)
-                $item->sys_no, // System Code
-                $item->sku_code, // SKU / Article No
-                $item->product_name, // Product Name
-                $item->product_description, // Product Description
-                $item->uom_name, // UOM
-                $item->packing, // Packing
-                $item->product_barcode, // Product barcode
-                $item->brand_name, // Brand
-                $item->group_name, // Group
-                $item->category_name, // Category
-                $item->sub_category_name, // Sub-Category
-                $item->product_classification_name, // Product Classification
-                $item->product_type_name, // Product Type
-                $item->product_trend_name, // Product trend
-                $item->purchase_price, // Purchase Price
-                $item->sale_price, // Sale Price
-                $item->mrp_price, // MRP Price
-                $item->is_tax_apply ? 'yes' : 'no', // is Tax apply
-                $item->tax_type_name, // Tax Type
-                $item->tax_applied_on, // Tax Applied On
-                $item->tax_policy, // Tax Policy
-                $item->tax, // Tax %
-                $item->flat_discount, // Product Flat Discount(%)
-                $item->min_qty, // Min Qty
-                $item->max_qty, // Max Qty
-               // Image Link (empty as requested) - यह पोजीशन 27 पर होना चाहिए
-               $item->hs_code_name, // HS Code - यह पोजीशन 28 पर होना चाहिए
-               0,
-                $item->locality, 
-               
-                
-                $item->origin, // Origin - यह पोजीशन 30 पर होना चाहिए
-                   '',// Locality - यह पोजीशन 29 पर होना चाहिए
-                $item->color, // Color - यह पोजीशन 31 पर होना चाहिए
-                $item->product_status, // Product Status - यह पोजीशन 32 पर होना चाहिए
-                $item->is_barcode_scanning ? 'yes' : 'no', // Barcode Scanning - यह पोजीशन 33 पर होना चाहिए
-                $item->principal_group_name // Principal Group - यह पोजीशन 34 पर होना चाहिए
+           
+
+                 $index + 1,
+        $item->sys_no,
+        $item->sku_code,
+        $item->product_name,
+        $item->product_description,
+        $item->uom_name,
+        $item->packing,
+        $item->product_barcode,
+        $item->brand_name,
+        $item->group_name,
+        $item->category_name,
+        $item->sub_category_name,
+        $item->product_classification_name,
+        $item->product_type_name,
+        $item->product_trend_name,
+        $item->purchase_price,
+        $item->sale_price,
+        $item->mrp_price,
+        $item->is_tax_apply ? 'yes' : 'no',
+        $item->tax_type_name,
+        $item->tax_applied_on,
+        $item->tax_policy,
+        $item->tax,
+        $item->flat_discount,
+        $item->min_qty,
+        $item->max_qty,
+
+        '',                     // ✅ Image Link (EMPTY)
+        $item->hs_code_name,    // ✅ HS Code
+        $item->locality,        // ✅ Locality
+        $item->origin,          // ✅ Origin
+        $item->color,           // ✅ Color
+        $item->product_status,
+        $item->is_barcode_scanning ? 'yes' : 'no',
+        $item->principal_group_name,
             ];
 
             });
