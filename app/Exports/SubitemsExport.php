@@ -130,8 +130,8 @@ class SubitemsExport implements FromCollection, WithHeadings
                 $item->min_qty, // Min Qty
                 $item->max_qty, // Max Qty
                // Image Link (empty as requested) - यह पोजीशन 27 पर होना चाहिए
+               $item->hs_code_name, // HS Code - यह पोजीशन 28 पर होना चाहिए
                0,
-                $item->hs_code_name, // HS Code - यह पोजीशन 28 पर होना चाहिए
                 $item->locality, 
                
                 
