@@ -59,7 +59,7 @@ $AccYearTo = $AccYearDate->accyearto;
         }
 
         /* th.userlittab.text-center.col-sm-1.sorting_asc{width:33px !important;}
-    */
+        */
         .userlittab>thead>tr>td,
         .userlittab>tbody>tr>td,
         .userlittab>tfoot>tr>td {
@@ -197,18 +197,19 @@ $AccYearTo = $AccYearDate->accyearto;
                                                     <!-- <th style="width:105px;" class="text-center col-sm-1">SO Date</th> -->
                                                     <!-- <th class="text-center col-sm-1">Model Terms Of Payment</th> -->
                                                     <!-- <th class="text-center col-sm-1">Order No</th> -->
-                                                    <th  style="width:105px;" class="text-center col-sm-1">Order Date</th>
-                                                    <th  style="width:400px;"class="text-center">Customer</th>
+                                                    <th style="width:105px;" class="text-center col-sm-1">Order Date</th>
+                                                    <th style="width:400px;"class="text-center">Customer</th>
                                                     <th style="width:120px;"class="text-center">Total Amount</th>
-                                                       <th class="text-center">Note</th>
+                                                    <th class="text-center">Note</th>
                                                     <th style="width:60px;"class="text-center">Action</th>
 
                                                 </thead>
                                                 <tbody id="data">
-                                                    
 
-                                        </tbody>
-                                        </table>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -218,9 +219,15 @@ $AccYearTo = $AccYearDate->accyearto;
             </div>
         </div>
     </div>
-    </div>
+    <script></script>
     <script>
-        $(document).ready(function () {
+        let saleTable = null;
+
+        $(document).ready(function() {
+
+
+
+
             salesTable = $('#data-table').DataTable({
                 ordering: true,
                 searching: true,
@@ -230,10 +237,10 @@ $AccYearTo = $AccYearDate->accyearto;
                 autoWidth: false,
             });
 
+
+
+            viewRangeWiseDataFilter();
         });
-    </script>
-    <script>
-        viewRangeWiseDataFilter();
         $('#BuyerId').select2();
         $('.select2-container--default').css('width', '100%');
 
@@ -299,9 +306,19 @@ $AccYearTo = $AccYearDate->accyearto;
                 },
 
                 success: function(response) {
-
+                    if ($.fn.DataTable.isDataTable('#data-table')) {
+                        $('#data-table').DataTable().destroy();
+                    }
                     $('#data').html(response);
-               
+
+                    salesTable = $('#data-table').DataTable({
+                        ordering: true,
+                        searching: true,
+                        paging: true,
+                        pageLength: 10,
+                        info: false,
+                        autoWidth: false,
+                    });
 
                 }
             });
@@ -316,11 +333,9 @@ $AccYearTo = $AccYearDate->accyearto;
 
 
 
-    <!-- <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script> -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
-    <script>
-     
-    </script>
+    <script></script>
     <script>
         function printView(divId) {
             var element = document.getElementById(divId);
