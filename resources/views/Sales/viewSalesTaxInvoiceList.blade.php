@@ -41,7 +41,6 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
 table.dataTable tbody th,table.dataTable tbody td{padding:8px 4px !important;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
 table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{width:8px !important;height:20px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;}
-
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
 
 
@@ -548,7 +547,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
         e.preventDefault();   // Stop default Print
         e.stopPropagation();  // Stop bubbling
-        printView("printReport");  // Apna DIV ID yahan likho
+        printView("PrintEmpExitInterviewList");  // Apna DIV ID yahan likho
     }
 }, true);  // <-- CAPTURE MODE ENABLED (very important)
 </script>

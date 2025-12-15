@@ -27,7 +27,7 @@ class CustomSalesTaxReportController extends Controller
                                         ->leftJoin("gst", "sales_tax_invoice.acc_id", "=", "gst.acc_id")
                                         ->join("territories", "territories.id", "=", "customers.territory_id")
                                         ->join(DB::raw("
-                                            (SELECT so_no, SUM(amount) as amount, SUM(amount * (tax / 100)) AS tax_amount, SUM(amount) AS net_amount, SUM(amount * (discount_percent_1 / 100)) as discount_amount
+                                            (SELECT so_no, SUM(amount) as amount, SUM(amount * (tax / 100)) AS tax_amount, SUM(amount) AS net_amount, SUM(amount * (discount_percent_1 / 100)) as discount_amount, SUM(sales_order_data.mrp_price) AS retail_value
                                             FROM sales_order_data
                                             GROUP BY so_no
                                             ) as sod
@@ -36,7 +36,8 @@ class CustomSalesTaxReportController extends Controller
                                         ->select("*",
                                             DB::raw("SUM(sales_tax_invoice_data.qty) as qty"), 
                                             DB::raw("SUM(sales_tax_invoice.sales_tax_further) as sales_tax_further"),
-                                            "brands.name AS brand_name"
+                                            "brands.name AS brand_name",
+                                            "subitem.group_id AS group_id"
                                         )
                                         ->when(isset($from) && isset($to), function($query) use($from, $to) {
                                             $query->whereBetween("sales_tax_invoice_data.date", [$from, $to]);

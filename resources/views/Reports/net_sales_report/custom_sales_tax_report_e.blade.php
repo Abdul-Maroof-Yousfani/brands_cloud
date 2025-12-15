@@ -80,7 +80,7 @@ use App\Helpers\SaleHelper;
                 </div>
                 <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Net Sales Summary Report 1</h1>
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">From Date</label>
                             <div class="input-group">
@@ -89,7 +89,7 @@ use App\Helpers\SaleHelper;
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">To Date</label>
                             <div class="input-group">
@@ -98,14 +98,18 @@ use App\Helpers\SaleHelper;
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">SKU No</label>
                                 <input type="text" name="to" class="form-control" id="sku">
                         </div>
                     </div>
 
-                    <div class="col-md-3">
+                    
+                </div>
+                <div class="row">
+
+<div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label">Brands</label>
                                 <select class="form-control select2" id="brand_id">
@@ -116,10 +120,6 @@ use App\Helpers\SaleHelper;
                                 </select>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-
-
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label">Customers</label>

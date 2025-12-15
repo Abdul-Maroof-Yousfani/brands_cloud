@@ -69,7 +69,9 @@ use App\Helpers\SaleHelper;
 
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="well_N">
+
             <div class="dp_sdw">
+                <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Custom Sale Tax Report</h1>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
                     <?php echo CommonHelper::displayPrintButtonInBlade('printDemandVoucherList', '', '1'); ?>
                     <?php if(true):?>
@@ -79,7 +81,7 @@ use App\Helpers\SaleHelper;
                     <?php endif;?>
                 </div>
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">From Date</label>
                             <div class="input-group">
@@ -88,7 +90,7 @@ use App\Helpers\SaleHelper;
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">To Date</label>
                             <div class="input-group">
@@ -97,13 +99,17 @@ use App\Helpers\SaleHelper;
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">S.I No</label>
                                 <input type="text" name="to" class="form-control" id="so">
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    
+                </div>
+                    <div class="row">
+
+<div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label">Brands</label>
                             <select class="form-control select2" id="brand_id">
@@ -114,10 +120,6 @@ use App\Helpers\SaleHelper;
                             </select>
                         </div>
                     </div>
-                </div>
-                    <div class="row">
-
-
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Customers</label>
@@ -182,6 +184,8 @@ use App\Helpers\SaleHelper;
                                                     <th class="text-center" style="width:150px;">Brand Name</th>
                                                     <th class="text-center" style="width:150px;">Category</th>
                                                     <th class="text-center" style="width:150px;">Invoice No</th>
+                                                    <th class="text-center" style="width:150px;">Group</th>
+                                                    <th class="text-center" style="width:150px;">HS Code</th>
                                                     <th class="text-center" style="width:150px;">Doc Date</th>
                                                     <th class="text-center" style="width:150px;">Retail Value</th>
                                                     <th class="text-center" style="width:150px;">Total Pcs</th>

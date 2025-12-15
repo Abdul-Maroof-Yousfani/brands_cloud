@@ -288,11 +288,8 @@ $sub_menu_id = implode(',', json_decode($erpRole->sub, true));
             DB::commit();
     
             // Return a success response
-            return response()->json([
-                'status' => 'success',
-                'success' => 'ERP Role and associated menu privileges updated successfully!',
-                'data' => $erpRole,
-            ], 200);
+            return redirect()->to(route("erproles.index"))->with(["success" => true, "message" => "ERP Role and associated menu privileges updated successfully!"]);
+
         } catch (Exception $e) {
             // Rollback the transaction in case of error
             DB::rollBack();

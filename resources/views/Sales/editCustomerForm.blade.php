@@ -711,9 +711,9 @@ $(document).ready(function() {
         for (val of cashCustomer) {
             jqueryValidationCustom();
             if (validate == 0) {
-                //return false;
+                // return true;
             } else {
-                return false;
+                return true;
             }
         }
     });

@@ -23,6 +23,7 @@ use App\Helpers\SaleHelper;
     <div class="well_N">
         <div class="dp_sdw">
             
+            <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Recovery Report</h1>
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
                 <?php echo CommonHelper::displayPrintButtonInBlade('printDemandVoucherList','','1');?>
                 <?php if(true):?>
@@ -31,7 +32,7 @@ use App\Helpers\SaleHelper;
                 <?php endif;?>
             </div>
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">From Date</label>
                         <div class="input-group">
@@ -40,7 +41,7 @@ use App\Helpers\SaleHelper;
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">To Date</label>
                         <div class="input-group">
@@ -49,7 +50,7 @@ use App\Helpers\SaleHelper;
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Voucher No</label>
                         <div class="input-group">

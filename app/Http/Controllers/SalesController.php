@@ -2294,9 +2294,16 @@ public function getDeliveryNoteDefaultData(Request $request)
         $currentMonthStartDate = date('Y-m-01');
         $currentMonthEndDate   = date('Y-m-t');
 
+         $territory_ids = json_decode(auth()->user()->territory_id); 
+           
         $sales_tax_invoice = new SalesTaxInvoice();
         $sales_tax_invoice = $sales_tax_invoice->SetConnection('mysql2');
-        $sales_tax_invoice = $sales_tax_invoice->where('status', 1)->get();
+        $sales_tax_invoice = $sales_tax_invoice
+            ->join("customers", "customers.id", "=", "sales_tax_invoice.buyers_id")
+            ->where('sales_tax_invoice.status', 1)
+            ->whereIn('customers.territory_id', $territory_ids)
+            ->get();
+            
         $Customer = DB::Connection('mysql2')->table('customers')->where('status', 1)->get();
         $username = SalesTaxInvoice::select('username')->groupBy('username')->get();
 
