@@ -12,7 +12,13 @@ $counter = 1;$total=0;?>
         <td class="text-center"><?php  echo \Carbon\Carbon::parse($row->so_date)->format("d-M-Y"); ?></td>
         <!-- <td class="text-center">{{$row->model_terms_of_payment}}</td> -->
         <!-- <td class="text-center"><?php echo $row->order_no?></td> -->
-        <td class="text-center"><?php  echo \Carbon\Carbon::parse($row->order_date)->format("d-M-Y"); ?></td>
+        <!-- <td class="text-center"><?php  echo \Carbon\Carbon::parse($row->order_date)->format("d-M-Y"); ?></td> -->
+           <td class="text-center">
+                                                        
+                                                    <?php echo $row->timestamp ? \Carbon\Carbon::parse($row->timestamp)->format("d-M-Y") : "";?> <br>
+                                                <?php echo $row->timestamp ? \Carbon\Carbon::parse($row->timestamp)->format("h:i:s A") : "";?> 
+                                                
+                                                </td>
         <td class="text-center"><strong>{{$customer->name}}</strong></td>
         <!-- @php
         $total_tax_ammount = $data->amount/100*$data->sales_tax_rate;
@@ -30,7 +36,9 @@ $counter = 1;$total=0;?>
         <!-- <td class="text-right">{{number_format($data->amount+$total_tax_ammount,2)}}
            
         </td> -->
-
+ <td  style="text-align:left;"  class="text-center">
+                                                        {{ !empty($sales_order->remark) ? $sales_order->remark : '-' }}
+                                                    </td>
 
         <td class="text-center">
             <div class="dropdown">
