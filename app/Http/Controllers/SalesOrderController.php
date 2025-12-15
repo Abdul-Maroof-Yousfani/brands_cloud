@@ -534,7 +534,7 @@ class SalesOrderController extends Controller
             $sales_order->sale_taxes_amount_total = $request->sale_taxes_amount_total ?? 0;
             $sales_order->sale_taxes_amount_rate = $request->sale_taxes_amount_rate ?? 0;
             $sales_order->warehouse_from = $request->warehouse;
-
+            $sales_order->principal_group_id = $request->principal_group;
             // $sales_order->purchase_order_no=$request->purchase_order_no ?? '';
             // $sales_order->purchase_order_date=$request->purchase_order_date;
             // $sales_order->purchase_order_contract=$request->quotation_id ?? '';
@@ -757,11 +757,19 @@ class SalesOrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+   public function edit($id)
     {
         $sale_orders = DB::Connection('mysql2')->table('sales_order')->find($id);
         // $sales_order_data =    DB::Connection('mysql2')->table('sales_order_data')->where('master_id',$id)->get();
-
+        $brands = DB::Connection('mysql2')->table('brands')->where('principal_group_id', $sale_orders->principal_group_id)->get();
+        
+        $data = [];
+        foreach($brands as $brand) {
+            $data[] = [
+                'id' => $brand->id,
+                'text' => $brand->name
+            ];
+        }
         $sales_order_data = DB::Connection('mysql2')
             ->table('sales_order_data')
             // ->join('subitem','subitem.id','sales_order_data.item_id')
@@ -781,9 +789,8 @@ class SalesOrderController extends Controller
         // print_r($sales_order_data);
         // exit();
 
-        return view($this->path . 'editSaleOrder', compact('sale_orders', 'sales_order_data'));
+        return view($this->path . 'editSaleOrder', compact('sale_orders', 'sales_order_data', 'data'));
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -995,6 +1002,7 @@ class SalesOrderController extends Controller
             $sales_order->branch = $request->branch ?? null;
             $sales_order->sales_person = $request->saleperson ?? null;
             $sales_order->balance_amount = $request->balance_amount ?? 0.0;
+            $sales_order->principal_group_id = $request->principal_group;
             $sales_order->credit_limit = $request->credit_limit ?? 0.0;
             $sales_order->current_balance_due = $request->balance_amount + $request->total_amount_after_sale_tax ?? 0.0;
             $sales_order->virtual_warehouse_check = $virtualWarehouseCheck;

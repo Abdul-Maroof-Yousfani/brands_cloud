@@ -1042,8 +1042,9 @@ public function uploadProduct(Request $request)
                 'flat_discount' => !empty($row[23]) ? (float) str_replace(',', '', trim($row[23])) : 0,
                 'min_qty' => !empty($row[24]) ? (int) trim($row[24]) : 0,
                 'max_qty' => !empty($row[25]) ? (int) trim($row[25]) : 0,
-                'hs_code' => !empty($row[26]) ? CommonHelper::get_id_from_db_by_name_for_product(trim($row[27]), 'hs_codes') : 0,
-                'locality' => !empty($row[27]) ? trim($row[28]) : null,
+                  'hs_code' => !empty($row[27]) ? (int)trim($row[27]): 0,
+                // 'hs_code' => !empty($row[27]) ? CommonHelper::get_id_from_db_by_name_for_product(trim($row[27]), 'hs_codes') : 0,
+                'locality' => !empty($row[28]) ? trim($row[28]) : null,
                 'origin' => !empty($row[29]) ? trim($row[29]) : null,
                 'color' => !empty($row[30]) ? trim($row[30]) : null,
                 'product_status' => !empty($row[31]) ? trim($row[31]) : null,
@@ -1676,7 +1677,8 @@ public function uploadProduct(Request $request)
         b.bundle_unit,
         a.desc,
         a.foc ,
-        a.warehouse_id
+        a.warehouse_id,
+        a.brand_id
         from sales_order_data a
         left join bundles b on a.bundles_id=b.id where a.master_id="' . $id . '"');
 
@@ -2288,25 +2290,25 @@ public function getDeliveryNoteDefaultData(Request $request)
         return view('Sales.EditSalesTaxInvoice', compact('sales_tax_invoice', 'sales_tax_invoice_data'));
     }
 
-    public function viewSalesTaxInvoiceList()
+ public function viewSalesTaxInvoiceList()
     {
 
         $currentMonthStartDate = date('Y-m-01');
         $currentMonthEndDate   = date('Y-m-t');
 
-         $territory_ids = json_decode(auth()->user()->territory_id); 
-           
         $sales_tax_invoice = new SalesTaxInvoice();
         $sales_tax_invoice = $sales_tax_invoice->SetConnection('mysql2');
         $sales_tax_invoice = $sales_tax_invoice
-            ->join("customers", "customers.id", "=", "sales_tax_invoice.buyers_id")
-            ->where('sales_tax_invoice.status', 1)
-            ->whereIn('customers.territory_id', $territory_ids)
+            ->where('status', 1)
+            ->where(function($q){
+                $q->where('pre_status', '!=', 1)
+                ->orWhereNull('pre_status');
+            })
             ->get();
-            
         $Customer = DB::Connection('mysql2')->table('customers')->where('status', 1)->get();
         $username = SalesTaxInvoice::select('username')->groupBy('username')->get();
 
+      
         return view('Sales.viewSalesTaxInvoiceList', compact('sales_tax_invoice', 'Customer', 'username'));
     }
 

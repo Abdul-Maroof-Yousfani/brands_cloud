@@ -2804,6 +2804,7 @@ class FinanceAddDetailControler extends Controller
 
 			$territory_id = $request->territory_id;
 			$brand_id = $request->brand_id;
+			$principal_group_id = $request->principal_group_id;
 			$data=array
 			(
 				'rv_no'=>$rv_no,
@@ -2822,8 +2823,11 @@ class FinanceAddDetailControler extends Controller
 				'bank'=>$bank,
 				'pay_mode'=>$pay_mode,
 				'territory_id' => $territory_id,
-				'brand_id' => $brand_id
+				'brand_id' => $brand_id,
+				'principal_group_id' => $principal_group_id
 			);
+
+			// dd($data);
 
 			$master_id=DB::Connection('mysql2')->table('new_rvs')->insertGetId($data);
 

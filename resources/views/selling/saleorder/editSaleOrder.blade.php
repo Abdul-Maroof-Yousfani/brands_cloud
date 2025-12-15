@@ -157,6 +157,18 @@
                                                 </div>
 
 
+
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label class="control-label" style="margin-bottom: 0;">Select Principal Groups</label>
+                                                <select style="wiidth: 100%;" id="principal_group"
+                                                        name="principal_group" onchange="get_brand_by_principal_group(this)" class="form-control select2 principal_group form-group">
+                                                    <option value="">Select Principal group</option>
+                                                    @foreach(CommonHelper::get_all_principal_groups() as $group)
+                                                        <option value="{{$group->id}}" {{ $sale_orders->principal_group_id == $group->id ? 'selected' : '' }}>{{$group->products_principal_group}}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -691,6 +703,7 @@ function getTableRowCount() {
 //     calculation_amount();
 // }
 
+let brands = @json($data);
 function AddMoreDetails() {
     var Counter = $('.main').length + 1;
     var previousBrandId = $('#brand_id' + (Counter - 1)).val();
@@ -700,15 +713,18 @@ function AddMoreDetails() {
     var stockValue = selectedOption.data('type');
     var hideshow = stockValue == 3 ? 'table-cell' : 'none';
     
+    let dropdown = "";
+    brands.forEach(brand => {
+        dropdown += `<option value="${brand.id}">${brand.text}</option>`;
+    })
+
     $('#more_details').append(`
         <tbody id="RemoveRows${Counter}">
             <tr class="main">
                 <td>
                     <select style="width:150px;" onchange="checkCustomerSelected(this);get_product_by_brand(this,${Counter});getBrandCustomerDiscount(this,${Counter});" name="brand_id[]" class="form-control brand-select no-tab-focus brands" id="brand_id${Counter}" tabindex="-1">
-                        <option value="">Select</option>
-                        @foreach(CommonHelper::get_all_brand() as $item)
-                            <option value="{{$item->id}}">{{$item->name}}</option>
-                        @endforeach
+                       
+                    ${dropdown}
                     </select>
                 </td>
                 <td>
@@ -799,6 +815,8 @@ function AddMoreDetails() {
         }
     }
 });
+
+
     $('#warehouse_from' + Counter).select2({
         matcher: function(params, data) {
             // Exclude 'all' option from dropdown
@@ -821,6 +839,22 @@ function AddMoreDetails() {
     // Update row count and calculations
     getTableRowCount();
     calculation_amount();
+}
+
+function get_brand_by_principal_group(element) {
+    var principal_group_id = $(element).val();
+    $.ajax({
+        // url: '/purchase/get_brand_by_principal_group',
+         url: "{{ route('get_brand_by_principal_group') }}",
+        type: 'Get',
+        data: { principal_group_id: principal_group_id },
+        success: function(response) {
+            brands = response;
+            $(".brands").each((index, element) => {
+                $(element).empty().select2({data: response});
+            })
+        }
+    });
 }
     // $('form').on('submit', function(event) {
     //     event.preventDefault(); // Prevent default form submission
