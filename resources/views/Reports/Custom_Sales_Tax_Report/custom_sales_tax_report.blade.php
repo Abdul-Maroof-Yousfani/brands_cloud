@@ -194,7 +194,7 @@ use App\Helpers\SaleHelper;
                                                     <th class="text-center" style="width:150px;">S.Tax Value</th>
                                                     <th class="text-center" style="width:150px;">Additional Tax Value</th>
                                                     <th class="text-center" style="width:150px;">Net Sales</th>
-                                                    <th class="text-center" style="width:150px;">GST</th>
+                                                    {{-- <th class="texssst-center" style="width:150px;">GST</th> --}}
                                                 </tr>
                                             </thead>
                                             <tbody id="tbody">

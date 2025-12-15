@@ -16,8 +16,11 @@
         <td>{{ number_format($data->amount - $data->tax_amount + $data->discount_amount, 2) }}</td>
         <td class="text-center">{{ number_format($data->discount_amount, 2) ?? 0 }}</td>
         <td class="text-center">{{ number_format($data->tax_amount, 2) ?? 0 }}</td>
-        <td class="text-center">{{ $data->sales_tax_further ?? 0 }}</td>
-        <td class="text-center">{{ number_format($data->net_amount, 2) }}</td>
-        <td class="text-center">{{ $data->percentid ?? "N/A" }}</td>
+        @php
+            $additional_st = App\Helpers\CommonHelper::get_additional_sales_tax($data->so_no) ? App\Helpers\CommonHelper::get_additional_sales_tax($data->so_no)->sale_taxes_amount_rate : 0;
+        @endphp
+        <td class="text-center">{{ $additional_st }}</td>
+        <td class="text-center">{{ number_format($data->net_amount + $additional_st, 2) }}</td>
+        {{-- <td class="text-center">{{ $data->percentid ?? "N/A" }}</td> --}}
     </tr>
 @endforeach
