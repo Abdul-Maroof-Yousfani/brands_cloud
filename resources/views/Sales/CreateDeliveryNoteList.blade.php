@@ -140,7 +140,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <!-- <th class="text-center col-sm-1">Order No</th> -->
                                                     <th  style="width:105px;" class="text-center col-sm-1">Order Date</th>
                                                     <th  style="width:400px;"class="text-center">Customer</th>
-                                                    <th style="width:60px;"class="text-center">Total Amount</th>
+                                                    <th style="width:120px;"class="text-center">Total Amount</th>
                                                        <th class="text-center">Note</th>
                                                     <th style="width:60px;"class="text-center">Action</th>
                                              
