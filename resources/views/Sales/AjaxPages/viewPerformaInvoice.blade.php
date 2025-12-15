@@ -144,7 +144,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                             <div class="contr2">
                                 <h2 class="subHeadingLabelClass">Sale Invoice-P</h2>
                                 <p>Document # {{$delivery_note->so_no}}</p>
-                                <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($delivery_note->so_date)->format('Y-M-d') }}</p>
+                                <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($delivery_note->so_date)->format('d-M-Y') }}</p>
                                  <br>
                                 <div class="table-responsive">
                                     <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:56% !important;margin: 5px 0px;float:right;">
@@ -174,7 +174,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 <div class="row">
                                     <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                                         <div class="term">
-                                            <p>SO Date: {{$delivery_note->so_date}}</p>
+                                            <p>SO Date:  {{ \Carbon\Carbon::parse($delivery_note->so_date)->format('d-M-Y') }}</p>
                                             <p>Warehouse: {{$buyers_warehouse_name}}</p>
                                             <p>Payment Terms: 30 Days</p>
                                             <p>Salesperson Mobile #</p>
@@ -184,7 +184,9 @@ foreach ($delivery_note_data as $sale_order_item) {
                                         <div class="term">
                                             <p>SO #: {{$delivery_note->so_no}}</p>
                                             <p>GDN #: <?php echo strtoupper($delivery_note->gd_no);?></p>
-                                            <p>Branch: {{$delivery_note->branch}}</p>
+                                            <!-- <p>Branch: {{$delivery_note->branch}}</p> -->
+                                          <p>Branch: {{ CommonHelper::getWarehouseName($delivery_note->id) }}</p>
+
                                             <p>Salesperson: {{$buyers_detail->SaleRep}}</p>
                                             <p><strong></strong></p>
                                         </div>
