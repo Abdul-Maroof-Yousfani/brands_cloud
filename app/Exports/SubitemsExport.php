@@ -91,7 +91,7 @@ class SubitemsExport implements FromCollection, WithHeadings
                 'subitem.flat_discount',
                 'subitem.min_qty',
                 'subitem.max_qty',
-                'hs_codes.description as hs_code_name',
+                'subitem.hs_code as hs_code_name',
                 'subitem.locality',
                 'subitem.origin',
                 'subitem.color',
