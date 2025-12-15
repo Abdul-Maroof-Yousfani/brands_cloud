@@ -36,6 +36,19 @@ use App\Helpers\ReuseableCode;
                                     name="v_date">
                             </div>
 
+
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            <label>Principal Group :</label>
+                            <span class="rflabelsteric"><strong>*</strong></span>
+                            <select style="width:100% !important;" autofocus name="principal_group_id" id="principal_group"
+                                class="form-control  select2" onchange="get_brand_by_principal_group(this)">
+                                <option value="">Select Principal Group</option>
+                                @foreach(App\Helpers\CommonHelper::get_all_principal_groups() as $principal) 
+                                    <option {{ $principal->id == $NewRvs->principal_group_id ? 'selected' : '' }} value="{{ $principal->id }}">{{ $principal->products_principal_group }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                 <label for="pwd">Brands</label>
                                 <select name="brand_id" id="brand_id" class="form-control select2">
@@ -105,7 +118,9 @@ use App\Helpers\ReuseableCode;
                                 <select name="acc_id" id="acc_id" class="form-control select2">
                                     <option value="">Select</option>
                                     @foreach (CommonHelper::get_all_account() as $row)
-                                        <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                        <option value="{{ $row->id }}" <?php if ($NewRvs->acc_id == $row->id):
+                                            echo 'selected';
+                                        endif; ?>>{{ $row->name }}</option>
                                     @endforeach
                                 </select>
 
@@ -431,5 +446,24 @@ use App\Helpers\ReuseableCode;
                 $(".hidee").css("display", "block");
             }
         }
+
+
+function get_brand_by_principal_group(element) {
+    var principal_group_id = $(element).val();
+    $.ajax({
+        // url: '/purchase/get_brand_by_principal_group',
+          url: "{{ route('get_brand_by_principal_group') }}",
+        type: 'Get',
+        data: { principal_group_id: principal_group_id },
+        success: function(response) {
+            $('#brand_id').empty().select2({
+                data: response
+            });
+            $('#brand_id').select2('open');
+
+        }
+    });
+}
+
     </script>
 @endsection
