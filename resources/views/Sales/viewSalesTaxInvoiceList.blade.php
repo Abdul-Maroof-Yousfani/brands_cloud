@@ -225,7 +225,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                 </tbody>
                                                 <tbody>
                                                     <tr>
-                                                        <td class="text-center" colspan="10" style="font-size: 13px;">
+                                                        <td class="text-center" colspan="7" style="font-size: 13px;">
                                                             Total
                                                         </td>
                                                         <td class="text-right" colspan="1" style="font-size:13px;color:#333;">
@@ -236,14 +236,14 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
 
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="10"></td>
+                                                        <td colspan="8"></td>
                                                         <td colspan="1" style="font-size: 13px;"><strong>Open</strong>
                                                         </td>
                                                         <td style="font-size: 13px;"><strong><?php echo $open; ?></strong>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="10"></td>
+                                                        <td colspan="8"></td>
                                                         <td colspan="1" style="font-size: 13px;">
                                                             <strong>Partial</strong>
                                                         </td>
@@ -251,7 +251,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="10"></td>
+                                                        <td colspan="8"></td>
                                                         <td colspan="1" style="font-size: 13px;">
                                                             <strong>Complete</strong>
                                                         </td>
