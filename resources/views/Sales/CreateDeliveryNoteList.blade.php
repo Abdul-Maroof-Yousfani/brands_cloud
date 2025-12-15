@@ -135,13 +135,13 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                 <thead>
                                                     <th style="width:5px;" class="text-center col-sm-1">S.No</th>
                                                     <th style="width:68px;" class="text-center col-sm-1">So No</th>
-                                                    <th style="width:105px;" class="text-center col-sm-1">SO Date</th>
+                                                    <!-- <th style="width:105px;" class="text-center col-sm-1">SO Date</th> -->
                                                     <!-- <th class="text-center col-sm-1">Model Terms Of Payment</th> -->
                                                     <!-- <th class="text-center col-sm-1">Order No</th> -->
-                                                    <th  style="width:105px;" class="text-center col-sm-1">Order Date</th>
+                                                    <th  style="width:105px;" class="text-center col-sm-1">SO Date</th>
                                                     <th  style="width:400px;"class="text-center">Customer</th>
                                                     <th style="width:120px;"class="text-center">Total Amount</th>
-                                                       <th class="text-center">Note</th>
+                                                       <th class="text-center" style="width: 90px;">Note</th>
                                                     <th style="width:60px;"class="text-center">Action</th>
                                              
                                                 </thead>

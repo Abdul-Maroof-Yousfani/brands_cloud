@@ -9,7 +9,7 @@ $counter = 1;$total=0;?>
     <tr @if ($row->so_type==1) style="background-color: lightyellow" @endif title="{{$row->id}}" id="{{$row->id}}">
         <td class="text-center">{{$counter++}}</td>
         <td title="{{$row->id}}" class="text-center">@if ($row->so_type==0) {{strtoupper($row->so_no)}} @else {{strtoupper($row->so_no.' ('.$row->description.')')}}@endif</td>
-        <td class="text-center"><?php  echo \Carbon\Carbon::parse($row->so_date)->format("d-M-Y"); ?></td>
+        <!-- <td class="text-center"><?php  echo \Carbon\Carbon::parse($row->so_date)->format("d-M-Y"); ?></td> -->
         <!-- <td class="text-center">{{$row->model_terms_of_payment}}</td> -->
         <!-- <td class="text-center"><?php echo $row->order_no?></td> -->
         <!-- <td class="text-center"><?php  echo \Carbon\Carbon::parse($row->order_date)->format("d-M-Y"); ?></td> -->
@@ -61,7 +61,7 @@ $counter = 1;$total=0;?>
 
 
 <tr>
-    <td class="text-center" colspan="5" style="font-size: 13px;"><strong>Total</strong></td>
+    <td class="text-center" colspan="4" style="font-size: 13px;"><strong>Total</strong></td>
     <td class="text-right" colspan="1" style="font-size: 13px;color: #333"><strong>{{number_format($total,2)}}</strong></td>
     <td class="text-center" colspan="1" style="font-size: 13px;"></td>
  
