@@ -552,15 +552,16 @@ input.form-control.form-control2{margin:0!important;}
             .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
             .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
             input.form-control.form-control2{margin:0 !important;}
-            .totlas{display:flex;gap:70px;background:#ddd;width:35%;float:right;padding-right:8px;justify-content:space-between;}
             .totlas p{font-weight:bold !important;}
-            .psds{display:flex;justify-content:right;gap:88px;font-weight:bold;}
             .psds p{font-weight:bold !important;}
             .totlass h2{font-size:13px !important;}
             .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;width:68%;float:left;}
             .col-lg-6{width:50% !important;}
             .col-lg-12{width:100% !important;}
             .col-lg-4{width:33.33333333% !important;}
+                    .totals3{width:37%;float:right;}
+            .psds{display:flex;font-weight:bold;justify-content:space-between;}
+            .totlas{display:flex;background:#ddd;justify-content:space-between;}
 
             </style>
         `);

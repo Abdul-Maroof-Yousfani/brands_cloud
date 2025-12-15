@@ -52,20 +52,13 @@ foreach ($sales_tax_invoice_data as $item) {
  p{margin:0;padding:0;font-size:13px;font-weight:500;}
 input.form-control.form-control2{margin:0!important;}
 .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-.totlas{display:flex;gap:70px;background:#ddd;width:37%;float:right;padding-right:8px;justify-content:space-between;}
 .totlas p{font-weight:bold;}
-.psds{display:flex;justify-content:right;gap:88px;font-weight:bold;}
 .psds p{font-weight:bold;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
-/* .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
-*/
 .totlass h2{font-size:13px !important;}
 .vomp{text-align:left;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
-
-
-
 </style>
 <?php
 ?>
@@ -871,7 +864,6 @@ input.form-control.form-control2{margin:0!important;}
             .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
             input.form-control.form-control2{margin:0 !important;}
             .totlas p{font-weight:bold !important;}
-            .psds{display:flex;justify-content:right;gap:88px;font-weight:bold;}
             .psds p{font-weight:bold !important;}
             .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;margin-bottom:30px !important;}
             .totlass h2{font-size:13px !important;}
@@ -880,9 +872,12 @@ input.form-control.form-control2{margin:0!important;}
             .contr h2{font-size:17px !important;font-weight:bold !important;color:#000 !important;}
             .contr2 h2{font-size:17px !important;font-weight:bold !important;color:#000 !important;}
             .col-lg-4{width:33.33333333% !important;}
-            .totlas{display:flex;gap:70px;background:#ddd;width:37%;float:right;padding-right:8px;justify-content:space-between;}
             .totlass h2{font-size:13px !important;}
 
+
+            .totals3{width:37%;float:right;}
+            .psds{display:flex;font-weight:bold;justify-content:space-between;}
+            .totlas{display:flex;background:#ddd;justify-content:space-between;}
 
 
             </style>
