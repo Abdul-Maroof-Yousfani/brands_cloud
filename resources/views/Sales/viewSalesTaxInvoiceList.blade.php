@@ -24,15 +24,6 @@ $export = ReuseableCode::check_rights(257);
 @section('content')
 @include('select2')
 <style>
-    /* .table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:22% !important;padding:8px 4px !important;background:#ddd;white-space:nowrap;}
-    table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
-    table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E);background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:0 !important;content:'';right:0.3rem;top:1.3rem;}
-    table.dataTable tbody th,table.dataTable tbody td{padding:8px 4px !important;}
-    th.so-width.text-center.col-sm-1.sorting_asc{width:33px !important;}
-    .table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{width:initial !important;padding:8px 4px !important;}
-    div.dataTables_wrapper div.dataTables_filter input{margin-left:0 !important;}
-    .dataTables_wrapper .dataTables_filter{float:left !important;text-align:left !important;} */
-
  .pagination{float:right;}
 .nowrap{white-space:nowrap;}
 .text-right-amount{text-align:right !important;}
@@ -42,10 +33,6 @@ table.dataTable tbody th,table.dataTable tbody td{padding:8px 4px !important;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
 table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{width:8px !important;height:20px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;}
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
-
-
-
-
 </style>
     <div class="panel-body">
         <div class="row">
@@ -83,7 +70,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <th style="width: 62px;"class="text-center col-sm-1">SO No</th>
                                                     <th  style="width: 80px;"class="text-center col-sm-1">SI No</th>
                                                     <!-- <th class="text-center col-sm-1">ST No</th> -->
-                                                    <th style="width: 100px;"class="text-center col-sm-1">Buyer's Unit</th>
+                                                    <!-- <th style="width: 100px;"class="text-center col-sm-1">Buyer's Unit</th> -->
                                                     <!-- <th class="text-center col-sm-1">Order No</th> -->
                                                     <th style="width: 90px;" class="text-center col-sm-1">SI Date</th>
                                                     <th style="width: 135px;" class="text-center col-sm-1">Payment Terms</th>
@@ -161,7 +148,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                             <button type="button" class=" btn btn-xs btn-success" id="BtnUpdate<?php echo $row->id; ?>" onclick="UpdateValue('<?php echo $row->id; ?>')">Update</button>
                                                             <span id="ScNoError<?php echo $row->id; ?>"></span>
                                                         </td> -->
-                                                            <td class="text-center"><?php echo $BuyersUnit; ?></td>
+                                                            <!-- <td class="text-center"><?php echo $BuyersUnit; ?></td> -->
                                                             <!-- <td class="text-center"><?php echo $BuyerOrderNo; ?></td> -->
                                                             <td class="text-center">
                                                                 <?php echo \Carbon\Carbon::parse($row->gi_date)->format("d-M-Y"); ?>
@@ -510,29 +497,27 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
 
         mywindow.document.write(`
             <style>
-                @page{size:A4;margin:1em;}
-                .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
-                .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
-                .table-responsive{height:inherit !important;}
-                .sales_or{position:relative !important;height:100% !important;}
-                .sgnature{position:absolute !important;bottom:0px !important;}
-                p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
-                .mt-top{margin-top:-72px !important;}
-                .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
-                .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
-                input.form-control.form-control2{margin:0 !important;}
-                .totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
-                .totlas p{font-weight:bold !important;}
-                .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
-                .psds p{font-weight:bold !important;}
-                .totlass h2{font-size:13px !important;}
+          @page{size:A4;margin:1em;}
+        .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
+        .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
+        .table-responsive{height:inherit !important;}
+        .sales_or{position:relative !important;height:100% !important;}
+        .sgnature{position:absolute !important;bottom:0px !important;}
+        p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
+        .mt-top{margin-top:-72px !important;}
+        .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
+        .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
+        input.form-control.form-control2{margin:0 !important;}
+        .totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
+        .totlas p{font-weight:bold !important;}
+        .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
+        .psds p{font-weight:bold !important;}
+        .totlass h2{font-size:13px !important;}
+        .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;width:68%;float:left;}
+        .col-lg-6{width:50% !important;}
+        .col-lg-12{width:100% !important;}
+        .col-lg-4{width:33.33333333% !important;}
 
-
-                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;width:68%;float:left;}
-
-                .col-lg-6{width:50% !important;}
-                .col-lg-12{width:100% !important;}
-                .col-lg-4{width:33.33333333% !important;}
             </style>
         `);
         mywindow.document.write('</head><body>');

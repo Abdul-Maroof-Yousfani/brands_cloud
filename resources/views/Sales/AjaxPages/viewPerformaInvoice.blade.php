@@ -10,61 +10,16 @@ $buyers_detail= CommonHelper::get_buyer_detail($delivery_note->buyers_id);
 $sale_order = CommonHelper::get_so_by_SONO($delivery_note->so_no);
 ?>
 <style>
-
-@media print {
- /* .printHide{display:none !important;}
-.fa{font-size:small;!important;}
-.table-bordered{border:1px solid black;}
-table.table-bordered>thead>tr>th{border:1px solid black !important;} */
-
-}
 table{border:solid 1px black;}
 tr{border:solid 1px black;}
 td{border:solid 1px black;}
 th{border:solid 1px black;}
-/* p{margin:0;padding:0;font-size:13px;font-weight:500;}
-input.form-control.form-control2{margin:0!important;}
-.table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
-.totlas p{font-weight:bold;}
-.psds{display:flex;justify-content:right;gap:88px;}
-.psds p{font-weight:bold;}
-.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
-.totlass{display:inline;background:transparent;margin-top:-25px;}
-.totlass h2{font-size:13px !important;} */
-
-      
-   /* .signature_bor{border-top:solid 1px #CCC;padding-top:7px;}
-textarea{border-style:none;border-color:Transparent;}
-p{margin:0;padding:0;font-size:13px;font-weight:500;}
-input.form-control.form-control2{margin:0!important;}
-.table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-.totlas p{font-weight:bold;}
-.psds{display:flex;justify-content:right;gap:88px;}
-.totlas{display:flex;justify-content:right;gap:88px;}
-.psds p{font-weight:bold;}
-.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
-.totlass{display:inline;background:transparent;margin-top:-25px;}
-.totlass h2{font-size:13px !important;}
-.table-responsive2{scrollbar-width:thin;scrollbar-color:#333 #ccc;overflow:auto;} */
-
- /* .pagination{float:right;}
-.nowrap{white-space:nowrap;}
-.text-right-amount{text-align:right !important;}
-.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 4px !important;background:#ddd;}
-table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;background-repeat:no-repeat;background-position:center;background-size:12px;color:#6e6b7b;width:5% !important;height:14px;content:'';right:0.3rem;top:1.3rem;}
-table.dataTable tbody th,table.dataTable tbody td{padding:8px 4px !important;}
-.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
-table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{width:8px !important;height:20px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;}
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;} */
-
-
  p{margin:0;padding:0;font-size:13px;font-weight:500;}
 input.form-control.form-control2{margin:0!important;}
 .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
+.totlas{display:flex;gap:70px;background:#ddd;width:37%;float:right;padding-right:8px;justify-content:space-between;}
 .totlas p{font-weight:bold;}
-.psds{display:flex;justify-content:right;gap:88px;}
+.psds{display:flex;justify-content:right;gap:88px;font-weight:bold;}
 .psds p{font-weight:bold;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
 .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
@@ -213,7 +168,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                 </div>
                                 @php $buyers_warehouse_name = CommonHelper::buyers_id_with_warehouse_name($delivery_note->buyers_id); @endphp
                                 <div class="row">
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                                         <div class="term">
                                             <p>SO Date: {{$delivery_note->so_date}}</p>
                                             <p>Warehouse: {{$buyers_warehouse_name}}</p>
@@ -221,7 +176,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                             <p>Salesperson Mobile #</p>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                         <div class="term">
                                             <p>SO #: {{$delivery_note->so_no}}</p>
                                             <p>GDN #: <?php echo strtoupper($delivery_note->gd_no);?></p>
@@ -378,7 +333,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                     <div class="totals3">
                                         <div class="psds">
                                             {{ CommonHelper::get_sale_tax_persentage_by_id($sale_order->sale_taxes_id)}}
-                                            <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{number_format(round($sale_order->sale_taxes_amount_rate),0)}}</p>
+                                            <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;">{{number_format(round($sale_order->sale_taxes_amount_rate),0)}}</p>
                                         </div>
                                         <div class="totlas">
                                             <p><strong>Total</strong></p>
@@ -568,44 +523,7 @@ function checkk() {
 
         mywindow.document.write(`
             <style>
-                // @page{size:A4;margin:1em;}
-                // .table-responsive2 .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
-                // .table-responsive2 .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
-                // .table-responsive2{height:inherit !important;}
-                // .sales_or{position:relative !important;height:100% !important;}
-                // // .sgnature{position:absolute !important;bottom:0px !important;}
-                // p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
-                // .mt-top{margin-top:-72px !important;}
-                // .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
-                // .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
-                // input.form-control.form-control2{margin:0 !important;}
-                // .totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
-                // .totlas p{font-weight:bold !important;}
-                // .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
-                // .psds p{font-weight:bold !important;}
-                // .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;margin-bottom:30px;}
-                // .totlass h2{font-size:13px !important;}
-                // .col-lg-6{width:50% !important;}
-                // .col-lg-12{width:100% !important;}
-                // .contr h2{font-size:17px !important;font-weight:bold !important;color:#000 !important;}
-                // .contr2 h2{font-size:17px !important;font-weight:bold !important;color:#000 !important;}
-                // .col-lg-4{width:33.33333333% !important;}
-                // .signature_bor{border-top:solid 1px #CCC;padding-top:7px;}
-                // textarea{border-style:none;border-color:Transparent;}
-                // p{margin:0;padding:0;font-size:13px;font-weight:500;}
-                // input.form-control.form-control2{margin:0!important;}
-                // .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-                // .totlas p{font-weight:bold;}
-                // .psds{display:flex;justify-content:right;gap:88px;}
-                // .totlas{display:flex;justify-content:right;gap:88px;}
-                // .psds p{font-weight:bold;}
-                // .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
-                // .totlass{display:inline;background:transparent;margin-top:-25px;}
-                // .totlass h2{font-size:13px !important;}
-                // .table-responsive2{scrollbar-width:thin;scrollbar-color:#333 #ccc;overflow:auto;}
-
-
-                                @page{size:A4;margin:1em;}
+                @page{size:A4;margin:1em;}
                 .table-responsive .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
                 .table-responsive .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
                 .table-responsive{height:inherit !important;}
@@ -616,18 +534,16 @@ function checkk() {
                 .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
                 .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
                 input.form-control.form-control2{margin:0 !important;}
-                .totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
+                .totlas{display:flex;gap:70px;background:#ddd;width:37%;float:right;padding-right:8px;justify-content:space-between;}
                 .totlas p{font-weight:bold !important;}
-                .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
+                .psds{display:flex;justify-content:right;gap:88px;font-weight:bold;}
                 .psds p{font-weight:bold !important;}
                 .totlass h2{font-size:13px !important;}
-
-
                 .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;width:68%;float:left;}
-
                 .col-lg-6{width:50% !important;}
                 .col-lg-12{width:100% !important;}
                 .col-lg-4{width:33.33333333% !important;}
+
             </style>
         `);
         mywindow.document.write('</head><body>');

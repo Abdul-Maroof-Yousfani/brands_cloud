@@ -58,32 +58,19 @@ foreach ($delivery_note_data as $sale_order_item) {
 }
 ?>
 <style>
-    /* p{margin:0;padding:0;font-size:13px;font-weight:500;}
-    input.form-control.form-control2{margin:0!important;}
-    .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding: 7px 5px !important;}
-    .totlas p{font-weight:bold;}
-    .psds{display:flex;justify-content:right;gap:88px;}
-    .psds p{font-weight:bold;}
-    .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
-    .totlass{display:inline;background:transparent;margin-top:-25px;}
-    .totlass h2{font-size:13px !important;}
-    .table-responsive2{scrollbar-width:thin;scrollbar-color:#333 #ccc;overflow:auto;} */
-
-
 p{margin:0;padding:0;font-size:13px;font-weight:500;}
 input.form-control.form-control2{margin:0!important;}
 .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
-.totlas p{font-weight:bold;}
 .psds{display:flex;justify-content:right;gap:88px;}
 .psds p{font-weight:bold;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
+.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
+.totlas p{font-weight:bold;}
 .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
 .totlass h2{font-size:13px !important;}
 .vomp{text-align:left;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
-
 
 </style>
 <?php
@@ -108,7 +95,7 @@ input.form-control.form-control2{margin:0!important;}
 
     @if($delivery_note->status == 0)
             @if($scannedqrcodeqty != $grnqty)
-                <input type="button" value="Approve" readonly  id="errorbutton" class="btn btn-success btn-xs ">
+                <input type="button" value="Approve" readonly  id="errorbutton" style="text-align:right !important;" class="btn btn-success btn-xs ">
             @else
                 <div class="">
                         <?php echo Form::open(array('url' => 'sad/approveDeliveryNote?m='.$delivery_note->id.'','id='.$delivery_note->id.'','id'=>'approveDeliveryNote','class'=>'stop'));?>
@@ -190,7 +177,7 @@ input.form-control.form-control2{margin:0!important;}
                                 
                                 @endphp
                             <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                                     <div class="term">
                                         <p>SO Date: {{$delivery_note->so_date}}</p>
                                         <p>Warehouse: {{$buyers_warehouse_name}}</p>
@@ -198,7 +185,7 @@ input.form-control.form-control2{margin:0!important;}
                                         <p>Salesperson Mobile #</p>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                  <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="term">
                                         <p>SO #: {{$delivery_note->so_no}}</p>
                                         <p>GDN #: <?php echo strtoupper($delivery_note->gd_no);?></p>
@@ -285,6 +272,9 @@ input.form-control.form-control2{margin:0!important;}
                                 </tbody>
                             </table>
                         </div>
+                   
+                        <br>
+                        <br>
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                  <div class="totlas totlass">
@@ -297,7 +287,7 @@ input.form-control.form-control2{margin:0!important;}
                     </div>
                 </div>
             </div>
-            <br>
+           
             <br>
             <br>
             <div class="row">
@@ -310,8 +300,8 @@ input.form-control.form-control2{margin:0!important;}
                                 <p><strong>Prepared By</strong> </p>
                             </div> -->
                              <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
+                                 <p><strong>Prepared By</strong> </p>
                                 <p><strong>{{$delivery_note->username}}</strong> </p>
-                                <p><strong>Prepared By</strong> </p>
                             </div>
                              <div class="col-lg-4 col-md-4 col-sm4 col-xs-4">
                                 <p><strong></strong> </p>
@@ -712,11 +702,11 @@ function checkk() {
                 .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
                 .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
                 input.form-control.form-control2{margin:0 !important;}
-                .totlas{display:flex !important;justify-content:right !important;gap:70px !important;background:#ddd !important;width:30% !important;float:right !important;padding-right:8px !important;}
-                .totlas p{font-weight:bold !important;}
                 .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
                 .psds p{font-weight:bold !important;}
-                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;margin-bottom:30px;}
+                .totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
+                .totlas p{font-weight:bold;}
+                .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
                 .totlass h2{font-size:13px !important;}
                 .col-lg-6{width:50% !important;}
                 .col-lg-12{width:100% !important;}

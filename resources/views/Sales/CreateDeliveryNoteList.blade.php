@@ -133,8 +133,8 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                         <div class="table-responsive"id="EmpExitInterviewList">
                                            <table class="userlittab table table-bordered sf-table-list" id="data-table">
                                                 <thead>
-                                                    <th style="width:20px;" class="text-center col-sm-1">S.No</th>
-                                                    <th style="width:70px;" class="text-center col-sm-1">So No</th>
+                                                    <th style="width:5px;" class="text-center col-sm-1">S.No</th>
+                                                    <th style="width:68px;" class="text-center col-sm-1">So No</th>
                                                     <th style="width:105px;" class="text-center col-sm-1">SO Date</th>
                                                     <!-- <th class="text-center col-sm-1">Model Terms Of Payment</th> -->
                                                     <!-- <th class="text-center col-sm-1">Order No</th> -->

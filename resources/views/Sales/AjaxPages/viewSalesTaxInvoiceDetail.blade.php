@@ -49,33 +49,16 @@ foreach ($sales_tax_invoice_data as $item) {
 }
 ?>
 <style>
- /* .signature_bor{border-top:solid 1px #CCC;padding-top:7px;}
-textarea{border-style:none;border-color:Transparent;}
-.vomp{text-align:left;}
-p{margin:0;padding:0;font-size:13px;font-weight:500;}
-input.form-control.form-control2{margin:0 !important;}
-.table-bordered>thead>tr>th,.table-bordered>tbody>tr>th,.table-bordered>tfoot>tr>th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
-.totlas p{font-weight:bold;}
-.psds{display:flex;justify-content:right;gap:88px;}
-.psds p{font-weight:bold;}
-.userlittab>thead>tr>td,.userlittab>tbody>tr>td,.userlittab>tfoot>tr>td{padding:10px 5px !important;}
-.totlass{display:inline;background:transparent;margin-top:-25px;}
-.totlass h2{font-size:13px !important;}
-table.table-bordered>tbody>tr>td{border:none !important;border-bottom:1px solid #000 !important;}
-.table-bordered>thead>tr>th,.table-bordered>tbody>tr>th,.table-bordered>tfoot>tr>th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;font-size:13px !important;}
-.table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{font-weight:400 !important;} */
-
-
  p{margin:0;padding:0;font-size:13px;font-weight:500;}
 input.form-control.form-control2{margin:0!important;}
 .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding:7px 5px !important;}
-.totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
+.totlas{display:flex;gap:70px;background:#ddd;width:37%;float:right;padding-right:8px;justify-content:space-between;}
 .totlas p{font-weight:bold;}
-.psds{display:flex;justify-content:right;gap:88px;}
+.psds{display:flex;justify-content:right;gap:88px;font-weight:bold;}
 .psds p{font-weight:bold;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
-/* .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;} */
+/* .totlass{display:inline;background:transparent;margin-top:-25px;width:68%;float:left;}
+*/
 .totlass h2{font-size:13px !important;}
 .vomp{text-align:left;}
 .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
@@ -288,7 +271,7 @@ input.form-control.form-control2{margin:0!important;}
                             @endif --}}
 
                             <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                                     <div class="term">
                                         <p>SO Date: {{ $sales_tax_invoice->so_date }}</p>
                                         <!-- <p>Warehouse: </p> -->
@@ -297,7 +280,7 @@ input.form-control.form-control2{margin:0!important;}
                                         <!-- <p>Sales Rep Mobile #: 1</p> -->
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="term">
                                         <p>SO #: {{ $sales_order->so_no }}</p>
                                         <p>GDN #: {{ $dn_detail->gd_no }}</p>
@@ -876,31 +859,30 @@ input.form-control.form-control2{margin:0!important;}
 
         mywindow.document.write(`
             <style>
-                @page{size:A4;margin:1em;}
-                .table-responsive2 .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
-                .table-responsive2 .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
-                .table-responsive2{height:inherit !important;}
-                .sales_or{position:relative !important;height:100% !important;}
-                // .sgnature{position:absolute !important;bottom:0px !important;}
-                p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
-                .mt-top{margin-top:-72px !important;}
-                .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
-                .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
-                input.form-control.form-control2{margin:0 !important;}
-                .totlas p{font-weight:bold !important;}
-                .psds{display:flex !important;justify-content:right !important;gap:88px !important;}
-                .psds p{font-weight:bold !important;}
-                .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;margin-bottom:30px !important;}
-                .totlass h2{font-size:13px !important;}
-                .col-lg-6{width:50% !important;}
-                .col-lg-12{width:100% !important;}
-                .contr h2{font-size:17px !important; font-weight:bold !important;color:#000 !important;}
-                .contr2 h2{font-size:17px !important; font-weight:bold !important;color:#000 !important;}
-                .col-lg-4{width:33.33333333% !important;}
+            @page{size:A4;margin:1em;}
+            .table-responsive2 .sale_older_tab > caption + thead > tr:first-child > th,.sale_older_tab > colgroup + thead > tr:first-child > th,.sale_older_tab > thead:first-child > tr:first-child > th,.sale_older_tab > caption + thead > tr:first-child > td,.sale_older_tab > colgroup + thead > tr:first-child > td,.sale_older_tab > thead:first-child > tr:first-child > td{border-top:0;font-size:10px !important;padding:9px 5px !important;}
+            .table-responsive2 .sale_older_tab > thead > tr > th,.sale_older_tab > tbody > tr > th,.sale_older_tab > tfoot > tr > th,.sale_older_tab > thead > tr > td,.sale_older_tab > tbody > tr > td,.table > tfoot > tr > td{padding:2px 5px !important;font-size:11px !important;border-top:1px solid #000000 !important;border-bottom:1px solid #000000 !important;border-left:1px solid #000000 !important;border-right:1px solid #000000 !important;}
+            .table-responsive2{height:inherit !important;}
+            .sales_or{position:relative !important;height:100% !important;}
+            // .sgnature{position:absolute !important;bottom:0px !important;}
+            p{margin:0;padding:0;font-size:13px !important;font-weight:500;}
+            .mt-top{margin-top:-72px !important;}
+            .sale-list.userlittab > thead > tr > td,.sale-list.userlittab > tbody > tr > td,.sale-list.userlittab > tfoot > tr > td{font-size:12px !important;text-align:left !important;}
+            .sale-list.table-bordered > thead > tr > th,.sale-list.table-bordered > tbody > tr > th,.sale-list.table-bordered > tfoot > tr > th{font-size:12px !important;margin:0 !important;vertical-align:inherit !important;padding:0px 17px !important;text-align:left !important;}
+            input.form-control.form-control2{margin:0 !important;}
+            .totlas p{font-weight:bold !important;}
+            .psds{display:flex;justify-content:right;gap:88px;font-weight:bold;}
+            .psds p{font-weight:bold !important;}
+            .totlass{display:inline!important;background:transparent!important;margin-top:-25px!important;margin-bottom:30px !important;}
+            .totlass h2{font-size:13px !important;}
+            .col-lg-6{width:50% !important;}
+            .col-lg-12{width:100% !important;}
+            .contr h2{font-size:17px !important;font-weight:bold !important;color:#000 !important;}
+            .contr2 h2{font-size:17px !important;font-weight:bold !important;color:#000 !important;}
+            .col-lg-4{width:33.33333333% !important;}
+            .totlas{display:flex;gap:70px;background:#ddd;width:37%;float:right;padding-right:8px;justify-content:space-between;}
+            .totlass h2{font-size:13px !important;}
 
-            .totlas{display:flex;justify-content:right;gap:70px;background:#ddd !important;width:18%;float:right;padding-right:8px;}
-
-                .totlass h2{font-size:13px !important;}
 
 
             </style>

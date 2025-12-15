@@ -17,7 +17,8 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
  .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{font-weight:300 !important;}
 table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,table.dataTable thead .sorting_desc:after{width:8px !important;height:20px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9' /%3E%3C/svg%3E") !important;}
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{color:#333 !important;border:1px solid #428bca!important;background-color:white;background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#fff),color-stop(100%,#dcdcdc));background:-webkit-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-moz-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-ms-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:-o-linear-gradient(top,#fff 0%,#dcdcdc 100%);background:#428bca !important;width:25px !important;height:30px!important;line-height:15px;color:#fff !important;}
-
+.table > caption + thead > tr:first-child > th,.table > colgroup + thead > tr:first-child > th,.table > thead:first-child > tr:first-child > th,.table > caption + thead > tr:first-child > td,.table > colgroup + thead > tr:first-child > td,.table > thead:first-child > tr:first-child > td{padding:8px 8px !important;}
+.userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 8px !important;}
 
  </style>
 
@@ -31,8 +32,8 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                         <thead>
                         <th style=" width:65px;" class="text-center col-sm-1">Check / Uncheck</th>
                         <th style=" width:35px;"  class="text-center col-sm-1">S.No</th>
-                        <th style=" width:100px;"class="text-center col-sm-1">GD No</th>
-                        <th style=" width:110px;" class="text-center col-sm-1">GD Date</th>
+                        <th style=" width:100px;"class="text-center col-sm-1">GDN No</th>
+                        <th style=" width:110px;" class="text-center col-sm-1">GDN Date</th>
                         <!-- <th style=" width:110px;"class="text-center col-sm-1">Payment Terms</th> -->
                         <th style=" width:110px;" class="text-center col-sm-1">Order Date</th>
                         <th  style=" width:400px;"class="text-center">Customer</th>
