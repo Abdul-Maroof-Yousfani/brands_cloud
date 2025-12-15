@@ -247,10 +247,9 @@ class ErpRoleController extends Controller
           //  $main_menu_id = implode(',', json_decode($erpRole->main));
            // $sub_menu_id = implode(',', json_decode($erpRole->sub));
             
-            dd($erpRole->sub);
-            $rights = implode(',', json_decode($erpRole->rights, true));   // ✅ true for array
-$main_menu_id = implode(',', json_decode($erpRole->main, true));
-$sub_menu_id = implode(',', json_decode($erpRole->sub, true));
+            $rights = $erpRole->rights ? implode(',', json_decode($erpRole->rights, true)) : '';   // ✅ true for array
+$main_menu_id = $erpRole->main ? implode(',', json_decode($erpRole->main, true)) : '';
+$sub_menu_id = $erpRole->sub ? implode(',', json_decode($erpRole->sub, true)) : '';
     
             // Fetch all users with the specific role_id
             $users = DB::table('users')->where('role_id', $id)->get();
