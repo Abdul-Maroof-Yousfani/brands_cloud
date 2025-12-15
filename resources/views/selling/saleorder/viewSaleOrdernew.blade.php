@@ -74,7 +74,7 @@ input.form-control.form-control2{margin:0!important;}
                                                     <strong>{{$buyer_detail->name}}</strong><br>
                                                     {{$buyer_detail->address}}<br>
                                                     {{ CommonHelper::get_all_country_by_id($buyer_detail->country)->name ?? '-'}}<br>
-                                                    {{$buyer_detail->phone_1}}<br>
+                                                    <!-- {{$buyer_detail->phone_1}}<br> -->
                                                     N.T.N #:{{isset($buyer_detail->cnic_ntn) ? $buyer_detail->cnic_ntn : "-" }}<br>
                                                     S.T #: {{isset($buyer_detail->strn) ? $buyer_detail->strn : "-"}}
                                                 </p>
