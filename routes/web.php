@@ -1299,6 +1299,7 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get("/unit_report", "UnitActivityListController@show")->name("unit_activity.view");
     Route::get("/sales_return_view", "SalesReturnReportController@show")->name("sales_return_report.view");
     Route::get("/stock_report_view", "StockReportController@show")->name("stock_report.view");
+    Route::get("/sale_return_journal_report", "SaleReturnJournalReportController@show")->name("sale_return.view");
     Route::get("/custom_sales_tax_report", "CustomSalesTaxReportController@show")->name('sales_tax_report.view');
     Route::get("/net_sales_report_view", "NetSalesReportController@show")->name('net_sale_report.view');
     Route::get("/net_sales_report_1_view", "NetSalesReportController@NetSalesExecutiveReport")->name('net_sale_report.view');
