@@ -2020,10 +2020,6 @@ public static function getSubItemByBrand($id, $item_id = null)
     return $html;
 }
 
-public static function get_additional_sales_tax($so_no) {
-    return DB::connection("mysql2")->table("sales_order")->select("id", "sale_taxes_amount_rate")->where("so_no", $so_no)->first();
-}
-
 
 
     public static function get_all_subitem()
@@ -3400,6 +3396,20 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         return DB::table($TableName)->where($TableId,$DataId)->where('status',1)->first();
     }
 
+       public static function getWarehouseName($deliveryNoteId)
+    {
+        if (empty($deliveryNoteId)) {
+            return '-';
+        }
+
+        $row = DB::Connection('mysql2')->table('delivery_note_data')
+            ->leftJoin('warehouse', 'warehouse.id', '=', 'delivery_note_data.warehouse_id')
+            ->where('delivery_note_data.master_id', $deliveryNoteId)
+            ->select('warehouse.name')
+            ->first();
+
+        return $row->name ?? '-';
+    }
     public static function get_data_from_survey_tracking($id,$type)
     {
         $client_job='';
@@ -4640,11 +4650,6 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         $get_item_detials = DB::Connection('mysql2')->table('sales_order_data')->where('status',1)->where('id',$id)->first();
         return $get_item_detials;
 
-    }
-
-    public static function get_group_by($group_id) {
-        $company_group = CompanyGroup::find($group_id);
-        return $company_group->name;
     }
 
     public function get_stock_location_wise(Request $request)
