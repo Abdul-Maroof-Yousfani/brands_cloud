@@ -117,7 +117,7 @@ use App\Helpers\CommonHelper;
         ?>
         <tr class="text-center" title="{{$row->sub_item_id}}">
             <td title="opeing">{{$count++}}</td>
-            <td title="sub item"><small>{{$row->sub_ic}}</small></td>
+            <td title="sub item"><small>{{$row->product_name}}</small></td>
             <td title="opening amount"><small>{{number_format($open_amount,2)}}</small></td>
             <td title="purchase amount"><small>{{number_format($purchase_amount,2)}}</small></td>
             <td title="purchase return"><small>{{number_format($return_data,2)}}</small></td>

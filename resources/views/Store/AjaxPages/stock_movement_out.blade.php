@@ -76,7 +76,7 @@ use App\Helpers\CommonHelper;
         ?>
         <tr class="text-center" title="{{$row->sub_item_id}}">
             <td title="opeing">{{$count++}}</td>
-            <td title="sub item"><small>{{$row->sub_ic}}</small></td>
+            <td title="sub item"><small>{{$row->product_name}}</small></td>
             <td title="Sales Value On DN"><small>{{number_format($sales_dn,2)}}</small></td>
             <td title="Sales Return On DN"><small>{{number_format($return_on_dn,2)}}</small></td>
             <td title="Purchase Return On GRN"><small>{{number_format($return_data_on_grn,2)}}</small></td>

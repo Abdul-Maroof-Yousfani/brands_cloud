@@ -104,7 +104,7 @@ use App\Helpers\CommonHelper;
         ?>
         <tr title="{{$row->sub_item_id}}">
             <td>{{$count++}}</td>
-            <td><small>{{$row->sub_ic}}</small></td>
+            <td><small>{{$row->product_name}}</small></td>
             <td><small>{{number_format($open_qty,2)}}</small></td>
             <td><small>{{number_format($open_amount,2)}}</small></td>
             <td><small>{{number_format($in_qty,2)}}</small></td>

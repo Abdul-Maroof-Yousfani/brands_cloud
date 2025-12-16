@@ -1649,7 +1649,7 @@ public function add_opening_import_post(Request $request)
             ->join('subitem as b','a.sub_item_id','=','b.id')
             ->where('a.status',1)
             ->where('amount','>',0)
-            ->select('a.*','b.sub_ic')
+            ->select('a.*','b.sub_ic', 'b.product_name')
             ->groupby('a.sub_item_id')
 
             ->get();
@@ -1659,7 +1659,7 @@ public function add_opening_import_post(Request $request)
             ->join('subitem as b','a.sub_item_id','=','b.id')
             ->where('a.status',1)
             ->where('a.sub_item_id',$ItemId)
-            ->select('a.*','b.sub_ic')
+            ->select('a.*','b.sub_ic', 'b.product_name')
             ->groupby('a.sub_item_id')
             ->get();
         endif;
