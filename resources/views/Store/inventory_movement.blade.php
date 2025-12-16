@@ -72,7 +72,7 @@ $export=ReuseableCode::check_rights(243);
              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label for="">Brands</label>
                 <select name="brand_id" id="brand_id" class="form-control select2">
-                    <option value="all">ALL</option>
+                    <option value="">ALL</option>
                     <?php foreach(App\Helpers\CommonHelper::get_all_brand() as $brand):?>
                         <option value="<?php echo $brand->id?>"><?php echo $brand->name?></option>
                     <?php endforeach;?>
