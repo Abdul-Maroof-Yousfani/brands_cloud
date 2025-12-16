@@ -1637,6 +1637,7 @@ public function add_opening_import_post(Request $request)
         ini_set('memory_limit', '-1');
         $ReportType=$request->ReportType;
         $from=$request->from_date;
+        $brand_id = $request->brand_id;
         $to=$request->to_date;
         $accyeafrom=$request->accyearfrom;
         $ItemId=$request->ItemId;
@@ -1647,6 +1648,10 @@ public function add_opening_import_post(Request $request)
 
         $data=DB::Connection('mysql2')->table('stock as a')
             ->join('subitem as b','a.sub_item_id','=','b.id')
+            ->join("brands", "brands.id", "=", "b.brand_id")
+            ->when(isset($brand_id), function($query) use ($brand_id) {
+                $query->where("brands.id", $brand_id);
+            })
             ->where('a.status',1)
             ->where('amount','>',0)
             ->whereBetween("a.created_date", [$from, $to])
@@ -1658,6 +1663,10 @@ public function add_opening_import_post(Request $request)
         else:
         $data=DB::Connection('mysql2')->table('stock as a')
             ->join('subitem as b','a.sub_item_id','=','b.id')
+            ->join("brands", "brands.id", "=", "b.brand_id")
+            ->when(isset($brand_id), function($query) use ($brand_id) {
+                $query->where("brands.id", $brand_id);
+            })
             ->where('a.status',1)
             ->where('a.sub_item_id',$ItemId)
             ->whereBetween("a.created_date", [$from, $to])

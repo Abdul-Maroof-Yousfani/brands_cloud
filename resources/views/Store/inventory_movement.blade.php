@@ -69,6 +69,16 @@ $export=ReuseableCode::check_rights(243);
                 </select>
             </div>
 
+             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <label for="">Brands</label>
+                <select name="brand_id" id="brand_id" class="form-control select2">
+                    <option value="all">ALL</option>
+                    <?php foreach(App\Helpers\CommonHelper::get_all_brand() as $brand):?>
+                        <option value="<?php echo $brand->id?>"><?php echo $brand->name?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+
             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
                 <label> Purchase <input id="purchase" type="checkbox" value="1"  ></label>
                 <label> Sales <input id="sales" type="checkbox" value="2"  ></label>
@@ -125,11 +135,13 @@ $export=ReuseableCode::check_rights(243);
 
         $(document).ready(function(){
             $('#ItemId').select2();
+            $(".select2").select2();
         });
         function stockReportItemWise(){
             var ReportType =1;
             var from_date = $('#from_date').val();
             var to_date = $('#to_date').val();
+            var brand_id = $("#brand_id").val();
             var ItemId = $('#ItemId').val();
             var accyearfrom = $('#accyearfrom').val();
             var purchase =0;
@@ -149,7 +161,7 @@ $export=ReuseableCode::check_rights(243);
             $.ajax({
                 url: '<?php echo url('/')?>/store/stock_movemnet',
                 method:'GET',
-                data:{from_date:from_date,to_date:to_date,accyearfrom:accyearfrom,ItemId:ItemId,ReportType:ReportType,purchase:purchase,sales:sales},
+                data:{brand_id,from_date:from_date,to_date:to_date,accyearfrom:accyearfrom,ItemId:ItemId,ReportType:ReportType,purchase:purchase,sales:sales},
                 error: function()
                 {
                     alert('error');
