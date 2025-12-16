@@ -62,7 +62,7 @@ $export=ReuseableCode::check_rights(243);
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label for="">Items</label>
                 <select name="ItemId" id="ItemId" class="form-control">
-                    <option value="">ALL</option>
+                    <option value="all">ALL</option>
                     <?php foreach(App\Helpers\CommonHelper::get_all_subitems() as $subitem):?>
                         <option value="<?php echo $subitem->id?>"><?php echo $subitem->product_name?></option>
                     <?php endforeach;?>
@@ -72,7 +72,7 @@ $export=ReuseableCode::check_rights(243);
              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label for="">Brands</label>
                 <select name="brand_id" id="brand_id" class="form-control select2">
-                    <option value="">ALL</option>
+                    <option value="all">ALL</option>
                     <?php foreach(App\Helpers\CommonHelper::get_all_brand() as $brand):?>
                         <option value="<?php echo $brand->id?>"><?php echo $brand->name?></option>
                     <?php endforeach;?>
