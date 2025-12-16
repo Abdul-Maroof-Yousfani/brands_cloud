@@ -76,7 +76,7 @@ input.form-control.form-control2{margin:0!important;}
                                                     {{ CommonHelper::get_all_country_by_id($buyer_detail->country)->name ?? '-'}}<br>
                                                     <!-- {{$buyer_detail->phone_1}}<br> -->
                                                     N.T.N #:{{isset($buyer_detail->cnic_ntn) ? $buyer_detail->cnic_ntn : "-" }}<br>
-                                                    S.T #: {{isset($buyer_detail->strn) ? $buyer_detail->strn : "-"}}
+                                                    S.T.R.N #: {{isset($buyer_detail->strn) ? $buyer_detail->strn : "-"}}
                                                 </p>
                                               
                                             </div>
@@ -87,7 +87,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 <h2 class="subHeadingLabelClass">Sale Order</h2>
                                                 <br>
                                                 <p>Document # {{$sale_order->so_no}}</p>
-                                                <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($sale_order->so_date)->format('Y-M-d') }}</p>
+                                                <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($sale_order->so_date)->format('d-M-Y') }}</p>
                                                 <br>
                                                 @if ($buyer_detail->display_pending_payment_invoice == 1)
                                                 @endif
