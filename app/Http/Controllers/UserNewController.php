@@ -58,7 +58,7 @@ class UserNewController extends Controller
     {
 
 
-        // dd($request->All());
+      
         $validated = $request->validate([
             'employee' => 'required',
             'name' => 'required|string|max:255',
@@ -106,17 +106,26 @@ class UserNewController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'message' => 'User created successfully.',
-                'user' => $user,
-            ], 201);
+            // return response()->json([
+            //     'message' => 'User created successfully.',
+            //     'user' => $user,
+            // ], 201);
+             return redirect()->back()->with([
+            'success' => 'User created successfully.',
+            'status'  => 201
+        ]);
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Failed to create user.',
-                'error' => $e->getMessage(),
-            ], 500);
+            // return response()->json([
+            //     'message' => 'Failed to create user.',
+            //     'error' => $e->getMessage(),
+            // ], 500);
+
+               return redirect()->back()->with([
+            'error'  => 'Failed to create user. ' . $e->getMessage(),
+            'status' => 500
+        ]);
         }
     }
 

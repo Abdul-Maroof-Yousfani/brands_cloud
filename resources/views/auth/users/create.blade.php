@@ -179,7 +179,9 @@
         var longitude = 67.0011364; // Example longitude
 </script>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places&callback=initMaps"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMa0w8q-4TiAhsApOkj2Xi2YWiQcOW9Kk&libraries=places&callback=initMaps"></script>
+<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places&callback=initMaps"></script> -->
+
 
 
     <script>
