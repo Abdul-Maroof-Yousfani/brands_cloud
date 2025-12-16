@@ -1649,6 +1649,7 @@ public function add_opening_import_post(Request $request)
             ->join('subitem as b','a.sub_item_id','=','b.id')
             ->where('a.status',1)
             ->where('amount','>',0)
+            ->whereBetween("a.created_date", [$from, $to])
             ->select('a.*','b.sub_ic', 'b.product_name')
             ->groupby('a.sub_item_id')
 
@@ -1659,6 +1660,7 @@ public function add_opening_import_post(Request $request)
             ->join('subitem as b','a.sub_item_id','=','b.id')
             ->where('a.status',1)
             ->where('a.sub_item_id',$ItemId)
+            ->whereBetween("a.created_date", [$from, $to])
             ->select('a.*','b.sub_ic', 'b.product_name')
             ->groupby('a.sub_item_id')
             ->get();
@@ -1681,6 +1683,7 @@ public function add_opening_import_post(Request $request)
                     ->join('subitem as b','a.item_id','=','b.id')
                     ->where('a.status',1)
                     ->select('a.*','b.sub_ic')
+                    
                     ->groupby('a.item_id')
                     ->get();
             else:

@@ -33,21 +33,38 @@ $export=ReuseableCode::check_rights(243);
         <div class="row">
 
 
-            <div  @if ($type==1) style="display: none" @endif class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                <label for="email">  From Date</label>
-                <input id="from_date"  required="required" min="{{$financial_year[0]}}" name="from_date" max="{{$financial_year[1]}}" class="date1 form-control" type="date" value="<?php echo $financial_year[0] ?>" />
-            </div>
-
             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                <label for="email">  @if ($type==1) As On @else To Date @endif</label>
-                <input id="to_date" required="required" min="{{$financial_year[0]}}" max="{{$financial_year[1]}}" name="from_date" class="date1 form-control" type="date" value="{{$financial_year[1]}}" />
+                <label for="email">  @if ($type==1) From @else To Date @endif</label>
+                <input
+                    id="from_date"
+                    name="from_date"
+                    required
+                    min="{{ $financial_year[0] }}"
+                    max="{{ $financial_year[1] }}"
+                    class="date1 form-control"
+                    type="date"
+                    value="{{ now()->toDateString() }}"
+                />
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                <label for="email">  @if ($type==1) To @else To Date @endif</label>
+                <input
+                    id="to_date"
+                    name="to_date"
+                    required
+                    min="{{ $financial_year[0] }}"
+                    max="{{ $financial_year[1] }}"
+                    class="date1 form-control"
+                    type="date"
+                    value="{{ now()->toDateString() }}"
+                />
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label for="">Items</label>
                 <select name="ItemId" id="ItemId" class="form-control">
                     <option value="all">ALL</option>
-                    <?php foreach($SubItem as $ItemFil):?>
-                        <option value="<?php echo $ItemFil->id?>"><?php echo $ItemFil->sub_ic?></option>
+                    <?php foreach(App\Helpers\CommonHelper::get_all_subitems() as $subitem):?>
+                        <option value="<?php echo $subitem->id?>"><?php echo $subitem->product_name?></option>
                     <?php endforeach;?>
                 </select>
             </div>
