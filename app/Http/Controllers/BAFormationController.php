@@ -27,7 +27,8 @@ class BAFormationController extends Controller
       $data['BAFormations'] = BAFormation::leftJoin('employees', 'employees.emp_id', '=', 'b_a_formations.employee_id')
           ->leftJoin('customers', 'customers.id', '=', 'b_a_formations.customer_id')
             ->select('b_a_formations.id','b_a_formations.status','b_a_formations.ba_no','b_a_formations.brands_ids','b_a_formations.employee_id','employees.name as employee_name','b_a_formations.customer_id','customers.name as customer_name')
-            ->paginate(10);
+            // ->paginate(10);
+            ->get();  
         return  view('BA.baFormation.getList',$data);
     }
     /**

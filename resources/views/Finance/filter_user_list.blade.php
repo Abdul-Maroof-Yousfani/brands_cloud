@@ -38,3 +38,15 @@ foreach ($Users as $row1) {
     </td>
 </tr>
 <?php }?>
+
+
+   <script>
+$("#TableExportToCsv").DataTable({
+    ordering: true,
+    searching: true,
+    paging: true,
+    info: false,
+    autoWidth: false, // prevent DataTables from auto-calculating width
+});
+
+</script>
