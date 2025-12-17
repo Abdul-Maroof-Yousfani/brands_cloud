@@ -17,7 +17,12 @@ $total = 0; ?>
                 {{ strtoupper($row->so_no . ' (' . $row->description . ')') }}
             @endif
         </td>
-        <td class="text-center"><?php echo \Carbon\Carbon::parse($row->so_date)->format('d-M-Y'); ?></td>
+        <td class="nowrap">
+    
+      {{ \Carbon\Carbon::parse($row->timestamp)->format('d-M-Y') }}<br>
+                            {{ \Carbon\Carbon::parse($row->timestamp)->format('h:i:s A') }}
+    
+    </td>
 
         <td class="text-center"><strong>{{ $customer->name }}</strong></td>
         <!-- @php
@@ -32,7 +37,7 @@ $total = 0; ?>
         <td class="text-right">{{ number_format($lineTotal, 0) }}</td>
 
         <td style="text-align:left;" class="text-center">
-            {{ !empty($sales_order->remark) ? $sales_order->remark : '-' }}
+            {{ !empty($row->remark) ? $row->remark : '-' }}
         </td>
 
         <td class="text-center">
