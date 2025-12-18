@@ -1,4 +1,4 @@
-<table class="table table-bordered sf-table-list">
+<table class="table table-bordered sf-table-list" id="TableExportToCsv">
     <thead>
         <tr class="text-center">
             <th class="text-center">S.No</th>
@@ -43,9 +43,6 @@
     </tbody>
 </table>
 
-<div id="paginationLinks">
-    {{ $roles->links() }}
-</div>
 
 <script>
     $(document).ready(function() {
@@ -58,4 +55,16 @@
             });
         });
     });
+</script>
+
+
+   <script>
+$("#TableExportToCsv").DataTable({
+    ordering: true,
+    searching: true,
+    paging: true,
+    info: false,
+    autoWidth: false, // prevent DataTables from auto-calculating width
+});
+
 </script>

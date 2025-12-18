@@ -8,12 +8,12 @@
                 <h1>Users List</h1>
             </div>
             <div class="col-md-4 text-right">
-                <form id="filterForm">
+                <!-- <form id="filterForm">
                     <div class="mb-3">
                         <label for="customers" class="form-label">Search</label>
                         <input type="text" class="form-control" id="search" name="search" value="">
                     </div>
-                </form>
+                </form> -->
             </div>
         </div>
 

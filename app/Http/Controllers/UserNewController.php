@@ -31,7 +31,11 @@ class UserNewController extends Controller
             $rolesQuery->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $data['roles'] = $rolesQuery->where('acc_type', 'ba')->paginate(10);
+        $data['roles'] = $rolesQuery->where('acc_type', 'ba')
+        ->get();
+        // ->paginate(10);
+
+       
 
         // Return the view with the roles data
         return view('auth.users.getList', $data);
