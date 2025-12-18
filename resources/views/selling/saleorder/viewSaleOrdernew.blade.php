@@ -275,8 +275,8 @@ input.form-control.form-control2{margin:0!important;}
                                                     <p id="sale_taxes_amount_rate" style="margin:0 !important;padding:0 !important;font-size:13px !important;font-weight:500 !important;">{{number_format(round($sale_order->sale_taxes_amount_rate),0)}}</p>
                                                 </div>
                                                 <div class="totlas">
-                                                    <p><strong>Total</strong></p>
-                                                    <p><strong>{{ number_format($sale_order->total_amount_after_sale_tax + $sale_order->sale_taxes_amount_rate) }}</strong></p>
+                                                    <p>Total</p>
+                                                    <p>{{ number_format($sale_order->total_amount_after_sale_tax + $sale_order->sale_taxes_amount_rate) }}</p>
                                                 </div>
                                             </div>
                                         </div>
