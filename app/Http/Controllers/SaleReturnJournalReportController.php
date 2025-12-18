@@ -37,6 +37,7 @@ class SaleReturnJournalReportController extends Controller
                                                                     "subitem.packing",
                                                                     "subitem.sale_price",
                                                                     "subitem.id",
+                                                                    "subitem.group_id",
                                                                     "subitem.hs_code AS hs_code", 
                                                                     "brands.name AS brand_name",
                                                                 )

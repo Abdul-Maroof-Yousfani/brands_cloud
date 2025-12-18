@@ -5,12 +5,12 @@
         <td>{{ $data->customer_name }}</td>
         <td>{{ $data->product_name }}</td>
         <td>{{ $data->brand_name }}</td>
-        <td>{{ 1 }}</td>
+        <td>{{ App\Helpers\CommonHelper::get_company_group_by($data->group_id) }}</td>
         <td>{{ $data->hs_code }}</td>
         <td>{{ $data->qty }}</td>
         <td>{{ $data->qty }}</td>
         <td>{{ $data->packing }}</td>
-        <td>{{ 1 }};</td>
+        <td>{{ $data->qty }};</td>
         <td>{{ $data->sale_price }}</td>
         @php
             $gross_amount = $data->amount - $data->tax_amount + $data->discount_amount + $data->second_discount_amount;
