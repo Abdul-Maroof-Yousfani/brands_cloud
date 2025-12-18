@@ -76,7 +76,7 @@ input.form-control.form-control2{margin:0!important;}
                                                     {{ CommonHelper::get_all_country_by_id($buyer_detail->country)->name ?? '-'}}<br>
                                                     <!-- {{$buyer_detail->phone_1}}<br> -->
                                                     N.T.N #:{{isset($buyer_detail->cnic_ntn) ? $buyer_detail->cnic_ntn : "-" }}<br>
-                                                    S.T.R.N #: {{isset($buyer_detail->strn) ? $buyer_detail->strn : "3277876156235"}}
+                                                    S.T.R.N #: {{isset($buyer_detail->strn) ? $buyer_detail->strn : "-"}}
                                                 </p>
                                               
                                             </div>
@@ -121,7 +121,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 <div class="row">
                                                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
                                                         <div class="term">
-                                                            <p>SO Date: {{ \Carbon\Carbon::parse($sale_order->so_date)->format('d-M-Y') }} </p>
+                                                            <p>SO Date: {{$sale_order->so_date}}</p>
                                                              @php
                                                                 $warehouse_name = null;
                                                                 if(!$sale_order->warehouse_from) {
