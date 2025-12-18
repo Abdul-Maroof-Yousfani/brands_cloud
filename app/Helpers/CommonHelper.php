@@ -2097,6 +2097,10 @@ public static function get_all_subitems()
 
     }
 
+    public static function get_additional_sales_tax($so_no) {
+        return DB::connection("mysql2")->table("sales_order")->select("id", "sale_taxes_amount_rate")->where("so_no", $so_no)->first();
+    }
+
     public static function get_all_subitem_by_demand_type($type)
     {
         $sub_item = new Subitem();
