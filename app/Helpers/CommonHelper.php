@@ -5375,7 +5375,7 @@ public static function get_customer_acc_id($id)
 
     public static  function get_company_group_by($group_id)
     {
-        return CompanyGroup::where("id", $group_id)->where('status',1)->get();
+        return CompanyGroup::where("id", $group_id)->where('status',1)->value("name");
     }
 
     public static function  get_total_issued_qty($id)
