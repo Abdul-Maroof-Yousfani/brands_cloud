@@ -8,7 +8,7 @@
         <td class="text-center">{{ $data->brand_name }}</td>
         <td class="text-center">{{ $data->main_ic ?? "N/A" }}</td>
         <td class="text-center">{{ $data->gi_no }}</td>
-        <td class="text-center">{{ App\Helpers\CommonHelper::get_group_by($data->group_id) }}</td>
+        <td class="text-center">{{ App\Helpers\CommonHelper::get_company_group_by($data->group_id) }}</td>
         <td class="text-center">{{ $data->hs_code }}</td>
         <td class="text-center">{{ \Carbon\Carbon::parse($data->despacth_document_date)->format("d-M-Y") }}</td>
         <td>{{ number_format($data->retail_value) }}</td>
