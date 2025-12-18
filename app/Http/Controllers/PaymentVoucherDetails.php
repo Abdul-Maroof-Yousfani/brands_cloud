@@ -310,7 +310,9 @@ class PaymentVoucherDetails extends Controller
             dd($e->getMessage());
 
         }
-     return Redirect::to('finance/viewCashPaymentVoucherList?m='.$m);
+    //  return Redirect::to('finance/viewCashPaymentVoucherList?m='.$m);
+    return redirect()->back()->with('success', 'Cash Payment Voucher created successfully.');
+
 
     }
 
@@ -1796,9 +1798,8 @@ class PaymentVoucherDetails extends Controller
         
         
         $credits = DB::connection("mysql2")->table("credits")->where("rv_no", $voucher_no)->get();
-        
         foreach($detail_data as $row):
-
+           
             $trans1 = new Transactions();
             $trans1 = $trans1->SetConnection('mysql2');
             $trans1->acc_id = $row->acc_id;
