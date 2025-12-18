@@ -14,8 +14,7 @@
         <td>{{ $data->sale_price }}</td>
         @php
             $gross_amount = $data->amount - $data->tax_amount + $data->discount_amount + $data->second_discount_amount;
-            $net_amount = $data->amount + $data->tax_amount - $data->discount_amount - $data->second_discount_amount
-        @endphp
+       @endphp
         <td>{{ $gross_amount }}</td>
         <td>{{ ($data->discount_amount / $gross_amount) * 100 }}</td>
         <td>{{ $data->discount_amount }}</td>
@@ -23,6 +22,6 @@
         <td>{{ $data->second_discount_amount ?? 0 }}</td>
         <td>{{ round(($data->tax_amount / $gross_amount) * 100) }}</td>
         <td>{{ $data->tax_amount }}</td>
-        <td>{{ $net_amount }}</td>
+        <td>{{ $data->amount }}</td>
     </tr>
 @endforeach
