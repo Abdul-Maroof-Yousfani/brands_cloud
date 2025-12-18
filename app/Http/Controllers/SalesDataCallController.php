@@ -2538,15 +2538,17 @@ class SalesDataCallController extends Controller
         // $FilterType = $request->FilterType;
         // $BuyerId = $request->BuyerId;
         $m = $request->m;
-
         $sale_order = new Sales_Order();
         $sale_order = $sale_order->SetConnection("mysql2");
+        $territory_ids = json_decode(auth()->user()->territory_id);
         $sale_order = $sale_order
                             // ->where("status", 0)
-                            ->where("status", "!=", 2)
-                            ->where("delivery_note_status", "!=", 1)
+                            ->join("customers", 'customers.id', "=", "sales_order.buyers_id")
+                            ->whereIn("customers.id", $territory_ids)
+                            ->where("sales_order.status", "!=", 2)
+                            ->where("sales_order.delivery_note_status", "!=", 1)
                             ->when($SoNo, function($query) use($SoNo) {
-                                $query->where("so_no", Str::upper($SoNo));
+                                $query->where("sales_order.so_no", Str::upper($SoNo));
                             })
                             ->get();
         
