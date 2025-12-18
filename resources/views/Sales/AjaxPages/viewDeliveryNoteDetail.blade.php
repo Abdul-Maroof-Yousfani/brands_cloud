@@ -153,7 +153,7 @@ input.form-control.form-control2{margin:0!important;}
                             <h2 class="subHeadingLabelClass">Goods Delivery Note</h2>
                             <br>
                             <p>Document # {{$delivery_note->so_no}}</p>
-                            <p style="margin-bottom: -23px !important;">Date: {{$delivery_note->so_date}}</p>
+                            <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($delivery_note->so_date)->format("d-M-Y") }}</p>
                             <br>
                            <div class="table-responsive">
                                 <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:56% !important;margin: 5px 0px;float:right;">
@@ -187,7 +187,7 @@ input.form-control.form-control2{margin:0!important;}
                             <div class="row">
                                 <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                                     <div class="term">
-                                        <p>SO Date: {{$delivery_note->so_date}}</p>
+                                        <p>SO Date: {{ \Carbon\Carbon::parse($delivery_note->so_date)->format("d-M-Y") }}</p>
                                         <p>Warehouse: {{$buyers_warehouse_name}}</p>
                                         <p>Payment Terms: 30 Days</p>
                                         <p>Salesperson Mobile #</p>
