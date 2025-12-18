@@ -21,7 +21,7 @@
         <td>{{ $data->discount_amount }}</td>
         <td>{{ ($data->second_discount_amount / $gross_amount) * 100 }}</td>
         <td>{{ $data->second_discount_amount ?? 0 }}</td>
-        <td>{{ ($data->tax_amount / $gross_amount) * 100 }}</td>
+        <td>{{ round(($data->tax_amount / $gross_amount) * 100) }}</td>
         <td>{{ $data->tax_amount }}</td>
         <td>{{ $net_amount }}</td>
     </tr>
