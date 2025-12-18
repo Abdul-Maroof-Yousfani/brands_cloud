@@ -121,7 +121,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 <div class="row">
                                                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
                                                         <div class="term">
-                                                            <p>SO Date: {{$sale_order->so_date}}</p>
+                                                            <p>SO Date: {{ \Carbon\Carbon::parse($sale_order->so_date)->format('d-M-Y') }} </p>
                                                              @php
                                                                 $warehouse_name = null;
                                                                 if(!$sale_order->warehouse_from) {
