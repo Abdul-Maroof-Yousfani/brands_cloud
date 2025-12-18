@@ -22,5 +22,6 @@
         <td class="text-center">{{ $additional_st }}</td>
         <td class="text-center">{{ number_format($data->net_amount + $additional_st, 2) }}</td>
         {{-- <td class="text-center">{{ $data->percentid ?? "N/A" }}</td> --}}
+        
     </tr>
 @endforeach
