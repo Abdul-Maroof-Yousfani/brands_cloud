@@ -2376,6 +2376,7 @@ public function getDeliveryNoteDefaultData(Request $request)
     public  function viewSalesTaxInvoiceDetail()
     {
         $ID = Input::get('id');
+        dd($ID);
         $Checking = $ID;
         $Checking = explode(',', $Checking);
 

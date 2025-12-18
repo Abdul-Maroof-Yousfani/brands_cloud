@@ -2022,6 +2022,9 @@ public static function getSubItemByBrand($id, $item_id = null)
 
 
 
+    public static function get_subitems() {
+        return Subitem::select("id", "product_name")->get();
+    }
     public static function get_all_subitem()
     {
 
@@ -4791,6 +4794,28 @@ public static function get_customer_name($id)
         }
 
 }
+
+public static function get_customer_address($id)
+{
+    $customer = new Customer();
+    $customer = $customer->SetConnection('mysql2');
+    $customer = $customer->where('status', 1)->where('id',$id)->first();
+    if(!empty($customer))
+        {
+            $delete='';
+            if ($customer->status!=1):
+                $delete='(Delete)';
+            endif;
+            return strtoupper($customer->address).' '.$delete;
+        }
+        else
+        {
+
+            return '';
+        }
+
+}
+
 
 public static function get_customer_acc_id($id)
 {
