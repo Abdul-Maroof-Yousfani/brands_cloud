@@ -200,7 +200,7 @@ $AccYearTo = $AccYearDate->accyearto;
                                                     <th style="width:105px;" class="text-center col-sm-1">Order Date</th>
                                                     <th style="width:400px;"class="text-center">Customer</th>
                                                     <th style="width:120px;"class="text-center">Total Amount</th>
-                                                    <th class="text-center">Note</th>
+                                                    <th style="width:55px;" class="text-center">Note</th>
                                                     <th style="width:60px;"class="text-center">Action</th>
 
                                                 </thead>
