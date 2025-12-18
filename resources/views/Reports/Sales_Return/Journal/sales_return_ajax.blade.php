@@ -5,7 +5,7 @@
         <td>{{ $data->customer_name }}</td>
         <td>{{ $data->product_name }}</td>
         <td>{{ $data->brand_name }}</td>
-        <td>{{ App\Helpers\CommonHelper::get_company_group_by($data->group_id)->name }}</td>
+        <td>{{  App\Helpers\CommonHelper::get_company_group_by($data->group_id) ? App\Helpers\CommonHelper::get_company_group_by($data->group_id)->name : '' }}</td>
         <td>{{ $data->hs_code }}</td>
         <td>{{ $data->qty }}</td>
         <td>{{ $data->qty }}</td>
