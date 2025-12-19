@@ -2541,16 +2541,18 @@ class SalesDataCallController extends Controller
         $sale_order = new Sales_Order();
         $sale_order = $sale_order->SetConnection("mysql2");
         $territory_ids = json_decode(auth()->user()->territory_id);
+
         $sale_order = $sale_order
-                            // ->where("status", 0)
-                            ->join("customers", 'customers.id', "=", "sales_order.buyers_id")
-                            ->whereIn("customers.id", $territory_ids)
-                            ->where("sales_order.status", "!=", 2)
-                            ->where("sales_order.delivery_note_status", "!=", 1)
-                            ->when($SoNo, function($query) use($SoNo) {
-                                $query->where("sales_order.so_no", Str::upper($SoNo));
-                            })
-                            ->get();
+    // ->where("status", 0)
+    ->join("customers", 'customers.id', "=", "sales_order.buyers_id")
+    ->whereIn("customers.id", $territory_ids)
+    ->where("sales_order.status", "!=", 2)
+    ->where("sales_order.delivery_note_status", "!=", 1)
+    ->when($SoNo, function($query) use($SoNo) {
+        $query->where("sales_order.so_no", Str::upper($SoNo));
+    })
+    ->select('sales_order.*') // <-- explicitly select sales_order columns
+    ->get();
         
         return view('Sales.AjaxPages.getSalesOrderDateWiseForDeliveryNote',compact('sale_order','m'));
         // if($FilterType ==2 && $SoNo !="")

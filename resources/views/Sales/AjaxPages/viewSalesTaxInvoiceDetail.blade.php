@@ -4,7 +4,6 @@ use App\Helpers\StoreHelper;
 use App\Helpers\ReuseableCode;
 use App\Helpers\SalesHelper;
 $sale_order = CommonHelper::get_so_by_SONO($sales_tax_invoice->so_no);
-dd($sales_tax_invoice);
 $id = $_GET['id'];
 //$m = $_GET['m']; before Code
 $m = Session::get('run_company'); //After Code Change

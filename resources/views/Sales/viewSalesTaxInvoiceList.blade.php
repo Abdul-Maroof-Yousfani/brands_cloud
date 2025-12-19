@@ -178,7 +178,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                                                 <button
                                                                                     onclick="showDetailModelOneParamerter('sales/viewSalesTaxInvoiceDetail','<?php echo $row->id; ?>','View Sales Tax Invoice')"
                                                                                     type="button"
-                                                                                    class="btn btn-success btn-xs" style="width:100% !important; text-align:left;">View {{ $row->id }}</button>
+                                                                                    class="btn btn-success btn-xs" style="width:100% !important; text-align:left;">View</button>
                                                                                 <?php endif;?>
                                                                                 <!-- <?php if($edit == true ):?>
                                                                                 <button
