@@ -162,7 +162,7 @@ input.form-control.form-control2{margin:0!important;}
                             <tr>
                                 <th style="border:1px solid black;" class="text-left" style="border: solid 1px;">SI Date</th>
                                 <td style="border:1px solid black;" class="text-left">
-                                <?php echo CommonHelper::changeDateFormat($sales_tax_invoice->gi_date); ?></td>
+                                {{ \Carbon\Carbon::parse($sales_tax_invoice->gi_date)->format("d-M-Y") }}</td>
                             </tr>
                             <tr>
                                 <th style="border:1px solid black;" class="text-left" style="width:50%; border: solid 1px;">SO NO.</th>
@@ -269,7 +269,7 @@ input.form-control.form-control2{margin:0!important;}
                             <div class="row">
                                 <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                                     <div class="term">
-                                        <p>SO Date: {{ $sales_tax_invoice->so_date }}</p>
+                                        <p>SO Date: {{ \Carbon\Carbon::parse($sales_tax_invoice->so_date)->format("d-M-Y") }}</p>
                                         <!-- <p>Warehouse: </p> -->
                                         {{-- {{ $sales_order->current_balance_due }} --}}
                                         <p>Payment Terms: {{ $sales_order->model_terms_of_payment }}</p>
