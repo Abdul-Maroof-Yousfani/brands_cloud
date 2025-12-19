@@ -47,6 +47,7 @@ class NetSalesReportController extends Controller
                                 "product_type.type AS product_type",
                                 "territories.name AS territory_name",
                                 "territories.id",
+                                'sales_order.buyers_id',
                                 "sales_order.warehouse_from",
 
                                 DB::raw("SUM(sales_order_data.qty) AS qty"),
@@ -65,11 +66,12 @@ class NetSalesReportController extends Controller
                             ->join("sales_order", "sales_order.id", "=", "sales_order_data.master_id")
 
                             // FIXED: Aggregated return data join
-                                    ->leftJoin(
+                            ->leftJoin(
                                 DB::raw("(" . $returnSub . ") as sr"),
                                 function ($join)  {
                                     $join->on("sr.item", "=", "subitem.id")
-                                        ->where("sr.buyer_id", "=", 'sales_order.buyers_id');
+                                        ->on('sr.buyer_id', "=", "sales_order.buyers_id");
+                                        // where("sr.buyer_id", "=", 'sales_order.buyers_id');
                                 }
                             )
 
