@@ -103,7 +103,7 @@ class NetSalesReportController extends Controller
 
 
     public function NetSalesExecutiveReport(Request $request) {
-        $sku = $request->sku;
+         $sku = $request->sku;
         $from = $request->from;
         $to = $request->to;
         $brand_id = $request->brand_id;
@@ -113,14 +113,14 @@ class NetSalesReportController extends Controller
         $cogs = false;
 
         if($request->ajax()) {
-              $returnSub = DB::connection("mysql2")
+         $returnSub = DB::connection("mysql2")
                             ->table("credit_note_data")
                             ->select(
-                                "item_id",
+                                "item",
                                 DB::raw("SUM(qty) as sales_return_qty"),
                                 DB::raw("SUM(amount) as gross_return_amount")
                             )
-                            ->groupBy("item_id")
+                            ->groupBy("item")
                             ->toSql();
 
                         $net_sales_reports = DB::connection("mysql2")
@@ -149,7 +149,6 @@ class NetSalesReportController extends Controller
                                 DB::raw("SUM(sales_order_data.foc) AS sale_foc"),
 
                                 DB::raw("COALESCE(sr.sales_return_qty, 0) AS sales_return_qty"),
-                                DB::raw("COALESCE(sr.foc_return_qty, 0) AS foc_return_qty"),
                                 DB::raw("COALESCE(sr.gross_return_amount, 0) AS gross_return_amount")
                             )
                             ->join("brands", "subitem.brand_id", "=", "brands.id")
@@ -191,7 +190,7 @@ class NetSalesReportController extends Controller
                             ->get();
 
 
-            return view("Reports.net_sales_report.custom_sales_tax_report_ajax", compact("net_sales_reports", "cogs"));
+            return view("Reports.net_sales_report.custom_sales_tax_report_ajax", compact("net_sales_reports", 'cogs'));
         }
 
         return view("Reports.net_sales_report.custom_sales_tax_report", compact("cogs"));
