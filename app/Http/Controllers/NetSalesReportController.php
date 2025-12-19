@@ -25,7 +25,7 @@ class NetSalesReportController extends Controller
                                 DB::raw("SUM(qty) as sales_return_qty"),
                                 DB::raw("SUM(amount) as gross_return_amount")
                             )
-                            ->groupBy("item_id")
+                            ->groupBy("item")
                             ->toSql();
 
                         $net_sales_reports = DB::connection("mysql2")
@@ -64,7 +64,7 @@ class NetSalesReportController extends Controller
                             // FIXED: Aggregated return data join
                             ->leftJoin(
                                 DB::raw("(" . $returnSub . ") as sr"),
-                                "sr.item_id",
+                                "sr.item",
                                 "=",
                                 "subitem.id"
                             )
