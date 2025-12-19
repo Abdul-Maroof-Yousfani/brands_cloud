@@ -186,6 +186,7 @@ use App\Helpers\SaleHelper;
                                                 <th class="text-center" style="width:150px;">Product</th>
                                                 <th class="text-center" style="width:150px;">Brand</th>
                                                 <th class="text-center" style="width:150px;">COGS Amount</th>
+                                                <th class="text-center" style="width:150px;">Total COGS</th>
                                                 <th class="text-center" style="width:150px;">Sale Quantity</th>
                                                 <th class="text-center" style="width:150px;">Gross Amount</th>
                                                 <th class="text-center" style="width:150px;">Discount</th>
