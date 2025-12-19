@@ -9,8 +9,10 @@
         <td>{{ $data->sku }}</td>
         <td>{{ $data->product_name }}</td>
         <td>{{ $data->brand_name }}</td>
-        <td>{{ $data->cog }}</td>
-        <td>{{ number_format($data->cog * $data->qty, 0) }}</td>
+        @if($cogs)
+            <td>{{ $data->cog }}</td>
+            <td>{{ number_format($data->cog * $data->qty, 0) }}</td>
+        @endif
         <td>{{ number_format($data->qty, 0) }}</td>
         <td>{{ number_format($data->amount, 0) }}</td>
         <td>{{ number_format($data->discount_amount, 0) }}</td>
