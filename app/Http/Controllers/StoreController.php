@@ -1535,8 +1535,8 @@ public function add_opening_import_post(Request $request)
 
 
                 $warehouse_quantities = [
-                    15 => trim($row[8]),  // Make Up City North
-                    22 => trim($row[9]), // Liquidation Stock RWL
+                    26 => trim($row[8]),  // Make Up City North
+                    // 22 => trim($row[9]), // Liquidation Stock RWL
                   
                    
                 ];
@@ -1566,7 +1566,7 @@ public function add_opening_import_post(Request $request)
                                     'created_date'  => date('Y-m-d'),
                                     'username'      => 'Amir Murshad',
                                     'status'        => 1,
-                                    'Territory'     => isset($row[10]) ? $row[10] : null,
+                                    'Territory'     => isset($row[9]) ? $row[9] : null,
                                 ];
 
 
