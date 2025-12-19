@@ -93,9 +93,7 @@ class NetSalesReportController extends Controller
 
                             ->groupBy(
                                 "subitem.id",
-                                "customers.id",
-                                "territories.id",
-                                "sales_order.warehouse_from"
+                                "sales_order.buyers_id",
                             )
                             ->get();
 
