@@ -37,6 +37,7 @@ class NetSalesReportController extends Controller
                                 "subitem.sku_code AS sku",
                                 "subitem.product_barcode AS barcode",
                                 "subitem.purchase_price AS cog",
+                                "subitem.hs_code",
                                 "customers.name AS customer_name",
                                 "customers.customer_code AS customer_code",
                                 "customers.id",

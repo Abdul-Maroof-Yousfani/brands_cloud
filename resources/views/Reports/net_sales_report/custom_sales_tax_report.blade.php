@@ -180,28 +180,21 @@ use App\Helpers\SaleHelper;
                                                 <th class="text-center" style="width:150px;">Customer Code</th>
                                                 <th class="text-center" style="width:150px;">Customer</th>
                                                 <th class="text-center" style="width:150px;">Zone</th>
-                                                <th class="text-center" style="width:150px;">Product</th>
-                                                <th class="text-center" style="width:150px;">MIS Code</th>
-                                                <th class="text-center" style="width:150px;">Barcode</th>
                                                 <th class="text-center" style="width:150px;">HS Code</th>
+                                                <th class="text-center" style="width:150px;">Barcode</th>
+                                                <th class="text-center" style="width:150px;">SKU Code</th>
+                                                <th class="text-center" style="width:150px;">Product</th>
                                                 <th class="text-center" style="width:150px;">Brand</th>
+                                                <th class="text-center" style="width:150px;">COGS Amount</th>
                                                 <th class="text-center" style="width:150px;">Sale Quantity</th>
-                                                <th class="text-center" style="width:150px;">FOC</th>
                                                 <th class="text-center" style="width:150px;">Gross Amount</th>
                                                 <th class="text-center" style="width:150px;">Discount</th>
                                                 <th class="text-center" style="width:150px;">Sale Amount</th>
-                                                <th class="text-center" style="width:150px;">COGS Amount</th>
                                                 <th class="text-center" style="width:150px;">Sale Return Qty</th>
-                                                <th class="text-center" style="width:150px;">FOC Return Qty</th>
                                                 <th class="text-center" style="width:150px;">Gross Return Amount</th>
                                                 <th class="text-center" style="width:150px;">Sales Return Amount</th>
                                                 <th class="text-center" style="width:150px;">NS Qty</th>
-                                                <th class="text-center" style="width:150px;">Amount W/O GST</th>
-
                                                 <th class="text-center" style="width:150px;">NS Amount</th>
-                                                <th class="text-center" style="width:150px;">Product Type</th>
-                                                <th class="text-center" style="width:150px;">CTN</th>
-                                                <th class="text-center" style="width:150px;">Tax</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbody">
