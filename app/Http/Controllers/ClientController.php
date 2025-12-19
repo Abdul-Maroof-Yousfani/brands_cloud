@@ -35,7 +35,6 @@ class ClientController extends Controller
         $sale_orders = DB::connection('mysql2')
         ->table('sales_order')
         ->join('customers','customers.id','sales_order.buyers_id')
-        ->whereIn('customers.territory_id', $territory_ids)
         ->where('sales_order.status', 1)
         ->paginate(10);
 

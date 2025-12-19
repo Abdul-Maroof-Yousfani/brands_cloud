@@ -5440,8 +5440,11 @@ public static function get_customer_acc_id($id)
      }
      public static function displayLatestSaleOrdersDetail()
      {
+        $territory_ids = json_decode(auth()->user()->territory_id); 
+        
       return  DB::Connection('mysql2')->table('sales_order')
       ->join('customers','sales_order.buyers_id', 'customers.id')
+      ->whereIn('customers.territory_id', $territory_ids)
       ->where('sales_order.status',1)
       ->select('sales_order.*','customers.name')
       ->orderBy('sales_order.id','DESC')->limit('7')->get();
