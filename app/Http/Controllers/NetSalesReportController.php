@@ -91,7 +91,12 @@ class NetSalesReportController extends Controller
                                 $q->where("sales_order.warehouse_from", $warehouse_id);
                             })
 
-                            ->groupBy("subitem.id")
+                            ->groupBy(
+                                "subitem.id",
+                                "customers.id",
+                                "territories.id",
+                                "sales_order.warehouse_from"
+                            )
                             ->get();
 
 
