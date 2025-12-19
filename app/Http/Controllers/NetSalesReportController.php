@@ -21,7 +21,7 @@ class NetSalesReportController extends Controller
          $returnSub = DB::connection("mysql2")
                             ->table("credit_note_data")
                             ->select(
-                                "item_id",
+                                "item",
                                 DB::raw("SUM(qty) as sales_return_qty"),
                                 DB::raw("SUM(amount) as gross_return_amount")
                             )
@@ -54,7 +54,6 @@ class NetSalesReportController extends Controller
                                 DB::raw("SUM(sales_order_data.foc) AS sale_foc"),
 
                                 DB::raw("COALESCE(sr.sales_return_qty, 0) AS sales_return_qty"),
-                                DB::raw("COALESCE(sr.foc_return_qty, 0) AS foc_return_qty"),
                                 DB::raw("COALESCE(sr.gross_return_amount, 0) AS gross_return_amount")
                             )
                             ->join("brands", "subitem.brand_id", "=", "brands.id")
@@ -161,7 +160,7 @@ class NetSalesReportController extends Controller
                             // FIXED: Aggregated return data join
                             ->leftJoin(
                                 DB::raw("(" . $returnSub . ") as sr"),
-                                "sr.item_id",
+                                "sr.item",
                                 "=",
                                 "subitem.id"
                             )
