@@ -61,7 +61,7 @@ class NetSalesReportController extends Controller
     // ✅ Proper return join (item + customer)
     ->leftJoin("credit_note_data", function ($join) {
         $join->on("credit_note_data.item", "=", "subitem.id")
-             ->on("credit_note_data.customer_id", "=", "customers.id");
+             ->on("credit_note_data.buyers_id", "=", "customers.id");
     })
 
     ->when(isset($from) && isset($to), function ($q) use ($from, $to) {
