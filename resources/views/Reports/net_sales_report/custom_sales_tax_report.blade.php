@@ -194,6 +194,7 @@ use App\Helpers\SaleHelper;
                                                 <th class="text-center" style="width:150px;">Gross Return Amount</th>
                                                 <th class="text-center" style="width:150px;">Sales Return Amount</th>
                                                 <th class="text-center" style="width:150px;">NS Qty</th>
+                                                <th class="text-center" style="width:150px;">Net Gross Amount</th>
                                                 <th class="text-center" style="width:150px;">NS Amount</th>
                                             </tr>
                                         </thead>
