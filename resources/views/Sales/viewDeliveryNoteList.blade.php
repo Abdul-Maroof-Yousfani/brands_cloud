@@ -217,7 +217,11 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <td style="text-align:center;" class="text-center">{{$counter++}}</td>
                                                     <td class="text-center"><?php echo  strtoupper($row->so_no) ?></td>
                                                     <td title="{{$row->id}}" class="text-center">{{strtoupper($row->gd_no)}}</td>
-                                                    <td class="text-center"> <?php echo  $row->gd_date ? \Carbon\Carbon::parse($row->gd_date)->format("d-M-Y") : '' ?></td>
+                                                    <td class="text-center"> 
+                                                        <?php echo  $row->gd_date ? \Carbon\Carbon::parse($row->gd_date)->format("d-M-Y") : '' ?>
+                                                        <br>
+                                                        <?php echo $row->timestamp ? \Carbon\Carbon::parse($row->timestamp)->format("h:i:s A") : "";?> 
+                                                    </td>
 
                                                     @php
                                                         $sales_order = App\Models\Sales_Order::where("so_no", $row->so_no)->first();
