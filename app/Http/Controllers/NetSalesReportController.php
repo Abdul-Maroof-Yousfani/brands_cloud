@@ -19,11 +19,10 @@ class NetSalesReportController extends Controller
 
         if($request->ajax()) {
          $returnSub = DB::connection("mysql2")
-                            ->table("sales_return_data")
+                            ->table("credit_note_data")
                             ->select(
                                 "item_id",
                                 DB::raw("SUM(qty) as sales_return_qty"),
-                                DB::raw("SUM(foc) as foc_return_qty"),
                                 DB::raw("SUM(amount) as gross_return_amount")
                             )
                             ->groupBy("item_id")
@@ -115,12 +114,11 @@ class NetSalesReportController extends Controller
         $cogs = false;
 
         if($request->ajax()) {
-         $returnSub = DB::connection("mysql2")
-                            ->table("sales_return_data")
+              $returnSub = DB::connection("mysql2")
+                            ->table("credit_note_data")
                             ->select(
                                 "item_id",
                                 DB::raw("SUM(qty) as sales_return_qty"),
-                                DB::raw("SUM(foc) as foc_return_qty"),
                                 DB::raw("SUM(amount) as gross_return_amount")
                             )
                             ->groupBy("item_id")
