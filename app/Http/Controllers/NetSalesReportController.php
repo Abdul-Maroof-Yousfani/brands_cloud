@@ -21,9 +21,10 @@ class NetSalesReportController extends Controller
             
          $returnSub = DB::connection("mysql2")
                             ->table("credit_note_data")
-                            ->join("credit_note", "credit_note.id", '=', 'credit_note_data.master_id')
+                            ->join("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
                             ->select(
                                 "item",
+                                "credit_note.buyer_id",
                                 DB::raw("SUM(qty) as sales_return_qty"),
                                 DB::raw("SUM(amount) as gross_return_amount")
                             )
@@ -64,11 +65,12 @@ class NetSalesReportController extends Controller
                             ->join("sales_order", "sales_order.id", "=", "sales_order_data.master_id")
 
                             // FIXED: Aggregated return data join
-                            ->leftJoin(
+                                    ->leftJoin(
                                 DB::raw("(" . $returnSub . ") as sr"),
-                                "sr.item",
-                                "=",
-                                "subitem.id"
+                                function ($join)  {
+                                    $join->on("sr.item", "=", "subitem.id")
+                                        ->where("sr.buyer_id", "=", 'sales_order.buyers_id');
+                                }
                             )
 
                             ->join("customers", "sales_order.buyers_id", "=", "customers.id")
@@ -162,11 +164,12 @@ class NetSalesReportController extends Controller
                             ->join("sales_order", "sales_order.id", "=", "sales_order_data.master_id")
 
                             // FIXED: Aggregated return data join
-                            ->leftJoin(
+                            ->join(
                                 DB::raw("(" . $returnSub . ") as sr"),
-                                "sr.item",
-                                "=",
-                                "subitem.id"
+                                function ($join)  {
+                                    $join->on("sr.item", "=", "subitem.id")
+                                        ->where("sr.buyer_id", "=", 'sales_order.buyers_id');
+                                }
                             )
 
                             ->join("customers", "sales_order.buyers_id", "=", "customers.id")
