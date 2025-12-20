@@ -886,15 +886,39 @@ use App\Helpers\CommonHelper;
 `);
 
             // Initialize select2 only for the new elements
-            $(`#sub_${Counter}, #batch_code${Counter}`).select2({
-                matcher: function(params, data) {
-                    if ($(data.element).data("brand") == $("#brands").val()) {
-                        return data;
-                    }
+       $(`#sub_${Counter}, #batch_code${Counter}`).select2({
+    matcher: function (params, data) {
 
-                    return null;
-                }
-            });
+        // keep placeholder
+        if (!data.id) {
+            return data;
+        }
+
+        const selectedBrand = $("#brands").val();
+        const itemBrand = $(data.element).data("brand");
+
+        // ❌ exclude if brand doesn't match
+        if (selectedBrand && itemBrand != selectedBrand) {
+            return null;
+        }
+
+        // ✅ default text search
+        if ($.trim(params.term) === '') {
+            return data;
+        }
+
+        if (
+            data.text.toLowerCase().indexOf(
+                params.term.toLowerCase()
+            ) > -1
+        ) {
+            return data;
+        }
+
+        return null;
+    }
+});
+
 
             // $("#brands").trigger("change");
 
