@@ -62,10 +62,10 @@ $count=1;
     <th class="text-center ApnaBorder ">(31-60)</th>
     <th class="text-center ApnaBorder ">(61-90)</th>
     <th class="text-center ApnaBorder ">(91-180)</th> -->
-    <th class="text-center ApnaBorder Chnage-bg">(1-45)</th>
-<th class="text-center ApnaBorder Chnage-bg">(46-90)</th>
-<th class="text-center ApnaBorder Chnage-bg">(91-179)</th>
-    <th class="text-center ApnaBorder ">More Than 180 days</th>
+    <th class="text-center ApnaBorder ">&gt; 180</th>
+    <th class="text-center ApnaBorder Chnage-bg">90-179</th>
+    <th class="text-center ApnaBorder Chnage-bg">46-90</th>
+    <th class="text-center ApnaBorder Chnage-bg">&lt;= 45</th>
     <th class="text-center ApnaBorder Chnage-bg">Total Amount</th>
 </tr>
 </thead>
@@ -146,11 +146,11 @@ if($TotOverAll > 0):
 
     <td colspan="8" class="ApnaBorder text-center"><?php echo CommonHelper::byers_name($Cfil->id)->name;?>  </td>
     <td class="ApnaBorder "><?php echo number_format($total_not_yet_due,2); $total_not_yet_due_end+=$total_not_yet_due;?></td>
-    <td class="ApnaBorder "><?php echo number_format($Tot_1_30,2); $Tot_1_30End+=$Tot_1_30;?></td>
-    <td class="ApnaBorder "><?php echo number_format($Tot_31_60,2); $Tot_31_60End+=$Tot_31_60;?></td>
-    <td class="ApnaBorder "><?php echo number_format($Tot_61_90,2); $Tot_61_90End+=$Tot_61_90;?></td>
-    <!-- <td class="ApnaBorder "><?php echo number_format($Tot_91_180,2); $Tot_91_180End+=$Tot_91_180;?></td> -->
     <td   class="ApnaBorder "><?php echo number_format($Tot_180_1000,2); $Tot_180_1000End+=$Tot_180_1000;?></td>
+    <!-- <td class="ApnaBorder "><?php echo number_format($Tot_91_180,2); $Tot_91_180End+=$Tot_91_180;?></td> -->
+    <td class="ApnaBorder "><?php echo number_format($Tot_61_90,2); $Tot_61_90End+=$Tot_61_90;?></td>
+    <td class="ApnaBorder "><?php echo number_format($Tot_31_60,2); $Tot_31_60End+=$Tot_31_60;?></td>
+    <td class="ApnaBorder "><?php echo number_format($Tot_1_30,2); $Tot_1_30End+=$Tot_1_30;?></td>
     <td class="ApnaBorder Chnage-bg"><?php echo number_format($TotOverAll,2); $TotOverAllEnd+=$TotOverAll;?></td>
     <td  class="ApnaBorder Chnage-bg hide"><?php echo number_format($amount,2); ?></td>
 
@@ -162,11 +162,11 @@ endforeach;?>
 <tr class="text-center ApnaBorder">
     <th colspan="8" class="ApnaBorder text-center" style="font-size: 20px;">Grand Total</th>
     <td class="ApnaBorder" style="font-size: 20px;"><?php echo number_format($total_not_yet_due_end,2)?></td>
-    <td class="ApnaBorder" style="font-size: 20px;"><?php echo number_format($Tot_1_30End,2);?></td>
-    <td class="ApnaBorder " style="font-size: 20px;"><?php echo number_format($Tot_31_60End,2);?></td>
-    <td class="ApnaBorder " style="font-size: 20px;"><?php echo number_format($Tot_61_90End,2);?></td>
-    <!-- <td class="ApnaBorder " style="font-size: 20px;"><?php echo number_format($Tot_91_180End,2);?></td> -->
     <td class="ApnaBorder " style="font-size: 20px;"><?php echo number_format($Tot_180_1000End,2);?></td>
+    <!-- <td class="ApnaBorder " style="font-size: 20px;"><?php echo number_format($Tot_91_180End,2);?></td> -->
+    <td class="ApnaBorder " style="font-size: 20px;"><?php echo number_format($Tot_61_90End,2);?></td>
+    <td class="ApnaBorder " style="font-size: 20px;"><?php echo number_format($Tot_31_60End,2);?></td>
+    <td class="ApnaBorder" style="font-size: 20px;"><?php echo number_format($Tot_1_30End,2);?></td>
     <td class="ApnaBorder Chnage-bg"><?php echo number_format($TotOverAllEnd,2);?></td>
 </tr>
 </tbody>
