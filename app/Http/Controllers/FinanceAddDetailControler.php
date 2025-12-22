@@ -3849,7 +3849,7 @@ die();
 
 		// for main
 		$main_menu_id=$request->main;
-		$main_menu_id=implode(',',$main_menu_id);
+		$main_menu_id= $main_menu_id ? implode(',',$main_menu_id) : null;
 
 
 		// for sub
