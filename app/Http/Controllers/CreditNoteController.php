@@ -372,15 +372,27 @@ class CreditNoteController extends Controller
     }
     public function store(Request $request) {
 		
-		$request->validate([
+		$rules = [
 			"store" => "required",
 			"delivery_man" => "required",
 			"date_and_time" => "required",
 			"details" => "required",
 			"debit" => "required",
 			"voucher_type" => "required",
-			"branch" => "required"
-		]);
+			"branch" => "required",
+			'type' => "required"
+		];
+
+		if($request->type === 'without-invoice') {
+			array_merge($rules, [
+				'amount' => "required"
+			]);
+		}
+
+		$request->validate($rules);
+	
+		$type = $request->type;
+		
 
 		$rv_no = \App\Helpers\CommonHelper::generateUniquePosNo("credits_data", "rv_no", "cvv");
         $credit = Credit::create([
@@ -388,7 +400,7 @@ class CreditNoteController extends Controller
             "store" => $request->store,
             "delivery_man" => $request->delivery_man,
             "date" => $request->date_and_time,
-            "amount" => $request->amount,
+            "amount" => $request->amount ?? "",
             "details" => $request->details,
             "credit" => "-",
             "debit" => $request->debit,
@@ -401,26 +413,7 @@ class CreditNoteController extends Controller
         DB::Connection('mysql2')->beginTransaction();
 		try
 		{
-			// $rv_type=0;
-			// $bank=0;
-
-			// if ($request->pay_mode=='1,1'):
-			// 	$rv_no = CommonHelper::uniqe_no_for_rvs(date('y'),date('m'),1);
-			// 	$rv_type=2;
-			// 	$pay_mode=1;
-			// 	$rv_type=1;
-			// 	$bank=$request->bank;
-			// 	elseif ($request->pay_mode=='2,2'):
-			// 		$rv_no = CommonHelper::uniqe_no_for_rvs(date('y'),date('m'),2);
-			// 		$pay_mode=2;
-			// 		$rv_type=2;
-			// 		elseif ($request->pay_mode=='3,1'):
-			// 			$rv_no = CommonHelper::uniqe_no_for_rvs(date('y'),date('m'),1);
-			// 			$rv_type=1;
-			// 			$pay_mode=3;
-			// 			$bank=$request->bank;
-            // endif;
-
+	
 
 			$data=array
 			(
@@ -453,48 +446,52 @@ class CreditNoteController extends Controller
             $brig=$request->si_id;
             $master_id = $credit->id;
 
-			foreach($brig as $key=>$row):
-				$data1=array
-				(
-					'si_id'=>$row,
-					'so_id'=>$request->input('so_id')[$key],
-					'rv_id'=>$master_id,
-					'rv_no'=>$rv_no,
-					'received_amount'=>CommonHelper::check_str_replace($request->input('receive_amount')[$key]),
-					'tax_percent'=>$request->input('percent')[$key],
-					'tax_amount'=>$request->input('tax_amount')[$key],
-					'discount_amount'=>$request->input('discount')[$key],
-					'net_amount'=>CommonHelper::check_str_replace($request->input('net_amount')[$key]),
-				);
-				if ($request->input('percent')[$key]!=0):
-				$tax_acc_id=	CommonHelper::generic('invoice_tax',array('name'=>$request->input('percent')[$key]),'acc_id')->first()->acc_id;
+			if($type == 'against-invoice'):
+				foreach($brig as $key=>$row):
+					$data1=array
+					(
+						'si_id'=>$row,
+						'so_id'=>$request->input('so_id')[$key],
+						'rv_id'=>$master_id,
+						'rv_no'=>$rv_no,
+						'received_amount'=>CommonHelper::check_str_replace($request->input('receive_amount')[$key]),
+						'tax_percent'=>$request->input('percent')[$key],
+						'tax_amount'=>$request->input('tax_amount')[$key],
+						'discount_amount'=>$request->input('discount')[$key],
+						'net_amount'=>CommonHelper::check_str_replace($request->input('net_amount')[$key]),
+					);
+					if ($request->input('percent')[$key]!=0):
+					$tax_acc_id=	CommonHelper::generic('invoice_tax',array('name'=>$request->input('percent')[$key]),'acc_id')->first()->acc_id;
 
-					endif;
+						endif;
 
-				$net_amount+=CommonHelper::check_str_replace($request->input('receive_amount')[$key]);
-				$discount_amount+=$request->input('discount')[$key];
+					$net_amount+=CommonHelper::check_str_replace($request->input('receive_amount')[$key]);
+					$discount_amount+=$request->input('discount')[$key];
 
-				if ($request->input('percent')[$key]!=0):
-				$tax_amount+=$request->input('tax_amount')[$key];
-					else:
-						$tax_amount+=0;
-					endif;
-				$total_amount+=CommonHelper::check_str_replace($request->input('net_amount')[$key]);
-				DB::Connection('mysql2')->table('brige_table_sales_receipt')->insert($data1);
+					if ($request->input('percent')[$key]!=0):
+					$tax_amount+=$request->input('tax_amount')[$key];
+						else:
+							$tax_amount+=0;
+						endif;
+					$total_amount+=CommonHelper::check_str_replace($request->input('net_amount')[$key]);
+					DB::Connection('mysql2')->table('brige_table_sales_receipt')->insert($data1);
 
 
 
-				$received_paymet=array
-				(
-					'sales_tax_invoice_id'=>$row,
-					'receipt_id'=>$master_id,
-					'receipt_no'=>$rv_no,
-					'received_amount'=>CommonHelper::check_str_replace($request->input('receive_amount')[$key]),
-					'slip_no'=>"-",
-					'status'=>1,
-				);
-				DB::Connection('mysql2')->table('received_paymet')->insert($received_paymet);
-			endforeach;
+					$received_paymet=array
+					(
+						'sales_tax_invoice_id'=>$row,
+						'receipt_id'=>$master_id,
+						'receipt_no'=>$rv_no,
+						'received_amount'=>CommonHelper::check_str_replace($request->input('receive_amount')[$key]),
+						'slip_no'=>"-",
+						'status'=>1,
+					);
+					DB::Connection('mysql2')->table('received_paymet')->insert($received_paymet);
+				endforeach;
+		
+
+			endif;
 
 			$transaction=new Transactions();
 			$transaction=$transaction->SetConnection('mysql2');
@@ -503,15 +500,31 @@ class CreditNoteController extends Controller
 
 
 
-
 			
-			foreach($brig as $key=>$row):
+			if($type === 'against-invoice'):
+				foreach($brig as $key=>$row):
+					$data2=array
+					(
+						'master_id' => $master_id,
+						'rv_no'=>$rv_no,
+						'acc_id' => $request->debit,
+						'amount' => CommonHelper::check_str_replace($request->input('net_amount')[$key]),
+						'debit_credit' => 1,
+						'status' => 1,
+						'rv_status' => 1,
+						'description' => $request->desc
+
+					);
+					DB::Connection('mysql2')->table('credits_item_data')->insert($data2);
+				endforeach;
+
+			else:
 				$data2=array
 				(
 					'master_id' => $master_id,
 					'rv_no'=>$rv_no,
 					'acc_id' => $request->debit,
-					'amount' => CommonHelper::check_str_replace($request->input('net_amount')[$key]),
+					'amount' => $request->amount,
 					'debit_credit' => 1,
 					'status' => 1,
 					'rv_status' => 1,
@@ -519,7 +532,7 @@ class CreditNoteController extends Controller
 
 				);
 				DB::Connection('mysql2')->table('credits_item_data')->insert($data2);
-			endforeach;
+			endif;
 		
 
 		if ($tax_amount>0):
@@ -559,31 +572,31 @@ class CreditNoteController extends Controller
 			if ($discount_amount>0):
 			$disc_acc_id=DB::Connection('mysql2')->table('accounts')->where('status',1)->where('name','Sales Discount')->first()->id;
         		
-			foreach($brig as $key=>$row):
-				$data6=array
-				(
-					'master_id' => $master_id,
-					'rv_no'=>$rv_no,
-					'acc_id' => $disc_acc_id,
-					'amount' => $discount_amount,
-					'debit_credit' => 0,
-					'status' => 1,
-					'rv_status' => 1,
-					'description' => ''
+			if($type === 'against-invoice'):
+				foreach($brig as $key=>$row):
+					$data6=array
+					(
+						'master_id' => $master_id,
+						'rv_no'=>$rv_no,
+						'acc_id' => $disc_acc_id,
+						'amount' => $discount_amount,
+						'debit_credit' => 0,
+						'status' => 1,
+						'rv_status' => 1,
+						'description' => ''
 
-				);
-				DB::Connection('mysql2')->table('credits_item_data')->insert($data6);
-				
-			endforeach;
+					);
+					DB::Connection('mysql2')->table('credits_item_data')->insert($data6);
+					
+				endforeach;
+			endif;
 				endif;
 
 
-
-		$customer_acc_id=	SalesHelper::get_customer_acc_id($request->buyers_id);
+		$customer_acc_id=	SalesHelper::get_customer_acc_id($request->store);
        
 
-
-
+		if($type === 'against-invoice'):
 			foreach($brig as $key=>$row):
 				$data6=array
 				(
@@ -600,6 +613,21 @@ class CreditNoteController extends Controller
 				DB::Connection('mysql2')->table('credits_item_data')->insert($data6);
 
 			endforeach;
+		else:
+			$data6=array
+				(
+					'master_id' => $master_id,
+					'rv_no'=>$rv_no,
+					'acc_id' => $customer_acc_id,
+					'amount' => $request->amount,
+					'debit_credit' => 0,
+					'status' => 1,
+					'rv_status' => 1,
+					'description' => $request->desc
+
+				);
+				DB::Connection('mysql2')->table('credits_item_data')->insert($data6);
+		endif;
 
 			// lala
 
