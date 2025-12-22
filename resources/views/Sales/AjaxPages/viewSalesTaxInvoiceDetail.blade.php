@@ -217,7 +217,7 @@ input.form-control.form-control2{margin:0!important;}
                                 <br>
                             <p>Document # {{ $sales_tax_invoice->gi_no }}</p>
                             <!-- <p>Doc #: 27903</p> -->
-                            <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($sales_tax_invoice->gi_date )->format('Y-M-d') }}</p>
+                            <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($sales_tax_invoice->gi_date )->format('d-M-Y') }}</p>
                             <br>
                                 <div class="table-responsive">
                                 <table class="sale-list userlittab table table-bordered sf-table-list" style="border:1px solid #000;width:56% !important;margin: 5px 0px;float:right;">
