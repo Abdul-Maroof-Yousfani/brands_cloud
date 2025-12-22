@@ -3854,7 +3854,8 @@ die();
 
 		// for sub
 		$sub_menu_id=$request->sub;
-		$sub_menu_id=implode(',',$sub_menu_id ? $sub_menu_id : null);
+		dd($sub_menu_id);
+		$sub_menu_id=implode(',',$sub_menu_id ? $sub_menu_id : []);
 
 
 		// for crud
