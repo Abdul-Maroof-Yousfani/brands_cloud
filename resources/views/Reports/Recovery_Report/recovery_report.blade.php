@@ -125,10 +125,10 @@ use App\Helpers\SaleHelper;
                                             <th>Total Adjustment</th>
                                             <th>Outstanding</th>
                                             <th>Difference</th>
-                                            <th>1-45</th>
+                                            <th>&gt; 180</th>
+                                            <th>90-179</th>
                                             <th>46-90</th>
-                                            <th>91-179</th>
-                                            <th>More than 180 days</th>
+                                            <th>&lt;= 45</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tbody">

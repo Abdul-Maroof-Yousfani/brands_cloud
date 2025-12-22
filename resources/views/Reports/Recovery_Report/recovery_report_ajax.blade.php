@@ -35,9 +35,9 @@
         <td>{{ number_format($data->sale_return_amount) }}</td>
         <td>Outstanding</td>
         <td>Difference</td>
-        <td>{{ number_format($data->one_to_fourty_five_days_due) }}</td>
-        <td>{{ number_format($data->fourty_five_to_ninety_days_due) }}</td>
-        <td>{{ number_format($data->ninety_one_to_one_seventy_nine_days_due) }}</td>
         <td>{{ number_format($data->more_than_one_eighty_days_due) }}</td>
+        <td>{{ number_format($data->ninety_one_to_one_seventy_nine_days_due) }}</td>
+        <td>{{ number_format($data->fourty_five_to_ninety_days_due) }}</td>
+        <td>{{ number_format($data->one_to_fourty_five_days_due) }}</td>
     </tr>
 @endforeach
