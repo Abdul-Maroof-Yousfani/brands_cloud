@@ -3665,6 +3665,9 @@ class PurchaseAddDetailControler extends Controller
                 'tr_date'     => $request->tr_date,
                 'description' => $request->description,
                 'status'      => 1,
+                "location_from" => $request->main_warehouse_from,
+                "location_to" => $request->main_warehouse_to,
+                "brand_id" => $request->brands,
                 'date'        => $request->tr_date,
                 'username'    => Auth::user()->name, // check this column in DB
                 'user_id'    => Auth::user()->id, // check this column in DB

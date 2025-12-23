@@ -64,7 +64,7 @@ use App\Helpers\CommonHelper;
                                                 <label for="">Location From</label>
                                                 <select onchange="updateAllWarehouseFrom()" name="main_warehouse_from" id="main_warehouse_from" class="form-control requiredField select2">
                                                     <option value="">Select Warehouse</option>
-                                                        <?php foreach(CommonHelper::get_all_warehouse() as $Fil):?> <option value="<?php echo $Fil->id?>"><?php echo $Fil->name?></option> <?php endforeach;?>
+                                                        <?php foreach(CommonHelper::get_all_warehouse() as $Fil):?> <option {{ $Fil->id == $Master->location_from ? 'selected' : ''}} value="<?php echo $Fil->id?>"><?php echo $Fil->name?></option> <?php endforeach;?>
                                                     
                                                 </select>
                                             </div>
@@ -73,7 +73,7 @@ use App\Helpers\CommonHelper;
                                                 <select onchange="updateAllWarehouseTo()" name="main_warehouse_to" id="main_warehouse_to" class="form-control requiredField select2">
                                                     
                                                 <option value="">Select Warehouse</option>
-                                                    <?php foreach(CommonHelper::get_all_warehouse() as $Fil):?> <option value="<?php echo $Fil->id?>"><?php echo $Fil->name?></option> <?php endforeach;?>
+                                                    <?php foreach(CommonHelper::get_all_warehouse() as $Fil):?> <option {{ $Fil->id == $Master->location_to ? 'selected' : ''}} value="<?php echo $Fil->id?>"><?php echo $Fil->name?></option> <?php endforeach;?>
                                                 </select>
                                             </div>
                                             
@@ -82,7 +82,7 @@ use App\Helpers\CommonHelper;
                                                 <select onchange="select_brand(this)" name="brands" id="brands" class="form-control requiredField select2">
                                                     
                                                 <option value="">Select Brands</option>
-                                                    <?php foreach(CommonHelper::get_all_brand() as $brand):?> <option value="<?php echo $brand->id ?>"><?php echo $brand->name?></option> <?php endforeach;?>
+                                                    <?php foreach(CommonHelper::get_all_brand() as $brand):?> <option {{ $brand->id == $Master->brand_id ? 'selected' : ''}} value="<?php echo $brand->id ?>"><?php echo $brand->name?></option> <?php endforeach;?>
                                                 </select>
                                             </div>
                                         </div>
