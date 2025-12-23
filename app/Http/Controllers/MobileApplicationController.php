@@ -275,32 +275,41 @@ public function login(Request $request)
       public function get_stock(Request $request)
     {
         $user = $this->getAuthenticatedUser();
- 
         if ($user instanceof \Illuminate\Http\JsonResponse) {
             return $user;
         }
- 
+
         $rules = [
             'product_id' => 'required|integer',
+            'distributor_id' => 'required|integer',
         ];
- 
+
         $validator = Validator::make($request->all(), $rules);
- 
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
             ], 422);
         }
- 
-        $records = Stock::where('sub_item_id', $request->product_id)->get();
- 
-        $total_stock   = $records->where('voucher_type', 1)->sum('qty');
-        $total_sale    = $records->where('voucher_type', 50)->sum('qty');
-        $total_return  = $records->where('voucher_type', 51)->sum('qty');
- 
-        $available_qty = $total_stock + $total_return - $total_sale;
- 
+
+        $total_stock = Stock::where('sub_item_id', $request->product_id)
+            ->where('customer_id', $request->distributor_id)
+            ->where('voucher_type', 1)
+            ->sum('qty');
+
+        $total_sale = Stock::where('sub_item_id', $request->product_id)
+            ->where('customer_id', $request->distributor_id)
+            ->where('voucher_type', 50)
+            ->sum('qty');
+
+        $total_return = Stock::where('sub_item_id', $request->product_id)
+            ->where('customer_id', $request->distributor_id)
+            ->where('voucher_type', 51)
+            ->sum('qty');
+
+        $available_qty = max(0, $total_stock + $total_return - $total_sale);
+
         return response()->json([
             'message' => 'Total stock for product',
             'available_qty' => $available_qty,
@@ -641,7 +650,7 @@ public function login(Request $request)
     // Start query
     $query = RetailSaleOrder::with([
         'details' => function ($query) {
-            $query->with(['brand:id,name', 'product:id,product_name']);
+            $query->with(['brand:id,name', 'product:id,product_name,product_barcode,sku_code']);
         },
         'distributor:id,name'
     ])->where('user_id', $user->id);
