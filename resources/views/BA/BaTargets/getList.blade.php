@@ -81,7 +81,7 @@
                                             <option  {{$BAFormation->status == 0 ? 'selected' : ''}}  value="0">Inactive</option>
                                         </select>
                                     </div>
-                                    <button style="margin-top: 10px" type="submit" class="btn btn-primary my-2">Create</button>
+                                    <button style="margin-top: 10px" type="submit" class="btn btn-primary my-2">Update</button>
                                 </form>
                             </div>
                         </div>
