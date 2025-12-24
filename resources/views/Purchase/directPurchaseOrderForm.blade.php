@@ -1459,6 +1459,11 @@ $(document).ready(function(){
             }
         });
     }
-
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        return false;
+    }
+});
 </script>
 @endsection
