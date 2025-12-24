@@ -3099,7 +3099,7 @@ public function viewSubItemListAjax(Request $request)
         // $category_id=$request->category;
         $productId=$request->productName;
 
-        $data=DB::Connection('mysql2')->table('subitem')->where('id',$productId)->select('product_type_id','product_barcode','product_classification_id','product_trend_id','uom')->first();
+        $data=DB::Connection('mysql2')->table('subitem')->where('id',$productId)->select('product_type_id','product_barcode','product_classification_id','product_trend_id','uom','purchase_price')->first();
         if ($data) {
             $productTypeId = $data->product_type_id;
             $productClassificationId = $data->product_classification_id;
