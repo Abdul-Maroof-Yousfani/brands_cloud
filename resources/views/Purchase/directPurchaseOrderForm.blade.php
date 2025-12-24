@@ -1053,17 +1053,17 @@ $(document).ready(function(){
                         }
                     });
 
-                    $('.ActualRate').each(function() {
-                        vala = parseFloat($(this).val());
-                        if (vala == 0) {
-                            alert('Please Enter Correct Rate Qty....!');
-                            $(this).css('border-color', 'red');
-                            flag = true;
-                            return false;
-                        } else {
-                            $(this).css('border-color', '#ccc');
-                        }
-                    });
+                    // $('.ActualRate').each(function() {
+                    //     vala = parseFloat($(this).val());
+                    //     if (vala == 0) {
+                    //         alert('Please Enter Correct Rate Qty....!');
+                    //         $(this).css('border-color', 'red');
+                    //         flag = true;
+                    //         return false;
+                    //     } else {
+                    //         $(this).css('border-color', '#ccc');
+                    //     }
+                    // });
                     if (flag == true) {
                         return false;
                     }
