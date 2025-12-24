@@ -11,6 +11,9 @@ $approve=ReuseableCode::check_rights(16);
 $currentDate = date('Y-m-d');
 CommonHelper::companyDatabaseConnection($m);
 $purchaseRequestDetail = DB::table('purchase_request')->where('purchase_request_no','=',$id)->get();
+$purchaseRequestDataDetail = DB::table("purchase_request_data")->where("master_id", $purchaseRequestDetail[0]->id)->get();
+// dd($id);
+
 
 // dd($id);
 CommonHelper::reconnectMasterDatabase();
@@ -194,7 +197,7 @@ if($_GET['pageType']=='viewlist'){
                             <tbody>
                             <?php
                             CommonHelper::companyDatabaseConnection($m);
-                            $purchaseRequestDataDetail = DB::table('purchase_request_data')->where('master_id','=',$id)->get();
+                            // $purchaseRequestDataDetail = DB::table('purchase_request_data')->where('master_id','=',$id)->get();
                             CommonHelper::reconnectMasterDatabase();
                             $counter = 1;
                                     $total=0;
