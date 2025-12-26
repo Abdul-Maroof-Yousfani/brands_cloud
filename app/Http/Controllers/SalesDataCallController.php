@@ -2542,10 +2542,14 @@ class SalesDataCallController extends Controller
         $sale_order = $sale_order->SetConnection("mysql2");
         $territory_ids = json_decode(auth()->user()->territory_id);
 
+        $whereTerritories = array_map('intval', $territory_ids);
+      
+
         $sale_order = $sale_order
     // ->where("status", 0)
     ->join("customers", 'customers.id', "=", "sales_order.buyers_id")
-    ->whereIn("customers.id", $territory_ids)
+    // ->whereIn("customers.id", $territory_ids)
+    ->whereIn("customers.territory_id", $whereTerritories) 
     ->where("sales_order.status", "!=", 2)
     ->where("sales_order.delivery_note_status", "!=", 1)
     ->when($SoNo, function($query) use($SoNo) {
@@ -2553,6 +2557,8 @@ class SalesDataCallController extends Controller
     })
     ->select('sales_order.*') // <-- explicitly select sales_order columns
     ->get();
+
+    // dd($sale_order);
         
         return view('Sales.AjaxPages.getSalesOrderDateWiseForDeliveryNote',compact('sale_order','m'));
         // if($FilterType ==2 && $SoNo !="")
@@ -2592,7 +2598,6 @@ class SalesDataCallController extends Controller
 
         return view('Sales.AjaxPages.getSalesOrderDateWiseForDeliveryNote',compact('sale_order','m'));
     }
-
     public static function getSalesOrderDateWiseForDeliveryChallan(Request $request)
     {
         $FromDate = $request->from;
