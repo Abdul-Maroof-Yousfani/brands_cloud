@@ -68,10 +68,12 @@
    
    }
          else{
-   $companiesList = DB::table('company')->select(['name','id','dbName'])->where('id','!=',4)->where('status','=','1')->get();
+   $companiesList = DB::table('company')->select(['name','id','dbName'])->where('status','=','1')->get();
    
          }
    
+
+    
    ?>
 @if(Session::get('run_company')==''):
 <div id="companyListModel" class="modal fade in" role="dialog" aria-hidden="false" style="display: block;">
@@ -123,6 +125,7 @@
                     <div class="panel-body">
                         <div class="">
                             <?php $count=0; ?>
+                            @dd($companiesList);
                             @foreach($companiesList as $key => $cRow1)
                             @if($count==0 && $cRow1->id<=5) <h2 style="text-align: center">
                                 <p class="">Select Company
