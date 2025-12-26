@@ -179,6 +179,7 @@ if($_GET['pageType']=='viewlist'){
                                 <th class="text-center">Product Name</th>
                                 <th class="text-center">UOM</th>
 
+                                
 
                                 <th class="text-center" >Approved. Qty. <span class="rflabelsteric"><strong>*</strong></span></th>
                                 <!-- <th class="text-center" >No Of Carton <span class="rflabelsteric"><strong>*</strong></span></th> -->
