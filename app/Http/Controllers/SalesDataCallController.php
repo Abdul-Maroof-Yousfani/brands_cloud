@@ -2556,6 +2556,7 @@ class SalesDataCallController extends Controller
         $query->where("sales_order.so_no", Str::upper($SoNo));
     })
     ->select('sales_order.*') // <-- explicitly select sales_order columns
+     ->orderBy('sales_order.id', 'desc')
     ->get();
 
     // dd($sale_order);
