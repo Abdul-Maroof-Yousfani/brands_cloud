@@ -5445,6 +5445,7 @@ public static function get_customer_acc_id($id)
       return  DB::Connection('mysql2')->table('sales_order')
       ->join('customers','sales_order.buyers_id', 'customers.id')
       ->whereIn('customers.territory_id', $territory_ids)
+      ->where("company_id", auth()->user()->company_id ?? 0)
       ->where('sales_order.status',1)
       ->select('sales_order.*','customers.name')
       ->orderBy('sales_order.id','DESC')->limit('7')->get();
