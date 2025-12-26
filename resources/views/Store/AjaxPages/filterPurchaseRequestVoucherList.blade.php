@@ -56,7 +56,7 @@ $data ='';
 $data .='<tr><td colspan="10" class="text-center"><strong>Filter By : (Suppliers => '.$selectSupplierTitle.')&nbsp;&nbsp;,&nbsp;&nbsp;(From Date => '.CommonHelper::changeDateFormat($fromDate).')&nbsp;&nbsp;,&nbsp;&nbsp;(To Date => '.CommonHelper::changeDateFormat($toDate).')&nbsp;&nbsp;,&nbsp;&nbsp;(Voucher Status => '.$voucherStatusTitle.')</strong></td></tr>';
 foreach ($purchaseRequestDetail as $row){
     $edit_url= url('/store/editPurchaseRequestVoucherForm/'.$row->id.'?m='.$m);
-    $edit_url_direct= url('/store/editDirectPurchaseRequestVoucherForm/'.$row->id.'?m='.$m);
+    $edit_url_direct= url('/purchase/editDirectPurchaseOrder/'.$row->id.'?m='.$m);
     $net_amount= ReuseableCode::get_po_total_amount($row->id);
     $total+=$net_amount;
     $paramOne = "stdc/viewPurchaseRequestVoucherDetail";
