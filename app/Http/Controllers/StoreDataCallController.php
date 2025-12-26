@@ -264,7 +264,7 @@ class StoreDataCallController extends Controller
                                 ->when($pr_no, function($query, $pr_no){ $query
                                 ->whereRaw('LOWER(purchase_request.pr_no) LIKE ?', ['%'.strtolower($pr_no).'%']); })
                                 ->orderBy('purchase_request.id','desc');
-        if(!empty($search)){
+         if(!empty($search)){
             $purchaseRequestDetail = $purchaseRequestDetail->whereRaw('LOWER(subitem.product_name) LIKE ?', ['%'.strtolower($search).'%'])
                                     ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?',['%'.strtolower($search).'%'])
                                     ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?',['%'.strtolower($search).'%'])
@@ -276,6 +276,7 @@ class StoreDataCallController extends Controller
         }
 
         $purchaseRequestDetail= $purchaseRequestDetail->get();
+        
 
         }else if($selectVoucherStatus == '0' && !empty($selectSubDepartmentId) && empty($selectSupplierId)){
             //return 'Two';
@@ -1168,6 +1169,7 @@ public function approve_transfer(Request $request)
         $PoNo = $request->PoNo;
         $m = $request->m;
         $purchaseRequestDetail = DB::Connection('mysql2')->table('purchase_request')->where('status',1)->where('purchase_request_no','like', '%' . $PoNo . '%')->get();
+        dd($purchaseRequestDetail);
         return view('Store.AjaxPages.getPoDataPoNoWise', compact('purchaseRequestDetail','m'));
     }
 

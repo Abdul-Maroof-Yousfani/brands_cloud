@@ -71,7 +71,7 @@ $grn_no = 'grn' . ($str + 1) . date('my');
                        id="bill_date" value="<?php echo date('Y-m-d')?>" />
             </div>
             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                <label class="sf-label">Location</label>
+                <label class="sf-label">warehouse</label>
                 <span class="rflabelsteric"><strong>*</strong></span>
                 <select class="form-control requiredField ClsAll" name="warehouse_id" id="warehouse_id_1"
                         onchange="ApplyAll('1','1')">
