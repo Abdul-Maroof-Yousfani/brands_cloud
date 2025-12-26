@@ -30,7 +30,7 @@ use App\Helpers\CommonHelper;
                             </div>
                             <div class="lineHeight">&nbsp;</div>
                             <div class="row">
-                                <?php echo Form::open(array('url' => 'pad/addGoodsReceiptNoteDetail?m='.$m.'', 'id' => 'addGoodsReceiptNoteDetail', 'enctype' => 'multipart/form-data'));?>
+                                <?php echo Form::open(array('url' => 'pad/addGoodsReceiptNoteDetail?m='.$m.'', 'id' => '', 'enctype' => 'multipart/form-data'));?>
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="pageType" value="<?php echo $_GET['pageType']?>">
                                 <input type="hidden" name="parentCode" value="<?php echo $_GET['parentCode']?>">
@@ -92,7 +92,7 @@ use App\Helpers\CommonHelper;
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-                                        {{ Form::submit('Load', ['class' => 'btn btn-success','id'=> 'BtnSubmit']) }}
+                                        {{ Form::submit('Submit', ['class' => 'btn btn-success','id'=> 'BtnSubmit']) }}
                                         <button type="reset" id="reset" class="btn btn-primary">Clear Form</button>
                                     </div>
                                 </div>
@@ -125,24 +125,53 @@ use App\Helpers\CommonHelper;
             }
         }
 
+        // function loadGoodsReceiptNoteDetailByPRNo(){
+        //     var prNo = $('#po').val();
+        //     var m = '<?php echo $_GET['m']?>';
+        //     if(prNo == ''){
+        //         alert('Please Select Purchase Request No');
+        //         $('.loadGoodsReceiptNoteDetailSection').html('');
+        //     }else{
+        //         $('.loadGoodsReceiptNoteDetailSection').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
+        //         $.ajax({
+        //             url: '<?php echo url('/')?>/pmfal/makeFormGoodsReceiptNoteDetailByPRNo',
+        //             type: "GET",
+        //             data: { prNo:prNo,m:m},
+        //             success:function(data) {
+        //                 $('.loadGoodsReceiptNoteDetailSection').html(data);
+        //             }
+        //         });
+        //     }
+        // }
+
         function loadGoodsReceiptNoteDetailByPRNo(){
-            var prNo = $('#po').val();
-            var m = '<?php echo $_GET['m']?>';
-            if(prNo == ''){
-                alert('Please Select Purchase Request No');
-                $('.loadGoodsReceiptNoteDetailSection').html('');
-            }else{
-                $('.loadGoodsReceiptNoteDetailSection').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
-                $.ajax({
-                    url: '<?php echo url('/')?>/pmfal/makeFormGoodsReceiptNoteDetailByPRNo',
-                    type: "GET",
-                    data: { prNo:prNo,m:m},
-                    success:function(data) {
-                        $('.loadGoodsReceiptNoteDetailSection').html(data);
-                    }
-                });
-            }
+
+    // Agar Supplier search active hi nahi hai to kuch na karo
+    if (!$('.SectionOne').is(':visible')) {
+        return;
+    }
+
+    var prNo = $('#po').val();
+    var m = '<?php echo $_GET['m']?>';
+
+    if(prNo == ''){
+        alert('Please Select PO No');
+        $('.loadGoodsReceiptNoteDetailSection').html('');
+        return;
+    }
+
+    $('.loadGoodsReceiptNoteDetailSection').html('<div class="loader"></div>');
+
+    $.ajax({
+        url: '<?php echo url('/')?>/pmfal/makeFormGoodsReceiptNoteDetailByPRNo',
+        type: "GET",
+        data: { prNo:prNo, m:m },
+        success:function(data) {
+            $('.loadGoodsReceiptNoteDetailSection').html(data);
         }
+    });
+}
+
 
         function GetManualPoByNo()
         {
