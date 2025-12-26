@@ -379,7 +379,6 @@ Route::group(['prefix' => 'finance', 'middleware' => 'mysql2', 'before' => 'csrf
     Route::get('/editCashRv/{id?}', 'FinanceController@editCashRv');
     Route::get('/editJv/{id?}', 'FinanceController@editJv');
 
-
     //ABDUL
     //Route::get('/editBankPaymentVoucherForm','FinanceController@editBankPaymentVoucherForm');
     Route::get('/editBankPaymentVoucherForm/{id?}', 'FinanceController@editBankPaymentVoucherForm');
@@ -875,6 +874,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
     Route::get('/ShowAllImages/{id}', 'PurchaseController@ShowAllImages');
     Route::get('/editJobOrder/{id?}/{duplicate?}', 'PurchaseController@editJobOrder');
     Route::get('/directPurchaseOrderForm', 'PurchaseController@directPurchaseOrderForm');
+    Route::get('/editDirectPurchaseOrder/{id}', 'PurchaseController@editDirectPurchaseOrder')->name('editDirectPurchaseOrder');
     Route::get('/purchase_order_status', 'PurchaseController@purchase_order_status');
     Route::get('/poReportPage', 'PurchaseController@poReportPage');
     Route::get('/directPurchaseInvoice', 'PurchaseController@directPurchaseInvoice');
@@ -1034,6 +1034,7 @@ Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/get_sub_category_by_id', 'PurchaseDataCallController@get_sub_category_by_id')->name('get_sub_category_by_id');
     Route::get('/get_currency_vendor_by_to_type', 'PurchaseDataCallController@get_currency_vendor_by_to_type');
     Route::get('/get_currency_vendor_by_to_type_direct', 'PurchaseDataCallController@get_currency_vendor_by_to_type_direct')->name('get_currency_vendor_by_to_type_direct');
+    Route::get('/get_currency_vendor_by_to_type_direct_simple', 'PurchaseDataCallController@get_currency_vendor_by_to_type_direct_simple')->name('get_currency_vendor_by_to_type_direct_simple');
     Route::get('/get_sub_item_code', 'PurchaseDataCallController@get_sub_item_code');
     Route::get('/get_product_by_id', 'PurchaseDataCallController@get_product_by_id');
     Route::get('/get_type_barcode_by_product', 'PurchaseDataCallController@get_type_barcode_by_product');
@@ -1406,6 +1407,7 @@ Route::group(['prefix' => 'stad', 'middleware' => 'mysql2', 'before' => 'csrf'],
     Route::post('/add_production', 'StoreAddDetailControler@add_production');
 
     Route::post('/insertDirectPurchaseOrder', 'StoreAddDetailControler@insertDirectPurchaseOrder');
+    Route::post('/updateDirectPurchaseOrder', 'StoreAddDetailControler@updateDirectPurchaseOrder')->name('updateDirectPurchaseOrder');
 
     Route::post('/insert_opening_data', 'StoreAddDetailControler@insert_opening_data');
     Route::get('/getSupplierDiscounts', 'StoreDataCallController@getSupplierDiscounts');

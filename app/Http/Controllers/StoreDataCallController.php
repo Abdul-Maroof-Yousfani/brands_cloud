@@ -257,8 +257,8 @@ class StoreDataCallController extends Controller
 
 
         $purchaseRequestDetail = PurchaseRequest::whereBetween('purchase_request.purchase_request_date',[$fromDate,$toDate])
-                                ->leftJoin('purchase_request_data', 'purchase_request_data.master_id', 'purchase_request.id')
-                                ->leftJoin('subitem', 'subitem.id', 'purchase_request_data.sub_item_id')
+                                // ->leftJoin('purchase_request_data', 'purchase_request_data.master_id', 'purchase_request.id')
+                                // ->leftJoin('subitem', 'subitem.id', 'purchase_request_data.sub_item_id')
                                 ->where('demand_type','=','1')->where('purchase_request.status','=','1')
                                 ->where('purchase_request.purchase_request_status','!=','4')
                                 ->when($pr_no, function($query, $pr_no){ $query

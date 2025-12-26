@@ -148,7 +148,6 @@ class StoreController extends Controller
         $purchase_order=new PurchaseRequest();
         $purchase_order=$purchase_order->SetConnection('mysql2');
         $purchase_order=$purchase_order->where('id',$id)->first();
-
         // for purchase order
         $purchase_order_data= new PurchaseRequestData();
         $purchase_order_data=$purchase_order_data->SetConnection('mysql2');

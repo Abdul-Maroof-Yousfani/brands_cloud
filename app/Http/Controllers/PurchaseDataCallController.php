@@ -3082,6 +3082,36 @@ public function viewSubItemListAjax(Request $request)
         ]);
                                             
     }
+
+
+       public function get_currency_vendor_by_to_type_direct_simple(Request $request)
+    {
+        
+        $id=$request->id;
+   
+        $data = DB::Connection('mysql2')->table('currency')->where('to_type_id',$id)->select('*')->get();
+        $vendors = DB::Connection('mysql2')->table('supplier')->where('to_type_id',$id)->select('*')->get();
+
+        $currencyOptions = '<option value="">Select Currency</option>';
+
+        foreach ($data as $currency) {
+            $currencyOptions .= '<option value="' . $currency->id . '">' . $currency->name . '</option>';
+        }
+
+        $vendorOptions = '<option value="">Select Vendor</option>';
+        foreach ($vendors as $vendor) {
+            $address= CommonHelper::get_supplier_address($vendor->id);
+                $vendorOptions .= '<option value="' . $vendor->id . '" data-items="'.'@#' . $address . '@#' . $vendor->ntn . '@#' . $vendor->terms_of_payment . '@#' . $vendor->strn . '">' . ucwords($vendor->name) . '</option>';
+        
+        }
+
+        return response()->json([
+            'currencyOptions' => $currencyOptions,
+            'vendorOptions' => $vendorOptions
+        ]);
+                                            
+    }
+    
     public function get_product_by_id(Request $request)
     {
         $category_id=$request->category;

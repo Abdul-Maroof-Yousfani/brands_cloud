@@ -726,6 +726,147 @@ class StoreAddDetailControler extends Controller
     }
 }
 
+public function updateDirectPurchaseOrder(Request $request)
+{
+    // Validate if needed (recommended)
+    // $request->validate([...]);
+
+    DB::Connection('mysql2')->beginTransaction();
+    try {
+        $edit_mode = $request->id; // This is required for update
+
+        if (!$edit_mode) {
+            throw new \Exception('Purchase Order ID is missing.');
+        }
+
+        $purchase_request = new PurchaseRequest();
+        $purchase_request = $purchase_request->SetConnection('mysql2');
+        $purchase_request = $purchase_request->findOrFail($edit_mode);
+
+        $purchaseRequestNo = $purchase_request->purchase_request_no; // Keep existing PO number
+
+        // Parse supplier ID correctly
+        $supplier_id = 0;
+        if (!empty($request->supplier_id)) {
+            $supplier_parts = explode('@#', $request->supplier_id);
+            $supplier_id = !empty($supplier_parts[0]) ? $supplier_parts[0] : 0;
+        }
+
+        // Parse currency correctly
+        $currency_id = 0;
+        $currency_rate = 1;
+        if (!empty($request->curren)) {
+            $currency_parts = explode(',', str_replace(',', '', $request->curren));
+            $currency_id = !empty($currency_parts[0]) ? $currency_parts[0] : 0;
+            $currency_rate = !empty($currency_parts[1]) ? $currency_parts[1] : 1;
+        }
+
+        // Sales tax handling
+        $SalesTaxAccId = 0;
+        $SalesTaxAmount = 0;
+        $SalesTaxPer = 0;
+
+        if ($request->input('sales_taxx') != "0") {
+            $salesTaxx = explode('@', $request->input('sales_taxx'));
+            if (count($salesTaxx) > 1 && !empty($salesTaxx[1])) {
+                $SalesTaxPer = $salesTaxx[0];
+                $SalesTaxAccId = $salesTaxx[1];
+                $SalesTaxAmount = CommonHelper::check_str_replace($request->input('sales_amount_td'));
+            }
+        }
+
+        // Update main Purchase Request fields
+        $purchase_request->purchase_request_date = $request->po_date;
+        $purchase_request->agent = $request->agent ?? 0;
+        $purchase_request->commission = $request->commission ?? 0;
+        $purchase_request->po_type = $request->po_type;
+        $purchase_request->sub_department_id = $request->sub_department_id_1 ?? 0;
+        $purchase_request->supplier_id = $supplier_id;
+        $purchase_request->term_of_del = $request->term_of_del;
+        $purchase_request->terms_of_paym = $request->model_terms_of_payment;
+        $purchase_request->due_date = $request->due_date;
+        $purchase_request->destination = $request->destination;
+        $purchase_request->currency_id = $currency_id;
+        $purchase_request->currency_rate = $request->currency_rate ?? $currency_rate;
+        $purchase_request->sales_tax = $SalesTaxPer;
+        $purchase_request->sales_tax_acc_id = $SalesTaxAccId;
+        $purchase_request->sales_tax_amount = $SalesTaxAmount;
+        $purchase_request->amount_in_words = $request->rupeess;
+        $purchase_request->trn = $request->trn ?? '';
+        $purchase_request->builty_no = $request->builty_no ?? '';
+        $purchase_request->remarks = $request->Remarks;
+        $purchase_request->description = $request->main_description;
+        $purchase_request->purchase_request_status = 1;
+        $purchase_request->status = 1;
+        $purchase_request->date = date('Y-m-d'); // or keep old date if preferred
+        $purchase_request->username = Auth::user()->name;
+        $purchase_request->type = 2;
+        $purchase_request->save();
+
+        $master_id = $purchase_request->id;
+
+        // Delete existing detail records before inserting new ones
+        DB::Connection('mysql2')
+            ->table('purchase_request_data')
+            ->where('master_id', $master_id)
+            ->delete();
+
+        // Insert updated purchase request details
+        $TotAmount = 0;
+        if (!empty($request->item_id)) {
+            foreach ($request->item_id as $key => $item_id) {
+                $purch_request_data = new PurchaseRequestData();
+                $purch_request_data = $purch_request_data->SetConnection('mysql2');
+
+                $purch_request_data->master_id = $master_id;
+                $purch_request_data->purchase_request_no = $purchaseRequestNo;
+                $purch_request_data->purchase_request_date = $request->po_date;
+                $purch_request_data->sub_item_id = $item_id;
+                $purch_request_data->brand_id = $request->brand_id[$key] ?? 0;
+                $purch_request_data->description = $request->item_id[$key] ?? ''; // or better description field
+                $purch_request_data->purchase_request_qty = CommonHelper::check_str_replace($request->actual_qty[$key] ?? 0);
+                $purch_request_data->purchase_approve_qty = CommonHelper::check_str_replace($request->actual_qty[$key] ?? 0);
+                $purch_request_data->rate = CommonHelper::check_str_replace($request->rate[$key] ?? 0);
+                $purch_request_data->amount = CommonHelper::check_str_replace($request->amount[$key] ?? 0);
+                $purch_request_data->sub_total = CommonHelper::check_str_replace($request->amount[$key] ?? 0);
+                $purch_request_data->discount_percent = CommonHelper::check_str_replace($request->discount_percent[$key] ?? 0);
+                $purch_request_data->discount_amount = CommonHelper::check_str_replace($request->discount_amount[$key] ?? 0);
+                $purch_request_data->net_amount = CommonHelper::check_str_replace($request->after_dis_amount[$key] ?? 0);
+
+                $net_amount = CommonHelper::check_str_replace($request->after_dis_amount[$key] ?? 0);
+                $TotAmount += $net_amount;
+
+                $purch_request_data->purchase_request_status = 1;
+                $purch_request_data->status = 1;
+                $purch_request_data->date = date('Y-m-d');
+                $purch_request_data->username = Auth::user()->name;
+                $purch_request_data->save();
+            }
+        }
+
+        // Update inventory activity log (use 'Update' action)
+        CommonHelper::inventory_activity(
+            $purchaseRequestNo,
+            $request->po_date,
+            $TotAmount + $SalesTaxAmount,
+            2,
+            'Update'
+        );
+
+        DB::Connection('mysql2')->commit();
+
+        Session::flash('dataInsert', 'Purchase Order updated successfully.');
+        return Redirect::to('store/viewPurchaseRequestList?pageType=view&parentCode=001&m=' . ($_GET['m'] ?? ''));
+
+    } catch (\Exception $e) {
+        DB::Connection('mysql2')->rollback();
+
+        \Log::error('Purchase Order Update Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+
+        Session::flash('error', 'Error updating purchase order: ' . $e->getMessage());
+        return back()->withInput();
+    }
+}
 
     public function insert_opening_data(Request $request)
     {

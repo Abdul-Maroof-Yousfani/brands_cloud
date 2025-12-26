@@ -908,6 +908,28 @@ class PurchaseController extends Controller
         return view('Purchase.directPurchaseOrderForm',compact('supplierList','departments'));
     }
 
+    public function editDirectPurchaseOrder($id)
+{
+    $purchaseRequest = DB::connection('mysql2')
+        ->table('purchase_request')
+        ->where('id', $id)
+        ->first();
+
+    if (!$purchaseRequest) {
+        abort(404);
+    }
+
+    $purchaseDetails = DB::connection('mysql2')
+        ->table('purchase_request_data')
+        ->where('master_id', $id)
+        ->get();
+
+    // You may want to eager load related data like product names, uom, etc.
+    // Or enhance in query if needed
+
+    return view('Purchase.editDirectPurchaseOrderForm', compact('purchaseRequest', 'purchaseDetails'));
+}
+
     public function purchase_order_status()
     {
         return view('Purchase.purchase_order_status');
