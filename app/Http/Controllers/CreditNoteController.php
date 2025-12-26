@@ -83,7 +83,11 @@ class CreditNoteController extends Controller
 
 
      public function show() {
-        $credits = Credit::where("status", 1)->orderBy("id", "desc")->get();
+		$m = request()->get("m");
+        $credits = Credit::where("status", 1)
+							->orderBy("id", "desc")
+							->where("company_id", $m)
+							->get();
         if(request()->ajax()) {
 			return view("creditNote.listAjax", compact("credits"));
         }
@@ -406,7 +410,8 @@ class CreditNoteController extends Controller
             "debit" => $request->debit,
             "on_record" => $request->on_record == "on" ? 1 : 0,
             "voucher_type" => $request->voucher_type,
-            "branch" => $request->branch
+            "branch" => $request->branch,
+			"company_id" => auth()->user()->company_id
         ]);
 
 
