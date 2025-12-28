@@ -3848,12 +3848,11 @@ die();
 
 
 		// for main
-		$main_menu_id=$request->main;
+		$main_menu_id=array_unique($request->main);
 		$main_menu_id= $main_menu_id ? implode(',',$main_menu_id) : null;
 
-
 		// for sub
-		$sub_menu_id=$request->sub;
+		$sub_menu_id=array_unique($request->sub);
 		$sub_menu_id= $sub_menu_id ? implode(',',$sub_menu_id) : null;
 
 
