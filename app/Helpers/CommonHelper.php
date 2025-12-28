@@ -133,6 +133,10 @@ public static function territory_name($id)
     return $territory->where('id', $id)->value('name');
 }
 
+public static function get_companies() {
+    return DB::table("company")->where("status", 1)->get();
+}
+
     public static function get_company_logo($CompanyId)
     {
         $Cdata = DB::table('company')->where('status',1)->where('id',$CompanyId)->first();
@@ -2025,6 +2029,13 @@ public static function getSubItemByBrand($id, $item_id = null)
     public static function get_subitems() {
         return Subitem::select("id", "product_name")->get();
     }
+    public static function get_all_items() {
+        $sub_item = DB::connection("mysql2")
+                            ->table("subitem")
+                            // ->where("status", 1)
+                            ->get();
+        return $sub_item;
+    }
     public static function get_all_subitem()
     {
 
@@ -2130,6 +2141,28 @@ public static function get_all_subitems()
         endif;
 
         return $name;
+    }
+
+
+    public static function get_users_companies() {
+        if(auth()->user()->acc_type !== 'user') return;
+        
+        $user_companies = DB::table("menu_privileges")
+                        ->select("compnay_id")
+                        ->where("emp_code", auth()->user()->id)
+                        ->groupBy("compnay_id")
+                        ->get()
+                        ->pluck("compnay_id")
+                        ->toArray();
+        // return $user_companies;
+
+        $companies = DB::table("company")->whereIn("id", $user_companies)->get();
+        return $companies;
+    }
+
+    public static function get_current_company_id() {
+        $current_company_id = session()->get("run_company");
+        return $current_company_id;
     }
 
     public static function get_curreny_name($id)
@@ -5241,6 +5274,8 @@ public static function get_customer_acc_id($id)
     public static function generateUniquePosNo($table,$field,$ref)
     {
 
+        
+
         // Get the maximum POS number from the database
         $maxPos =  DB::connection('mysql2')->table($table)->max($field);
  
@@ -5440,6 +5475,10 @@ public static function get_customer_acc_id($id)
      }
      public static function displayLatestSaleOrdersDetail()
      {
+
+        $d = DB::selectOne('select `dbName` from `company` where `id` = '.request()->session()->get('run_company').'')->dbName;
+        Config::set(['database.connections.mysql2.database' => $d]);
+        DB::purge('mysql2');
         $territory_ids = json_decode(auth()->user()->territory_id); 
         
       return  DB::Connection('mysql2')->table('sales_order')

@@ -19,7 +19,6 @@ class mysql2
      */
     public function handle($request, Closure $next)
     {
-
         if ($request->session()->get('run_company')==null):
             return  Redirect::to('/dClient');
         endif;

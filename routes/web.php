@@ -15,12 +15,18 @@ use App\Models\Branch;
 use App\Models\Stock;
 use App\Models\Subitem;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 
 Route::auth();
 
 
 Route::get('testing', function () {
-    dd(\App\Helpers\CommonHelper::get_bank_accounts());
+    Auth::logout(); 
+});
+
+Route::get("privileges", function() {
+    dd(\App\Helpers\CommonHelper::get_users_companies());
+    // dd($privileges);
 });
 
 Route::get("test", function() {
@@ -674,26 +680,30 @@ Route::group(['prefix' => 'fdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
 });
 //End Finance
 
-Route::get("debitNote/create", "DebitNoteController@create")->name("debitnote.create");
-Route::post("debitNote/create", "DebitNoteController@store")->name("debitnote.store");
-Route::get("debitNote/{debit}/update", "DebitNoteController@update")->name("debitnote.update");
-Route::get("debitNote/create", "DebitNoteController@create")->name("debitnote.create");
-Route::post("debitNote/{debit}/update", "DebitNoteController@edit")->name("debitnote.edit");
-Route::get("debitNote", "DebitNoteController@show")->name("debitnote.list");
-Route::get("debitNote/{debit}/delete", "DebitNoteController@destroy")->name("debitnote.delete");
-Route::get("debitNote/{debit}/approve", "DebitNoteController@approve")->name("debitnote.approve");
-Route::get("debitNote/view", "DebitNoteController@view")->name("debitnote.view");
+Route::group(['middleware' => 'mysql2','before' => 'csrf'], function () {
+    Route::get("debitNote/create", "DebitNoteController@create")->name("debitnote.create");
+    Route::post("debitNote/create", "DebitNoteController@store")->name("debitnote.store");
+    Route::get("debitNote/{debit}/update", "DebitNoteController@update")->name("debitnote.update");
+    Route::get("debitNote/create", "DebitNoteController@create")->name("debitnote.create");
+    Route::post("debitNote/{debit}/update", "DebitNoteController@edit")->name("debitnote.edit");
+    Route::get("debitNote", "DebitNoteController@show")->name("debitnote.list");
+    Route::get("debitNote/{debit}/delete", "DebitNoteController@destroy")->name("debitnote.delete");
+    Route::get("debitNote/{debit}/approve", "DebitNoteController@approve")->name("debitnote.approve");
+    Route::get("debitNote/view", "DebitNoteController@view")->name("debitnote.view");
+
+    Route::get("creditNote/customer/showReceipt", "CreditNoteController@showReceipt")->name("creditNote.receipt.show");
+    Route::get("creditNote/create", "CreditNoteController@create")->name("creditNote.create");
+    Route::post("creditNote/create", "CreditNoteController@store")->name("creditNote.store");
+    Route::get("creditNote/{debit}/update", "CreditNoteController@update")->name("creditNote.update");
+    Route::post("debitNote/{debit}/update", "CreditNoteController@edit")->name("creditNote.edit");
+    Route::get("creditNotes", "CreditNoteController@show")->name("creditNote.list");
+    Route::get("creditNote/{debit}/delete", "CreditNoteController@destroy")->name("creditNote.delete");
+    Route::get("creditNote/{debit}/approve", "CreditNoteController@approve")->name("creditNote.approve");
+    Route::get("creditNote/submit_receipt", "CreditNoteController@submitReceiptData")->name("creditNote.receipt.create");
+});
 
 
-Route::get("creditNote/customer/showReceipt", "CreditNoteController@showReceipt")->name("creditNote.receipt.show");
-Route::get("creditNote/create", "CreditNoteController@create")->name("creditNote.create");
-Route::post("creditNote/create", "CreditNoteController@store")->name("creditNote.store");
-Route::get("creditNote/{debit}/update", "CreditNoteController@update")->name("creditNote.update");
-Route::post("debitNote/{debit}/update", "CreditNoteController@edit")->name("creditNote.edit");
-Route::get("creditNotes", "CreditNoteController@show")->name("creditNote.list");
-Route::get("creditNote/{debit}/delete", "CreditNoteController@destroy")->name("creditNote.delete");
-Route::get("creditNote/{debit}/approve", "CreditNoteController@approve")->name("creditNote.approve");
-Route::get("creditNote/submit_receipt", "CreditNoteController@submitReceiptData")->name("creditNote.receipt.create");
+
 
 //Start Purchase
 Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {
@@ -1303,6 +1313,8 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get("/stock_report_view", "StockReportController@show")->name("stock_report.view");
     Route::get("/sale_return_journal_report", "SaleReturnJournalReportController@show")->name("sale_return.view");
     Route::get("/custom_sales_tax_report", "CustomSalesTaxReportController@show")->name('sales_tax_report.view');
+    Route::get("/store_brand_tertiary_summary", "StoresBrandTertialSummaryController@show")->name('stores_brand_tertiary_summary.view');
+    Route::get("/inventory_sheet", "InventorySheetController@show")->name('inventory_sheet.view');
     Route::get("/net_sales_report_view", "NetSalesReportController@show")->name('net_sale_report.view');
     Route::get("/net_sales_report_1_view", "NetSalesReportController@NetSalesExecutiveReport")->name('net_sale_report.view');
     Route::get("/recovery_report_view", "RecoveryReportController@show")->name("recovery_report.view");

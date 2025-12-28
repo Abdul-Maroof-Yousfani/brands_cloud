@@ -37,6 +37,7 @@ CommonHelper::reconnectMasterDatabase();
         width: 225px;
     }
 </style>
+@include("select2")
 <div id="mySidenav" class="sidenavnr">
    <div class="logo_wrp">
     <a href="{{route('dClient')}}">
@@ -211,6 +212,14 @@ CommonHelper::reconnectMasterDatabase();
             @endif
 
          </ul>
+<select style="margin-top: 30px;" class="form-control select2" onchange="if(this.value) window.location.href='{{ url('set_user_db_id') }}?company=' + this.value">
+    <option value="">Select Company</option>
+    @foreach(App\Helpers\CommonHelper::get_companies() as $company)
+        <option value="{{ $company->id }}" {{ \App\Helpers\CommonHelper::get_current_company_id() == $company->id ? 'selected' : '' }}>
+            {{ $company->name }}
+        </option>
+    @endforeach
+</select>
       </div>
       <ul class='ctn-list'>
          <li>

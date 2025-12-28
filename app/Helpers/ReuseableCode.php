@@ -354,6 +354,7 @@ public static function get_stock_new($item_id, $warehouse_id, $qty = null, $batc
             endif;
 
 
+
       $crud=explode(',',$crud);
        $account_typ=Auth::user()->acc_type;
         if ($account_typ=='user' && (!in_array($id,$crud))):

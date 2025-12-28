@@ -12,6 +12,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Session;
 use VoucherType;
 
 class CreditNoteController extends Controller
@@ -83,12 +84,19 @@ class CreditNoteController extends Controller
 
 
      public function show() {
-		$m = request()->get("m");
-        $credits = Credit::where("status", 1)
-							->orderBy("id", "desc")
-							->where("company_id", $m)
-							->get();
-        if(request()->ajax()) {
+		
+
+		 $credits = DB::Connection("mysql2")->table("credits")->where("status", 1)->orderBy("id", "desc")->get();
+		 // dd($credits);
+		 if(request()->ajax()) {
+
+			$company = DB::table("company")->where("id", Session::get("run_company"))->first();
+			config(['database.connections.mysql2.database' => $company->dbName]);
+			DB::purge('mysql2');      // 🔥 remove old connection
+			DB::reconnect('mysql2'); 
+			$credits = DB::Connection("mysql2")->table("credits")->where("status", 1)->orderBy("id", "desc")->get();
+			// $credits = DB::connection("mysql2")->table("credits")->where("status", 1)->orderBy("id", "desc")->get();
+		
 			return view("creditNote.listAjax", compact("credits"));
         }
 
@@ -369,6 +377,11 @@ class CreditNoteController extends Controller
         return back()->with("success", "Credit Note is approved");
     }
     public function destroy(Debit $debit) {
+			$company = DB::table("company")->where("id", Session::get("run_company"))->first();
+			config(['database.connections.mysql2.database' => $company->dbName]);
+			DB::purge('mysql2');      // 🔥 remove old connection
+			DB::reconnect('mysql2'); 
+		
         $debit->status = 0;
         $debit->save();
 
@@ -376,6 +389,12 @@ class CreditNoteController extends Controller
     }
     public function store(Request $request) {
 		
+		$company = DB::table("company")->where("id", Session::get("run_company"))->first();
+			config(['database.connections.mysql2.database' => $company->dbName]);
+			DB::purge('mysql2');      
+			DB::reconnect('mysql2'); 
+		
+
 		$rules = [
 			"store" => "required",
 			"delivery_man" => "required",

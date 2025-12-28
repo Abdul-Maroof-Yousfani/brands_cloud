@@ -205,6 +205,14 @@ endif;
 
                 </ul>
             </div>
+            <select style="margin-left: 30px; margin-right: 30px;" class="form-control select2" onchange="if(this.value) window.location.href='{{ url('set_user_db_id') }}?company=' + this.value">
+    <option value="">Select Company</option>
+    @foreach(\App\Helpers\CommonHelper::get_users_companies() as $company)
+        <option value="{{ $company->id }}" {{ \App\Helpers\CommonHelper::get_current_company_id() == $company->id ? 'selected' : '' }}>
+            {{ $company->name }}
+        </option>
+    @endforeach
+</select>
            <ul class='ctn-list'>
               <li>
                  <div class='ser'>
