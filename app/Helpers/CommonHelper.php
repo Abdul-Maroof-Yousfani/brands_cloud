@@ -163,6 +163,8 @@ public static function get_companies() {
                         <p style="float: left; font-size: 20px;"><strong>BURHANI AQMS INDUSTRIES</strong></p>
                         <br>
                         <p style="font-size: 13px;margin: 10px !important;">A-516/517, Mehran Town, Sector 6-A, Korangi Industrial Area, Karachi-74900, Pakistan.</p>';
+        
+            $HtmlData = "";
         }
 
         elseif($CompanyId == 5)
@@ -173,7 +175,7 @@ public static function get_companies() {
                         <p style="font-size: 13px;margin: 10px !important;">Shop-1,2,3 Tawakkal Mansion Bellasis Street Karachi, 74200 Pakistan</p>';
         }
 
-
+        return "";
         return $HtmlData;
     }
 
