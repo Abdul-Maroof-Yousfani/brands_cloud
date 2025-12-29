@@ -558,10 +558,8 @@ public function closingReportView(Request $request)
 
     
     $m = $request->m ?? null;
-  
     if ((int)$m === 1) {
-
-                // $from_date = $request->from ?? date('Y-m-d');
+            // $from_date = $request->from ?? date('Y-m-d');
                 $from_date = $request->from ?? date('Y-m-d', strtotime('-2 years'));
 
                 $to_date = $request->to ?? date('Y-m-d');
@@ -626,8 +624,8 @@ public function closingReportView(Request $request)
                     ->limit(5)
                     ->get(['id', 'product_name']);
 
+
             if ($request->ajax()) {
-                
             $transitSub = DB::connection('mysql2')->table('stock_transfers_transit')
                 ->select(
                     'product_id',
@@ -737,7 +735,6 @@ public function closingReportView(Request $request)
 
     }else{
 
-       
                 // $from_date = $request->from ?? date('Y-m-d');
             $from_date = $request->from ?? date('Y-m-d', strtotime('-2 years'));
 
@@ -804,7 +801,6 @@ public function closingReportView(Request $request)
                 ->get(['id', 'product_name']);
 
         if ($request->ajax()) {
-            
         $transitSub = DB::connection('mysql2')->table('stock_transfers_transit')
             ->select(
                 'product_id',
