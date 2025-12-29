@@ -95,8 +95,8 @@ $grn_no = 'grn' . ($str + 1) . date('my');
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label class="sf-label">Delivery Challan No</label>
                 <span class="rflabelsteric"><strong>*</strong></span>
-                <input type="text" class="form-control requiredField" placeholder="Delivery Challan No"
-                       name="del_chal_no" id="del_chal_no" value="" />
+                <input type="text" class="form-control " placeholder="Delivery Challan No"
+                       name="del_chal_no" id="del_chal_no" value="-" />
             </div>
 
 
@@ -104,8 +104,8 @@ $grn_no = 'grn' . ($str + 1) . date('my');
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label class="sf-label">Delivery Detail/ Vehicle # </label>
                 <span class="rflabelsteric"><strong>*</strong></span>
-                <input type="text" class="form-control requiredField" placeholder="Delivery Detail/ Vehicle #"
-                       name="del_detail" id="del_detail" value="" />
+                <input type="text" class="form-control " placeholder="Delivery Detail/ Vehicle #"
+                       name="del_detail" id="del_detail" value="-" />
             </div>
 
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hide">
