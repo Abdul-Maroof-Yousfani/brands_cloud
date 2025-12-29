@@ -101,7 +101,7 @@
             {{-- Footer Total Row --}}
             <tfoot>
                 <tr class="totals-row">
-                    <td colspan="7" class="text-end">Total</td>
+                    <td colspan="9" class="text-end">Total</td>
                       <td>{{ number_format($transitTotal) }}</td> 
 
                     @foreach($warehouses as $id => $wName)
