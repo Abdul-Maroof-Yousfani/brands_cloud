@@ -636,6 +636,8 @@ $bindings = $transitSub->getBindings(); // bindings
 
 $query = DB::connection('mysql2')->table('stock as s')
     ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
+    ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
+
     ->leftJoin('category as c', 'si.main_ic_id', '=', 'c.id')
     ->leftJoin('warehouse as w', 's.warehouse_id', '=', 'w.id')
     ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
@@ -649,7 +651,8 @@ $query = DB::connection('mysql2')->table('stock as s')
         'si.sku_code',
         'si.product_name',
         'si.product_barcode as barcode',
-        'si.type as item_type',
+        'pt.type as item_type',
+        // 'si.type as item_type',
         'si.pack_size as packing',
         'b.name as brand',
         'w.id as warehouse_id',
@@ -701,6 +704,7 @@ $query = DB::connection('mysql2')->table('stock as s')
                 'sku_code' => $stock->sku_code,
                 'product_name' => $stock->product_name,
                 'barcode' => $stock->barcode,
+                
                 'item_type' => $stock->item_type,
                 'brand' => $stock->brand,
                 'packing' => $stock->packing,

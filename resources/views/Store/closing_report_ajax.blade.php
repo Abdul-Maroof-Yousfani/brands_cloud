@@ -62,7 +62,9 @@
                         <td>{{ $row['sku_code'] }}</td>
                         <td>{{ $row['product_name'] }}</td>
                         <td>{{ $row['barcode'] }}</td>
-                        <td>{{ $row['item_type'] != 1 ? 'Commercial' : 'Non-Commercial' }}</td>
+                        <td>{{ $row['item_type'] ?? 'N/A' }}</td>
+
+                        <!-- <td>{{ $row['item_type'] != 1 ? 'Commercial' : 'Non-Commercial' }}</td> -->
                         <td>{{ $row['brand'] ?? 'N/A' }}</td>
                         <td>{{ $row['packing'] }}</td>
                          <td>{{ number_format($transitVal) }}</td>
