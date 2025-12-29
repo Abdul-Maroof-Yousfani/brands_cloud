@@ -287,6 +287,7 @@ $grn_status = $row->grn_status;
 
                         CommonHelper::reconnectMasterDatabase();
                         $counter = 1;
+                        $totalqty = 0;
                         foreach ($grnDataDetail as $row1)
                         {
 
@@ -326,10 +327,12 @@ $grn_status = $row->grn_status;
                                         ?>
                                     <?php endif;?>
                                 </td>
+
+                                <?php $totalqty += $row1->purchase_approved_qty; ?>
                                 <!-- <td class="text-center"><?php echo $row1->batch_code?></td> -->
                                 <td class="text-center"><?php echo CommonHelper::changeDateFormat($row1->expiry_date)?></td>
-                                <td class="text-center"><?php echo number_format($row1->purchase_approved_qty,2);?></td>
-                                <td  class="text-center"><?php echo  number_format($row1->purchase_recived_qty-$row1->qc_qty,2)?></td>
+                                <td class="text-center"><?php echo number_format($row1->purchase_approved_qty,0);?></td>
+                                <td  class="text-center"><?php echo  number_format($row1->purchase_recived_qty-$row1->qc_qty,0)?></td>
                                 <td  class="text-center ShowHideRate" style="display: none;"><?php echo  number_format($row1->rate,2)?></td>
                                 <td  class="text-center ShowHideAmount" style="display: none;"><?php echo  number_format($row1->amount,2)?></td>
                                 <td  class="text-center ShowHideDiscountPercent" style="display: none;"><?php echo  number_format($row1->discount_percent,2)?></td>
@@ -350,6 +353,17 @@ $grn_status = $row->grn_status;
                             }
                         ?>
                             </tbody>
+                            <tr class="text-center" style="background-color: darkgrey">
+                                <td colspan="3">Total</td>
+                                <td style="font-size: larger;font-weight:"><?php echo  number_format($totalqty,0) ?></td>
+                                <td class="ShowHideRate" style="display: none;"></td>
+                                <td class="ShowHideAmount" style="display: none;"></td>
+                                <td class="ShowHideDiscountPercent" style="display: none;"></td>
+                                <td class="ShowHideDiscountAmount" style="display: none;"></td>
+                                <td class="ShowHideNetAmount" style="display: none;"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                         </table>
 
                         <table style="display: none;"  id=""  class="table table-bordered tra">
