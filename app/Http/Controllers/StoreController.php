@@ -556,9 +556,10 @@ public function searchProduct(Request $request)
 public function closingReportView(Request $request)
 {
 
+    
     $m = $request->m ?? null;
   
-if ((int)$m == 1) {
+    if ((int)$m === 1) {
 
                 // $from_date = $request->from ?? date('Y-m-d');
                 $from_date = $request->from ?? date('Y-m-d', strtotime('-2 years'));
