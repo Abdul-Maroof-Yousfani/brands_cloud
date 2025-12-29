@@ -265,7 +265,9 @@ $grn_status = $row->grn_status;
                             <thead>
                             <tr>
                                 <th class="text-center">Sr No.</th>
+                                <th class="text-center">SKU</th>
                                 <th class="text-center">Product Name</th>
+                                <th class="text-center">Barcode</th>
                                 <!-- <th class="text-center">Batch Code</th> -->
                                 <th class="text-center">Expiry Date</th>
                                 <th class="text-center">Ordered Qty	<span class="rflabelsteric"></span></th>
@@ -303,6 +305,7 @@ $grn_status = $row->grn_status;
                             ?>
                             <tr>
                                 <td><?php echo $counter?></td>
+                                <td>{{ \App\Helpers\CommonHelper::get_item_sku_code($row1->sub_item_id) }}</td>
                                 <td title="{{$item_name}}" class="text-center">
 
                                     <?php $accType = Auth::user()->acc_type;
@@ -327,6 +330,8 @@ $grn_status = $row->grn_status;
                                         ?>
                                     <?php endif;?>
                                 </td>
+                                <td>{{ \App\Helpers\CommonHelper::product_barcode($row1->sub_item_id) }}</td>
+                                
 
                                 <?php $totalqty += $row1->purchase_approved_qty; ?>
                                 <!-- <td class="text-center"><?php echo $row1->batch_code?></td> -->
