@@ -59,6 +59,8 @@ $fromDate = $_GET['fromDate'];
 $toDate = $_GET['toDate'];
 
 $OverAllTot = 0;
+$OverAllTotpurchase_approved_qty = 0;
+$OverAllTotpurchase_recived_qty = 0;
 $total_pi=0;
 $total_return_grn=0;
 $total_return_pi=0;
@@ -68,6 +70,8 @@ foreach ($goodsReceiptNoteDetail as $row)
 {
     $addAmount = DB::Connection('mysql2')->table('addional_expense')->where('main_id',$row->id)->select('amount')->sum('amount');
     $ntAmount = DB::Connection('mysql2')->table('grn_data')->where('master_id',$row->id)->select('net_amount','rate','')->sum('net_amount');
+    $purchase_approved_qty = DB::Connection('mysql2')->table('grn_data')->where('master_id',$row->id)->select('purchase_approved_qty')->sum('purchase_approved_qty');
+    $purchase_recived_qty = DB::Connection('mysql2')->table('grn_data')->where('master_id',$row->id)->select('purchase_recived_qty')->sum('purchase_recived_qty');
     $checkifbarcodescanningproduct = DB::connection('mysql2')->table('grn_data')
         ->join('subitem', 'grn_data.sub_item_id', '=', 'subitem.id')
         ->where('subitem.is_barcode_scanning', 1)
@@ -80,6 +84,8 @@ foreach ($goodsReceiptNoteDetail as $row)
     $pi_no=DB::Connection('mysql2')->table('new_purchase_voucher')->where('status',1)->where('grn_id',$row->id)->select('pv_no')->value('pv_no');
     $pi_date=DB::Connection('mysql2')->table('new_purchase_voucher')->where('status',1)->where('grn_id',$row->id)->select('pv_date')->value('pv_date');
     $net_amount = $ntAmount;
+    $purchase_approved_qty = $purchase_approved_qty;
+    $purchase_recived_qty = $purchase_recived_qty;
     //  $pi_amount= ReuseableCode::pi_get_net_amount($row->id);
     // $pi_date=$pi_amount->pv_date;
     // $pi_amount=$pi_amount->net_amount;
@@ -94,6 +100,8 @@ foreach ($goodsReceiptNoteDetail as $row)
     //   endif;
 
     $OverAllTot+=$net_amount;
+    $OverAllTotpurchase_approved_qty+=$purchase_approved_qty;
+    $OverAllTotpurchase_recived_qty+=$purchase_recived_qty;
 
     if($row->type==0 || $row->type == 5):
         $paramOne = "pdc/viewGoodsReceiptNoteDetail";
@@ -128,7 +136,10 @@ foreach ($goodsReceiptNoteDetail as $row)
     <td class="text-center">' . strtoupper($po_no) . '</td>
     <td class="text-center">' . $row->supplier_invoice_no . '</td>
     <td class="text-center">' . CommonHelper::getCompanyDatabaseTableValueById($m, 'supplier', 'name', $row->supplier_id) . '</td>
+    <td class="text-right">' . number_format($purchase_approved_qty, 2) . '</td>
+    <td class="text-right">' . number_format($purchase_recived_qty, 2) . '</td>
     <td class="text-right">' . number_format($net_amount, 2) . '</td>
+
     <td class="text-center ' . $row->id . '">' . PurchaseHelper::checkVoucherStatus($row->grn_status, $row->status, $row->id) . '</td>
     <td class="text-center ' . $row->id . '">' .strtoupper($row->grn_data_status). '</td>
     <td class="text-center">' . strtoupper($row->username . ' ' . $wrong) . '</td>
@@ -192,7 +203,8 @@ foreach ($goodsReceiptNoteDetail as $row)
     }
 
 }
-$data.= '<tr><td colspan="7"></td><td>'.number_format($OverAllTot,2).'</td><td>'.number_format($total_return_grn,2).'</td><td>'.number_format($total_pi,2).'</td><td>'.number_format($total_return_pi,2).'</td></tr>';
+$data.= '<tr><td colspan="7"></td><td>'.number_format($OverAllTotpurchase_approved_qty,2).'</td><td>'.number_format($OverAllTotpurchase_recived_qty,2).'</td>
+<td>'.number_format($OverAllTot,2).'</td><td>'.number_format($total_return_grn,2).'</td><td>'.number_format($total_pi,2).'</td><td>'.number_format($total_return_pi,2).'</td></tr>';
 ?>
 
 <?php

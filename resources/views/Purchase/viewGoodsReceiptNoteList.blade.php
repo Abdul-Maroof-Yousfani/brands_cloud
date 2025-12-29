@@ -130,6 +130,8 @@ $currentMonthEndDate   = date('Y-m-t');
                                                             <th class="text-center col-md-1">PO No.</th>
                                                             <th class="text-center">Supplier Invoice No.</th>
                                                             <th class="text-center">Supplier Name</th>
+                                                            <th class="text-center">Ordered Qty</th>
+                                                            <th class="text-center">Received  Qty</th>
                                                             <th class="text-center">GRN Net Amount</th>
                                         
                                                             <th class="text-center col-md-1">Approval Status</th>
