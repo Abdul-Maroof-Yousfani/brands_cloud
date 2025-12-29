@@ -836,6 +836,7 @@ if ((int)$m === 1) {
                 'si.product_barcode as barcode',
                 'pt.type as item_type',
                 's.voucher_no as voucher_no',
+                's.supplier_id as supplier_id',
                 // 'si.type as item_type',
                 'si.pack_size as packing',
                 'b.name as brand',
@@ -888,6 +889,7 @@ if ((int)$m === 1) {
                         'sku_code' => $stock->sku_code,
                         'product_name' => $stock->product_name,
                         'voucher_no' => $stock->voucher_no,
+                        'supplier_id' => $stock->supplier_id,
                         'purchase_price' => $stock->purchase_price,
                         'barcode' => $stock->barcode,
                         

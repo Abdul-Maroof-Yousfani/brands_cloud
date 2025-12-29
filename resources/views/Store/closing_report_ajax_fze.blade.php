@@ -39,8 +39,9 @@
                     <th>Item Type</th>
                     <th>Brand</th>
                     <th>Packing</th>
-                    <th>purchase_price</th>
+                    <th>purchase price</th>
                     <th>Supplier Invoice</th>
+                    <th>Supplier Name</th>
                      <th>Stock in Transit (Pcs)</th>
 
                     @foreach($warehouses as $warehouseName)
@@ -78,6 +79,13 @@
         ->value('supplier_invoice_no');
 @endphp
 <td>{{ $supplier_invoice_no ?? 'N/A' }}</td>
+                  @php
+    $supplier_name = DB::connection('mysql2')
+        ->table('supplier')
+        ->where('id', $row['supplier_id'])
+        ->value('name');
+@endphp
+<td>{{ $supplier_name ?? 'N/A' }}</td>
 
 
 
@@ -101,7 +109,7 @@
             {{-- Footer Total Row --}}
             <tfoot>
                 <tr class="totals-row">
-                    <td colspan="9" class="text-end">Total</td>
+                    <td colspan="10" class="text-end">Total</td>
                       <td>{{ number_format($transitTotal) }}</td> 
 
                     @foreach($warehouses as $id => $wName)
