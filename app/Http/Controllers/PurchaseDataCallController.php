@@ -1242,8 +1242,8 @@ $subitems = Subitem::where('subitem.status', 1)
         if ($selectVoucherStatus == '0' && empty($selectSubDepartmentId) && empty($selectSupplierId)) {
             //return 'One';
             $goodsReceiptNoteDetail = GoodsReceiptNote::whereBetween('goods_receipt_note.grn_date', [$fromDate, $toDate])
-                                      ->leftJoin("grn_data", "grn_data.master_id", "goods_receipt_note.id")
-                                      ->leftJoin("subitem", "subitem.id", "grn_data.sub_item_id")
+                                      // ->leftJoin("grn_data", "grn_data.master_id", "goods_receipt_note.id")
+                                      // ->leftJoin("subitem", "subitem.id", "grn_data.sub_item_id")
                                       ->where('goods_receipt_note.status', '=', '1')->orderBy('goods_receipt_note.id', 'desc');
 
             if(!empty($search)){
