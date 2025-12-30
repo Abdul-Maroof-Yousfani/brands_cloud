@@ -89,7 +89,7 @@
 
 
 
-                         <td>{{ number_format($transitVal) }}</td>
+                         <td>{{ ($transitVal) }}</td>
 
                         @foreach($warehouses as $id => $wName)
                             @php
@@ -97,10 +97,10 @@
                                 $warehouseTotals[$id] += $val;
                                 $rowTotal += $val;
                             @endphp
-                            <td>{{ number_format($val) }}</td>
+                            <td>{{ ($val) }}</td>
                         @endforeach
 
-                        <td>{{ number_format($rowTotal) }}</td>
+                        <td>{{ ($rowTotal) }}</td>
                         @php $grandTotal += $rowTotal; @endphp
                     </tr>
                 @endforeach
@@ -110,13 +110,13 @@
             <tfoot>
                 <tr class="totals-row">
                     <td colspan="10" class="text-end">Total</td>
-                      <td>{{ number_format($transitTotal) }}</td> 
+                      <td>{{ ($transitTotal) }}</td> 
 
                     @foreach($warehouses as $id => $wName)
-                        <td>{{ number_format($warehouseTotals[$id]) }}</td>
+                        <td>{{ ($warehouseTotals[$id]) }}</td>
                     @endforeach
 
-                    <td>{{ number_format($grandTotal) }}</td>
+                    <td>{{ ($grandTotal) }}</td>
                 </tr>
             </tfoot>
         </table>
