@@ -204,6 +204,7 @@ if($_GET['pageType']=='viewlist'){
                                     $total=0;
                             $total_exchange=0;
                             $actual_amount =0;
+                            $approved_qty_sum = 0;
                             foreach ($purchaseRequestDataDetail as $row1){
                             ?>
                             <tr>
@@ -231,7 +232,10 @@ if($_GET['pageType']=='viewlist'){
                                 <td> <?php echo CommonHelper::get_uom_name($sub_ic_detail[0]);?>
                                     <input type="hidden" value="<?php echo $row1->sub_item_id?>" id="sub_<?php echo $counter?>">
                                 </td>
-                                <td class="text-center"><?php echo $row1->purchase_approve_qty;?></td>
+                                @php
+                                    $approved_qty_sum += (int)$row1->purchase_approve_qty;
+                                @endphp
+                                <td class="text-center"><?php echo (int)$row1->purchase_approve_qty;?></td>
                                 <!-- <td class="text-center"><?php echo $row1->no_of_carton;?></td> -->
                                 <td class="text-center"><?php echo number_format($row1->rate,2);?></td>
                                 <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty * $row->currency_rate,2);?></td>
@@ -252,7 +256,8 @@ if($_GET['pageType']=='viewlist'){
 
                             <tr>
 
-                                <td style="background-color: darkgray" class="text-center" colspan="6">Total</td>
+                                <td style="background-color: darkgray" class="text-center" colspan="3">Total</td>
+                                <td style="background-color: darkgray" class="text-center">{{ $approved_qty_sum }}</td>
                                 <td style="background-color: darkgray" class="text-right"  >{{number_format($actual_amount,2)}} ({{$currency}})</td>
                                 <td  style="background-color: darkgray" class="text-right"  colspan="4">{{number_format($total,2)}}</td>
                                 <td  style="background-color: darkgray;display: none" class="text-right showw"  colspan="1">{{number_format($total_exchange,2)}}</td>
