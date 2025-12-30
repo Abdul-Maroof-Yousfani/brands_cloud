@@ -70,7 +70,7 @@
                         <!-- <td>{{ $row['item_type'] != 1 ? 'Commercial' : 'Non-Commercial' }}</td> -->
                         <td>{{ $row['brand'] ?? 'N/A' }}</td>
                         <td>{{ $row['packing'] }}</td>
-                        <td>{{ $row['purchase_price'] }}$</td>
+                        <td>{{ $row['purchase_price'] }}</td>
 
                   @php
     $supplier_invoice_no = DB::connection('mysql2')
