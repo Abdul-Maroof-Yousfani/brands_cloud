@@ -182,7 +182,7 @@ use App\Helpers\SaleHelper;
                     bookSST: true,
                     type: 'base64'
                 }) :
-                XLSX.writeFile(wb, fn || ('Recovery Report <?php echo date('d-m-Y'); ?>.' + (type || 'xlsx')));
+                XLSX.writeFile(wb, fn || ('Stores Brand Tertiary Report <?php echo date('d-m-Y'); ?>.' + (type || 'xlsx')));
         }
     </script>
     <script>
