@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mt-5">
-        <h2>BA Formation - Upload XLSX</h2>
+        <h2>BA Opening - Upload XLSX</h2>
 
         <div class="card p-4 shadow-sm" style="max-width: 500px;">
             <!-- Upload Button (triggers file picker) -->
