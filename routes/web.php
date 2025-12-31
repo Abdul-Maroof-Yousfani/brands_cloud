@@ -1369,6 +1369,9 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get('/stockReportView', 'StoreController@stockReportView');
     Route::get("/outstanding-again-report", "OutstandingAgainController@show");
     Route::get('/closingReportView', 'StoreController@closingReportView')->name('closingReportView');
+    
+    Route::get('/BAclosingReport', 'StoreController@BAclosingReportView')->name('baClosingReportView');
+    
     // Route::get('/ajax/search-product', 'StoreController@searchProduct')->name('ajax.search.product');
     Route::get('/ajax/search-product', 'StoreController@searchProduct')->name('ajax.search.product');
 Route::get('/ajax/get-warehouses-by-territory','StoreController@getWarehousesByTerritory')->name('ajax.get.warehouses');
