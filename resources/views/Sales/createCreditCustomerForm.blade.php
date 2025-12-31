@@ -484,10 +484,9 @@ $m=Session::get('run_company');
                                                                             <option value="">Select Option</option>
                                                                             @foreach(App\Helpers\SalesHelper::get_all_unregistered_employees() as $row)
                                                                                 <option value="{{ $row->id }}" data-email="{{ $row->email }}" data-name="{{ $row->name }}">
-                                                                                    {{ $row->name }}
+                                                                                    {{ $row->name }} -- {{ $row->id }}
                                                                                 </option>
                                                                             @endforeach
-                                                                            <option value="2">Employee 02</option>
                                                                         </select>
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
