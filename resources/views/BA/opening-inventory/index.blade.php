@@ -5,6 +5,12 @@
         <h2>BA Formation - Upload XLSX</h2>
 
         <div class="card p-4 shadow-sm" style="max-width: 500px;">
+            <a href="{{ asset('storage/sample.xlsx') }}"
+            class="btn btn-outline-secondary mb-3 w-100"
+            style="margin-right: 20px"
+            download>
+                <i class="fas fa-download"></i> Download Sample XLSX
+            </a>
             <!-- Upload Button (triggers file picker) -->
             <button type="button" class="btn btn-outline-primary mb-3" id="chooseFileBtn">
                 <i class="fas fa-folder-open"></i> Choose XLSX File
