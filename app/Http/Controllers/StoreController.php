@@ -666,6 +666,7 @@ public function closingReportView(Request $request)
                     DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
                 )
                 ->where('s.status', 1)
+                ->where("s.voucher_type", "!=", "9")
                 ->whereBetween('s.created_date', [$from_date, $to_date])
                 ->groupBy('si.id','w.id');
 
@@ -844,6 +845,7 @@ public function closingReportView(Request $request)
                 DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
             )
             ->where('s.status', 1)
+            ->where("s.voucher_type", "!=", "9")
             ->whereBetween('s.created_date', [$from_date, $to_date])
             ->groupBy('si.id','w.id');
 

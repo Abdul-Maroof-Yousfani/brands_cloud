@@ -223,6 +223,9 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
 
     Route::resource('baTargets', 'BaTargetsController');
     Route::post('listbaTargets', 'BaTargetsController@getList')->name('list.baTargets');
+
+    Route::get("opening-inventory", "OpeningInventoryController@index");
+    Route::post("opening-inventory", "OpeningInventoryController@import")->name("baFormation.import");
 });
 
 
