@@ -556,7 +556,7 @@ public function searchProduct(Request $request)
 public function closingReportView(Request $request)
 {
 
-    
+
     $m = $request->m ?? null;
     if ((int)$m === 1) {
             // $from_date = $request->from ?? date('Y-m-d');
@@ -1563,6 +1563,7 @@ public function getBrandsByWarehouse(Request $request)
   
         return view('Store.add_opening');
     }
+    
     public function add_opening_import(Request $request)
     {
   
