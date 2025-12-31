@@ -482,7 +482,11 @@ $m=Session::get('run_company');
                                                                         <span class="rflabelsteric"></span>
                                                                         <select name="employee_id" id="employee_id" class="form-control">
                                                                             <option value="">Select Option</option>
-                                                                            <option value="1">Employee 01</option>
+                                                                            @foreach(App\Helpers\SalesHelper::get_all_unregistered_employees() as $row)
+                                                                                <option value="{{ $row->id }}" data-email="{{ $row->email }}" data-name="{{ $row->name }}">
+                                                                                    {{ $row->name }}
+                                                                                </option>
+                                                                            @endforeach
                                                                             <option value="2">Employee 02</option>
                                                                         </select>
                                                                     </div>

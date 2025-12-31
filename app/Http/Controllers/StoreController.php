@@ -1588,7 +1588,6 @@ public function getBrandsByWarehouse(Request $request)
 
                 $user = Auth::user();
                 $isUser = $user && $user->acc_type == 'user';
-
                 if ($isUser) {
                     $territory_ids = json_decode($user->territory_id, true);
                     if (!is_array($territory_ids)) {
@@ -1599,9 +1598,10 @@ public function getBrandsByWarehouse(Request $request)
                         ->whereIn('territory', $territory_ids)
                         ->where('status', 1)
                         ->pluck('warehouse_id');
-
+                 
                     $warehouses = DB::connection('mysql2')->table('warehouse')
                         ->whereIn('id', $warehouseList)
+                        ->where("is_virtual", 1)
                         ->where('status', 1)
                         ->get();
 
@@ -1630,7 +1630,10 @@ public function getBrandsByWarehouse(Request $request)
                         ->where('status', 1)
                         ->get(['id', 'name']);
                 } else {
-                    $warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->get();
+                    $warehouses = DB::connection('mysql2')->table('warehouse')
+                                                                ->where("is_virtual", 1)
+                                                                ->where('status', 1)
+                                                                ->get();
                     $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
                     $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
                     $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
@@ -1807,7 +1810,7 @@ public function getBrandsByWarehouse(Request $request)
                     ->where('status', 1)
                     ->get(['id', 'name']);
             } else {
-                $warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->get();
+                $warehouses = DB::connection('mysql2')->table('warehouse')->where("is_virtual", 1)->where('status', 1)->get();
                 $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
                 $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
                 $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);

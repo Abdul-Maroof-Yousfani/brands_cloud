@@ -230,8 +230,8 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                   
                                                     <td class="text-center">
                                                         
-                                                    <?php echo $sales_order->timestamp ? \Carbon\Carbon::parse($sales_order->timestamp)->format("d-M-Y") : "";?> <br>
-                                                <?php echo $sales_order->timestamp ? \Carbon\Carbon::parse($sales_order->timestamp)->format("h:i:s A") : "";?> 
+                                                    <?php echo $sales_order && $sales_order->timestamp ? \Carbon\Carbon::parse($sales_order->timestamp)->format("d-M-Y") : "";?> <br>
+                                                <?php echo $sales_order && $sales_order->timestamp ? \Carbon\Carbon::parse($sales_order->timestamp)->format("h:i:s A") : "";?> 
                                                 
                                                 </td>
 

@@ -1544,7 +1544,7 @@ class SalesAddDetailControler extends Controller
                         'amount' => $value->qty * $average_cost,  //DNA
                         'status' => 1,
                         'warehouse_id' => $value->warehouse_to_id,   //DNA
-                        'warehouse_to_id' => $value->warehouse_to_id,   //DNA
+                        'warehouse_id_to' => $value->warehouse_to_id,   //DNA
                         'username' => Auth::user()->username,
                         'created_date' => date('Y-m-d'),
                         'created_date' => date('Y-m-d'),
