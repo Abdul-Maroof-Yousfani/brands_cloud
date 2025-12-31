@@ -84,6 +84,7 @@
                     }
                 });
 
+                
                 $.ajax({
                     url: "{{ route('baFormation.import') }}",
                     method: "POST",
