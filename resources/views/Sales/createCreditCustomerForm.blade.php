@@ -480,7 +480,7 @@ $m=Session::get('run_company');
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                         <label>Employee :</label>
                                                                         <span class="rflabelsteric"></span>
-                                                                        <select name="employee_id" id="employee_id" class="form-control">
+                                                                        <select name="employee_id" id="employee_id" class="form-control select2">
                                                                             <option value="">Select Option</option>
                                                                             @foreach(App\Helpers\SalesHelper::get_all_unregistered_employees() as $row)
                                                                                 <option value="{{ $row->id }}" data-email="{{ $row->email }}" data-name="{{ $row->name }}">
@@ -963,6 +963,7 @@ $m=Session::get('run_company');
     </div>
     <script>
     const radioButtons = document.querySelectorAll('input[name="company_shipping_type"]');
+    $(".select2").select2();
 
     // Add change event listener to each radio button
     radioButtons.forEach(radio => {
