@@ -22,6 +22,7 @@
                <th class="text-center hide">Hs Code Id</th>
                <!-- <th class="text-center hide">Brand</th> -->
                <th class="text-center">Product Name</th>
+               <th class="text-center">Product Type</th>
                <th class="text-center hide">Product Description
                </th>
                <th class="text-center hide">Packing</th>
@@ -62,6 +63,7 @@
                        <td>{{ $row->product_barcode }}</td>
                        <td>{{ $row->sku_code }}</td>
                        <td>{{ $row->product_name }}</td>
+                       <td>{{ \App\Helpers\CommonHelper::get_product_type_by_id($row->type) }}</td>
                        <td>{{ $row->brand_name }}</td>
                        <td class="hide">{{ $row->purchase_price }}</td>
                        <td>{{ $row->sale_price }}</td>
