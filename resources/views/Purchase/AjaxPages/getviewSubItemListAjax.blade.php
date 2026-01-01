@@ -63,7 +63,7 @@
                        <td>{{ $row->product_barcode }}</td>
                        <td>{{ $row->sku_code }}</td>
                        <td>{{ $row->product_name }}</td>
-                       <td>{{ ({{ $row->type }}) \App\Helpers\CommonHelper::get_product_type_by_id($row->type) }}</td>
+                       <td>{{ $row->type }} {{ \App\Helpers\CommonHelper::get_product_type_by_id($row->type) }}</td>
                        <td>{{ $row->brand_name }}</td>
                        <td class="hide">{{ $row->purchase_price }}</td>
                        <td>{{ $row->sale_price }}</td>
