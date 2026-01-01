@@ -2222,7 +2222,7 @@ public static function get_all_subitems()
         if($product_type){
             return $product_type->type;
         }
-        return "Product Type First";
+        return "N/A";
     }
     public static function get_classification_by_id($id)
     {
