@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\Issuance;
 use App\Models\IssuanceData;
 
+use App\Models\ProductsPrincipalGroup;
 use Illuminate\Http\Request;
 use App\Helpers\CommonHelper;
 
@@ -521,7 +522,9 @@ class PurchaseController extends Controller
         $username = Subitem::select("username")->groupBy("username")->get();
         $product_classification = ProductClassification::where('status',1)->get();
         $product_trends = ProductTrend::where('status',1)->get();
-        return view('Purchase.viewSubItemList', compact('product_classification', 'subitem', 'username', 'product_trends'));
+        $principl_groups = ProductsPrincipalGroup::select("id", "products_principal_group")->get();
+
+        return view('Purchase.viewSubItemList', compact('product_classification', 'subitem', 'username', 'product_trends', 'principl_groups'));
     }
 
     public function viewSubItemDetail(){

@@ -79,6 +79,15 @@ if ($accType == 'client') {
                                                 <div class="col-md-11 mb-3 ">
                                                     <div class="row justify-content-end text-right">
                                                         <div class="col-md-2 mb-3">
+                                                            <label>Principle Group </label>
+                                                            <select name="principle_group" class="form-control select2">
+                                                                <option value="">Principle Groups</option>
+                                                                @foreach($principl_groups as $key => $principle_group)
+                                                                    <option value="{{ $principle_group->id}}">{{ $principle_group->products_principal_group}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-2 mb-3">
                                                             <label>Classification </label>
                                                             <select name="product_classification_id[]" multiple class="form-control select2">
                                                                 <option disabled>Select Product Classification</option>
