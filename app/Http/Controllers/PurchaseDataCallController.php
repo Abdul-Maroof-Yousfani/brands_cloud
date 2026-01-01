@@ -699,6 +699,7 @@ $subitems = Subitem::where('subitem.status', 1)
     })
 
     ->select('subitem.*', 'brands.name as brand_name')
+     ->orderBy('subitem.id', 'desc')
     ->paginate(request('per_page'));
 
 
