@@ -2229,7 +2229,7 @@ public static function get_all_subitems()
 
     public static function get_product_type_by_id_subitem($id)
 {
-    // Subitem se product_type_id nikaalna
+   
     $subitem = DB::connection('mysql2')
         ->table('subitem')
         ->where('id', $id)
@@ -2239,7 +2239,7 @@ public static function get_all_subitems()
         return "N/A";
     }
 
-    // Product type ka naam nikaalna
+  
     $productType = DB::connection('mysql2')
         ->table('product_type')
         ->where('product_type_id', $subitem->product_type_id)
