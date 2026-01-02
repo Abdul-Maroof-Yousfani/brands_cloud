@@ -318,7 +318,7 @@ class SalesAddDetailControler extends Controller
 
     public function addCreditCustomerDetail(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'customer_name' => 'required|unique:mysql2.customers,name',
             'customer_code' => 'required',
             'email' => 'nullable|email',
@@ -340,7 +340,9 @@ class SalesAddDetailControler extends Controller
             'customer_type' => 'required',
             'ba_mapping' => 'required_if:customer_type,3',
             'warehouse_to' => 'required_if:customer_type,3',
-        ], [
+        ];
+    
+        $validator = Validator::make($request->all(), $rules, [
             'ba_mapping.required_if' => 'BA Mapping is required for Reseller/Distributor.',
             'warehouse_to.required_if' => 'Warehouse To is required for Reseller/Distributor.',
         ]);

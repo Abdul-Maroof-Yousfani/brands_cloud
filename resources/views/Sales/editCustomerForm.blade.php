@@ -466,13 +466,12 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                             <select name="employee_id" id="employee_id"
                                                                                 class="form-control">
                                                                                 <option value="">Select Option</option>
-                                                                                <option value="1"
-                                                                                    {{$Cusomter->employee_id == 1? 'selected' :''}}>
-                                                                                    Employee 01</option>
-                                                                                <option value="2"
-                                                                                    {{$Cusomter->employee_id == 2? 'selected' :''}}>
-                                                                                    Employee 02</option>
-                                                                            </select>
+                                                                                @foreach(\App\Helpers\SalesHelper::get_all_unregistered_employees() as $employee)
+                                                                                <option value="{{ $employee->id }}"
+                                                                                        {{ $Cusomter->employee_id == $employee->id ? 'selected' :'' }}>
+                                                                                        {{ $employee->name }} -- {{ $employee->id }}</option>
+                                                                                        @endforeach
+                                                                                    </select>
                                                                         </div>
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                             <label>Special Price Mapped :</label>
@@ -583,6 +582,8 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
 
 <script>
 const radioButtons = document.querySelectorAll('input[name="company_shipping_type"]');
+
+$("#customer_Type").trigger("change");
 
 // Add change event listener to each radio button
 radioButtons.forEach(radio => {

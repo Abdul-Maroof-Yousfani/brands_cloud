@@ -213,7 +213,7 @@ $m=Session::get('run_company');
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 taxFillerField">
                                                                         <label>NTN :</label>
                                                                         <span class="rflabelsteric"><strong>*</strong></span>
-                                                                        <input type="text" name="ntn" id="strn" class="form-control " />
+                                                                        <input type="text" name="ntn" value="-" id="strn" class="form-control " />
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
@@ -222,12 +222,12 @@ $m=Session::get('run_company');
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12  taxFillerField">
                                                                         <label>STRN :</label>
                                                                         <span class="rflabelsteric"><strong>*</strong></span>
-                                                                        <input type="text" name="strn" id="strn" class="form-control " />
+                                                                        <input type="text" name="strn" id="strn" value="-" class="form-control " />
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12  taxFillerField">
                                                                         <label>STRN Note/Terms :</label>
                                                                         <span class="rflabelsteric"></span>
-                                                                        <input type="text" name="strn_term" id="strn_term"
+                                                                        <input type="text" name="strn_term" value="-" id="strn_term"
                                                                             class="form-control" />
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
