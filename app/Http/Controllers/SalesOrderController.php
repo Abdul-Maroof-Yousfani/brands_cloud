@@ -312,7 +312,7 @@ class SalesOrderController extends Controller
             $sale_orders = DB::Connection('mysql2')->table('sales_order')
             ->join('customers', 'sales_order.buyers_id', 'customers.id')
             ->join('sales_order_data', 'sales_order_data.master_id', 'sales_order.id')
-            ->join('subitem', 'subitem.id', 'sales_order_data.item_id');
+            ->join('subitem', 'subitem.id', 'sales_order_data.item_id')
             // ->whereIn('customers.territory_id', $territory_ids);
 
 
