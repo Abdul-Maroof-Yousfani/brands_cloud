@@ -278,6 +278,8 @@ class SalesOrderController extends Controller
         if ($request->ajax()) {
             
             $territory_ids = json_decode(auth()->user()->territory_id); 
+            $sale_orders = DB::connection("mysql2")->table("sales_order")->get();
+            dd($sale_orders);
             $sale_orders = DB::Connection('mysql2')
                                 ->table('sales_order')
                                 ->join('customers', 'sales_order.buyers_id', 'customers.id')
