@@ -315,11 +315,10 @@ class SalesOrderController extends Controller
             ->join('subitem', 'subitem.id', 'sales_order_data.item_id');
 
             $m = Session::get("run_company");
-            if($m == 3) {
+            if($m == 1) {
                 $sale_orders = $sale_orders->whereIn('customers.territory_id', $territory_ids);
             } else {
                 $territories = (DB::connection("mysql2")->table("territories")->select("id")->get()->pluck("id"))->toArray();
-                dd($territories);
                 $sale_orders = $sale_orders->whereIn('customers.territory_id', $territories);
             }
 
