@@ -279,7 +279,6 @@ class SalesOrderController extends Controller
             
             $territory_ids = json_decode(auth()->user()->territory_id); 
             $sale_orders = DB::connection("mysql2")->table("sales_order")->get();
-            dd($sale_orders);
             $sale_orders = DB::Connection('mysql2')
                                 ->table('sales_order')
                                 ->join('customers', 'sales_order.buyers_id', 'customers.id')
@@ -309,11 +308,12 @@ class SalesOrderController extends Controller
         if ($request->ajax()) {
             
             $territory_ids = json_decode(auth()->user()->territory_id); 
+
             $sale_orders = DB::Connection('mysql2')->table('sales_order')
             ->join('customers', 'sales_order.buyers_id', 'customers.id')
             ->join('sales_order_data', 'sales_order_data.master_id', 'sales_order.id')
-            ->join('subitem', 'subitem.id', 'sales_order_data.item_id')
-            ->whereIn('customers.territory_id', $territory_ids);
+            ->join('subitem', 'subitem.id', 'sales_order_data.item_id');
+            // ->whereIn('customers.territory_id', $territory_ids);
 
 
                               $user = Auth::user();
