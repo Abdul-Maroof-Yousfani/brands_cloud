@@ -556,7 +556,6 @@ public function searchProduct(Request $request)
 public function closingReportView(Request $request)
 {
 
-
     $m = $request->m ?? null;
     if ((int)$m === 1) {
             // $from_date = $request->from ?? date('Y-m-d');
@@ -580,6 +579,7 @@ public function closingReportView(Request $request)
                     $warehouseList = DB::connection('mysql2')->table('stock')
                         ->whereIn('territory', $territory_ids)
                         ->where('status', 1)
+                        ->distinct()
                         ->pluck('warehouse_id');
 
                     $warehouses = DB::connection('mysql2')->table('warehouse')
@@ -590,13 +590,15 @@ public function closingReportView(Request $request)
                     $subitem_ids = DB::connection('mysql2')->table('stock')
                         ->whereIn('territory', $territory_ids)
                         ->where('status', 1)
+                        ->distinct()
                         ->pluck('sub_item_id');
-
+                
                     $products = DB::connection('mysql2')->table('subitem')
                         ->whereIn('id', $subitem_ids)
                         ->where('status', 1)
+                        ->distinct()
                         ->get(['id', 'product_name']);
-
+               
                     $brandList = DB::connection('mysql2')->table('subitem')
                         ->whereIn('id', $subitem_ids)
                         ->whereNotNull('brand_id')
@@ -757,6 +759,7 @@ public function closingReportView(Request $request)
                 $warehouseList = DB::connection('mysql2')->table('stock')
                     ->whereIn('territory', $territory_ids)
                     ->where('status', 1)
+                    ->distinct()
                     ->pluck('warehouse_id');
 
                 $warehouses = DB::connection('mysql2')->table('warehouse')
@@ -767,6 +770,7 @@ public function closingReportView(Request $request)
                 $subitem_ids = DB::connection('mysql2')->table('stock')
                     ->whereIn('territory', $territory_ids)
                     ->where('status', 1)
+                    ->distinct()
                     ->pluck('sub_item_id');
 
                 $products = DB::connection('mysql2')->table('subitem')
@@ -1597,6 +1601,7 @@ public function getBrandsByWarehouse(Request $request)
                     $warehouseList = DB::connection('mysql2')->table('stock')
                         ->whereIn('territory', $territory_ids)
                         ->where('status', 1)
+                        ->distinct()
                         ->pluck('warehouse_id');
                  
                     $warehouses = DB::connection('mysql2')->table('warehouse')
@@ -1608,6 +1613,7 @@ public function getBrandsByWarehouse(Request $request)
                     $subitem_ids = DB::connection('mysql2')->table('stock')
                         ->whereIn('territory', $territory_ids)
                         ->where('status', 1)
+                        ->distinct()
                         ->pluck('sub_item_id');
 
                     $products = DB::connection('mysql2')->table('subitem')
@@ -1778,6 +1784,7 @@ public function getBrandsByWarehouse(Request $request)
                 $warehouseList = DB::connection('mysql2')->table('stock')
                     ->whereIn('territory', $territory_ids)
                     ->where('status', 1)
+                    ->distinct()
                     ->pluck('warehouse_id');
 
                 $warehouses = DB::connection('mysql2')->table('warehouse')
@@ -1788,6 +1795,7 @@ public function getBrandsByWarehouse(Request $request)
                 $subitem_ids = DB::connection('mysql2')->table('stock')
                     ->whereIn('territory', $territory_ids)
                     ->where('status', 1)
+                    ->distinct()
                     ->pluck('sub_item_id');
 
                 $products = DB::connection('mysql2')->table('subitem')
