@@ -1659,7 +1659,7 @@ public function getBrandsByWarehouse(Request $request)
             $rawQuery = $transitSub->toSql(); // ye SQL string banega
             $bindings = $transitSub->getBindings(); // bindings
 
-            $query = DB::connection('mysql2')->table('stock as s')
+            $query = DB::connection('mysql2')->table('ba_stock as s')
                 ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
                 ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
 
@@ -1834,7 +1834,7 @@ public function getBrandsByWarehouse(Request $request)
 
         $rawQuery = $transitSub->toSql(); // ye SQL string banega
         $bindings = $transitSub->getBindings(); // bindings
-        $query = DB::connection('mysql2')->table('stock as s')
+        $query = DB::connection('mysql2')->table('ba_stock as s')
             ->where("s.voucher_type", "=", "9")
             ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
             ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')

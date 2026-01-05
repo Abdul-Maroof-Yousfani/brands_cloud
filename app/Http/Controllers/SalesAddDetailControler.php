@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transactions;
+use App\Models\Warehouse;
 use Illuminate\Database\DatabaseManager;
 use App\Http\Requests;
 use Illuminate\Http\Request;
@@ -601,7 +602,7 @@ class SalesAddDetailControler extends Controller
 
     public function updateCreditCustomerDetail(Request $request)
     {
-        // dd($request->EditId);
+      
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required',
             'customer_code' => 'required',
@@ -1527,6 +1528,40 @@ class SalesAddDetailControler extends Controller
                     'so_data_id' => $value->so_data_id   //DNA
                 );
                 DB::Connection('mysql2')->table('stock')->insert($stock);
+
+                $customer = DB::connection("mysql2")->table("customers")
+                                        ->select("id", "CustomerType")
+                                        ->where("id", $delivery_note->buyers_id)
+                                        ->first();
+             
+                // Customer is distributes/reseller
+                if($customer->CustomerType == 3 && isset($value->warehouse_to_id)) {
+                    $virtualWarehouseStock = array(
+                        'main_id' => $delivery_note->id,   //  delivery note id
+                        'master_id' => $value->master_id, // delievry note data id
+                        'voucher_no' => $delivery_note->gd_no,      //DN gd_no
+                        'voucher_date' => $delivery_note->gd_date,  // DN
+                        'supplier_id' => 0,
+                        'customer_id' => $delivery_note->buyers_id,   //DN
+                        'voucher_type' => 9,
+                        'rate' => $value->rate,    //DNA
+                        'sub_item_id' => $value->item_id, // DNA
+                        'batch_code' => $value->batch_code ?? "",  //DNA
+                        'qty' => $value->qty,     //DNA
+                        'discount_percent' => 0,    //DNA
+                        'discount_amount' => 0, // $request->input('send_discount_amount' . $i),    //DNA
+                        'amount' => $value->qty * $average_cost,  //DNA
+                        'status' => 1,
+                        'warehouse_id' => $value->warehouse_to_id,   //DNA
+                        'warehouse_id_to' => $value->warehouse_to_id,   //DNA
+                        'username' => Auth::user()->username,
+                        'created_date' => date('Y-m-d'),
+                        'opening' => 0,
+                        'so_data_id' => $value->so_data_id   //DNA
+                    );
+                    DB::Connection('mysql2')->table('ba_stock')->insert($virtualWarehouseStock);
+                }
+
 
                 if (isset($value->warehouse_to_id)) {
                     $virtualWarehouseStock = array(

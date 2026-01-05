@@ -738,7 +738,7 @@ $buyer_detail = CommonHelper::get_buyer_detail($sales_order->buyers_id);
                                                                                             <option value="">Select</option>
                                                                                             @foreach(CommonHelper::get_all_virtual_warehouse()
                                                                                             as $row)
-                                                                                                <option value="{{$row->id}}">
+                                                                                                <option value="{{$row->id}}" selected>
                                                                                                     {{$row->name}}</option>
                                                                                             @endforeach
 
