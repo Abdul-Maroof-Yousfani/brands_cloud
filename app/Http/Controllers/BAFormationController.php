@@ -84,6 +84,7 @@ class BAFormationController extends Controller
 
             DB::commit();
 
+            return redirect()->back()->with(["success" => "Successfully saved"]);
             return response()->json(['success' => 'Successfully Saved.', 'data' => $baFormation]);
         } catch (Exception $e) {
             DB::rollBack();
