@@ -448,7 +448,7 @@ class SalesAddDetailControler extends Controller
 
         $data2['CustomerType']     = Input::get('customer_type') ?? 1;
         // $data2['status']     = Input::get('status') ?? "Active";
-        $data2['status']     = 0;
+        $data2['status']     = 1;
         $data2['ba_mapping']     = Input::get('ba_mapping') ?? "no";
         $data2['employee_id']     = Input::get('employee_id') ?? NULL;
         $data2['special_price_mapped']     = Input::get('special_price_mapped') ?? "no";
