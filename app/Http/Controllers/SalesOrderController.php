@@ -319,6 +319,7 @@ class SalesOrderController extends Controller
                 $sale_orders = $sale_orders->whereIn('customers.territory_id', $territory_ids);
             } else {
                 $territories = (DB::connection("mysql2")->table("territories")->select("id")->get()->pluck("id"))->toArray();
+                dd($territories);
                 $sale_orders = $sale_orders->whereIn('customers.territory_id', $territories);
             }
 
