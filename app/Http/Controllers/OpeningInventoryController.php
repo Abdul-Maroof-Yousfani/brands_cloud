@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BAStock;
 use App\Models\Customer;
 use App\Models\Stock;
 use App\Models\Subitem;
@@ -45,11 +46,15 @@ class OpeningInventoryController extends Controller
 
         // 6. Map customers from header (skip first 4 columns)
         $customer_ids = [];
+        $no_customers = [];
 
         foreach ($header as $colIndex => $customerName) {
             if ($colIndex < 4) continue;
 
             $customer_ids[$colIndex] = Customer::where('name', $customerName)->value('id');
+            if(!$customer_ids[$colIndex]) {
+                $no_customers[] = $customerName;
+            }
         }
 
         // 7. Get virtual warehouse
@@ -78,22 +83,24 @@ class OpeningInventoryController extends Controller
 
                 if ($colIndex < 4) continue;       // skip SKU, barcode, brand, item
                 if (!isset($customer_ids[$colIndex])) continue;
+                
 
-                Stock::create([
-                    'customer_id'  => $customer_ids[$colIndex],
-                    'voucher_type' => 9,
-                    'sub_item_id'  => $sub_item_id,
-                    'qty'          => $qty,
-                    'warehouse_id' => $warehouse->id,
-                    'status'       => 1,
-                    'created_date' => now(),
-                    'username'     => auth()->user()->username,
-                    'opening'      => 1,
-                ]);
+               
+              DB::Connection('mysql2')->table('ba_stock')->insert([
+    'customer_id'  => $customer_ids[$colIndex],
+    'voucher_type' => 9,
+    'sub_item_id'  => $sub_item_id,
+    'qty'          => $qty,
+    'warehouse_id' => $warehouse->id,
+    'status'       => 1,
+    'created_date' => now(),
+    'username'     => auth()->user()->username,
+    'opening'      => 1,
+]);
             }
         }
 
-        return response()->json('Import completed successfully', 200);
+        return response()->json($no_customers, 200);
 
     } catch (\Exception $e) {
         return response()->json($e->getMessage(), 500);
