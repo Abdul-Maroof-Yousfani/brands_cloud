@@ -314,7 +314,7 @@ class SalesOrderController extends Controller
             ->join('sales_order_data', 'sales_order_data.master_id', 'sales_order.id')
             ->join('subitem', 'subitem.id', 'sales_order_data.item_id');
 
-            $m = request()->m;
+            $m = Session::get("run_company");
             if($m == 3) {
                 $sale_orders = $sale_orders->whereIn('customers.territory_id', $territory_ids);
             } else {
