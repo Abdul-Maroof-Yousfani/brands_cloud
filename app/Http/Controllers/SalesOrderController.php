@@ -313,10 +313,17 @@ class SalesOrderController extends Controller
             ->join('customers', 'sales_order.buyers_id', 'customers.id')
             ->join('sales_order_data', 'sales_order_data.master_id', 'sales_order.id')
             ->join('subitem', 'subitem.id', 'sales_order_data.item_id');
-            // ->whereIn('customers.territory_id', $territory_ids);
+
+            $m = request()->m;
+            if($m == 3) {
+                $sale_orders = $sale_orders->whereIn('customers.territory_id', $territory_ids);
+            } else {
+                $territories = (DB::connection("mysql2")->table("territories")->select("id")->get()->pluck("id"))->toArray();
+                $sale_orders = $sale_orders->whereIn('customers.territory_id', $territories);
+            }
 
 
-                              $user = Auth::user();
+        $user = Auth::user();
         if ($user && $user->acc_type === 'user') {
             $territory_ids = json_decode($user->territory_id, true);
             if (!is_array($territory_ids)) {
