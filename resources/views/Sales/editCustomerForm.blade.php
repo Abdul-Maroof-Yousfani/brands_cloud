@@ -5,6 +5,7 @@ $accType = Auth::user()->acc_type;
 if($accType == 'client'){
     $m = $_GET['m'];
 }else{
+
     $m = Auth::user()->company_id;
 }
 
@@ -39,6 +40,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                                             <span class="subHeadingLabelClass">Edit Credit Customer</span>
                                         </div>
+                                        
                                         <div class="col-sm-4">
                                             <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
                                                 data-target="#exampleModal" style="float: right;"> Import csv </button>
