@@ -95,7 +95,10 @@ $("#TableExportToCsv").DataTable({
     searching: true,
     paging: true,
     info: false,
-    autoWidth: false, // prevent DataTables from auto-calculating width
+    autoWidth: false,
+    columnDefs: [
+        { targets: 4, searchable: false } // Action column
+    ]
 });
 
 </script>

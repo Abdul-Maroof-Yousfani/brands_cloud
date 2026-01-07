@@ -278,6 +278,7 @@ class SalesOrderController extends Controller
         if ($request->ajax()) {
             
             $territory_ids = json_decode(auth()->user()->territory_id); 
+            $sale_orders = DB::connection("mysql2")->table("sales_order")->get();
             $sale_orders = DB::Connection('mysql2')
                                 ->table('sales_order')
                                 ->join('customers', 'sales_order.buyers_id', 'customers.id')
@@ -307,14 +308,22 @@ class SalesOrderController extends Controller
         if ($request->ajax()) {
             
             $territory_ids = json_decode(auth()->user()->territory_id); 
+
             $sale_orders = DB::Connection('mysql2')->table('sales_order')
             ->join('customers', 'sales_order.buyers_id', 'customers.id')
             ->join('sales_order_data', 'sales_order_data.master_id', 'sales_order.id')
-            ->join('subitem', 'subitem.id', 'sales_order_data.item_id')
-            ->whereIn('customers.territory_id', $territory_ids);
+            ->join('subitem', 'subitem.id', 'sales_order_data.item_id');
+
+            $m = Session::get("run_company");
+            if($m == 1) {
+                $sale_orders = $sale_orders->whereIn('customers.territory_id', $territory_ids);
+            } else {
+                $territories = (DB::connection("mysql2")->table("territories")->select("id")->get()->pluck("id"))->toArray();
+                $sale_orders = $sale_orders->whereIn('customers.territory_id', $territories);
+            }
 
 
-                              $user = Auth::user();
+        $user = Auth::user();
         if ($user && $user->acc_type === 'user') {
             $territory_ids = json_decode($user->territory_id, true);
             if (!is_array($territory_ids)) {
