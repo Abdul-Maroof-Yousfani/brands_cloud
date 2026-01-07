@@ -91,7 +91,7 @@ public function login(Request $request)
 
     // ✅ Check account type
     if ($user->acc_type !== 'ba') {
-        return response()->json(['message' => 'Unauthorized account type'], 403);
+        return response()->json(['message' => 'Unauthorized account type1'], 403);
     }
 
     // ✅ Generate token (ensure generateApiToken() exists)
@@ -272,7 +272,51 @@ public function login(Request $request)
     // }
 
 
-      public function get_stock(Request $request)
+    //   public function get_stock(Request $request)
+    // {
+    //     $user = $this->getAuthenticatedUser();
+    //     if ($user instanceof \Illuminate\Http\JsonResponse) {
+    //         return $user;
+    //     }
+
+    //     $rules = [
+    //         'product_id' => 'required|integer',
+    //         'distributor_id' => 'required|integer',
+    //     ];
+
+    //     $validator = Validator::make($request->all(), $rules);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'errors' => $validator->errors()
+    //         ], 422);
+    //     }
+
+    //     $total_stock = Stock::where('sub_item_id', $request->product_id)
+    //         ->where('customer_id', $request->distributor_id)
+    //         ->where('voucher_type', 1)
+    //         ->sum('qty');
+
+    //     $total_sale = Stock::where('sub_item_id', $request->product_id)
+    //         ->where('customer_id', $request->distributor_id)
+    //         ->where('voucher_type', 50)
+    //         ->sum('qty');
+
+    //     $total_return = Stock::where('sub_item_id', $request->product_id)
+    //         ->where('customer_id', $request->distributor_id)
+    //         ->where('voucher_type', 51)
+    //         ->sum('qty');
+
+    //     $available_qty = max(0, $total_stock + $total_return - $total_sale);
+
+    //     return response()->json([
+    //         'message' => 'Total stock for product',
+    //         'available_qty' => $available_qty,
+    //     ], 200);
+    // }
+ 
+public function get_stock(Request $request)
     {
         $user = $this->getAuthenticatedUser();
         if ($user instanceof \Illuminate\Http\JsonResponse) {
@@ -293,17 +337,17 @@ public function login(Request $request)
             ], 422);
         }
 
-        $total_stock = Stock::where('sub_item_id', $request->product_id)
+        $total_stock = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $request->product_id)
             ->where('customer_id', $request->distributor_id)
-            ->where('voucher_type', 1)
+            ->whereIn("voucher_type", [1, 9])
             ->sum('qty');
 
-        $total_sale = Stock::where('sub_item_id', $request->product_id)
+        $total_sale = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $request->product_id)
             ->where('customer_id', $request->distributor_id)
             ->where('voucher_type', 50)
             ->sum('qty');
 
-        $total_return = Stock::where('sub_item_id', $request->product_id)
+        $total_return = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $request->product_id)
             ->where('customer_id', $request->distributor_id)
             ->where('voucher_type', 51)
             ->sum('qty');
@@ -315,8 +359,6 @@ public function login(Request $request)
             'available_qty' => $available_qty,
         ], 200);
     }
- 
-
 
 // public function getSaleAmount(Request $request)
 // {
@@ -500,6 +542,8 @@ public function login(Request $request)
 
         $user = $this->getAuthenticatedUser();
 
+
+
         if ($user instanceof \Illuminate\Http\JsonResponse) {
             return $user; // Return the error response if no authenticated user
         }
@@ -542,6 +586,7 @@ public function login(Request $request)
 
             $distributor = $user->customers()->where('customers.id', $request->distributor_id)->first();
 
+           
             if (!$distributor) {
                 return response()->json([
                     'success' => false,
@@ -589,7 +634,7 @@ public function login(Request $request)
                     'opening' => 0,
                     'so_data_id' => 0   //DNA
                 );
-                DB::Connection('mysql2')->table('stock')->insert($stock);
+                DB::Connection('mysql2')->table('ba_stock')->insert($stock);
             }
 
             return response()->json([
@@ -915,7 +960,7 @@ public function login(Request $request)
                     'opening' => 0,
                     'so_data_id' => 0   //DNA
                 );
-                DB::Connection('mysql2')->table('stock')->insert($stock);
+                DB::Connection('mysql2')->table('ba_stock')->insert($stock);
             }
 
             return response()->json([
