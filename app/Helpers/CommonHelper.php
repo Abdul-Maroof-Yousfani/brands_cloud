@@ -2038,6 +2038,15 @@ public static function getSubItemByBrand($id, $item_id = null)
                             ->get();
         return $sub_item;
     }
+
+
+public static function get_all_groups() {
+        $groups = DB::connection("mysql2")->table("company_groups")->select("id", "name")->where("status", 1)->get();
+
+        return $groups;
+    }
+
+    
     public static function get_all_subitem()
     {
 

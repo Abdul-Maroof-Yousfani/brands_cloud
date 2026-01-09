@@ -88,6 +88,15 @@ if ($accType == 'client') {
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
+                                                            <label>Group </label>
+                                                            <select name="group" class="form-control select2">
+                                                                <option value="">Groups</option>
+                                                                @foreach(\App\Helpers\CommonHelper::get_all_groups() as $key => $group)
+                                                                    <option value="{{ $group->id}}">{{ $group->name}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-2 mb-3">
                                                             <label>Classification </label>
                                                             <select name="product_classification_id[]" multiple class="form-control select2">
                                                                 <option disabled>Select Product Classification</option>
@@ -328,7 +337,7 @@ if ($accType == 'client') {
 
             <script type="text/javascript">
                 function viewSubItemList() {
-                    alert();
+                    alert("test");
                     if (loading == false) {
                         loading = true;
                         $('#viewSubItemList').html(

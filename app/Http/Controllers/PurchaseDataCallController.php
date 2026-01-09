@@ -597,6 +597,126 @@ function delete_cate(id) {
         }
 
     }
+
+
+// public function viewSubItemListAjax(Request $request)
+// {
+
+   
+//     $m = 1;
+//     $category = $request->category;
+//     $sub_category = $request->sub_category;
+//     $principle_group = $request->principle_group;
+//     $product_trend_id = $request->product_trend_id; // Assuming Product Trend IDs are passed in the request.
+//     $product_classification_id = $request->product_classification_id; // Assuming Product Classification IDs are passed in the request.
+//     $brand_ids = $request->brand_ids; // Assuming brand IDs are passed in the request.
+//     $creation_date = $request->creation_date; // Assuming brand IDs are passed in the request.
+//     $product_status = $request->product_status; // Assuming Product Status are passed in the request.
+//     $username = $request->username; // Assuming brand IDs are passed in the request.
+//     $search = $request->search;
+
+//     CommonHelper::companyDatabaseConnection($m);
+
+//     // $subitems = Subitem::where('subitem.status', '=', 1)
+//     //     ->leftJoin('brands', 'brands.id', 'subitem.brand_id')
+//     //     ->when($category, function ($query, $category) {
+//     //         $query->where('subitem.main_ic_id', '=', $category);
+//     //     })
+//     //     ->when($product_status !== null && $product_status !== '', function ($query) use ($product_status) {
+//     //         $query->where('subitem.product_status', '=', $product_status);
+//     //     })
+//     //     ->when($product_classification_id, function ($query, $product_classification_id) {
+//     //         $query->whereIn('subitem.product_classification_id', $product_classification_id);
+//     //     })
+//     //     ->when($product_trend_id, function ($query, $product_trend_id) {
+//     //         $query->whereIn('subitem.product_trend_id', $product_trend_id);
+//     //     })
+//     //     ->when($username, function ($query, $username) {
+//     //         $query->whereIn('subitem.username', $username);
+//     //     })
+//     //     ->when($creation_date, function ($query, $creation_date) {
+//     //         $query->whereDate('subitem.date', '=', $creation_date);
+//     //     })
+//     //     ->when($sub_category, function ($query, $sub_category) {
+//     //         $query->where('subitem.sub_category_id', '=', $sub_category);
+//     //     })
+//     //     ->when($brand_ids, function ($query, $brand_ids) {
+//     //         $query->whereIn('subitem.brand_id', $brand_ids);
+//     //     })
+//     //     ->when($search, function ($query, $search) {
+//     //         $query->whereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . strtolower($search) . '%'])
+//     //             ->orWhereRaw('brands.name LIKE ?', ['%' . strtolower($search) . '%'])
+//     //             ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%' . strtolower($search) . '%'])
+//     //             ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%' . strtolower($search) . '%'])
+//     //             ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%' . strtolower($search) . '%']);
+//     //     })
+//     //     ->select('subitem.*', 'brands.name as brand_name')
+//     //     ->paginate(request('per_page'));
+
+
+// $subitems = Subitem::where('subitem.status', 1)
+//     ->leftJoin('brands', 'brands.id', 'subitem.brand_id')
+
+//     ->when($category, function ($query, $category) {
+//         $query->where('subitem.main_ic_id', $category);
+//     })
+
+//     ->when($product_status !== null && $product_status !== '', function ($query) use ($product_status) {
+//         $query->where('subitem.product_status', $product_status);
+//     })
+
+//     ->when($product_classification_id, function ($query, $product_classification_id) {
+//         $query->whereIn('subitem.product_classification_id', $product_classification_id);
+//     })
+//     ->when($principle_group, function($query, $principle_group) {
+//         $query->where("subitem.principal_group_id", $principle_group);
+//     })
+//     ->when($product_trend_id, function ($query, $product_trend_id) {
+//         $query->whereIn('subitem.product_trend_id', $product_trend_id);
+//     })
+
+//     ->when($username, function ($query, $username) {
+//         $query->whereIn('subitem.username', $username);
+//     })
+
+//     ->when($creation_date, function ($query, $creation_date) {
+//         $query->whereDate('subitem.date', $creation_date);
+//     })
+
+//     ->when($sub_category, function ($query, $sub_category) {
+//         $query->where('subitem.sub_category_id', $sub_category);
+//     })
+
+//     ->when($brand_ids, function ($query, $brand_ids) {
+//         $query->whereIn('subitem.brand_id', $brand_ids);
+//     })
+
+//     // ✅ FIXED SEARCH
+//     ->when($search, function ($query, $search) {
+//         $search = strtolower($search);
+//         $query->where(function ($q) use ($search) {
+//             $q->whereRaw('LOWER(subitem.product_name) LIKE ?', ["%{$search}%"])
+//               ->orWhereRaw('LOWER(brands.name) LIKE ?', ["%{$search}%"])
+//               ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ["%{$search}%"])
+//               ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ["%{$search}%"])
+//               ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ["%{$search}%"]);
+//         });
+//     })
+
+//     ->select('subitem.*', 'brands.name as brand_name')
+//      ->orderBy('subitem.id', 'desc')
+//     ->paginate(request('per_page'));
+
+
+
+//     CommonHelper::reconnectMasterDatabase();
+
+//     return view('Purchase.AjaxPages.getviewSubItemListAjax', compact('subitems'));
+// }
+
+
+
+
 public function viewSubItemListAjax(Request $request)
 {
 
@@ -605,6 +725,7 @@ public function viewSubItemListAjax(Request $request)
     $category = $request->category;
     $sub_category = $request->sub_category;
     $principle_group = $request->principle_group;
+    $group = $request->group;
     $product_trend_id = $request->product_trend_id; // Assuming Product Trend IDs are passed in the request.
     $product_classification_id = $request->product_classification_id; // Assuming Product Classification IDs are passed in the request.
     $brand_ids = $request->brand_ids; // Assuming brand IDs are passed in the request.
@@ -668,6 +789,9 @@ $subitems = Subitem::where('subitem.status', 1)
     })
     ->when($principle_group, function($query, $principle_group) {
         $query->where("subitem.principal_group_id", $principle_group);
+    })
+    ->when($group, function($query, $group) {
+        $query->where("subitem.group_id", $group);
     })
     ->when($product_trend_id, function ($query, $product_trend_id) {
         $query->whereIn('subitem.product_trend_id', $product_trend_id);
