@@ -14,16 +14,36 @@ class BrandController extends Controller
     //     return view('Purchase.Brand.brand_list', compact('brands'));
     // }
 
-
- public function index()
+public function index()
 {
-    $brands = Brand::with('principalGroup')
-                   ->where('status', 1)
-                   ->orderBy('id', 'desc') // latest first
-                   ->get();
+    if(request()->ajax()) {
+        // return view();
+    
+        $groups = request()->principal_group;
+     
+         $brands = Brand::with('principalGroup')
+                    ->where('status', 1)
+                    ->orderBy('id', 'desc') // latest first
+                    ->when(isset($groups), function($query) use ($groups) {
+                        $query->whereIn("principal_group_id", $groups);
+                    })
+                    ->get();
 
-    return view('Purchase.Brand.brand_list', compact('brands'));
+        return view('Purchase.Brand.brand_list_ajax', compact('brands'));
+    }
+
+    return view('Purchase.Brand.brand_list');
 }
+
+//  public function index()
+// {
+//     $brands = Brand::with('principalGroup')
+//                    ->where('status', 1)
+//                    ->orderBy('id', 'desc') // latest first
+//                    ->get();
+
+//     return view('Purchase.Brand.brand_list', compact('brands'));
+// }
 
 
     public function create()
