@@ -21,7 +21,7 @@ jobs:
           password: ${{ secrets.SFTP_PASS }}
           port: 22
           source: "."
-          target: "/var/www/fze.erpcode.live/"
+          target: "/var/www/brands.erpcode.live/"
           strip_components: 0
 
       
@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.SFTP_USER }}
           password: ${{ secrets.SFTP_PASS }}
           script: |
-            cd /var/www/fze.erpcode.live
+            cd /var/www/brands.erpcode.live
             
             # Directory structure create karna (Sudo ki zaroorat nahi)
             mkdir -p storage/framework/{sessions,views,cache}
