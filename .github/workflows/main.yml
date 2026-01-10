@@ -1,21 +1,59 @@
+name: Deploy Laravel Project
+
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-name:  Deploy website on push
+    branches: [ main ]
+
 jobs:
-  web-deploy:
-    name:  Deploy
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name:  Get latest code
-      uses: actions/checkout@v2
-    
-    - name:  Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.3.0
-      with:
-        server: 188.166.248.183
-        username: dailyfood_deploy
-        password: depLaz**87Ftjb
-        server-dir: /brands.erpcode.live/
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 1. Files upload karna (Khali folder me saari files chali jayengi)
+      - name: Copy files via SFTP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          port: 22
+          source: "."
+          target: "/var/www/fze.erpcode.live/"
+          strip_components: 0
+
+      
+      # 2. Permissions aur Laravel setup
+      - name: Execute SSH commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          script: |
+            cd /var/www/fze.erpcode.live
+            
+            # Directory structure create karna (Sudo ki zaroorat nahi)
+            mkdir -p storage/framework/{sessions,views,cache}
+            mkdir -p bootstrap/cache
+
+            # Permissions set karna (Sirf un folders par jo user owned hain)
+            find . -type d -exec chmod 775 {} \;
+            find . -type f -exec chmod 664 {} \;
+            chmod -R 775 storage bootstrap/cache
+
+            # Laravel Optimization
+            # Agar composer path me nahi hai to full path use karein: /usr/local/bin/composer
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Cache clear (ye tabhi chalega jab .env file server par maujood ho)
+            if [ -f .env ]; then
+                php artisan config:cache
+                php artisan route:cache
+                php artisan view:cache
+                # php artisan migrate --force
+            else
+                echo ".env file not found, skipping artisan commands"
+            fi
