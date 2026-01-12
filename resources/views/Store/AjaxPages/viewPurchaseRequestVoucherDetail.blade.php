@@ -7,6 +7,7 @@ $id = $_GET['id'];
 
 $m = Session::get('run_company');
 $approve=ReuseableCode::check_rights(16);
+// $approve = true;
 
 $currentDate = date('Y-m-d');
 CommonHelper::companyDatabaseConnection($m);
@@ -49,11 +50,11 @@ if($_GET['pageType']=='viewlist'){
         <button class="btn btn-primary btn-sm" onclick="EmailSent()"> Email Sent </button>
     </div> -->
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-        <!-- <?php
-        if ($approve==true):
+       
+       <?php if ($approve==true):
         echo StoreHelper::displayApproveDeleteRepostButtonPurchaseRequest($m,$row->purchase_request_status,$row->status,$row->id,'purchase_request_no','purchase_request_status','status','purchase_request','purchase_request_data');
         endif;
-        ?> -->
+        ?>
         <?php CommonHelper::displayPrintButtonInView('po_detail','LinkHide','1');?>
     </div>
     <div style="line-height:5px;">&nbsp;</div>

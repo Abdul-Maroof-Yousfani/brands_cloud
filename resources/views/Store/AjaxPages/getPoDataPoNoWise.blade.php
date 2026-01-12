@@ -27,7 +27,7 @@ foreach ($purchaseRequestDetail as $row){
 
     $paramOne = "stdc/viewPurchaseRequestVoucherDetail";
     $paramTwo = $row->id;
-    $paramThree = "View Purchase Order Detail";
+    $paramThree = "d";
     $Tstatus = '';
 
     if($row->purchase_request_status == 3)

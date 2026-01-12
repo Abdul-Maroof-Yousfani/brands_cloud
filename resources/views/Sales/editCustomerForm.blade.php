@@ -462,8 +462,8 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                                     No</option>
                                                                             </select>
                                                                         </div>
-                                                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                                                            <label>Employee :</label>
+                                                                        <div id="only_emp" class="col-lg-12 col-md-12 col-sm-12 col-xs-12  @if($Cusomter->CustomerType != 2) hide @endif">
+                                                                            <label>Employee:</label>
                                                                             <span class="rflabelsteric"></span>
                                                                             <select name="employee_id" id="employee_id"
                                                                                 class="form-control">
@@ -689,14 +689,19 @@ function getCustomerType(element) {
     const dataType = selectedOption.getAttribute('data-type');
     if (dataType == "reseller") {
         $('.customerTypeField').removeClass('hide');
+
+        $("#only_emp").addClass("hide");
     } else {
         $('.customerTypeField').addClass('hide');
     }
     if (dataType == "employee") {
         $('#employee_id').prop('disabled', false);
+        $("#only_emp").removeClass("hide");
     }
     else {
         $('#employee_id').prop('disabled', true);
+
+        $("#only_emp").addClass("hide");
     }
 }
 

@@ -104,7 +104,7 @@ echo $data;
             $total+=$net_amount;
             $paramOne = "stdc/viewPurchaseRequestVoucherDetail";
             $paramTwo = $row->id;
-            $paramThree = "View Purchase Order Detail";
+            $paramThree = "View Purchase Order Detaidl";
             $Tstatus = '';
             if($row->purchase_request_status == 3)
             {
