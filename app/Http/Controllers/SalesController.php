@@ -1063,7 +1063,7 @@ public function uploadProduct(Request $request)
 
                 $existingProduct = DB::connection('mysql2')->table('subitem')
                 ->where('sku_code', $sku_code)
-                ->where('brand_id', $brand_id)
+                // ->where('brand_id', $brand_id)
                 ->first();
 
 
