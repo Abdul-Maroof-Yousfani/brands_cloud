@@ -360,12 +360,14 @@ $grn_status = $row->grn_status;
                             </tbody>
                             <tr class="text-center" style="background-color: darkgrey">
                                 <td colspan="3">Total</td>
-                                <td style="font-size: larger;font-weight:"><?php echo  number_format($totalqty,0) ?></td>
+                                <td ></td>
                                 <td class="ShowHideRate" style="display: none;"></td>
                                 <td class="ShowHideAmount" style="display: none;"></td>
                                 <td class="ShowHideDiscountPercent" style="display: none;"></td>
                                 <td class="ShowHideDiscountAmount" style="display: none;"></td>
                                 <td class="ShowHideNetAmount" style="display: none;"></td>
+                                <td></td>
+                                <td style="font-size: larger;font-weight:"><?php echo  number_format($totalqty,0) ?></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
