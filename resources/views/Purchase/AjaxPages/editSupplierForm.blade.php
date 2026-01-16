@@ -1040,6 +1040,7 @@ if($accType == 'client'){
         }
     </script>
 
+
     <script type="text/javascript">
         $('#account_head').select2();
         $('#vendor_type').select2();
