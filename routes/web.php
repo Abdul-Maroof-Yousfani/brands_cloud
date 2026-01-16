@@ -22,6 +22,7 @@ Route::auth();
 
 Route::get('testing', function () {
     Auth::logout(); 
+    
 });
 
 Route::get("privileges", function() {
