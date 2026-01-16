@@ -71,6 +71,7 @@ Route::get('migrate', function () {
 });
 
 
+
 Route::get('/abc', function () {
     $nexmo = app('Nexmo\Client');
     $nexmo->message()->send([
