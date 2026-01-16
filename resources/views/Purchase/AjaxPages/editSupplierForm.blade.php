@@ -332,17 +332,28 @@ if($accType == 'client'){
                                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                                             <label for="o_blnc" >Opening Balance :</label>
                                                             <span class="rflabelsteric"><strong>*</strong></span>
-                                                            <input type="number" name="o_blnc" maxlength="15" value="{{  $transactions->amount }}"  min="0" id="o_blnc" placeholder="Opening Balance" class="form-control requiredField" value="0" autocomplete="off"/>
+                                                            @if($transactions)
+                                                                <input type="number" name="o_blnc" maxlength="15" value="{{  $transactions->amount }}"  min="0" id="o_blnc" placeholder="Opening Balance" class="form-control requiredField" value="0" autocomplete="off"/>
+                                                            @else
+                                                                <input type="number" name="o_blnc" maxlength="15" value="0"  min="0" id="o_blnc" placeholder="Opening Balance" class="form-control requiredField" value="0" autocomplete="off"/>
+                                                            @endif    
                                                         </div>
 
                                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                                             <label for="o_blnc" >Opening Type :</label>
-                                                            <select class="form-control" name="nature">
-                                                                <option @if($transactions->debit_credit==0) selected @endif value="0">Credit</option>
-                                                                <option @if($transactions->debit_credit==1) selected @endif value="1">Debit</option>
-                                                            </select>
+                                                            @if($transactions)
+                                                                <select class="form-control" name="nature">
+                                                                    <option @if($transactions->debit_credit==0) selected @endif value="0">Credit</option>
+                                                                    <option @if($transactions->debit_credit==1) selected @endif value="1">Debit</option>
+                                                                </select>
+                                                            @else
+                                                                <select class="form-control" name="nature">
+                                                                    <option value="0" selected>Credit</option>
+                                                                    <option value="1">Debit</option>
+                                                                </select>
+                                                            @endif
                                                         </div>
-                                                        
+                                                        ->debit_credit==1
                                                         <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12">
                                                             <label for="o_blnc" >TaxPayer Status </label> <br>
                                                             <span>COMPANY</span> <input type="checkbox" name="company_status[]" id="COMPANY" value="COMPANY"><br>
