@@ -47,15 +47,16 @@ class PurchaseTraceabilityReportController extends Controller
         "pr.purchase_request_date as pr_date",
         "grn.grn_no",
         'grn.grn_date',
-        DB::raw('prd.pr_qty as po_qty'),
-        DB::raw('prd.pr_amount as po_amount'),
-        DB::raw('grnd.grn_qty as grn_qty'),
-        DB::raw('grnd.grn_amount as grn_amount'),
+        DB::raw('SUM(prd.pr_qty) as po_qty'),
+        DB::raw('SUM(prd.pr_amount) as po_amount'),
+        DB::raw('SUM(grnd.grn_qty) as grn_qty'),
+        DB::raw('SUM(grnd.grn_amount) as grn_amount'),
         DB::raw('pv.pv_no as pi_no'),
         DB::raw('pv.pv_date as pi_date'),
-        DB::raw('pvd.voucher_amount AS invoice_amount'),
-        DB::raw('pvd.qty AS pv_qty')
+        DB::raw('SUM(pvd.voucher_amount) AS invoice_amount'),
+        DB::raw('SUM(pvd.qty) AS pv_qty')
     )
+    ->groupBy("purchase_request_no", "pi_no", "po_no")
     ->get();
 
 
