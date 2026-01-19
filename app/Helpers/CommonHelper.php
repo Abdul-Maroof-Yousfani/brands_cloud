@@ -133,6 +133,16 @@ public static function territory_name($id)
     return $territory->where('id', $id)->value('name');
 }
 
+
+public static function get_ba_location($ba_id) {
+    $location = DB::table("ba_locations")
+                    ->select("id", "location_name")
+                    ->where("ba_id", $ba_id)
+                    ->first();
+    return $location ? $location->location_name : "N/A";
+}
+
+
 public static function get_companies() {
     return DB::table("company")->where("status", 1)->get();
 }
