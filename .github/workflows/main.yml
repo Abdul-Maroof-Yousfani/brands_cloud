@@ -1,5 +1,4 @@
 name: Deploy Laravel Project
-
 on:
   push:
     branches: [ main ]
@@ -7,12 +6,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 1. Files upload karna (Khali folder me saari files chali jayengi)
+      # 1. Files upload karna
       - name: Copy files via SFTP
         uses: appleboy/scp-action@master
         with:
@@ -21,11 +19,11 @@ jobs:
           password: ${{ secrets.SFTP_PASS }}
           port: 22
           source: "."
+          # Chroot ki wajah se target path root se start hoga
           target: "/var/www/brands.erpcode.live/"
           strip_components: 0
 
-      
-      # 2. Permissions aur Laravel setup
+      # 2. Execute Commands (Ab ye chalega kyunki ForceCommand hata diya)
       - name: Execute SSH commands
         uses: appleboy/ssh-action@master
         with:
@@ -35,25 +33,20 @@ jobs:
           script: |
             cd /var/www/brands.erpcode.live
             
-            # Directory structure create karna (Sudo ki zaroorat nahi)
+            # Directory structure setup
             mkdir -p storage/framework/{sessions,views,cache}
             mkdir -p bootstrap/cache
-
-            # Permissions set karna (Sirf un folders par jo user owned hain)
-            find . -type d -exec chmod 775 {} \;
-            find . -type f -exec chmod 664 {} \;
+            
+            # Permissions (ACL humne pehle hi laga di hai, to chmod ki kam zaroorat paregi)
             chmod -R 775 storage bootstrap/cache
-
-            # Laravel Optimization
-            # Agar composer path me nahi hai to full path use karein: /usr/local/bin/composer
+            
+            # Composer install (Check karein server pe composer installed hai)
             composer install --no-dev --optimize-autoloader --no-interaction
-
-            # Cache clear (ye tabhi chalega jab .env file server par maujood ho)
+            
             if [ -f .env ]; then
                 php artisan config:cache
                 php artisan route:cache
                 php artisan view:cache
-                # php artisan migrate --force
             else
-                echo ".env file not found, skipping artisan commands"
+                echo ".env file missing!"
             fi
