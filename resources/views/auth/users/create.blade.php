@@ -49,12 +49,19 @@
                         <input placeholder="Confirm Password" type="password" id="password_confirmation" name="password_confirmation" class="form-control">
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="status" class="form-label">Status</label>
-                    <select class="form-select select2" name="status" id="status" style="width: 100%;">
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select select2" name="status" id="status" style="width: 100%;">
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+    
+                    <div class="col-md-6">
+                        <label for="status" class="form-label">IMEI</label>
+                        <input placeholder="IMEI" type="text" id="imei" name="imei" class="form-control">
+                    </div>
                 </div>
 
                 

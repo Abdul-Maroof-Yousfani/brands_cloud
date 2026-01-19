@@ -68,6 +68,7 @@ public function login(Request $request)
     $validator = Validator::make($request->all(), [
         'name' => ['required', 'string'],
         'password' => 'required|string',
+        'imei' => 'required'
     ]);
 
     if ($validator->fails()) {
@@ -79,6 +80,10 @@ public function login(Request $request)
 
     // ✅ Check user by username
     $user = User::where('username', $request->name)->first();
+
+    if($user->imei != $request->imei) {
+        return response()->json(["message" => "invalid IMEI"], 401);
+    }
 
     if (!$user) {
         return response()->json(['message' => 'Invalid username or password'], 401);

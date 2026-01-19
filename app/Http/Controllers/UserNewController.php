@@ -69,6 +69,7 @@ class UserNewController extends Controller
             'password' => 'required|string|confirmed|min:8',
             'status' => 'required|boolean',
             'roles' => 'required',
+            'imei' => 'required'
         ]);
 
         DB::beginTransaction();
@@ -82,7 +83,8 @@ class UserNewController extends Controller
                 'acc_type' => 'ba',
                 'password' => $request->password,
                 'status' => $request->status,
-                'ba_role_id' => $request->roles
+                'ba_role_id' => $request->roles,
+                'imei' => $request->imei
             ]);
 
 
@@ -243,6 +245,7 @@ public function update(Request $request, $id)
         'status' => 'required|boolean',
         'roles' => 'required',
         'password' => 'nullable|string|confirmed|min:8',
+        'imei' => "required"
     ]);
 
     DB::beginTransaction();
@@ -259,6 +262,7 @@ public function update(Request $request, $id)
             'username'   => $request->email,
             'status'     => $request->status,
             'ba_role_id' => $request->roles,
+            'imei' => $request->imei
         ];
 
         // Only update password if it’s not empty
