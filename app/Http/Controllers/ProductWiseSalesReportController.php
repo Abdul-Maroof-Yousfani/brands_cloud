@@ -18,22 +18,23 @@ class ProductWiseSalesReportController extends Controller
         
             $items = DB::connection("mysql2")
                         ->table("subitem")
-                        ->leftJoin("retail_sale_order_details", "retail_sale_order_details.product_id", "=", "subitem.id")
-                        ->leftJoin("retail_sale_orders", "retail_sale_orders.id", "=", "retail_sale_order_details.retail_sale_order_id")
+                        ->join("retail_sale_order_details", "retail_sale_order_details.product_id", "=", "subitem.id")
+                        ->join("retail_sale_orders", "retail_sale_orders.id", "=", "retail_sale_order_details.retail_sale_order_id")
                         ->select(
                             "retail_sale_orders.sale_order_date",
-                            "retail_sale_orders.distributor_id",
+                            "retail_sale_orders.distributor_id AS buyers_id",
                             "subitem.sku_code",
                             "subitem.sku_code AS sku",
                             "subitem.product_barcode",
                             "subitem.product_name",
                             "subitem.brand_id",
                             "subitem.purchase_price",
+                            "subitem.sale_price",
                             "subitem.date",
                             "subitem.id",
                             DB::raw("SUM(retail_sale_order_details.qty) AS qty"),
-                            DB::raw("SUM(retail_sale_order_details.amount) AS amount"),
-                            DB::raw("SUM(retail_sale_order_details.mrp_price) AS mrp_price")
+                            DB::raw("SUM(subitem.sale_price * retail_sale_order_details.qty) AS amount"),
+                            DB::raw("SUM(subitem.mrp_price) AS mrp_price")
                         )
                         ->when(isset($from) && isset($to), function($query) use ($from, $to) {
                             $query->whereBetween("retail_sale_orders.date", [$from, $to]);

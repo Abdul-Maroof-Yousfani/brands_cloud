@@ -10,7 +10,7 @@
         <td>{{ $data->product_name }}</td>
         <td>{{ \App\Helpers\CommonHelper::get_brand_by_id($data->brand_id) }}</td>
         <td>{{ $data->qty }}</td>
-        <td>{{ $data->purchase_price }}</td>
+        <td>{{ $data->sale_price }}</td>
         <td>{{ $data->amount }}</td>
         <td>1</td>
         <td>{{ $data->mrp_price}}</td>
