@@ -4919,14 +4919,6 @@ public static function get_customer_name($id)
 
 }
 
-public static function get_ba_location($ba_id) {
-    $location = DB::table("ba_locations")
-                    ->select("id", "location_name")
-                    ->where("ba_id", $ba_id)
-                    ->first();
-    return $location ? $location->location_name : "N/A";
-}
-
 public static function get_customer_address($id)
 {
     $customer = new Customer();
