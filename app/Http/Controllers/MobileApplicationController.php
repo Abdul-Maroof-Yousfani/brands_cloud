@@ -80,7 +80,6 @@ public function login(Request $request)
 
     // ✅ Check user by username
     $user = User::where('username', $request->name)->first();
-
     
     if($user->imei != $request->imei) {
         return response()->json(["message" => "invalid IMEI"], 401);
