@@ -2014,6 +2014,10 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
     }
 
+    public static function get_all_customers() {
+        return DB::connection("mysql2")->table("customers")->select("id", "name")->where("status", 1)->get();
+    }
+
     public static function get_buyer_detail($id){
        return DB::Connection('mysql2')->table('customers')->find($id);
     }

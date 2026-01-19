@@ -87,13 +87,12 @@ if (isset($_GET['item_id'])) {
 
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label class="control-label">Warehouse</label>
-                                            <select name="warehouse_id[]" id="warehouse_id" class="form-control select2"
+                                            <label class="control-label">Customers</label>
+                                            <select name="customer_id[]" id="customer_id" class="form-control select2"
                                                 multiple>
-                                                @foreach ($warehouses as $warehouse)
-                                                    <option value="{{ $warehouse->id }}"
-                                                        {{ collect(request('warehouse_id'))->contains($warehouse->id) ? 'selected' : '' }}>
-                                                        {{ $warehouse->name }}
+                                                @foreach (App\Helpers\CommonHelper::get_all_customers() as $customer)
+                                                    <option value="{{ $customer->id }}">
+                                                        {{ $customer->name }}
                                                     </option>
                                                 @endforeach
                                             </select>

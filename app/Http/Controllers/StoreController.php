@@ -1582,6 +1582,7 @@ public function getBrandsByWarehouse(Request $request)
 
             $to_date = $request->to ?? date('Y-m-d');
             $warehouse_ids = (array) $request->input('warehouse_id', []);
+            $customer_ids = (array) $request->input('customer_id', []);
             $product_id = $request->product_id ?? null;
             $brand_ids = (array) $request->input('brand_id', []);
             $territory_id = $request->territory_id ?? null;
@@ -1704,10 +1705,10 @@ public function getBrandsByWarehouse(Request $request)
             ->groupBy('si.id','cus.id');
 
 
-            if (!empty($warehouse_ids)) {
-                $query->whereIn('s.warehouse_id', $warehouse_ids);
+            if (!empty($customer_ids)) {
+                $query->whereIn('s.customer_id', $customer_ids);
             } elseif ($territory_id) {
-                $territoryWarehouseIds = DB::connection('mysql2')->table('stock')
+                $territoryWarehouseIds = DB::connection('mysql2')->table('ba_stock')
                     ->where('territory', $territory_id)
                     ->where('status', 1)
                     ->distinct()
