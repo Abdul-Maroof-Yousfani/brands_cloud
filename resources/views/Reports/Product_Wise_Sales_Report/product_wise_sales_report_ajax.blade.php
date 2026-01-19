@@ -3,7 +3,7 @@
         <td>{{ $loop->iteration }}</td>
         <td>{{ \Carbon\Carbon::parse($data->date)->format("d-M-Y") }}</td>
         <td>{{ $data->buyers_id ? App\Helpers\CommonHelper::get_customer_name($data->buyers_id) : "N/A" }}</td>
-        <td>{{ $data->buyers_id ? App\Helpers\CommonHelper::get_customer_address($data->buyers_id) : "N/A" }}</td>
+        <td>{{ \App\Helpers\CommonHelper::get_ba_location($data->ba_id) }}</td>
         <td>{{ \App\Helpers\CommonHelper::get_username($data->ba_id) }}</td>
         <td>{{ $data->sku }}</td>
         <td>{{ $data->product_barcode }}</td>

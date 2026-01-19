@@ -779,6 +779,8 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
 
     // opening stock eend
 
+    Route::get("purchase-traceability-report", "PurchaseTraceabilityReportController@index");
+
     Route::post('/createPurchaseVoucherFormThroughGrn', 'PurchaseController@createPurchaseVoucherFormThroughGrn');
     Route::get('/editPurchaseVoucherForm/{id?}', 'PurchaseController@editPurchaseVoucherForm');
 
