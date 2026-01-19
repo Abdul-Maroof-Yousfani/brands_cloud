@@ -12,7 +12,10 @@
         <td>{{ $data->qty }}</td>
         <td>{{ $data->sale_price }}</td>
         <td>{{ $data->amount }}</td>
-        <td>1</td>
+        @php
+            $markup = 1 + ($data->tax_amount / 100)
+        @endphp
+        <td>{{ $data->mrp_price / $markup }}</td>
         <td>{{ $data->mrp_price}}</td>
     </tr>
 @endforeach

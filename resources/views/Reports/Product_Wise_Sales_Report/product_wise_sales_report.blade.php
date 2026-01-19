@@ -123,7 +123,7 @@ use App\Helpers\SaleHelper;
                                             <th class="text-center" style="width:150px;">Product</th>
                                             <th class="text-center" style="width:150px;">Brand</th>
                                             <th class="text-center" style="width:150px;">Qty</th>
-                                            <th class="text-center" style="width:150px;">Price</th>
+                                            <th class="text-center" style="width:150px;">Unit Price</th>
                                             <th class="text-center" style="width:150px;">Total Amount (SP)</th>
                                             <th class="text-center" style="width:150px;">Total Amount (TP)</th>
                                             <th class="text-center" style="width:150px;">Total Amount (MRP)</th>
