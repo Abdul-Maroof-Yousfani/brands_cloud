@@ -18,11 +18,11 @@ class ProductWiseSalesReportController extends Controller
         
             $items = DB::connection("mysql2")
                         ->table("subitem")
-                        ->leftJoin("sales_order_data", "sales_order_data.item_id", "=", "subitem.id")
-                        ->leftJoin("sales_order", "sales_order.id", "=", "sales_order_data.master_id")
+                        ->leftJoin("retail_sale_order_details", "retail_sale_order_details.product_id", "=", "subitem.id")
+                        ->leftJoin("retail_sale_orders", "retail_sale_orders.id", "=", "retail_sale_order_details.retail_sale_order_id")
                         ->select(
-                            "sales_order_data.date",
-                            "sales_order.buyers_id",
+                            "retail_sale_orders.sale_order_date",
+                            "retail_sale_orders.distributor_id",
                             "subitem.sku_code",
                             "subitem.sku_code AS sku",
                             "subitem.product_barcode",
@@ -31,18 +31,18 @@ class ProductWiseSalesReportController extends Controller
                             "subitem.purchase_price",
                             "subitem.date",
                             "subitem.id",
-                            DB::raw("SUM(sales_order_data.qty) AS qty"),
-                            DB::raw("SUM(sales_order_data.amount) AS amount"),
-                            DB::raw("SUM(sales_order_data.mrp_price) AS mrp_price")
+                            DB::raw("SUM(retail_sale_order_details.qty) AS qty"),
+                            DB::raw("SUM(retail_sale_order_details.amount) AS amount"),
+                            DB::raw("SUM(retail_sale_order_details.mrp_price) AS mrp_price")
                         )
                         ->when(isset($from) && isset($to), function($query) use ($from, $to) {
-                            $query->whereBetween("sales_order.date", [$from, $to]);
+                            $query->whereBetween("retail_sale_orders.date", [$from, $to]);
                         })
                         ->when(isset($brand_id), function($query) use ($brand_id) {
                             $query->where("subitem.brand_id", $brand_id);
                         })
                         ->when(isset($store_id), function($query) use ($store_id) {
-                            $query->where('sales_order.buyers_id', $store_id);
+                            $query->where('retail_sale_orders.buyers_id', $store_id);
                         })
                         ->when(isset($subitem_id), function($query) use($subitem_id) {
                             $query->where("subitem.id", $subitem_id);

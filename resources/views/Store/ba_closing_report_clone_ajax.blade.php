@@ -11,20 +11,19 @@
 </style>
 
 @php
-    $warehouseTotals = [];
-    foreach ($warehouses as $id => $name) {
-        $warehouseTotals[$id] = 0;
-    };
-    $grandTotal = 0;
-     $transitTotal = 0;
+    $customerTotals = [];
+    foreach ($customersMap as $id => $customer) {
+        $customerTotals[$id] = 0;
+    }
+    $grandTotal   = 0;
+    $transitTotal = 0;
 @endphp
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 text-center">
-            <h3>Stores Product Stock</h3>
+            <h3>Customer Wise Product Stock</h3>
             <h5>{{ date('d-M-Y', strtotime($to_date)) }}</h5>
-            <!-- <h5>{{ date('d-M-Y', strtotime($from_date)) }} to {{ date('d-M-Y', strtotime($to_date)) }}</h5> -->
         </div>
     </div>
 
@@ -38,48 +37,71 @@
                     <th>Barcode</th>
                     <th>Item Type</th>
                     <th>Brand</th>
-                    <th>Stock</th>
+
+                    {{-- ✅ CUSTOMER HEADERS --}}
+                    @foreach($customersMap as $customer)
+                        <th>{{ $customer }}</th>
+                    @endforeach
+
+                    <th>Total</th>
                 </tr>
             </thead>
-            <tbody>
-                @php $counter = 1; $total = 0; @endphp
-                @foreach($stocks as $row)
-                @php
-                $product = \App\Helpers\CommonHelper::get_product_by_sku($row['sku_code']);
-                        $rowTotal = \App\Helpers\ReuseableCode::get_ba_stock_wo_warehouse($product->id);
-                        $total += $rowTotal;
+            <tbody> 
+                @php $counter = 1; @endphp
 
-                        
-                           $transitVal = (int)($row['transit_stock'] ?? 0); // New field
+                @foreach($stocks as $row)
+                    @php
+                        $rowTotal = 0;
+
+                        $transitVal = (int) ($row['transit_stock'] ?? 0);
                         $transitTotal += $transitVal;
                     @endphp
+
                     <tr>
                         <td>{{ $counter++ }}</td>
                         <td>{{ $row['sku_code'] }}</td>
                         <td>{{ $row['product_name'] }}</td>
                         <td>{{ $row['barcode'] }}</td>
                         <td>{{ $row['item_type'] ?? 'N/A' }}</td>
-
-                        <!-- <td>{{ $row['item_type'] != 1 ? 'Commercial' : 'Non-Commercial' }}</td> -->
                         <td>{{ $row['brand'] ?? 'N/A' }}</td>
 
-                        <td>{{ $rowTotal }}</td>
-                       
+                        {{-- ✅ CUSTOMER STOCK CELLS --}}
+                        @foreach($customersMap as $id => $customer)
+                            @php
+                               
+                                $val = (int)($row[$customer] ?? 0);  // use warehouse name, not ID
+                                $customerTotals[$id] += $val;
+                                $rowTotal = $val;
+
+                                // $rowTotal += $qty;
+                                // $customerTotals[$id] += $qty;
+                            @endphp
+                            <td class="text-end">{{ $rowTotal }}</td>
+                        @endforeach
+                    
+
+                        {{-- Row Total --}}
+                        <td class="text-end">{{ $rowTotal }}</td>
+
+                        @php $grandTotal += $rowTotal; @endphp
                     </tr>
                 @endforeach
             </tbody>
 
-            {{-- Footer Total Row --}}
+            {{-- ✅ FOOTER TOTALS --}}
             <tfoot>
                 <tr class="totals-row">
                     <td colspan="6" class="text-end">Total</td>
-                      <td>{{ ($total) }}</td>
 
+                    @foreach($customersMap as $id => $customer)
+                        <td class="text-end">
+                            {{ $customerTotals[$id] }}
+                        </td>
+                    @endforeach
+
+                    <td class="text-end">{{ $grandTotal }}</td>
                 </tr>
             </tfoot>
         </table>
     </div>
 </div>
-
-
-

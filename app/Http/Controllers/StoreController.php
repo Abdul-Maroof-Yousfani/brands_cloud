@@ -1600,6 +1600,10 @@ public function getBrandsByWarehouse(Request $request)
                     ->distinct()
                     ->pluck('warehouse_id');
 
+                $customers = \Illuminate\Support\Facades\DB::connection("mysql2")->table("customers")
+                    ->where("status", "active")
+                    ->get();
+
                 $warehouses = DB::connection('mysql2')->table('warehouse')
                     ->whereIn('id', $warehouseList)
                     ->where("is_virtual", 1)
@@ -1636,6 +1640,10 @@ public function getBrandsByWarehouse(Request $request)
                                                             ->where("is_virtual", 1)
                                                             ->where('status', 1)
                                                             ->get();
+                $customers = \Illuminate\Support\Facades\DB::connection("mysql2")->table("customers")
+                    ->where("status", "active")
+                    ->get();
+
                 $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
                 $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
                 $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
@@ -1664,7 +1672,7 @@ public function getBrandsByWarehouse(Request $request)
         $query = DB::connection('mysql2')->table('ba_stock as s')
             ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
             ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
-
+            ->leftJoin("customers as cus", "cus.id", "=", "s.customer_id")
             ->leftJoin('category as c', 'si.main_ic_id', '=', 'c.id')
             ->leftJoin('warehouse as w', 's.warehouse_id', '=', 'w.id')
             ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
@@ -1684,6 +1692,8 @@ public function getBrandsByWarehouse(Request $request)
                 'b.name as brand',
                 'w.id as warehouse_id',
                 'w.name as warehouse_name',
+                'cus.name as customer_name',
+                'cus.id as customer_id',
                 DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,9) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
                 DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock'),
                 DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
@@ -1691,7 +1701,7 @@ public function getBrandsByWarehouse(Request $request)
             ->where('s.status', 1)
 
             ->whereBetween('s.created_date', [$from_date, $to_date])
-            ->groupBy('si.id','w.id');
+            ->groupBy('si.id','cus.id');
 
 
             if (!empty($warehouse_ids)) {
@@ -1722,7 +1732,7 @@ public function getBrandsByWarehouse(Request $request)
             $rawStock = $query->groupBy('si.id', 'w.id')->get();
 
             $stocks = [];
-            $warehouseMap = [];
+            $customersMap = [];
 
             foreach ($rawStock as $stock) {
                 $key = $stock->product_id;
@@ -1732,7 +1742,6 @@ public function getBrandsByWarehouse(Request $request)
                         'sku_code' => $stock->sku_code,
                         'product_name' => $stock->product_name,
                         'barcode' => $stock->barcode,
-
                         'item_type' => $stock->item_type,
                         'brand' => $stock->brand,
                         'packing' => $stock->packing,
@@ -1741,21 +1750,22 @@ public function getBrandsByWarehouse(Request $request)
                 }
 
                 $stockQty = (float)$stock->in_stock - (float)$stock->out_stock;
-                $stocks[$key][$stock->warehouse_name] = abs($stockQty);
-                $warehouseMap[$stock->warehouse_id] = $stock->warehouse_name;
+                $stocks[$key][$stock->customer_name] = abs($stockQty);
+                $customersMap[$stock->customer_id] = $stock->customer_name;
             }
 
             return view('Store.ba_closing_report_clone_ajax', [
                 'stocks' => $stocks,
                 'from_date' => $from_date,
                 'to_date' => $to_date,
-                'warehouses' => $warehouseMap
+                'customersMap' => $customersMap,
+                'customers' => $customers
             ]);
         }
 
 
         return view('Store.ba_closing_report_clone', compact(
-                        'warehouses', 'products', 'brands', 'defaultProducts', 'territories'
+                        'warehouses', 'products', 'brands', 'defaultProducts', 'territories', 'customers'
                     ));
 
     }
