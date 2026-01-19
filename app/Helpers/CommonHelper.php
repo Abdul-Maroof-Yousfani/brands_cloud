@@ -384,7 +384,7 @@ public function getlistSaleOrder(Request $request)
 }
    public static function get_brand_by_id($id){
         $brands = DB::Connection('mysql2')->table('brands')->find($id);
-        return $brands->name;
+        return $brands ? $brands->name : 'N/A';
     } 
 
     public static function get_data($item_id)
