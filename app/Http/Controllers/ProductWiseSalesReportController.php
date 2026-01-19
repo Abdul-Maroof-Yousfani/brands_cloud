@@ -36,7 +36,7 @@ class ProductWiseSalesReportController extends Controller
                             DB::raw("SUM(sales_order_data.mrp_price) AS mrp_price")
                         )
                         ->when(isset($from) && isset($to), function($query) use ($from, $to) {
-                            $query->whereBetween("subitem.date", [$from, $to]);
+                            $query->whereBetween("sales_order.date", [$from, $to]);
                         })
                         ->when(isset($brand_id), function($query) use ($brand_id) {
                             $query->where("subitem.brand_id", $brand_id);
