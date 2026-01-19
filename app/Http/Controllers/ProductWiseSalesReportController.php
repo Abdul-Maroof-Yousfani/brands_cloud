@@ -23,6 +23,7 @@ class ProductWiseSalesReportController extends Controller
                         ->select(
                             "retail_sale_orders.sale_order_date",
                             "retail_sale_orders.distributor_id AS buyers_id",
+                            "retail_sale_orders.user_id as ba_id",
                             "subitem.sku_code",
                             "subitem.sku_code AS sku",
                             "subitem.product_barcode",

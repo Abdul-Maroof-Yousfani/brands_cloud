@@ -2166,6 +2166,10 @@ public static function get_all_subitems()
         return $name;
     }
 
+    public static function get_username($user_id) {
+        $user = User::select("id", "name")->find($user_id);
+        return $user ? $user->name : 'N/A';
+    }
 
     public static function get_users_companies() {
         if(auth()->user()->acc_type !== 'user') return;
