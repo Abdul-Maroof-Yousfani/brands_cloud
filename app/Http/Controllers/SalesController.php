@@ -1063,7 +1063,7 @@ public function uploadProduct(Request $request)
 
                 $existingProduct = DB::connection('mysql2')->table('subitem')
                 ->where('sku_code', $sku_code)
-                ->where('brand_id', $brand_id)
+                // ->where('brand_id', $brand_id)
                 ->first();
 
 
@@ -3202,6 +3202,14 @@ if (in_array($user->acc_type, ['user'])) {
         $StoresCategory = $StoresCategory->SetConnection('mysql2');
         $StoresCategory = $StoresCategory->where('status', 1)->get();
         return view('Sales.StoresCategory.List', compact('StoresCategory'));
+    }
+
+    public function storesCategoryListReadOnly()
+    {
+        $StoresCategory = new  StoresCategory();
+        $StoresCategory = $StoresCategory->SetConnection('mysql2');
+        $StoresCategory = $StoresCategory->where('status', 1)->get();
+        return view('Sales.StoresCategory.ListReadOnly', compact('StoresCategory'));
     }
     function editStoresCategoryForm(Request $request)
     {

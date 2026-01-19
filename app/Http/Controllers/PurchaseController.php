@@ -527,6 +527,16 @@ class PurchaseController extends Controller
         return view('Purchase.viewSubItemList', compact('product_classification', 'subitem', 'username', 'product_trends', 'principl_groups'));
     }
 
+    public function viewSubItemListWithoutEditing(){
+        $subitem = Subitem::all();
+        $username = Subitem::select("username")->groupBy("username")->get();
+        $product_classification = ProductClassification::where('status',1)->get();
+        $product_trends = ProductTrend::where('status',1)->get();
+        $principl_groups = ProductsPrincipalGroup::select("id", "products_principal_group")->get();
+
+        return view('Purchase.viewSubItemListWithoutEditing', compact('product_classification', 'subitem', 'username', 'product_trends', 'principl_groups'));
+    }
+
     public function viewSubItemDetail(){
         $id=$_GET['id'];
         $sub_item=new Subitem();
@@ -931,7 +941,7 @@ class PurchaseController extends Controller
     // Or enhance in query if needed
 
     return view('Purchase.editDirectPurchaseOrderForm', compact('purchaseRequest', 'purchaseDetails'));
-}
+    }
 
     public function purchase_order_status()
     {

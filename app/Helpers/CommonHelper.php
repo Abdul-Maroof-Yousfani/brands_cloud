@@ -1448,6 +1448,14 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         endif;
     }
 
+    public static function get_product_by_sku($sku)
+    {
+        $Subitem = new Subitem();
+        $Subitem = $Subitem->SetConnection('mysql2');
+        $Subitem = $Subitem->where('sku_code', $sku)->first();
+        return $Subitem;
+    }
+
 
    public static function get_product_sku($id)
     {
@@ -4710,6 +4718,37 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
             $amount=0;
             return $qty;
         endif;
+    }
+
+    public static function subitem_stock($item)
+    {
+        $in= DB::Connection('mysql2')->table('stock')->where('status',1)
+            ->whereIn('voucher_type',[1,4,6,10,11])
+            ->where('sub_item_id',$item)
+            ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+            ->first();
+
+
+
+        $oout=  DB::Connection('mysql2')->table('stock')->where('status',1)
+            ->whereIn('voucher_type',[2,5,3,9])
+            ->where('sub_item_id',$item)
+            ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+            ->first();
+
+        $qty=$in->qty-$oout->qty;
+        $amount=$in->amount;
+        $rate=0;
+        if ($qty>0):
+
+            $rate=number_format($amount / $in->qty,2, '.', '');
+            return $qty;
+        else:
+            $qty=0;
+            $amount=0;
+            return $qty;
+        endif;
+        
     }
 
     public static function get_sod_qty($id)

@@ -22,6 +22,7 @@ Route::auth();
 
 Route::get('testing', function () {
     Auth::logout(); 
+    
 });
 
 Route::get("privileges", function() {
@@ -68,6 +69,7 @@ Route::get('migrate', function () {
     echo Artisan::call('migrate');
     echo 'All migration run successfully';
 });
+
 
 
 Route::get('/abc', function () {
@@ -808,6 +810,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
 
     Route::get('/createSubItemForm', 'PurchaseController@createSubItemForm');
     Route::get('/viewSubItemList', 'PurchaseController@viewSubItemList');
+    Route::get('/viewSubItemListWithoutEditing', 'PurchaseController@viewSubItemListWithoutEditing');
     Route::resource('specialPrice', 'SpecialPriceController');
     Route::resource('customerDiscount', 'CustomerDiscountController');
     Route::resource('stockBarcode', 'StockBarcodeController');
@@ -1060,6 +1063,7 @@ Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/viewRegionList', 'PurchaseDataCallController@viewRegionList');
     Route::get('/viewSubItemList', 'PurchaseDataCallController@viewSubItemList');
     Route::post('/viewSubItemListAjax', 'PurchaseDataCallController@viewSubItemListAjax')->name('viewSubItemListAjax');
+    Route::post('/viewSubItemListAjaxWithoutEditing', 'PurchaseDataCallController@viewSubItemListAjaxWithoutEditing')->name('viewSubItemListAjaxWithoutEditing');
 
     Route::get('/export-subitem/purchase/export-subitems', 'PurchaseDataCallController@exportSubitems')->name('export.subitems');
 
@@ -1371,6 +1375,7 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get('/closingReportView', 'StoreController@closingReportView')->name('closingReportView');
     
     Route::get('/BAclosingReport', 'StoreController@BAclosingReportView')->name('baClosingReportView');
+    Route::get('/BAclosingReportClone', 'StoreController@BAclosingReportViewClone')->name('baClosingReportViewClone');
     
     // Route::get('/ajax/search-product', 'StoreController@searchProduct')->name('ajax.search.product');
     Route::get('/ajax/search-product', 'StoreController@searchProduct')->name('ajax.search.product');
@@ -1704,6 +1709,7 @@ Route::group(['prefix' => 'sales', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::match(['GET', 'POST'], '/createStoresCategory', 'SalesController@createStoresCategory');
     Route::match(['GET', 'POST'], '/editStoresCategory', 'SalesController@editStoresCategoryForm');
     Route::get('/storesCategoryList', 'SalesController@storesCategoryList');
+    Route::get('/storesCategoryListReadOnly', 'SalesController@storesCategoryListReadOnly');
     Route::get('/deleteStoresCategory', 'SalesController@deleteStoresCategory');
     // End Stores Category
     // Territory
