@@ -78,7 +78,7 @@ public function login(Request $request)
     }
 
     // ✅ Check user by username
-    $user = User::where('name', $request->name)->first();
+    $user = User::where('username', $request->name)->first();
 
     if (!$user) {
         return response()->json(['message' => 'Invalid username or password'], 401);
