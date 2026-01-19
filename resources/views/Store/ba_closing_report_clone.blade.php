@@ -35,7 +35,7 @@ if (isset($_GET['item_id'])) {
                         <div class="panel panel-default">
 
                             <div class="panel-heading clearfix">
-                                <h3 class="panel-title pull-left">BA Closing Report (Clone)</h3>
+                                <h3 class="panel-title pull-left">Stores Product Stock</h3>
                                 <div class="pull-right">
                                     <button type="button" onclick="exportBtn('BA_Closing_Stock_Report_Clone_{{ date('Y-m-d') }}')"
                                         class="btn btn-success btn-sm">
