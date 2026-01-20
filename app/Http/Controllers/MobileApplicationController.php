@@ -62,13 +62,13 @@ class MobileApplicationController extends Controller
     //         'token' => $token,
     //     ]);
     // }
+
 public function login(Request $request)
 {
-    // ✅ Validation rules
     $validator = Validator::make($request->all(), [
-        'name' => ['required', 'string'],
+        'name'     => ['required', 'string'],
         'password' => 'required|string',
-        'imei' => 'required'
+        'imei'     => 'nullable|string',
     ]);
 
     if ($validator->fails()) {
@@ -78,36 +78,93 @@ public function login(Request $request)
         ], 422);
     }
 
-    // ✅ Check user by username
+    // ✅ Find user
     $user = User::where('username', $request->name)->first();
-    
-    if($user->imei != $request->imei) {
-        return response()->json(["message" => "invalid IMEI"], 401);
-    }
 
     if (!$user) {
         return response()->json(['message' => 'Invalid username or password'], 401);
     }
 
-    // ✅ Verify password
+    // ✅ IMEI check ONLY if user has IMEI stored
+    if (!empty($user->imei)) {
+
+        // request me IMEI nahi aya
+        if (empty($request->imei)) {
+            return response()->json(['message' => 'IMEI required for this user'], 401);
+        }
+
+        // IMEI mismatch
+        if ($user->imei !== $request->imei) {
+            return response()->json(['message' => 'Invalid IMEI'], 401);
+        }
+    }
+
+    // ✅ Password check
     if (!Hash::check($request->password, $user->password)) {
         return response()->json(['message' => 'Invalid username or password'], 401);
     }
 
-    // ✅ Check account type
+    // ✅ Account type check
     if ($user->acc_type !== 'ba') {
-        return response()->json(['message' => 'Unauthorized account type1'], 403);
+        return response()->json(['message' => 'Unauthorized account type'], 403);
     }
 
-    // ✅ Generate token (ensure generateApiToken() exists)
+    // ✅ Generate token
     $token = $user->generateApiToken();
 
     return response()->json([
         'message' => 'Login successful',
-        'user' => $user,
-        'token' => $token,
+        'user'    => $user,
+        'token'   => $token,
     ], 200);
 }
+
+// public function login(Request $request)
+// {
+//     // ✅ Validation rules
+//     $validator = Validator::make($request->all(), [
+//         'name' => ['required', 'string'],
+//         'password' => 'required|string',
+//         'imei' => 'required'
+//     ]);
+
+//     if ($validator->fails()) {
+//         return response()->json([
+//             'success' => false,
+//             'errors' => $validator->errors(),
+//         ], 422);
+//     }
+
+//     // ✅ Check user by username
+//     $user = User::where('username', $request->name)->first();
+    
+//     if($user->imei != $request->imei) {
+//         return response()->json(["message" => "invalid IMEI"], 401);
+//     }
+
+//     if (!$user) {
+//         return response()->json(['message' => 'Invalid username or password'], 401);
+//     }
+
+//     // ✅ Verify password
+//     if (!Hash::check($request->password, $user->password)) {
+//         return response()->json(['message' => 'Invalid username or password'], 401);
+//     }
+
+//     // ✅ Check account type
+//     if ($user->acc_type !== 'ba') {
+//         return response()->json(['message' => 'Unauthorized account type1'], 403);
+//     }
+
+//     // ✅ Generate token (ensure generateApiToken() exists)
+//     $token = $user->generateApiToken();
+
+//     return response()->json([
+//         'message' => 'Login successful',
+//         'user' => $user,
+//         'token' => $token,
+//     ], 200);
+// }
 
 
     public function logout(Request $request)
