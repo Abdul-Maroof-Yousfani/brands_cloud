@@ -31,7 +31,7 @@ class ProductWiseSalesReportController extends Controller
                             "subitem.brand_id",
                             "subitem.purchase_price",
                             "subitem.sale_price",
-                            "subitem.date",
+                            "retail_sale_orders.created_at as date",
                             "subitem.id",
                             "subitem.tax as tax_amount",
                             DB::raw("SUM(retail_sale_order_details.qty) AS qty"),
