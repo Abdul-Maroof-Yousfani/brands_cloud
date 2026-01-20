@@ -52,7 +52,7 @@ use App\Helpers\CommonHelper;
                     <label for="csv_file">CSV File</label>
                     <input type="file" class="form-control-file" id="csv_file" name="csv_file" required>
                     <small class="form-text text-muted">
-                        Download the <a href="{{ asset('public/store_brand_discount.csv') }}" download>CSV template</a> for reference.
+                        Download the <a href="{{ asset('store_brand_discount.csv') }}" download>CSV template</a> for reference.
                     </small>
                 </div>
 
