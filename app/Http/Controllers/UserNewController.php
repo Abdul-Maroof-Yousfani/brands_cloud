@@ -69,7 +69,7 @@ class UserNewController extends Controller
             'password' => 'required|string|confirmed|min:8',
             'status' => 'required|boolean',
             'roles' => 'required',
-            'imei' => 'required'
+            'imei'     => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -245,7 +245,7 @@ public function update(Request $request, $id)
         'status' => 'required|boolean',
         'roles' => 'required',
         'password' => 'nullable|string|confirmed|min:8',
-        'imei' => "required"
+        'imei'     => 'nullable|string',
     ]);
 
     DB::beginTransaction();
