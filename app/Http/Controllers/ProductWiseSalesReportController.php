@@ -45,7 +45,7 @@ class ProductWiseSalesReportController extends Controller
                             $query->where("subitem.brand_id", $brand_id);
                         })
                         ->when(isset($store_id), function($query) use ($store_id) {
-                            $query->where('retail_sale_orders.buyers_id', $store_id);
+                            $query->where('retail_sale_orders.distributor_id', $store_id);
                         })
                         ->when(isset($subitem_id), function($query) use($subitem_id) {
                             $query->where("subitem.id", $subitem_id);
