@@ -177,8 +177,8 @@ class SalesOrderController extends Controller
         return response()->json([
             'total_so'               => ReuseableCode::get_reserved_so($itemId, $request->cusId),
             'company_warehouse'      => $company_warehouses,
-            'store_warehouse'        => $store_warehouses,
-            'company_total_quantity' => $company_total_qty,
+            'store_warehouse'        => $store_warehouses, 
+            'company_total_quantity' => ReuseableCode::get_stock($itemId, $warehouseFrom),
             'store_total_quantity'   => $store_total_qty,
         ]);
     }
