@@ -29,9 +29,19 @@ public function show_ba(Request $request) {
                 ->when(isset($so), function($query) use ($so) {
                     $query->where("retail_sale_order_returns.return_no", $so);
                 })
-                ->when(isset($from) && isset($to), function($query) use ($from, $to) {
-                    $query->whereBetween("retail_sale_order_returns.created_at", [$from, $to]);
+               ->when($from || $to, function ($query) use ($from, $to) {
+
+                    $query->whereBetween(
+                        DB::raw('DATE(retail_sale_order_returns.return_date)'),
+                        [$from, $to]
+                    );
+
+                }, function ($query) {
+
+                    $query->whereDate('retail_sale_order_returns.return_date', today());
+
                 })
+
                 ->groupBy("subitem.product_barcode")
                 ->select(
                     "category.main_ic",
