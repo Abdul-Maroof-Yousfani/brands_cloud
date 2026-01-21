@@ -23,7 +23,7 @@ use App\Helpers\SaleHelper;
     <div class="well_N">
 
         <div class="dp_sdw">
-            <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Sale Return Report</h1>
+            <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Product Wise Sales Report</h1>
              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
                 <?php echo CommonHelper::displayPrintButtonInBlade('printDemandVoucherList','','1');?>
                 <?php if(true):?>
@@ -37,7 +37,7 @@ use App\Helpers\SaleHelper;
                         <label class="control-label">From Date</label>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="from" class="form-control" id="from" value="2025-10-28">
+                            <input type="date" name="from" class="form-control" id="from">
                         </div>
                     </div>
                 </div>
@@ -46,23 +46,60 @@ use App\Helpers\SaleHelper;
                         <label class="control-label">To Date</label>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="to" class="form-control" id="to" value="2025-10-28">
+                            <input type="date" name="to" class="form-control" id="to">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label class="control-label">S.O No</label>
+                        <label class="control-label">Brand</label>
                         <div class="input-group">
-                            <input type="text" name="to" class="form-control" id="so">
+                            <select class="form-control select2" id="brand_id">
+                                <option value="">Select Brand</option>
+                                @foreach(\App\Helpers\CommonHelper::get_all_brand() as $brand)
+                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">Stores</label>
+                        <div class="input-group">
+                            <select class="form-control select2" id="store_id">
+                                <option value="">Select Store</option>
+                                @foreach(\App\Helpers\CommonHelper::get_customer() as $customer)
+                                    <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">Products</label>
+                        <div class="input-group">
+                            <select class="form-control select2" id="subitem_id">
+                                <option value="">Select Product</option>
+                                @foreach(\App\Helpers\CommonHelper::get_subitems() as $subitem)
+                                    <option value="{{ $subitem->id }}">{{ $subitem->product_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div class="row">
                 <div class="col-md-3">
-                    <div class="form-group" style="margin-top: 25px;">
-                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;margin-left: 20px;">
-                            <i class="fa fa-refresh"></i> Generate
-                        </button>
+                        <div class="form-group" style="margin-top: 25px;">
+                            <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;margin-left: 20px;">
+                                <i class="fa fa-refresh"></i> Generate
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,20 +113,20 @@ use App\Helpers\SaleHelper;
                                     <table  class="table table-bordered table-striped table-condensed tableMargin">
                                         <thead>
                                         <tr>
-                                            <th class="text-center" style="width:150px;">Item Description</th>
-                                            <th class="text-center" style="width:150px;" >Brand</th>
-                                            <th class="text-center" style="width:150px;">Category</th>
-                                            <th class="text-center" style="width:150px;">Sub Category</th>
-                                            <th class="text-center" style="width:150px;" >Article No. / SKU</th>
+                                            <th class="text-center" style="width:150px;">S. No</th>
+                                            <th class="text-center" style="width:150px;" >Date</th>
+                                            <th class="text-center" style="width:150px;">Store</th>
+                                            <th class="text-center" style="width:150px;">Location</th>
+                                            <th class="text-center" style="width:150px;" >BA</th>
+                                            <th class="text-center" style="width:150px;">MIS Code</th>
                                             <th class="text-center" style="width:150px;">Barcode</th>
-                                            <th class="text-center" style="width:150px;">CTN</th>
-                                            <th class="text-center" style="width:150px;">PCS</th>
-                                            <th class="text-center" style="width:150px;">Gross Amount</th>
-                                            <th class="text-center" style="width:150px;">Discount</th>
-                                            <th class="text-center" style="width:150px;">Tax</th>
-                                            <th class="text-center" style="width:150px;">Net Amount</th>
-                                            <th class="text-center" style="width:150px;">COGS</th>
-                                            <th class="text-center" style="width:150px;">COGS VAL</th>
+                                            <th class="text-center" style="width:150px;">Product</th>
+                                            <th class="text-center" style="width:150px;">Brand</th>
+                                            <th class="text-center" style="width:150px;">Qty</th>
+                                            <th class="text-center" style="width:150px;">Unit Price</th>
+                                            <th class="text-center" style="width:150px;">Total Amount (SP)</th>
+                                            <th class="text-center" style="width:150px;">Total Amount (TP)</th>
+                                            <th class="text-center" style="width:150px;">Total Amount (MRP)</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tbody">
@@ -108,12 +145,13 @@ use App\Helpers\SaleHelper;
 </div>
  <script src="{{ URL::asset('assets/custom/js/exportToExcelXlsx.js') }}"></script>
     <script !src="">
+        $(".select2").select2();
         function ExportToExcel(type, fn, dl) {
             var elt = document.getElementById('printCashSaleVoucherDetail');
             var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
             return dl ?
                     XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
-                    XLSX.writeFile(wb, fn || ('Stock Report <?php echo date('d-m-Y')?>.' + (type || 'xlsx')));
+                    XLSX.writeFile(wb, fn || ('Product Wise Sales Report <?php echo date('d-m-Y')?>.' + (type || 'xlsx')));
         }
     </script>
 <script>
@@ -124,7 +162,10 @@ use App\Helpers\SaleHelper;
         data: {
             from: $("#from").val(),
             to: $("#to").val(),
-            so: $('#so').val()
+            so: $('#so').val(),
+            brand_id: $("#brand_id").val(),
+            store_id: $("#store_id").val(),
+            subitem_id: $("#subitem_id").val()
         },
         beforeSend: function() {
             $('#data').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');

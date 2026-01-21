@@ -1,18 +1,21 @@
-@foreach($sales_report_data as $data)
+@foreach($items as $data)
     <tr>
-        <td class="text-center">{{ $data->product_name }}</td>
-        <td>{{ $data->name }}</td>
-        <td>{{ $data->main_ic ?? "N/A" }}</td>
-        <td>{{ $data->main_ic ?? "N/A"}}</td>
-        <td class="text-center">{{ $data->voucher_no }}</td>
-        <td class="text-center">{{ $data->product_barcode }}</td>
-        <td class="text-center">{{ $data->qty }}</td>
-        <td class="text-center">{{ $data->qty }}</td>
-        <td>{{ $data->net_amount }}</td>
-        <td>{{ $data->discount_amount }}</td>
-        {{-- <td>{{ (int)$data->sales_tax + (int)$data->sales_tax_further }}</td> --}}
-        <td class="text-center">{{ $data->amount }}</td>
-        <td class="text-center">{{ $data->cogs }}</td>
-        <td class="text-center"></td>
+        <td>{{ $loop->iteration }}</td>
+        <td>{{ \Carbon\Carbon::parse($data->date)->format("d-M-Y") }}</td>
+        <td>{{ $data->buyers_id ? App\Helpers\CommonHelper::get_customer_name($data->buyers_id) : "N/A" }}</td>
+        <td>{{ \App\Helpers\CommonHelper::get_ba_location($data->ba_id) }}</td>
+        <td>{{ \App\Helpers\CommonHelper::get_username($data->ba_id) }} {{ $data->ba_id }}</td>
+        <td>{{ $data->sku }}</td>
+        <td>{{ $data->product_barcode }}</td>
+        <td>{{ $data->product_name }}</td>
+        <td>{{ \App\Helpers\CommonHelper::get_brand_by_id($data->brand_id) }}</td>
+        <td>{{ $data->qty }}</td>
+        <td>{{ $data->sale_price }}</td>
+        <td>{{ $data->amount }}</td>
+        @php
+            $markup = 1 + ($data->tax_amount / 100)
+        @endphp
+        <td>{{ $data->mrp_price / $markup }}</td>
+        <td>{{ $data->mrp_price}}</td>
     </tr>
 @endforeach

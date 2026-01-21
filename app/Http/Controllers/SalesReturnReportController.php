@@ -11,55 +11,59 @@ class SalesReturnReportController extends Controller
 
 
 
-public function show_ba(Request $request) {
+ public function ba_show() {
+        if(request()->ajax()) {
 
-        if($request->ajax()) {
-            $so = $request->so;
-            $from = $request->from;
-            $to = $request->to;
-       
-            $sales_report_data = DB::connection("mysql2")->table("retail_sale_order_return_details")
-                ->join("retail_sale_order_returns", "retail_sale_order_returns.id", "=", "retail_sale_order_return_details.retail_sale_order_return_id")
-                ->join("subitem", "subitem.id", "=", "retail_sale_order_return_details.product_id")
-                ->join("category", "category.id", "=", "subitem.main_ic_id")
-                ->join("brands", "subitem.brand_id", "=","brands.id")
-                // ->when($so, function ($q) use ($so_id) {
-                //     $q->where("credit_note.so_id", "like", "%{$so_id}%");
-                // })
-                ->when(isset($so), function($query) use ($so) {
-                    $query->where("retail_sale_order_returns.return_no", $so);
-                })
-               ->when($from || $to, function ($query) use ($from, $to) {
+            $from = request()->from;
+            $to = request()->to;
+            $brand_id = request()->brand_id;
+            $store_id = request()->store_id;
+            $subitem_id = request()->subitem_id;
+        
+            $items = DB::connection("mysql2")
+                        ->table("subitem")
+                        ->join("retail_sale_order_return_details", "retail_sale_order_return_details.product_id", "=", "subitem.id")
+                        ->join("retail_sale_order_returns", "retail_sale_order_returns.id", "=", "retail_sale_order_return_details.retail_sale_order_return_id")
+                        ->select(
+                            "retail_sale_order_returns.created_at",
+                            "retail_sale_order_returns.distributor_id AS buyers_id",
+                            "retail_sale_order_returns.user_id as ba_id",
+                            "subitem.sku_code",
+                            "subitem.sku_code AS sku",
+                            "subitem.product_barcode",
+                            "subitem.product_name",
+                            "subitem.brand_id",
+                            "subitem.purchase_price",
+                            "subitem.sale_price",
+                            "retail_sale_order_returns.created_at as date",
+                            "subitem.id",
+                            "subitem.tax as tax_amount",
+                            DB::raw("SUM(retail_sale_order_return_details.quantity) AS qty"),
+                            DB::raw("SUM(subitem.sale_price * retail_sale_order_return_details.quantity) AS amount"),
+                            DB::raw("subitem.mrp_price AS mrp_price")
+                        )
+                        // ->when(isset($from) && isset($to), function($query) use ($from, $to) {
+                        //     $query->whereBetween("retail_sale_order_returns.created_at", [$from, $to]);
+                        // })
 
-                    $query->whereBetween(
-                        DB::raw('DATE(retail_sale_order_returns.return_date)'),
-                        [$from, $to]
-                    );
+                        ->when(isset($from) && isset($to), function($query) use ($from, $to) {
+                            $query->whereDate("retail_sale_order_returns.created_at", ">=", $from)
+                                  ->whereDate("retail_sale_order_returns.created_at", "<=", $to);
+                        })
+                        ->when(isset($brand_id), function($query) use ($brand_id) {
+                            $query->where("subitem.brand_id", $brand_id);
+                        })
+                        ->when(isset($store_id), function($query) use ($store_id) {
+                            $query->where('retail_sale_order_returns.distributor_id', $store_id);
+                        })
+                        ->when(isset($subitem_id), function($query) use($subitem_id) {
+                            $query->where("subitem.id", $subitem_id);
+                        })
+                        ->groupBy("subitem.id")
+                        ->get();
 
-                }, function ($query) {
-
-                    $query->whereDate('retail_sale_order_returns.return_date', today());
-
-                })
-
-                ->groupBy("subitem.product_barcode")
-                ->select(
-                    "category.main_ic",
-                    "subitem.tax",
-                    "brands.name",
-                    "retail_sale_order_returns.return_no AS voucher_no", 
-                    "subitem.product_name", 
-                    "subitem.product_barcode", 
-                    'subitem.purchase_price AS cogs',
-                    DB::raw("SUM(retail_sale_order_return_details.quantity) as qty"), 
-                    DB::raw("SUM(subitem.sale_price) as amount"),
-                    DB::raw("SUM(retail_sale_order_return_details.quantity * subitem.sale_price) as net_amount"),
-                    DB::raw("SUM(subitem.flat_discount) as discount_amount"),
-                )
-                ->get();
-
-       
-            return view('Reports.Sales_Return.ba_sales_return_ajax', compact("sales_report_data"));
+            
+            return view("Reports.Sales_Return.ba_sales_return_ajax", compact("items"));
         }
 
         return view("Reports.Sales_Return.ba_sales_return_report");
