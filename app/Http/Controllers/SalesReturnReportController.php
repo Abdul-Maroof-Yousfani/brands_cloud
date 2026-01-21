@@ -9,6 +9,51 @@ use Illuminate\Http\Request;
 class SalesReturnReportController extends Controller
 {
 
+
+
+public function show_ba(Request $request) {
+
+        if($request->ajax()) {
+            $so = $request->so;
+            $from = $request->from;
+            $to = $request->to;
+       
+            $sales_report_data = DB::connection("mysql2")->table("retail_sale_order_return_details")
+                ->join("retail_sale_order_returns", "retail_sale_order_returns.id", "=", "retail_sale_order_return_details.retail_sale_order_return_id")
+                ->join("subitem", "subitem.id", "=", "retail_sale_order_return_details.product_id")
+                ->join("category", "category.id", "=", "subitem.main_ic_id")
+                ->join("brands", "subitem.brand_id", "=","brands.id")
+                // ->when($so, function ($q) use ($so_id) {
+                //     $q->where("credit_note.so_id", "like", "%{$so_id}%");
+                // })
+                ->when(isset($so), function($query) use ($so) {
+                    $query->where("retail_sale_order_returns.return_no", $so);
+                })
+                ->when(isset($from) && isset($to), function($query) use ($from, $to) {
+                    $query->whereBetween("retail_sale_order_returns.created_at", [$from, $to]);
+                })
+                ->groupBy("subitem.product_barcode")
+                ->select(
+                    "category.main_ic",
+                    "subitem.tax",
+                    "brands.name",
+                    "retail_sale_order_returns.return_no AS voucher_no", 
+                    "subitem.product_name", 
+                    "subitem.product_barcode", 
+                    'subitem.purchase_price AS cogs',
+                    DB::raw("SUM(retail_sale_order_return_details.quantity) as qty"), 
+                    DB::raw("SUM(subitem.sale_price) as amount"),
+                    DB::raw("SUM(retail_sale_order_return_details.quantity * subitem.sale_price) as net_amount"),
+                    DB::raw("SUM(subitem.flat_discount) as discount_amount"),
+                )
+                ->get();
+
+       
+            return view('Reports.Sales_Return.ba_sales_return_ajax', compact("sales_report_data"));
+        }
+
+        return view("Reports.Sales_Return.ba_sales_return_report");
+    }
     public function show(Request $request) {
 
         if($request->ajax()) {
