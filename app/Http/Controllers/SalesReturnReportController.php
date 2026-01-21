@@ -11,7 +11,7 @@ class SalesReturnReportController extends Controller
 
 
 
- public function ba_show() {
+ public function show_ba() {
         if(request()->ajax()) {
 
             $from = request()->from;
