@@ -53,7 +53,7 @@
 
                         <!-- <td>{{ $row['item_type'] != 1 ? 'Commercial' : 'Non-Commercial' }}</td> -->
                         <td>{{ \App\Helpers\CommonHelper::get_brand_by_id($row['brand']) }}</td>
-                        <td>{{ \App\Helpers\ReuseableCode::get_ba_stock_wo_warehouse($row["item_id"]) }}</td>
+                        <td>{{ \App\Helpers\ReuseableCode::get_total_stock($row["item_id"]) }}</td>
                         <td>{{ $sale_order_amount }}</td>
                         <td>{{ $sales_return_amount }}</td>
                         <td>{{ ($overall_qty - $sale_order_amount) + $sales_return_amount }}</td>
