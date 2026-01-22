@@ -136,7 +136,7 @@ public static function get_purchased_amount($id)
 
         return [$total_stock, $total_sale, $total_return];
 
-    };
+    }
     public static function get_sum_stock($item,$from,$to)
     {
 
