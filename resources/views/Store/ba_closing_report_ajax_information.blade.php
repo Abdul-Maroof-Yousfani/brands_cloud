@@ -40,7 +40,7 @@
                 @php $counter = 1; @endphp
                 @foreach($stocks as $row)
                     @php
-                        $overall_qty = \App\Helpers\ReuseableCode::get_ba_stock_wo_warehouse($row["item_id"]);
+                        $overall_qty = \App\Helpers\ReuseableCode::get_total_stock($row["item_id"]);
                         $sale_order_amount = $row["sale_order_amount"];
                         $sales_return_amount = $row["sale_return_amount"];
                     @endphp
