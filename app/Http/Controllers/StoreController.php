@@ -14,6 +14,9 @@ use App\Models\Category;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestData;
 use App\Models\Subitem;
+use App\Models\RetailSaleOrder;
+use App\Models\RetailSaleOrderDetail;
+use App\RetailSaleOrderReturnDetail;
 
 use Input;
 use Validator;
