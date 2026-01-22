@@ -113,7 +113,7 @@ public static function get_purchased_amount($id)
         return $data=  DB::Connection('mysql2')->table('invoice_data_totals')->where('master_id',$id)->first();
     }
   public static function get_total_stock($item_id) {
-         $total_stock = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $request->product_id)
+            $total_stock = DB::Connection('mysql2')->table('ba_stock')
             ->where("sub_item_id", $item_id)
             ->sum('qty');
 
