@@ -120,7 +120,7 @@ public static function get_purchased_amount($id)
         return $total_stock;
     }
 
-	public function get_ba_stock_quantities($product_id) {
+	public static function get_ba_stock_quantities($product_id) {
 
         $total_stock = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $product_id)
             ->whereIn("voucher_type", [1, 9])
