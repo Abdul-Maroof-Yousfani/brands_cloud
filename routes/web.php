@@ -1303,6 +1303,8 @@ Route::group(['prefix' => 'pmfal', 'middleware' => 'mysql2', 'before' => 'csrf']
 //Start Store
 Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {
     Route::get('/st', 'StoreController@toDayActivity');
+
+    Route::get("/BAProductInformation", "StoreController@productInformation")->name("ba.product-information");
     Route::get('/average_cost', 'StoreController@average_cost');
     Route::get('/inventoryActivityPage', 'StoreController@inventoryActivityPage');
     Route::get('/inventoryActivityAjax', 'StoreController@inventoryActivityAjax');

@@ -1771,6 +1771,175 @@ public function getBrandsByWarehouse(Request $request)
 
     }
 
+      public function productInformation(Request $request) {
+            
+  
+    
+            // $from_date = $request->from ?? date('Y-m-d');
+                $from_date = $request->from ?? date('Y-m-d', strtotime('-2 years'));
+
+                $to_date = $request->to ?? date('Y-m-d');
+                $product_id = $request->product_id ?? null;
+                $brand_ids = (array) $request->input('brand_id', []);
+                $territory_id = $request->territory_id ?? null;
+
+                $user = Auth::user();
+                $isUser = $user && $user->acc_type == 'user';
+                if ($isUser) {
+                    $territory_ids = json_decode($user->territory_id, true);
+                    if (!is_array($territory_ids)) {
+                        $territory_ids = [$user->territory_id];
+                    }
+
+                    $warehouseList = DB::connection('mysql2')->table('stock')
+                        ->whereIn('territory', $territory_ids)
+                        ->where('status', 1)
+                        ->distinct()
+                        ->pluck('warehouse_id');
+                 
+                    $warehouses = DB::connection('mysql2')->table('warehouse')
+                        ->whereIn('id', $warehouseList)
+                        ->where("is_virtual", 1)
+                        ->where('status', 1)
+                        ->get();
+
+                    $subitem_ids = DB::connection('mysql2')->table('stock')
+                        ->whereIn('territory', $territory_ids)
+                        ->where('status', 1)
+                        ->distinct()
+                        ->pluck('sub_item_id');
+
+                    $products = DB::connection('mysql2')->table('subitem')
+                        ->whereIn('id', $subitem_ids)
+                        ->where('status', 1)
+                        ->get(['id', 'product_name']);
+
+                    $brandList = DB::connection('mysql2')->table('subitem')
+                        ->whereIn('id', $subitem_ids)
+                        ->whereNotNull('brand_id')
+                        ->pluck('brand_id');
+
+                    $brands = DB::connection('mysql2')->table('brands')
+                        ->whereIn('id', $brandList)
+                        ->where('status', 1)
+                        ->get(['id', 'name']);
+
+                    $territories = DB::connection('mysql2')->table('territories')
+                        ->whereIn('id', $territory_ids)
+                        ->where('status', 1)
+                        ->get(['id', 'name']);
+                } else {
+                    $warehouses = DB::connection('mysql2')->table('warehouse')
+                                                                ->where("is_virtual", 1)
+                                                                ->where('status', 1)
+                                                                ->get();
+                    $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
+                    $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
+                    $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
+                }
+
+                $defaultProducts = DB::connection('mysql2')
+                    ->table('subitem')
+                    ->where('status', 1)
+                    ->limit(5)
+                    ->get(['id', 'product_name']);
+
+
+            if ($request->ajax()) {
+            // $transitSub = DB::connection('mysql2')->table('stock_transfers_transit')
+            //     ->select(
+            //         'product_id',
+            //         'warehouse_to_id',
+            //         DB::raw('SUM(quantity) as transit_stock')
+            //     )
+            //     ->where('tr_status', 1)
+            //     ->groupBy('product_id', 'warehouse_to_id');
+
+            $retail_sale_order = RetailSaleOrderDetail::all()
+                ->groupBy('product_id')
+                ->mapWithKeys(function ($items, $productId) {
+                    return [$productId => $items->sum('qty')];
+                })->toArray();
+
+            $retail_sale_return = RetailSaleOrderReturnDetail::all()
+                ->groupBy("product_id")
+                ->mapWithKeys(function($items, $productId) {
+                    return [$productId => $items->sum("quantity")];
+                })->toArray();
+
+            $query = \Illuminate\Support\Facades\DB::connection("mysql2")->table("subitem");
+            // $query = DB::connection('mysql2')->table('ba_stock as s')
+            //     ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
+            //     ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
+
+            //     ->leftJoin('category as c', 'si.main_ic_id', '=', 'c.id')
+            //     ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
+            //     ->select(
+            //         'si.id as product_id',
+            //         'si.sku_code',
+            //         'si.product_name',
+            //         'si.product_barcode as barcode',
+            //         'pt.type as item_type',
+            //         // 'si.type as item_type',
+            //         'si.pack_size as packing',
+            //         'b.name as brand',
+            //         DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,9) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
+            //         DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock'),
+            //     )
+            //     ->where('s.status', 1)
+                
+            //     ->whereBetween('s.created_date', [$from_date, $to_date])
+            //     ->groupBy('si.id');
+
+
+              
+
+                if ($product_id) {
+                    $query->where('id', $product_id);
+                }
+
+                if (!empty($brand_ids)) {
+                    $query->whereIn('brand_id', $brand_ids);
+                }
+
+                // ✅ Group only by product and warehouse (not transit_stock)
+                $rawStock = $query->get();
+
+                $stocks = [];
+                $warehouseMap = [];
+
+                foreach ($rawStock as $stock) {
+                    $key = $stock->id;
+
+                    if (!isset($stocks[$key])) {
+                        $stocks[$key] = [
+                            'item_id' => $stock->id,
+                            'sku_code' => $stock->sku_code,
+                            'product_name' => $stock->product_name,
+                            'barcode' => $stock->product_barcode,
+                            
+                            'item_type' => $stock->product_type_id,
+                            'brand' => $stock->brand_id,
+                            'sale_order_amount' => $retail_sale_order[$key] ?? 0,
+                            'sale_return_amount' => $retail_sale_return[$key] ?? 0
+                        ];
+                    }
+             
+                }
+
+                return view('Store.ba_closing_report_ajax_information', [
+                    'stocks' => $stocks,
+                    'from_date' => $from_date,
+                    'to_date' => $to_date,
+                ]);
+            }
+
+              
+            return view('Store.ba_closing_report_information', compact(
+                            'warehouses', 'products', 'brands', 'defaultProducts', 'territories'
+                        ));
+        }
+
         public function BAclosingReportView(Request $request)
         {
 
