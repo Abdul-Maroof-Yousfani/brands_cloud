@@ -40,6 +40,7 @@
                 @php $counter = 1; @endphp
                 @foreach($stocks as $row)
                     @php
+                        [$overall_qty, $sale_order_amount, $sales_return_amount] = \App\Helpers\ReuseableCode::get_ba_stock_quantities($row["item_id"]);
                         $overall_qty = \App\Helpers\ReuseableCode::get_ba_stock_wo_warehouse($row["item_id"]);
                         $sale_order_amount = $row["sale_order_amount"];
                         $sales_return_amount = $row["sale_return_amount"];
@@ -53,7 +54,7 @@
 
                         <!-- <td>{{ $row['item_type'] != 1 ? 'Commercial' : 'Non-Commercial' }}</td> -->
                         <td>{{ \App\Helpers\CommonHelper::get_brand_by_id($row['brand']) }}</td>
-                        <td>{{ \App\Helpers\ReuseableCode::get_ba_stock_wo_warehouse($row["item_id"]) }}</td>
+                        <td>{{ $overall_qty }}</td>
                         <td>{{ $sale_order_amount }}</td>
                         <td>{{ $sales_return_amount }}</td>
                         <td>{{ ($overall_qty - $sale_order_amount) + $sales_return_amount }}</td>
