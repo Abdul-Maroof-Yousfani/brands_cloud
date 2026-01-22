@@ -120,6 +120,23 @@ public static function get_purchased_amount($id)
         return $total_stock;
     }
 
+	public function get_ba_stock_quantities($product_id) {
+
+        $total_stock = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $product_id)
+            ->whereIn("voucher_type", [1, 9])
+            ->sum('qty');
+
+        $total_sale = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $product_id)
+            ->where('voucher_type', 50)
+            ->sum('qty');
+
+        $total_return = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $product_id)
+            ->where('voucher_type', 51)
+            ->sum('qty');
+
+        return [$total_stock, $total_sale, $total_return];
+
+    };
     public static function get_sum_stock($item,$from,$to)
     {
 
