@@ -257,17 +257,17 @@ public static function get_purchased_amount($id)
 
     public static function get_ba_stock_wo_warehouse($item_id,$qty=null,$batch_code=null)
     {
-        $item= $item_id;
+            $item= $item_id;
 
         $in= DB::Connection('mysql2')->table('ba_stock')->whereIn('status',array(1,3))
-            ->whereIn('voucher_type',[1,4,6,10,11])
+            ->whereIn('voucher_type',[51,1,9])
              ->where('sub_item_id',$item)
             //  ->where('batch_code',$batch_code)
             ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
             ->first();
 
         $oout=  DB::Connection('mysql2')->table('ba_stock')->whereIn('status',array(1,3))
-            ->whereIn('voucher_type',[2,5,3,9])
+            ->whereIn('voucher_type',[50])
              ->where('sub_item_id',$item)
             // ->where('batch_code',$batch_code)
             ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
