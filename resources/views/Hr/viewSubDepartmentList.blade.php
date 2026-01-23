@@ -48,6 +48,9 @@ use App\Models\Department;
 												<th class="text-center">Salesman Name</th>
 												<th class="text-center">Created By</th>
 												<th class="text-center">Status</th>
+												<th class="text-center">Designation</th>
+												<th class="text-center">Ph Number</th>
+									
 												<th class="text-center hidden-print">Action</th>
 												</thead>
 												<tbody>
@@ -64,7 +67,9 @@ use App\Models\Department;
 
 														</td>
 														<td><?php echo $y->sub_department_name;?></td>
-														<td><?php echo $y->username;?></td>
+													<td>{{ $y->designation ? $y->designation : 'N/A' }}</td>
+														<td>{{ $y->phone_number ? $y->phone_number : 'N/A' }}</td>
+																				<td><?php echo $y->username;?></td>
 														<td class="text-center">{{ HrHelper::getStatusLabel($y->status) }}</td>
 														<td class="text-center hidden-print">
 															@if(in_array('edit',$operation_rights))
