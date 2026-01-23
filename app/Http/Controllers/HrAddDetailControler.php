@@ -93,6 +93,9 @@ class HrAddDetailControler extends Controller
             $data1['sub_department_name'] = strip_tags($sub_department_name);
             $data1['username'] = Auth::user()->name;
             $data1['company_id'] = $_GET['m'];
+            $data1["designation"] = Input::get("designation");
+            $data1["phone_number"] = Input::get("phone_number");
+         
             $data1['date'] = date("Y-m-d");
             $data1['time'] = date("H:i:s");
 
