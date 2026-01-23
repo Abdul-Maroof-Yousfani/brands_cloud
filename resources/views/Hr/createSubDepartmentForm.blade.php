@@ -56,6 +56,22 @@ $currentDate = date('Y-m-d');
 										<input type="text" name="sub_department_name_1" id="sub_department_name_1" value="" class="form-control requiredField" />
 									</div>
 								</div>
+								<div class="row">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<label>Designation:</label>
+										<span class="rflabelsteric"><strong>*</strong></span>
+										<input type="text" name="designation" id="designation" value="" class="form-control requiredField" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<label>Phone Number:</label>
+										<span class="rflabelsteric"><strong>*</strong></span>
+										<input type="tel" name="phone_number" id="phone_number" value="" class="form-control requiredField" />
+									</div>
+								</div>
+							</div>
+					
 							</div>
 						</div>
 						<div class="lineHeight">&nbsp;</div>
