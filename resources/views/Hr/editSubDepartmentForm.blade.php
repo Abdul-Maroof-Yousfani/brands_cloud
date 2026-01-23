@@ -16,7 +16,7 @@ $subDepartmentDetail = DB::selectOne('select * from `sub_department` where `id` 
 								<input type="hidden" name="pageType" value="<?php echo $_GET['pageType']?>">
 								<input type="hidden" name="parentCode" value="<?php echo $_GET['parentCode']?>">
 								<div class="panel">
-									<div class="panel-body">
+									<div class="panel-body">sa
 										<div class="row">
 											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 												<input type="hidden" name="subDepartmentSection[]" class="form-control" id="subDepartmentSection" value="1" />
@@ -44,6 +44,21 @@ $subDepartmentDetail = DB::selectOne('select * from `sub_department` where `id` 
 												<input type="text" name="sub_department_name_1" id="sub_department_name_1" value="{{$subDepartmentDetail->sub_department_name}}" class="form-control requiredField" />
 											</div>
 										</div>
+										<div class="row">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+												<label>Designation:</label>
+												<span class="rflabelsteric"><strong>*</strong></span>
+												<input type="text" name="designation" id="designation" value="{{$subDepartmentDetail->designation}}" class="form-control requiredField" />
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+												<label>Phone Number:</label>
+												<span class="rflabelsteric"><strong>*</strong></span>
+												<input type="text" name="phone_number" id="phone_number" value="{{$subDepartmentDetail->phone_number}}" class="form-control requiredField" />
+											</div>
+										</div>
+						
 									</div>
 								</div>
 								<div class="lineHeight">&nbsp;</div>
