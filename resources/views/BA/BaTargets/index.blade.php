@@ -15,64 +15,67 @@
         </div>
 
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl"> <!-- Make modal larger for table -->
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Create BA Targets</h5>
-                        {{--                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>--}}
                     </div>
                     <div class="modal-body">
                         <form id="submitadv" action="{{route('baTargets.store')}}" method="POST">
                             <input type="hidden" value="{{csrf_token()}}" name="_token">
                             <input type="hidden" id="listRefresh" value="{{route('list.baTargets')}}">
                             <div class="mb-3">
-                                <label for="customers" class="form-label">BA Name</label>
-                                <select class="form-select select2" id="employee" name="employee"  style="width: 100%;">
-                                    <option value="">Select Employee</option>
-                                    @foreach(App\Helpers\SalesHelper::get_all_employees() as $row)
-                                        <option value="{{$row->id}}">{{$row->name}}</option>
-                                    @endforeach
-                                </select>
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" name="start_date" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label for="customers" class="form-label">Store Name</label>
-                                <select class="form-select select2" id="customers" name="customer"  style="width: 100%;">
-                                    <option value="">Select Store</option>
-                                    @foreach(App\Helpers\SalesHelper::get_all_customer_only_distributors() as $row)
-                                        <option value="{{$row->id}}">{{$row->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="brands" class="form-label">Brands</label>
-                                <select multiple
-                                        class="form-select select2" id="brands" name="brands[]"  style="width: 100%;">
-                                    @foreach(App\Helpers\CommonHelper::get_all_subitems() as $item)
-                                        <option value="{{$item->id}}">
-                                            {{$item->product_name}}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" name="end_date" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label for="brands" class="form-label">Start Date</label>
-                                <input type="date" name="start_date" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label for="brands" class="form-label">End Date</label>
-                                <input type="date" name="end_date" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label for="brands" class="form-label">Targeted Qty</label>
-                                <input type="number" name="target_qty" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label for="customers" class="form-label">status</label>
-                                <select class="form-select select2"  name="status"   id="status"  style="width: 100%;">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select select2" name="status" id="status" style="width: 100%;" required>
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Targets (Customer-wise)</label>
+                                <div style="overflow-x: auto;"> <!-- For horizontal scroll if many brands -->
+                                    <table class="table table-bordered" id="targetsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Code</th>
+                                                <th>Store</th>
+                                                <th>Zone</th>
+                                                @foreach($brands as $brand)
+                                                    <th>{{ $brand->name }}</th>
+                                                @endforeach
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="targetRows">
+                                            <!-- Initial row -->
+                                            <tr class="target-row">
+                                                <td><input type="text" name="targets[0][code]" class="form-control" readonly></td>
+                                                <td>
+                                                    <select name="targets[0][customer_id]" class="form-select select2 customer-select" style="width: 100%;">
+                                                        <option value="">Select Store</option>
+                                                        @foreach($customers as $customer)
+                                                            <option value="{{ $customer->id }}" data-zone="{{ $customer->zone ?? 'N/A' }}">{{ $customer->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                <td><input type="text" name="targets[0][zone]" class="form-control zone-input" readonly></td>
+                                                @foreach($brands as $brand)
+                                                    <td><input type="number" name="targets[0][brands][{{ $brand->id }}]" class="form-control" min="0"></td>
+                                                @endforeach
+                                                <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button type="button" id="addMore" class="btn btn-secondary">Add More</button>
+                                </div>
                             </div>
                             <button style="margin-top: 10px" type="submit" class="btn btn-primary my-2">Create</button>
                         </form>
@@ -80,7 +83,6 @@
                 </div>
             </div>
         </div>
-
 
         <div id="filteredData">
             <div class="text-center spinnerparent">
@@ -97,92 +99,48 @@
     <script>
         $(document).ready(function () {
             filterationCommonGlobal('{{route('list.baTargets')}}');
-        });
 
+            // Initialize select2 on initial row
+            $('.select2').select2();
 
+            let rowIndex = 1;
 
-        $(document).ready(function () {
-            $('#SubmitForm').submit(function (e) {
-                e.preventDefault();
-
-                let formData = new FormData(this);
-
-                Swal.fire({
-                    title: 'Processing...',
-                    text: 'Please wait while the file is being uploaded.',
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
+            $('#addMore').click(function () {
+                let newRow = $('.target-row:first').clone();
+                newRow.find('input').val('');
+                newRow.find('select').val('').trigger('change'); // Reset select2
+                newRow.find('input[name^="targets"]').each(function () {
+                    let name = $(this).attr('name').replace(/\[\d+\]/, '[' + rowIndex + ']');
+                    $(this).attr('name', name);
                 });
-
-                $.ajax({
-                    url: "{{ route('baFormation.store') }}", // Ensure this route is defined in web.php
-                    method: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (response) {
-                        Swal.close();
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Import Successful!',
-                                text: response.message
-                            }).then(() => {
-                                // Refresh the page after the alert is closed
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Import Failed',
-                                text: response.message
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        Swal.close();
-
-                        let errors = xhr.responseJSON?.errors;
-                        let errorMessage = 'An error occurred.';
-
-                        if (errors) {
-                            // Join all error messages into a single string
-                            errorMessage = Object.values(errors).map(error => error.join(' ')).join(' ');
-                        } else if (xhr.responseJSON?.message) {
-                            // Fallback to general error message if specific validation errors are not available
-                            errorMessage = xhr.responseJSON.message;
-                        }
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: errorMessage
-                        });
-                    }
+                newRow.find('select[name^="targets"]').each(function () {
+                    let name = $(this).attr('name').replace(/\[\d+\]/, '[' + rowIndex + ']');
+                    $(this).attr('name', name);
                 });
+                newRow.appendTo('#targetRows');
+                newRow.find('.select2').select2(); // Reinitialize select2 on new row
+                rowIndex++;
+            });
+
+            // Remove row
+            $(document).on('click', '.remove-row', function () {
+                if ($('.target-row').length > 1) {
+                    $(this).closest('tr').remove();
+                }
+            });
+
+            // Update zone and code on customer select
+            $(document).on('change', '.customer-select', function () {
+                let selectedOption = $(this).find('option:selected');
+                let zone = selectedOption.data('zone');
+                let code = selectedOption.val(); // Using ID as code for simplicity
+                $(this).closest('tr').find('.zone-input').val(zone);
+                $(this).closest('tr').find('input[name$="[code]"]').val(code);
             });
         });
-
-
     </script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
     <script>
-        $('#customers').select2({
-            placeholder: 'Select Customers',
-            allowClear: true
-        });
-        $('#brands').select2({
-            placeholder: 'Select Brands',
-            allowClear: true
-        });
-        $('#employee').select2({
-            placeholder: 'Select Employee',
-            allowClear: true
-        });
         $('#status').select2();
     </script>
 @endsection
