@@ -48,6 +48,7 @@
                             @php
                                 $closingStock += $row1->qty;
                                 $closingValue += $row1->amount;
+                                echo $row1->amount;
                             @endphp
                             <tr>
                                 <td>{{$counter++}}</td>
