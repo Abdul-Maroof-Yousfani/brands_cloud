@@ -62,11 +62,7 @@ if($accType == 'client'){
                                                                 <td><?php echo $Counter++;?></td>
                                                                 <td><?php echo  $category_name;?></td>
                                                                 <td><?php echo  $row->sub_category_name;?></td>
-
-                                                            <td>
-
-
-                                                                <td>
+                                                                 <td>
                                                                     <?php if($edit == true):?>
                                                                         <button type="button" onclick="showDetailModelMasterTable('<?php Session::get('run_company') ?>','purchase/edit_sub_ca?id=<?php echo $row->id ?>','1','<?php echo $row->id ?>','<?php echo  $row->id ?>', 'category','Edit Sub Category  Form')" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></button>
                                                                         <!-- <a onclick="showDetailModelMasterTable('<?php Session::get('run_company') ?>','purchase/edit_sub_ca?id=<?php echo $row->id ?>','1','<?php echo $row->id ?>','<?php echo  $row->id ?>', 'category','Edit Sub Category  Form')"
@@ -77,6 +73,9 @@ if($accType == 'client'){
                                                                     <?php endif;?>
                                                               
                                                                 </td>
+                                                           
+
+                                                               
 
                                                             </tr>
                                                             <?php endforeach;?>
