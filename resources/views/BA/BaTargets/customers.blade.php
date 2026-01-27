@@ -29,7 +29,8 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Code</th>
+               <th>Code</th>
+                <th>Name</th>
                 <th>Zone</th>
 
                 <!-- Dynamic headers -->
@@ -48,7 +49,12 @@
                             <input type="hidden" name="customer_id[{{ $customer->id }}]" value="{{ $customer->id }}" />
                             <input type="text" class="form-control" value="{{ $customer->customer_code }}" readonly>
                         </td>
-
+                    <td>
+                            <input type="text" class="form-control"
+                                value="{{ $customer->name }}" readonly>
+                            {{-- agar column ka naam customer_name ho to --}}
+                            {{-- value="{{ $customer->customer_name }}" --}}
+                        </td>
                         <!-- Zone (disabled) -->
                         <td>
                             <input type="text" class="form-control" name="zone[{{ $customer->id }}]" value="{{ $customer->zone }}" readonly>
