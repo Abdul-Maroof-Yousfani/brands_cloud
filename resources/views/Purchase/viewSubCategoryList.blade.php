@@ -72,12 +72,10 @@ if($accType == 'client'){
                                                                         <!-- <a onclick="showDetailModelMasterTable('<?php Session::get('run_company') ?>','purchase/edit_sub_ca?id=<?php echo $row->id ?>','1','<?php echo $row->id ?>','<?php echo  $row->id ?>', 'category','Edit Sub Category  Form')"
                                                                            class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a> -->
                                                                     <?php endif;?>
-                                                                @if ($count==0)
-                                                                    <?php if(true):?>
+                                                                    <?php if($delete == true):?>
                                                                 <button type="button" class="btn btn-danger btn-xs" id="" onclick="delete_sub_cate('<?php echo $row->id ?>')"><span class="glyphicon glyphicon-trash"></span></button>
                                                                     <?php endif;?>
-                                                                    @endif
-
+                                                              
                                                                 </td>
 
                                                             </tr>
