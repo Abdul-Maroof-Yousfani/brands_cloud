@@ -24,7 +24,7 @@ class BaTargetsController extends Controller
     public function getCustomers(Request $request) {
         [$year, $month] = explode("-", $request->month);
      
-        $customers = Customer::where("status", "active")
+        $customers = Customer::where("status", 1)
                         ->get();
 
         $target_items = TargetItems::where('month', (int)$month)
