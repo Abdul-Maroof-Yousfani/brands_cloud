@@ -20,7 +20,7 @@
                         <th style="" class="text-center" >Year<span class="rflabelsteric"><strong>*</strong></span></th>
                         <th style="" class="text-center" > Closing Stock<span class="rflabelsteric"><strong>*</strong></span></th>
                         <th class="text-center">Closing Value<span class="rflabelsteric"><strong>*</strong></span></th>
-                        <th class="text-center">Batch Number<span class="rflabelsteric"><strong>*</strong></span></th>
+                        <th class="text-center" style="visibility: hidden">Batch Number<span class="rflabelsteric"><strong>*</strong></span></th>
 
                     </tr>
                     </thead>
@@ -35,7 +35,7 @@
                             <td class="text-center">{{$row->name}}</td>
                             <td><input step="any" type="number" class="form-control requiredField" value="0" name="closing_stock[]" id="closing_stock{{$counter}}" /> </td>
                             <td><input step="any" type="number" class="form-control requiredField" value="0" name="closing_val[]" id="closing_val{{$counter}}" /> </td>
-                            <td><input type="text" class="form-control requiredField" value="0" name="batch_code[]" id="batch_code{{$counter}}" /> </td>
+                            <td style="visibility: hidden"><input type="text" class="form-control requiredField" value="0" name="batch_code[]" id="batch_code{{$counter}}" /> </td>
                         </tr>
                     @endforeach
                         @else
@@ -48,7 +48,7 @@
                                 <td class="text-center">{{CommonHelper::get_name_warehouse($row1->warehouse_id)}}</td>
                                 <td><input step="any" type="number" class="form-control requiredField" value="{{$row1->qty}}" name="closing_stock[]"  id="closing_stock{{$counter}}" /> </td>
                                 <td><input step="any" type="number" class="form-control requiredField" value="{{$row1->amount}}" name="closing_val[]" id="closing_val{{$counter}}" /> </td>
-                                <td><input type="text" value="{{$row1->batch_code}}" class="form-control requiredField" value="" name="batch_code[]" id="batch_code{{$counter}}" /> </td>
+                                <td style="visibility: hidden"><input type="text" value="{{$row1->batch_code}}" class="form-control requiredField" value="" name="batch_code[]" id="batch_code{{$counter}}" /> </td>
                             </tr>
                         @endforeach
                         @endif
