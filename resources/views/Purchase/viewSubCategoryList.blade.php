@@ -63,7 +63,6 @@ if($accType == 'client'){
                                                                 <td><?php echo  $category_name;?></td>
                                                                 <td><?php echo  $row->sub_category_name;?></td>
 
-                                                                <td> @if($count>0){{'&#x2714;'}} @else {{'&#x2716;'}} @endif</td>
                                                             <td>
 
 
@@ -74,7 +73,7 @@ if($accType == 'client'){
                                                                            class="btn btn-xs btn-info"><span class="glyphicon glyphicon-edit"></span></a> -->
                                                                     <?php endif;?>
                                                                 @if ($count==0)
-                                                                    <?php if($delete == true):?>
+                                                                    <?php if(true):?>
                                                                 <button type="button" class="btn btn-danger btn-xs" id="" onclick="delete_sub_cate('<?php echo $row->id ?>')"><span class="glyphicon glyphicon-trash"></span></button>
                                                                     <?php endif;?>
                                                                     @endif
