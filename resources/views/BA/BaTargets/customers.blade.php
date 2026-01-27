@@ -24,7 +24,8 @@
         min-width: 140px;
     }
     </style>
-        <form id="targetForm" action="{{ route('insert.target') }}" method="GET">
+        <form id="targetForm" action="{{ route('insert.target') }}" method="POST">
+            {{ csrf_field() }}
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -85,7 +86,7 @@
 
         $.ajax({
             url: url,
-            type: 'GET', // same as your form method
+            type: 'POST', // same as your form method
             data: data,
             success: function(response) {
                 // handle success
