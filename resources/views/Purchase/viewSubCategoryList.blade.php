@@ -42,8 +42,6 @@ if($accType == 'client'){
                                                             <th class="text-center">S.No</th>
                                                             <th class="text-center">Category</th>
                                                             <th class="text-center">Sub Category Name</th>
-                                                            <th class="text-center">Transactions</th>
-
                                                             <th class="text-center">Action </th>
 
                                                             </thead>
