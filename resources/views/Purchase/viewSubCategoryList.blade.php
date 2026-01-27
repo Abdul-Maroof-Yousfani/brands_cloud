@@ -60,7 +60,6 @@ if($accType == 'client'){
                                                             ?>
                                                             <tr id="remove{{$row->id}}" class="text-center">
                                                                 <td><?php echo $Counter++;?></td>
-                                                                <td><?php echo $row->id?></td>
                                                                 <td><?php echo  $category_name;?></td>
                                                                 <td><?php echo  $row->sub_category_name;?></td>
 
