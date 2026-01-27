@@ -48,7 +48,6 @@
                             @php
                                 $closingStock += $row1->qty;
                                 $closingValue += $row1->amount;
-                                echo $row1->amount;
                             @endphp
                             <tr>
                                 <td>{{$counter++}}</td>
@@ -66,7 +65,7 @@
                     <tr  style="font-size:large;font-weight: bold">
                         <td class="text-center" colspan="2">Total</td>
                         <td id="" class="text-right" colspan="1"><input readonly class="form-control clear" type="text" value="{{ $closingStock }}" id="total_qty"/> </td>
-                        <td id="" class="text-right" colspan="1"><input readonly class="form-control clear" type="text" vaalue="{{ $closingValue }}" id="total_rate"/> </td>
+                        <td id="" class="text-right" colspan="1"><input readonly class="form-control clear" type="text" value="{{ $closingValue }}" id="total_rate"/> </td>
 
 
                     </tr>
