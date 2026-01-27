@@ -25,6 +25,10 @@
                     </tr>
                     </thead>
                     <tbody id="append_bundle">
+                        @php
+                            $closingStock = 0;
+                            $closingValue = 0;
+                        @endphp
                     <?php $counter=1; ?>
                     @if ($stock->isEmpty())
 
@@ -41,7 +45,10 @@
                         @else
 
                         @foreach($stock as $row1)
-
+                            @php
+                                $closingStock += $row1->qty;
+                                $closingValue += $row1->amount;
+                            @endphp
                             <tr>
                                 <td>{{$counter++}}</td>
                                 <input type="hidden" name="warehouse[]" value="{{$row1->warehouse_id}}"/>
@@ -57,8 +64,8 @@
                     <tbody>
                     <tr  style="font-size:large;font-weight: bold">
                         <td class="text-center" colspan="2">Total</td>
-                        <td id="" class="text-right" colspan="1"><input readonly class="form-control clear" type="text" id="total_qty"/> </td>
-                        <td id="" class="text-right" colspan="1"><input readonly class="form-control clear" type="text" id="total_rate"/> </td>
+                        <td id="" class="text-right" colspan="1"><input readonly class="form-control clear" type="text" value="{{ $closingStock }}" id="total_qty"/> </td>
+                        <td id="" class="text-right" colspan="1"><input readonly class="form-control clear" type="text" vaalue="{{ $closingValue }}" id="total_rate"/> </td>
 
 
                     </tr>
