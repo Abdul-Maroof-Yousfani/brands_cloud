@@ -21,7 +21,7 @@
                                     <option>Select Item</option>
                                     @foreach (App\Helpers\CommonHelper::get_all_subitem() as $key => $value)
                                         <option value="{{ $value->id }}">
-                                            {{ $value->product_name }}
+                                            {{ $value->product_name  }}
                                         </option>
                                     @endforeach
                                 </select>
