@@ -46,10 +46,10 @@ use App\Models\Department;
 												<th class="text-center col-sm-1">S.No</th>
 												<th class="text-center hide">Department Name</th>
 												<th class="text-center">Salesman Name</th>
-												<th class="text-center">Created By</th>
-												<th class="text-center">Status</th>
 												<th class="text-center">Designation</th>
 												<th class="text-center">Ph Number</th>
+												<th class="text-center">Created By</th>
+												<th class="text-center">Status</th>
 									
 												<th class="text-center hidden-print">Action</th>
 												</thead>
