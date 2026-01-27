@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\BAFormation;
 use App\BaTargets;
+use App\Models\Brand;
+use App\Models\Customer;
+use App\TargetItems;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,6 +20,126 @@ class BaTargetsController extends Controller
         $data['brands'] = \App\Helpers\CommonHelper::get_all_brand();
         return view('BA.BaTargets.index', $data);
     }
+
+    public function getCustomers(Request $request) {
+        [$year, $month] = explode("-", $request->month);
+     
+        $customers = Customer::where("status", "active")
+                        ->get();
+
+        $target_items = TargetItems::where('month', (int)$month)
+                        ->where('year', (int)$year)
+                        ->get()
+                        ->mapWithKeys(function ($item) {
+                            return [$item->customer_id . '_' . $item->brand_id => $item];
+                        })
+                        ->toArray();
+   
+      
+
+        $brands = Brand::where("status", 1)->get();
+
+
+        return view("BA.BaTargets.customers", compact("customers", "brands", "target_items", "year", "month"));
+    }
+
+    public function insertTarget(Request $request)
+{
+    $customer_ids = $request->customer_id ?? [];
+    $targets      = $request->target ?? [];     // corrected from $request->targets
+    $year         = $request->year;
+    $month        = $request->month;
+    $brands       = $request->brand_id ?? [];
+
+    if (empty($customer_ids) || empty($targets)) {
+        return back()->with('error', 'No data submitted');
+    }
+
+    $lookupKeys = [];
+    $dataByKey  = [];
+
+    foreach ($customer_ids as $customer_id) {
+        if (!isset($targets[$customer_id]) || !is_array($targets[$customer_id])) {
+            continue;
+        }
+
+        foreach ($targets[$customer_id] as $index => $targetValue) {
+            if ($targetValue === null || $targetValue === '' || $targetValue == 0) {
+                continue;
+            }
+
+            $brand_id = $brands[$customer_id][$index] ?? null;
+            if (!$brand_id) {
+                continue;
+            }
+
+            $key = "{$year}-{$month}-{$customer_id}-{$brand_id}";
+
+            $lookupKeys[] = [
+                'year'       => $year,
+                'month'      => $month,
+                'customer_id' => $customer_id,
+                'brand_id'   => $brand_id,
+            ];
+
+            $dataByKey[$key] = [
+                'target'     => $targetValue,
+                'customer_id' => $customer_id,
+                'brand_id'   => $brand_id,
+            ];
+        }
+    }
+
+    if (empty($lookupKeys)) {
+        return back()->with('warning', 'No valid targets to process');
+    }
+
+    $existing = TargetItems::where('year', $year)
+        ->where('month', $month)
+        ->whereIn('customer_id', $customer_ids)
+        ->get(['id', 'customer_id', 'brand_id', 'target'])
+        ->keyBy(function ($item) use ($year, $month) {
+            return "{$year}-{$month}-{$item->customer_id}-{$item->brand_id}";
+        });
+
+    $toInsert = [];
+    $toUpdate = [];
+
+    foreach ($dataByKey as $key => $data) {
+        if (isset($existing[$key])) {
+            // exists → update
+            $toUpdate[] = [
+                'id'     => $existing[$key]->id,
+                'target' => $data['target'],
+            ];
+        } else {
+            $toInsert[] = [
+                'year'        => $year,
+                'month'       => $month,
+                'customer_id'  => $data['customer_id'],
+                'brand_id'    => $data['brand_id'],
+                'target'      => $data['target'],
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ];
+        }
+    }
+    DB::transaction(function () use ($toInsert, $toUpdate) {
+        // Bulk insert
+        if (!empty($toInsert)) {
+            TargetItems::insert($toInsert);
+        }
+
+        if (!empty($toUpdate)) {
+            foreach ($toUpdate as $item) {
+                TargetItems::where('id', $item['id'])
+                    ->update(['target' => $item['target']]);
+            }
+        }
+    });
+
+    return back()->with('success', 'Targets processed successfully');
+}
 
     public function getList(Request $request)
     {
@@ -33,7 +157,7 @@ class BaTargetsController extends Controller
      */
     public function create()
     {
-        //
+        return view("BA.BaTargets.create");
     }
 
     /**
@@ -64,12 +188,11 @@ class BaTargetsController extends Controller
     try {
         $created = [];
         $targets_input = $request->input('targets', []);
-
+        
         foreach ($targets_input as $index => $row) {
             $customer_id    = $row['customer_id'] ?? null;
             $brand_targets  = $row['brands'] ?? [];
 
-            // Optional: agar sab brands 0/null hain to skip kar do (ya save karo agar chahte ho)
             $has_target = false;
             foreach ($brand_targets as $qty) {
                 if (is_numeric($qty) && $qty > 0) {
@@ -91,6 +214,7 @@ class BaTargetsController extends Controller
             ];
 
             $baTarget = BaTargets::create($data);
+            dd("test");
             $created[] = $baTarget;
         }
 
