@@ -37,7 +37,7 @@ use App\Helpers\CommonHelper;
                                             <thead>
                                             <th class="text-center col-sm-1">S.No</th>
                                             <th class="text-center col-sm-1">Name</th>
-                                            <th class="text-center">Action</th>
+                                            <th class="text-center col-sm-1">Action</th>
                                             </thead>
                                             <tbody id="data">
                                             <?php $counter = 1;$total=0;
