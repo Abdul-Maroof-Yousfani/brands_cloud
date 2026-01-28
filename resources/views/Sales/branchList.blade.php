@@ -62,6 +62,7 @@ use App\Helpers\CommonHelper;
                                             <thead>
                                             <th class="text-center">S.No</th>
                                             <th class="text-center">Branch Name</th>
+                                            <th class="text-center">Action</th>
                                             </thead>
                                             <tbody id="data">
                                             <?php $counter = 1;$total=0;
@@ -72,6 +73,18 @@ use App\Helpers\CommonHelper;
                                                 <tr>
                                                     <td class="text-center">{{$counter++}}</td>
                                                     <td class="text-center">{{ $row->branch_name }}</td>
+                                                    <td>
+                                                        <button class="edit-modal btn btn-xs btn-info" onclick="showMasterTableEditModel('/sales/branch/{{ $row->id }}/edit','2','Edit Branch','1')">
+                                                            <span class="glyphicon glyphicon-edit"></span>
+                                                        </button>
+                                                        <form style="display: inline-block" action="{{ route('branch.delete', [ 'id'  => $row->id ]) }}" method="POST">
+                                                            {{ csrf_field() }}
+                                                            {{ method_field("DELETE") }}
+                                                            <button class="delete-modal btn btn-xs btn-danger">
+                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                            </button>
+                                                        </form>
+                                                    </td>
                                                 </tr>
 
                                             @endforeach
