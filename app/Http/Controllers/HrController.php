@@ -12,6 +12,7 @@ use App\Models\Diseases;
 use App\Models\EmployeeGsspDocuments;
 use App\Models\FinalSettlement;
 use App\Models\States;
+use App\Models\UOM;
 use Hamcrest\Core\AllOf;
 use Illuminate\Http\Request;
 use App\Models\Department;
@@ -157,6 +158,12 @@ class HrController extends Controller
     {
         $departments = Department::where([['company_id','=',Input::get('m')],['status','=', 1]])->orderBy('id')->get();
         return view('Hr.editSubDepartmentForm',compact('departments'));
+    }
+
+    public function editUOM(int $id)
+    {
+        $uom = UOM::find($id);
+        return view('Hr.editUOM',compact('uom'));
     }
 
     public function createDesignationForm()

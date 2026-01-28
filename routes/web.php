@@ -844,6 +844,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
 
     Route::get('/createUOMForm', 'PurchaseController@createUOMForm');
     Route::get('/viewUOMList', 'PurchaseController@viewUOMList');
+    
 
     Route::get('/createDemandForm', 'PurchaseController@createDemandForm');
     Route::get('/viewDemandList', 'PurchaseController@viewDemandList');

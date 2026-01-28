@@ -989,16 +989,8 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
         $uoms = new UOM;
         $uoms = $uoms::where('status', '=', '1')->where('company_id', '=', $_GET['m'])->get();
 
-        $counter = 1;
-        foreach ($uoms as $row) {
-            ?>
-<tr>
-    <td class="text-center"><?php echo $counter++; ?></td>
-    <td><?php echo $row['uom_name']; ?></td>
-    <td></td>
-</tr>
-<?php
-        }
+    
+        return view("Purchase.AjaxPages.UOMAjax", compact("uoms"));
     }
 
     public function filterDemandVoucherList(Request $request)
