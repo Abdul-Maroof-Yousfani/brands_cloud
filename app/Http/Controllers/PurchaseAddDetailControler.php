@@ -2468,11 +2468,11 @@ class PurchaseAddDetailControler extends Controller
         $territory_id = $request->territory_id;
         $warehouse = new Warehouse();
         $warehouse = $warehouse->SetConnection('mysql2');
-        $warehouse_count = $warehouse->where('status', 1)->where('name', $name)->count();
-        if ($warehouse_count > 0):
-            Session::flash('dataDelete', $name . ' ' . 'Already Exists.');
-            return Redirect::to('purchase/createWarehouseForm?pageType=add&&parentCode=82&&m=1#SFR');
-        else:
+        // $warehouse_count = $warehouse->where('status', 1)->where('name', $name)->count();
+        // if ($warehouse_count > 0):
+        //     Session::flash('dataDelete', $name . ' ' . 'Already Exists.');
+        //     return Redirect::to('purchase/createWarehouseForm?pageType=add&&parentCode=82&&m=1#SFR');
+        // else:
 
             $warehouse = DB::connection("mysql2")->table("warehouse")->where("id", $id)->update([
                 "name" => $name,
@@ -2485,7 +2485,7 @@ class PurchaseAddDetailControler extends Controller
           
             Session::flash('dataInsert', 'successfully saved.');
             return Redirect::to('purchase/viewWarehouseList?pageType=add&&parentCode=82&&m=1#SFR');
-        endif;
+        // endif;
 
     }
 
