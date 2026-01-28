@@ -23,6 +23,7 @@ class BranchController extends Controller
             "branch_name" => $branch_name
         ]);
 
+        
         return back();
     }
 }
