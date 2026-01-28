@@ -155,6 +155,7 @@ class BaTargetsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function create()
     {
         return view("BA.BaTargets.create");
@@ -306,4 +307,60 @@ class BaTargetsController extends Controller
     {
         //
     }
+   public function targetReport(Request $request)
+{
+    $date = $request->date ?? date('Y-m');
+    [$year, $month] = explode('-', $date);
+
+    $reports = TargetItems::where('year', $year)
+        ->where('month', (int)$month)
+        ->get();
+
+    $customerIds = $reports->pluck('customer_id')->unique();
+    $brandIds = $reports->pluck('brand_id')->unique();
+
+    $customers = Customer::whereIn('id', $customerIds)->pluck('name', 'id');
+    $brands = Brand::whereIn('id', $brandIds)->pluck('name', 'id');
+
+    // Sales
+    $sales = DB::connection('mysql2')->table('retail_sale_orders as so')
+        ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
+        ->whereIn('so.distributor_id', $customerIds)
+        ->whereYear('so.sale_order_date', $year)
+        ->whereMonth('so.sale_order_date', $month)
+        ->select('so.distributor_id', 'sod.brand_id', DB::raw('SUM(sod.qty) as total_qty'))
+        ->groupBy('so.distributor_id', 'sod.brand_id')
+        ->get();
+
+    $salesData = [];
+    foreach ($sales as $sale) {
+        $salesData[$sale->distributor_id][$sale->brand_id] = $sale->total_qty;
+    }
+
+    // Returns
+    $returns = DB::connection('mysql2')->table('retail_sale_order_returns as rsor')
+        ->join('retail_sale_order_return_details as rsord', 'rsor.id', '=', 'rsord.retail_sale_order_return_id')
+        ->whereIn('rsor.distributor_id', $customerIds)
+        ->whereYear('rsor.created_at', $year)
+        ->whereMonth('rsor.created_at', $month)
+        ->select('rsor.distributor_id', 'rsord.brand_id', DB::raw('SUM(rsord.quantity) as total_qty'))
+        ->groupBy('rsor.distributor_id', 'rsord.brand_id')
+        ->get();
+
+    $returnsData = [];
+    foreach ($returns as $ret) {
+        $returnsData[$ret->distributor_id][$ret->brand_id] = $ret->total_qty;
+    }
+
+    return view('BA.BaTargets.report', compact(
+        'reports',
+        'customers',
+        'brands',
+        'year',
+        'month',
+        'salesData',
+        'returnsData'
+    ));
+}
+
 }
