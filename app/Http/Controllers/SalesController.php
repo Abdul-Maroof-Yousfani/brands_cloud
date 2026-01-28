@@ -1008,6 +1008,75 @@ public function uploadProduct(Request $request)
             }
           $sku_code = !empty($row[2]) ? trim($row[2]) : null;
 
+            if(empty($row[2])) {
+                continue;
+            }
+            if(!$product_name) {
+                continue;
+            }
+            if(empty($row[4])) {
+                continue;
+            }
+            if(empty($row[5])) {
+                continue;   
+            }
+            if(empty($row[7]))  {
+                continue;
+            }
+            if(!$brand_id) {
+                continue;
+            }
+            if(empty($row[9])) {
+                continue;
+            }
+
+            if(empty($row[10])) {
+                continue;
+            }
+
+            if(empty($row[11])) {
+                continue;
+            }
+
+            if(empty($row[12])) {
+                continue;
+            }
+
+            if(empty($row[13])) {
+                continue;
+            }
+
+            if(empty($row[14])) {
+                continue;
+            }
+
+            if(empty($row[15])) {
+                continue;
+            }
+
+            if(empty($row[16])) {
+                continue;
+            }
+
+            if(empty($row[17])) {
+                continue;
+            }
+
+            if(empty($row[18])) {
+                continue;
+            }
+
+            if(empty($row[20])) {
+                continue;
+            }
+            if(empty($row[22])) {
+                continue;
+            }
+
+            if(empty($row[31])) {
+                continue;
+            }
+
             $productData = [
                 'sku_code' => !empty($row[2]) ? trim($row[2]) : null,
                 'product_name' => $product_name,
