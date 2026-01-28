@@ -1449,10 +1449,10 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
             $Subitem = $Subitem->SetConnection('mysql2');
             $Subitem = $Subitem->where('id', $id)->select('product_name','sub_ic','status')->first();
             $delete='';
-            if ($Subitem->status!=1):
+            if ($Subitem && $Subitem->status!=1):
                 $delete='(Delete)';
-                endif;
-            return strtoupper(($Subitem->product_name != '' ? $Subitem->product_name :$Subitem->sub_ic)).' '.$delete;
+            endif;
+            return strtoupper(($Subitem && $Subitem->product_name != '' ? $Subitem->product_name :'')).' '.$delete;
         else:
             return '';
         endif;
