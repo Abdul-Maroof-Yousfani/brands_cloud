@@ -179,40 +179,10 @@ endif;
                         <a href="#" class="closebtn theme-f-clr Navclose" ><i class="fa fa-list-ul" aria-hidden="true"></i></a>
                     </div>
                     </li>
-                    @if(in_array("dashboard", $dashboard_access)) 
-                    <li>
-                        <a class="btn btn-primary" href="{{route('dClient')}}">
-                        Dashboard
-                    </a>
-                    </li>
-                    @endif
-                    @if(in_array("dashboard_production", $dashboard_access)) 
-
-                    <li>
-                        <a class="btn btn-primary" href="{{route('production_dashboard')}}">
-                        Production Dashboard
-                        </a>
-                    </li>
-                    @endif
-                    @if(in_array("dashboard_management", $dashboard_access)) 
-
-                    <li>
-                        <a class="btn btn-primary" href="{{route('fClient')}}">
-                        Management Dashboard
-                        </a>
-                    </li>
-                    @endif
-
+             
                 </ul>
             </div>
-            <select style="margin-left: 30px; margin-right: 30px;" class="form-control select2" onchange="if(this.value) window.location.href='{{ url('set_user_db_id') }}?company=' + this.value">
-    <option value="">Select Company</option>
-    @foreach(\App\Helpers\CommonHelper::get_users_companies() as $company)
-        <option value="{{ $company->id }}" {{ \App\Helpers\CommonHelper::get_current_company_id() == $company->id ? 'selected' : '' }}>
-            {{ $company->name }}
-        </option>
-    @endforeach
-</select>
+    
            <ul class='ctn-list'>
               <li>
                  <div class='ser'>
