@@ -43,7 +43,20 @@ CommonHelper::reconnectMasterDatabase();
     <a href="{{route('dClient')}}">
       <img class="logo_m" src="{{ url('/logoo.png') }}">
     </a>
+     <div class="nav navbar-nav" style="float: right;  align-items: center">
+         <ul class=" tmenu-list d">
+            <li>
+               <div class="o_f">
+                  <a href="#" class="closebtn theme-f-clr Navclose" ><i class="fa fa-list-ul" aria-hidden="true" style="color: white; margin-top: 30px;"></i></a>
+               </div>
+            </li>
+           
+
+         </ul>
+
+      </div>
    </div>
+   
    @if(Session::get('run_company') != null)
    <?php
    $Clause = "";
@@ -180,18 +193,7 @@ CommonHelper::reconnectMasterDatabase();
 
 <div class="container-fluid head-sh">
    <div class="headerwrap">
-      <div class="nav navbar-nav">
-         <ul class=" tmenu-list d">
-            <li>
-               <div class="o_f">
-                  <a href="#" class="closebtn theme-f-clr Navclose" ><i class="fa fa-list-ul" aria-hidden="true"></i></a>
-               </div>
-            </li>
-           
-
-         </ul>
-
-      </div>
+     
       <ul class='ctn-list'>
          <li>
             <div class='ser'>

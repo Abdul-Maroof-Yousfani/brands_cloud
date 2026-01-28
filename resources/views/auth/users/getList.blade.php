@@ -64,6 +64,7 @@ $("#TableExportToCsv").DataTable({
     searching: true,
     paging: true,
     info: false,
+    order: [[0, 'desc']],   // 👈 column index + direction
     autoWidth: false, // prevent DataTables from auto-calculating width
 });
 

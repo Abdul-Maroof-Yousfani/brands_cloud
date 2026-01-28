@@ -96,6 +96,7 @@ $("#TableExportToCsv").DataTable({
     paging: true,
     info: false,
     autoWidth: false,
+    order: [[0, 'desc']],   // 👈 column index + direction
     columnDefs: [
         { targets: 4, searchable: false } // Action column
     ]

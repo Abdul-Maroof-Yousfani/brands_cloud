@@ -175,9 +175,9 @@ endif;
            <div class="nav navbar-nav">
                 <ul class=" tmenu-list d">
                     <li>
-                    <div class="o_f">
+                    {{-- <div class="o_f">
                         <a href="#" class="closebtn theme-f-clr Navclose" ><i class="fa fa-list-ul" aria-hidden="true"></i></a>
-                    </div>
+                    </div> --}}
                     </li>
              
                 </ul>
