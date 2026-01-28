@@ -227,6 +227,7 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
     Route::get("/ba/getCustomers", "BaTargetsController@getCustomers")->name("get.customers");
     Route::post("/ba/insertTarget", "BaTargetsController@insertTarget")->name("insert.target");
     Route::post('listbaTargets', 'BaTargetsController@getList')->name('list.baTargets');
+    Route::get("target-report", "BaTargetsController@targetReport")->name("target.report");
 
     Route::get("opening-inventory", "OpeningInventoryController@index");
     Route::post("opening-inventory", "OpeningInventoryController@import")->name("baFormation.import");
