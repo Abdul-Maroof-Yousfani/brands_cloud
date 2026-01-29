@@ -336,10 +336,7 @@ function delete_cate(id) {
         $Region = new Region();
         $Region = $Region->SetConnection('mysql2');
         $Region = $Region->where('id',$EditId)->where('status',1)->first();
-        $Cluster = new Cluster();
-        $Cluster = $Cluster->SetConnection('mysql2');
-        $Cluster = $Cluster->where('status',1)->get();
-        return view('Purchase.AjaxPages.editRegionDetail',compact('Region','Cluster'));
+         return view('Purchase.AjaxPages.editRegionDetail',compact('Region','Cluster'));
     }
 
     function get_dashboard_info()
