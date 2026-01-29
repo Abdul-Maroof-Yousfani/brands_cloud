@@ -195,12 +195,7 @@ CommonHelper::reconnectMasterDatabase();
    <div class="headerwrap">
      
       <ul class='ctn-list'>
-         <li>
-            <div class='ser'>
-               <input  placeholder="Search anything"  /> 
-               <button><i class="fa fa-search" aria-hidden="true"></i></button>
-            </div>
-         </li>
+         
          <li>
             <div class="tim d">
                 {{-- Laravel se initial time show kare --}}

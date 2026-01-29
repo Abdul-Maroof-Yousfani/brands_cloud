@@ -184,12 +184,7 @@ endif;
             </div>
     
            <ul class='ctn-list'>
-              <li>
-                 <div class='ser'>
-                    <input  placeholder="Search anything"  /> 
-                    <button><i class="fa fa-search" aria-hidden="true"></i></button>
-                 </div>
-              </li>
+              
               <li>
                  <div class="tim d">
                      {{-- <p>{{ date('Y-m-d H:i:s') }}</p> --}}
