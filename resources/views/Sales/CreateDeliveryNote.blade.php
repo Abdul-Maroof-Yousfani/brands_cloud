@@ -462,6 +462,7 @@ $buyer_detail = CommonHelper::get_buyer_detail($sales_order->buyers_id);
                                                                             <tr>
                                                                                 <th class="text-center">S.NO</th>
                                                                                 <th class="text-center">Item</th>
+                                                                                <th class="text-center">Barcode</th>
 
                                                                                 <th class="text-center">Uom</th>
 
@@ -614,10 +615,13 @@ $buyer_detail = CommonHelper::get_buyer_detail($sales_order->buyers_id);
                                                                                               style="margin: 0px 221.973px 0px 0px; resize: none; ">{{$product_name}}</textarea>
                                                                                 </td>
 
-
+                                                                                
                                                                                     <?php $sub_ic_detail=CommonHelper::get_subitem_detail($row1->item_id);
-                                                                                    $sub_ic_detail= explode(',',$sub_ic_detail)
+                                                                                    $sub_ic_detail= explode(',',$sub_ic_detail);
                                                                                     ?>
+                                                                                <td>
+                                                                                    <input type="text" value='{{ $sub_ic_detail[3] }}' style="width: 150px; text-align: center;" class="form-control" readonly />
+                                                                                </td>
                                                                                 <td class="text-left">
                                                                                         <?php echo CommonHelper::get_uom_name($sub_ic_detail[0]);?>
                                                                                 </td>
