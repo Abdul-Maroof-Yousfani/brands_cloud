@@ -31,6 +31,7 @@ use App\Models\PurchaseVoucher;
 use App\Models\PurchaseVoucherData;
 use App\Models\PurchaseVoucherThroughGrn;
 use App\Models\PurchaseVoucherThroughGrnData;
+use App\Models\Region;
 use App\Models\SalesTaxDepartmentAllocation;
 use App\Models\Stock;
 use App\Models\Subitem;
@@ -624,14 +625,12 @@ class PurchaseAddDetailControler extends Controller
         $m = $_GET['m'];
         $RegionCode = Input::get('region_code');
         $RegionName = Input::get('region_name');
-        $ClusterId = Input::get('cluster_id');
-
+      
 
 
         $data2['region_code'] = strip_tags($RegionCode);
         $data2['region_name'] = strip_tags($RegionName);
-        $data2['cluster_id'] = $ClusterId;
-
+      
 
         $data2['status'] = 1;
 
@@ -1231,13 +1230,21 @@ class PurchaseAddDetailControler extends Controller
         $UpdateId = Input::get('edit_id');
         $RegionCode = Input::get('region_code');
         $RegionName = Input::get('region_name');
-        $ClusterId = Input::get('cluster_id');
         $UpdateData['region_code'] = $RegionCode;
         $UpdateData['region_name'] = $RegionName;
-        $UpdateData['cluster_id'] = $ClusterId;
-
+       
         DB::Connection('mysql2')->table('region')->where('id',$UpdateId)->update($UpdateData);
         return Redirect::to('purchase/regionList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $CompanyId . '#SFR');
+    }
+
+    public function deleteRegion(int $id) {
+        $region_id = $id;
+
+        $region = Region::find($region_id);
+
+        $region->delete();
+
+        return back()->with("message", "Region has been deleted!");
     }
 
     public function addGoodsReceiptNoteDetail(Request $request)

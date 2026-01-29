@@ -30,15 +30,7 @@
                                             <label class="sf-label">Region Name<span class="rflabelsteric"><strong>*</strong></span></label>
                                             <input autofocus type="text" class="form-control requiredField" placeholder="REGION NAME" name="region_name" id="region_name" value="<?php echo $Region->region_name ?>" />
                                         </div>
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <label class="sf-label">Cluster<span class="rflabelsteric"><strong>*</strong></span></label>
-                                            <select name="cluster_id" id="cluster_id" class="form-control requiredField ">
-                                                <option value="">Select Cluster</option>
-                                                <?php foreach($Cluster as $Fil):?>
-                                                <option value="<?php echo $Fil->id?>" <?php if($Region->cluster_id == $Fil->id){echo "selected";}?>><?php echo $Fil->cluster_name;?></option>
-                                                <?php endforeach;?>
-                                            </select>
-                                        </div>
+                                  
 
                                     </div>
                                 </div>

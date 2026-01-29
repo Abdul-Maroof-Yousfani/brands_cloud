@@ -22,7 +22,8 @@ if($accType == 'client'){
                         <div class="well">
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <span class="subHeadingLabelClass">View Region List</span>
+                                    <span class="subHeadingLabelClass" style="float: left;">View Region List</span>
+                                    <a href="/purchase/addRegionForm?m={{ $m }}&pageType=true&parentCode=true" class="btn btn-primary" style="float: right;">Create Region</a>
                                 </div>
                             </div>
                             <div class="lineHeight">&nbsp;</div>
@@ -37,7 +38,6 @@ if($accType == 'client'){
                                                             <thead>
                                                             <th class="text-center">S.No</th>
                                                             <th class="text-center">Region Code</th>
-                                                            <th class="text-center">Cluster Name</th>
                                                             <th class="text-center">Region Name</th>
                                                             <th class="text-center">Action</th>
 

@@ -38,16 +38,7 @@ if($accType == 'client'){
                                                     <span class="rflabelsteric"><strong>*</strong></span>
                                                     <input type="text" name="region_code" id="region_code" value="" class="form-control requiredField" placeholder="REGION CODE"/>
                                                 </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                                    <label>Cluster :</label>
-                                                    <span class="rflabelsteric"><strong>*</strong></span>
-                                                    <select name="cluster_id" id="cluster_id" class="form-control requiredField select2">
-                                                        <option value="">Select Cluster</option>
-                                                        <?php foreach($Cluster as $Fil):?>
-                                                        <option value="<?php echo $Fil->id?>"><?php echo $Fil->cluster_name?></option>
-                                                        <?php endforeach;?>
-                                                    </select>
-                                                </div>
+                                                
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                                     <label>Region Name :</label>
                                                     <span class="rflabelsteric"><strong>*</strong></span>
