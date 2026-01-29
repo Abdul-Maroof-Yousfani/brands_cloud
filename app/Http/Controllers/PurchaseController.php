@@ -326,11 +326,8 @@ class PurchaseController extends Controller
     }
 
     public function addRegionForm(){
-        $Cluster=new Cluster();
-        $Cluster=$Cluster->SetConnection('mysql2');
-        $Cluster=$Cluster->where('status',1)->get();
 
-        return view('Purchase.addRegionForm',compact('Cluster'));
+        return view('Purchase.addRegionForm');
     }
 
     public function regionList(){

@@ -273,7 +273,6 @@ class SalesDataCallController extends Controller
         CommonHelper::companyDatabaseConnection(request()->get('m'));
 		$customers = new Customer;
 
-        $customers = $customers->where('status', 1);
 		// $customers = $customers::where('status', '=', '1')->get();
 
         if($request->has('customer_type') && count($request->customer_type) > 0) {

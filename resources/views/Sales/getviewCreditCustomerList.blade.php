@@ -18,6 +18,8 @@ $createAccount = ReuseableCode::check_rights(220);
             <th class="text-center col-xs-1">Opening Balance</th>
             <th class="text-center">Opening Balance Date
             </th>
+
+            <th class="text-center col-xs-1">Customer Status</th>
             <th class="text-center">Status</th>
             <th class="text-center">Action</th>
         </tr>
@@ -33,6 +35,12 @@ $createAccount = ReuseableCode::check_rights(220);
                 <td class="text-center"><?php echo $row['company_shipping_type']; ?></td>
                 <td class="text-center"><?php echo $row['opening_balance']; ?></td>
                 <td class="text-center"><?php echo $row['opening_balance_date']; ?></td>
+                <td class="text-center">
+                    @if($row["status"] == 1)
+                        <a class="btn btn-success">Active</a>
+                    @else
+                        <a class="btn btn-danger">In-Active</a>
+                    @endif
                 <td class="text-center"><?php echo $row['status'] == 1 ? 'Approved' : 'Pending'; ?></td>
 
                 <td class="text-center hidden-print printListBtn">
