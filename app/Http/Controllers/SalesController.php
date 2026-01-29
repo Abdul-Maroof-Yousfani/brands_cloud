@@ -1449,12 +1449,13 @@ public function uploadProduct(Request $request)
         $StoresCategory = StoresCategory::where('status', '=', 1)->get();
         $Territory = Territory::where('status', '=', 1)->get();
         $CustomerType = CustomerType::where('status', '=', 1)->get();
+        $regions = Region::where("status", 1)->get();
 
        
         CommonHelper::reconnectMasterDatabase();
 
          $SubDepartments = SubDepartment::where('status','=', 1)->orderBy('id')->get();
-        return view('Sales.createCreditCustomerForm', compact('accounts', 'countries', 'StoresCategory', 'Territory', 'CustomerType','SubDepartments'));
+        return view('Sales.createCreditCustomerForm', compact('regions', 'accounts', 'countries', 'StoresCategory', 'Territory', 'CustomerType','SubDepartments'));
     }
 
     public function editCustomerForm($id)
@@ -1474,11 +1475,12 @@ public function uploadProduct(Request $request)
         $StoresCategory = StoresCategory::where('status', '=', 1)->get();
         $Territory = Territory::where('status', '=', 1)->get();
         $CustomerType = CustomerType::where('status', '=', 1)->get();
+        $regions = Region::where("status", 1)->get();
         CommonHelper::reconnectMasterDatabase();
 
-         $salesPersons = SubDepartment::where('status','=', 1)->orderBy('id')->get();
+        $salesPersons = SubDepartment::where('status','=', 1)->orderBy('id')->get();
 
-        return view('Sales.editCustomerForm', compact('accounts', 'countries', 'id', 'StoresCategory', 'Territory', 'CustomerType','salesPersons'));
+        return view('Sales.editCustomerForm', compact('regions', 'accounts', 'countries', 'id', 'StoresCategory', 'Territory', 'CustomerType','salesPersons'));
     }
     public function approveCustomer(Request $request)
     {

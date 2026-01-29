@@ -504,6 +504,19 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                             
                                                                         </select>
                                                                     </div>
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                                        <label>Region :</label>
+                                                                        <span class="rflabelsteric"></span>
+                                                                        <br>
+                                                                        <select name="region_id" class="select2" style="width: 100%;" id="region_id"
+                                                                            class="form-control">
+                                                                            <option value="">All</option>
+                                                                            @foreach($regions as $region)
+                                                                                <option value="{{ $region->id }}" {{ $Cusomter->region_id == $region->id ? 'selected' : '' }}>{{ $region->region_name }}</option>
+                                                                            @endforeach
+                                                                            
+                                                                        </select>
+                                                                    </div>
                                                                         <div
                                                                             class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hide customerTypeField">
                                                                             <label>Warehouse To :</label>

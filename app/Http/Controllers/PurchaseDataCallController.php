@@ -331,12 +331,11 @@ function delete_cate(id) {
     }
     function editRegionDetail()
     {
-
         $EditId = $_GET['id'];
         $Region = new Region();
         $Region = $Region->SetConnection('mysql2');
         $Region = $Region->where('id',$EditId)->where('status',1)->first();
-         return view('Purchase.AjaxPages.editRegionDetail',compact('Region'));
+        return view('Purchase.AjaxPages.editRegionDetail',compact('Region'));
     }
 
     function get_dashboard_info()

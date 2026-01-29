@@ -461,6 +461,7 @@ class SalesAddDetailControler extends Controller
         $data2['time']                = date("H:i:s");
         $data2['action']              = 'create';
         $data2['terms_of_payment']     = Input::get('term') ?? 0;
+        $data2["region_id"] = Input::get("region_id") ?? 0;
         // $data2['discount_percent']     = Input::get('discount_percent') ?? 0;
 
         $CustId = DB::table('customers')->insertGetId($data2);
@@ -671,6 +672,7 @@ class SalesAddDetailControler extends Controller
                 'phone_2' => $request->input('phone_2', $customer->phone_2),
                 'address' => $request->input('address', $customer->address),
                 'country' => $request->input('country', $customer->country),
+                'region_id' => $request->input("region_id"),
                 'province' => $request->input('state', $customer->province),
                 'city' => $request->input('city', $customer->city),
                 'zip' => $request->input('zip', $customer->zip),
