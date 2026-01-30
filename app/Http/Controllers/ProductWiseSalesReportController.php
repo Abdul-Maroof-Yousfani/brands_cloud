@@ -18,8 +18,8 @@ class ProductWiseSalesReportController extends Controller
         
             $items = DB::connection("mysql2")
                         ->table("subitem")
-                        ->join("retail_sale_order_details", "retail_sale_order_details.product_id", "=", "subitem.id")
-                        ->join("retail_sale_orders", "retail_sale_orders.id", "=", "retail_sale_order_details.retail_sale_order_id")
+                        ->leftJoin("retail_sale_order_details", "retail_sale_order_details.product_id", "=", "subitem.id")
+                        ->leftJoin("retail_sale_orders", "retail_sale_orders.id", "=", "retail_sale_order_details.retail_sale_order_id")
                         ->select(
                             "retail_sale_orders.sale_order_date",
                             "retail_sale_orders.distributor_id AS buyers_id",
