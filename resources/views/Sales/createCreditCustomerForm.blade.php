@@ -525,6 +525,16 @@ $m=Session::get('run_company');
                                                                             
                                                                         </select>
                                                                     </div>
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                                        <label>Region :</label>
+                                                                        <span class="rflabelsteric"></span>
+                                                                        <br>
+                                                                        <select name="status" class="select2" style="width: 100%;" id="status"
+                                                                            class="form-control">
+                                                                            <option value="1">Active</option>
+                                                                            <option value="0">In-active</option>
+                                                                        </select>
+                                                                    </div>
                                                                     <div
                                                                         class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hide customerTypeField">
                                                                         <label>Warehouse To :</label>
