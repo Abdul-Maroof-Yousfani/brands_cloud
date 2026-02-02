@@ -517,6 +517,16 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                             
                                                                         </select>
                                                                     </div>
+                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                                        <label>Region :</label>
+                                                                        <span class="rflabelsteric"></span>
+                                                                        <br>
+                                                                        <select name="status" class="select2" style="width: 100%;" id="status"
+                                                                            class="form-control">
+                                                                            <option value="1" {{ $Cusomter->status == 1 ? 'selected' : '' }}>Active</option>
+                                                                            <option value="0" {{ $Cusomter->status == 0 ? 'selected' : '' }}>In-active</option>
+                                                                        </select>
+                                                                    </div>
                                                                         <div
                                                                             class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hide customerTypeField">
                                                                             <label>Warehouse To :</label>
