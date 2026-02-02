@@ -5647,6 +5647,8 @@ class SalesAddDetailControler extends Controller
 
             DB::rollBack();
         }
+            Session::flash("success", "Vendor Opening balance has been created");
+   
         return Redirect::to('sales/creatVendorOpeningBalance?m=1');
     }
 
