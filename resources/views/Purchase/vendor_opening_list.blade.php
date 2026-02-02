@@ -6,10 +6,9 @@ use App\Models\Transactions;
 ?>
 @extends('layouts.default')
 @section('content')
-    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right">
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right well_N">
 
 
-    </div>
 
     @php
     $grand_total_invoice=0;
@@ -92,4 +91,5 @@ use App\Models\Transactions;
       <p>Grand Total Of Balance : {{number_format($grand_total_balance,2)}}</p>
   </div>
 
+    </div>
 @endsection
