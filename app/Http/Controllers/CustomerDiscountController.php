@@ -8,6 +8,7 @@ use App\Models\CustomerSpecialPrice;
 use App\Models\Subitem;
 use Illuminate\Http\Request;
 use DB;
+use Session;
 class CustomerDiscountController extends Controller
 {
     /**
@@ -114,7 +115,7 @@ class CustomerDiscountController extends Controller
      */
     public function edit(CustomerDiscount $customerDiscount)
     {
-        //
+        return view("Purchase.customerDiscount.edit", compact("customerDiscount"));
     }
 
     /**
@@ -126,7 +127,22 @@ class CustomerDiscountController extends Controller
      */
     public function update(Request $request, CustomerDiscount $customerDiscount)
     {
-        //
+        $request->validate([
+            'brand_id' => 'required',
+            'product_id' => 'required',
+            'customer_id' => 'required',
+            'discount_percentage' => 'required|numeric',
+        ]);
+
+        $customerDiscount->update([
+            "customer_id" => $request->customer_id,
+            "product_id" => $request->product_id,
+            "brand_id" => $request->brand_id,
+            "discount_percentage" => $request->discount_percentage
+        ]);
+
+        Session::flash("message", "Customer discount has been udated");
+        return redirect(route("customerDiscount.index"));
     }
 
     /**
@@ -137,7 +153,9 @@ class CustomerDiscountController extends Controller
      */
     public function destroy(CustomerDiscount $customerDiscount)
     {
-        //
+        $customerDiscount->delete();
+        Session::flash("error", "Customer discount has been deleted!");
+        return redirect()->back();
     }
 
 
