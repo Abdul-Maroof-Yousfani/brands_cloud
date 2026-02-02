@@ -142,7 +142,10 @@ public static function get_ba_location($ba_id) {
     return $location ? $location->location_name : "N/A";
 }
 
-
+   public static function get_product_names_by_brand_id($brand_id) {
+        $products = Subitem::select("id", "product_name")->where("brand_id", $brand_id)->get();
+        return $products;
+    }
 public static function get_companies() {
     return DB::table("company")->where("status", 1)->get();
 }
