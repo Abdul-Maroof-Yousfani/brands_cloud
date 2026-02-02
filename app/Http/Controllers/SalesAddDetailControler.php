@@ -444,11 +444,11 @@ class SalesAddDetailControler extends Controller
         $data2['SaleRep']     = Input::get('sale_person') ?? 0;
         $data2['accept_cheque']     = Input::get('accept_cheque') ?? "no";
         $data2['display_pending_payment_invoice']     = Input::get('display_pending_payment_invoice') ?? 0;
-
+        
 
         $data2['CustomerType']     = Input::get('customer_type') ?? 1;
         // $data2['status']     = Input::get('status') ?? "Active";
-        $data2['status']     = 1;
+        $data2['status']     = Input::get("status") ?? 1;
         $data2['ba_mapping']     = Input::get('ba_mapping') ?? "no";
         $data2['employee_id']     = Input::get('employee_id') ?? NULL;
         $data2['special_price_mapped']     = Input::get('special_price_mapped') ?? "no";
@@ -717,6 +717,7 @@ class SalesAddDetailControler extends Controller
                 'time' => date("H:i:s"),
                 'action' => 'update',
                 'terms_of_payment' => $request->input('term', $customer->terms_of_payment),
+                'status' => Input::get("status") ?? 1
             ];
 
             DB::table('customers')->where('id', $customerId)->update($data2);
@@ -5616,6 +5617,7 @@ class SalesAddDetailControler extends Controller
 
 
             $VendorId = $request->vendor_id;
+         
             $VoDate = $request->vo_date;
             $PiNo = $request->pi_no;
             $PoNo = $request->po_no;
@@ -5635,6 +5637,7 @@ class SalesAddDetailControler extends Controller
                 $invoice_amount += $BalanceAmount[$key];
                 DB::Connection('mysql2')->table('vendor_opening_balance')->insert($InsertData);
                 ReuseableCode::insert_pv($PiNo);
+           
             endforeach;
 
             ReuseableCode::hit_ledger_vendor_opening($VendorId);
@@ -5647,8 +5650,8 @@ class SalesAddDetailControler extends Controller
 
             DB::rollBack();
         }
-            Session::flash("success", "Vendor Opening balance has been created");
-   
+
+        Session::flash("success", "Vendor Opening balance has been created");
         return Redirect::to('sales/creatVendorOpeningBalance?m=1');
     }
 
@@ -6208,6 +6211,7 @@ class SalesAddDetailControler extends Controller
                     $item->date = date('y-m-d');
                     $item->save();
                 endforeach;
+                
             }
             DB::Connection('mysql2')->commit();
             return redirect()->back()->with('dataInsert', 'Item create SuccessFully');
