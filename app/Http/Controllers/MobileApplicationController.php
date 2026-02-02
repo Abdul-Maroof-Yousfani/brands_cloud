@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
+use App\TargetItems;
+use App\Models\Customer;
 
 class MobileApplicationController extends Controller
 {
@@ -1711,4 +1713,121 @@ public function get_stock(Request $request)
 
         return $user;
     }
+
+    public function targetReportApi(Request $request)
+{
+    // ================= Filters =================
+    $date = $request->date ?? date('Y-m');
+    [$year, $month] = explode('-', $date);
+
+    $customerFilterId = $request->customer_id; // optional
+    $userId           = $request->user_id;     // optional
+
+    // ================= Targets =================
+    $reports = TargetItems::where('year', $year)
+        ->where('month', (int)$month)
+        ->when($customerFilterId, function ($q) use ($customerFilterId) {
+            $q->where('customer_id', $customerFilterId);
+        })
+        ->get();
+
+    if ($reports->isEmpty()) {
+        return response()->json([
+            'status' => true,
+            'data'   => []
+        ]);
+    }
+
+    $customerIds = $reports->pluck('customer_id')->unique();
+    $brandIds    = $reports->pluck('brand_id')->unique();
+
+    // ================= Brands =================
+    $brands = Brand::whereIn('id', $brandIds)
+        ->pluck('name', 'id');
+
+    // ================= SALES =================
+    $sales = DB::connection('mysql2')
+        ->table('retail_sale_orders as so')
+        ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
+        ->whereIn('so.distributor_id', $customerIds)
+        ->whereYear('so.sale_order_date', $year)
+        ->whereMonth('so.sale_order_date', $month)
+        ->when($userId, function ($q) use ($userId) {
+            $q->where('so.user_id', $userId);
+        })
+        ->select(
+            'sod.brand_id',
+            DB::raw('SUM(sod.qty) as total_qty')
+        )
+        ->groupBy('sod.brand_id')
+        ->get();
+
+    $salesData = $sales->pluck('total_qty', 'brand_id')->toArray();
+
+    // ================= RETURNS =================
+    $returns = DB::connection('mysql2')
+        ->table('retail_sale_order_returns as rsor')
+        ->join('retail_sale_order_return_details as rsord', 'rsor.id', '=', 'rsord.retail_sale_order_return_id')
+        ->whereIn('rsor.distributor_id', $customerIds)
+        ->whereYear('rsor.created_at', $year)
+        ->whereMonth('rsor.created_at', $month)
+        ->when($userId, function ($q) use ($userId) {
+            $q->where('rsor.user_id', $userId);
+        })
+        ->select(
+            'rsord.brand_id',
+            DB::raw('SUM(rsord.quantity) as total_qty')
+        )
+        ->groupBy('rsord.brand_id')
+        ->get();
+
+    $returnsData = $returns->pluck('total_qty', 'brand_id')->toArray();
+
+    // ================= FINAL BRAND-WISE REPORT =================
+    $finalReport = [];
+
+    foreach ($reports as $report) {
+
+        $brandId = $report->brand_id;
+
+        if (!isset($finalReport[$brandId])) {
+            $finalReport[$brandId] = [
+                'brand_id'         => $brandId,
+                'brand_name'       => $brands[$brandId] ?? '',
+                'target_qty'       => 0,
+                'achieved_qty'     => 0,
+                'return_qty'       => 0,
+                'net_achieved_qty' => 0,
+                'achieved_percent' => 0
+            ];
+        }
+
+        // ✅ Correct target column
+        $finalReport[$brandId]['target_qty'] += $report->target ?? 0;
+    }
+
+    foreach ($finalReport as $brandId => &$row) {
+
+        $row['achieved_qty'] = $salesData[$brandId] ?? 0;
+        $row['return_qty']   = $returnsData[$brandId] ?? 0;
+
+        $row['net_achieved_qty'] = $row['achieved_qty'] - $row['return_qty'];
+
+        $row['achieved_percent'] = $row['target_qty'] > 0
+            ? round(($row['net_achieved_qty'] / $row['target_qty']) * 100, 2)
+            : 0;
+    }
+
+    return response()->json([
+        'status'  => true,
+        'filters' => [
+            'year'        => $year,
+            'month'       => $month,
+            'customer_id' => $customerFilterId,
+            'user_id'     => $userId
+        ],
+        'data' => array_values($finalReport)
+    ]);
+}
+
 }

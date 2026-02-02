@@ -65,6 +65,7 @@ Route::middleware(['custom-middleware'])->group(function () {
     Route::post('/createSurvey','MobileApplicationController@createSurvey');
     Route::get('/surveyList','MobileApplicationController@surveyList');
     Route::get('/surveyData','MobileApplicationController@surveyData');
+    Route::get('/get-target-report', 'MobileApplicationController@targetReportApi');
 
     // Route::controller('SalesController')->prefix("survey")->group(function(){
     //     Route::post('createSurvey', "createSurvey");
