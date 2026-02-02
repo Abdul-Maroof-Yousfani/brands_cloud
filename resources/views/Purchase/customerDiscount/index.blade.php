@@ -20,6 +20,7 @@
                         <a   href="javascript:void(0);"  class="d-block mb-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
                             Create Customer Discount
                         </a>
+                        
                         <a   href="javascript:void(0);"  class="d-block mb-4"  data-bs-toggle="modal" data-bs-target="#importDiscount">
                             Import  Brand Wise  Discount
                         </a>
@@ -136,6 +137,7 @@
                     </div>
                     <div class="modal-body">
                         <form id="discountForm">
+                            {{ csrf_field() }}
                             <!-- Brand Selection -->
                             <div class="mb-3">
                                 <label for="brands" class="form-label">Brands</label>
@@ -206,7 +208,14 @@
                     <td>{{ App\Helpers\CommonHelper::get_product_name($csp->product_id) }}</td>
                     <td>{{ $csp->discount_percentage }}%</td>
                     <td>{{ \Carbon\Carbon::parse($csp->created_at)->format('m/d/Y') }}</td>
-                    <td><a href="{{ route('specialPrice.edit', $csp->id) }}">Edit</a></td>
+                    <td>
+                        <a class="edit-modal btn btn-xs btn-info" href="{{ route('customerDiscount.edit', $csp->id) }}">Edit</a>
+                        <form style="display: inline-block" action="{{ route('customerDiscount.destroy', $csp->id) }}" method="POST">
+                            {{ csrf_field() }}
+                            {{ method_field("DELETE") }}
+                            <button class="edit-modal btn btn-xs btn-danger" type="submit">Delete</a>
+                        </form>
+                    </td>
                 </tr>
             @endforeach
             </tbody>
@@ -368,7 +377,8 @@
         $(document).ready(function () {
             $('#discountForm').submit(function (e) {
                 e.preventDefault();
-
+                console.log("{{ route('customerDiscount.store') }}")
+              
                 let formData = $(this).serialize();
 
                 // Show processing Swal loader
