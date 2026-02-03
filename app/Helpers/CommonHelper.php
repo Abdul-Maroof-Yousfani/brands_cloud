@@ -141,7 +141,10 @@ public static function get_ba_location($ba_id) {
                     ->first();
     return $location ? $location->location_name : "N/A";
 }
-
+public static function get_group_by($group_id) {
+    $group = DB::connection("mysql2")->table("company_groups")->find($group_id);
+    return $group->name;
+}
    public static function get_product_names_by_brand_id($brand_id) {
         $products = Subitem::select("id", "product_name")->where("brand_id", $brand_id)->get();
         return $products;
