@@ -526,7 +526,7 @@ $m=Session::get('run_company');
                                                                         </select>
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                                                        <label>Status :</label>
+                                                                        <label>Status:</label>
                                                                         <span class="rflabelsteric"></span>
                                                                         <br>
                                                                         <select name="status" class="select2" style="width: 100%;" id="status"
