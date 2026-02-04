@@ -52,7 +52,7 @@ Route::get('testing', function () {
                 "parent_code" => 2,
                 "level1" => 2,
                 "level2" => $level,
-                "name" => $supplier->company_name,
+                "name" => $supplier->name,
                 "status" => 1,
                 "username" => "Amir",
                 "operational" => 1
