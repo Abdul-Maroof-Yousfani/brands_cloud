@@ -14,6 +14,7 @@ use App\Http\Controllers\StoreController;
 use App\Models\Branch;
 use App\Models\Stock;
 use App\Models\Subitem;
+use App\Models\Supplier;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 
