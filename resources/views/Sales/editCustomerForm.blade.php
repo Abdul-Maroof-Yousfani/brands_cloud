@@ -241,6 +241,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                                 value="{{$Cusomter->opening_balance_date}}"
                                                                                 class="form-control" />
                                                                         </div>
+                                                                        
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                             <label> Tax Filer Registered :</label>
                                                                             <span class="rflabelsteric"><strong>*</strong></span>
