@@ -973,7 +973,7 @@ $m=Session::get('run_company');
                                     </tr>
                                      <tr>
                                         <td>Region</td>
-                                        <th><span class="badge badge-outline-success">This Field is optional</span>
+                                        <th><span class="badge badge-outline-success">This Field is required</span>
                                         </th>
                                     </tr>
                                   
