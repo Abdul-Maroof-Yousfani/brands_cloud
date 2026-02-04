@@ -30,6 +30,46 @@ Route::get("privileges", function() {
     // dd($privileges);
 });
 
+
+Route::get('testing', function () {
+    
+    $suppliers = Supplier::all();
+    $account = DB::connection("mysql2")
+                        ->table("accounts")
+                        ->where("level1", 2)
+                        ->orderBy("level2", "desc")
+                        ->first();
+    $latest_level = $account->level2;
+   
+    DB::beginTransaction();
+    try {
+        foreach($suppliers as $supplier) {
+            $level = $latest_level++;
+            $code = "2-$level";
+            $accountId = DB::connection("mysql2")->table("accounts")->insertGetId([
+                "code" => $code,
+                "parent_code" => 2,
+                "level1" => 2,
+                "level2" => $level,
+                "name" => $supplier->company_name,
+                "status" => 1,
+                "username" => "Amir",
+                "operational" => 1
+            ]);
+    
+            $supplier->acc_id = $accountId;
+            $supplier->acc_code = $code;
+            $supplier->save();
+        }
+    } catch(Exception $e) {
+        DB::rollBack();
+        dd($e);
+    }
+    
+    dd("COA created");
+    
+});
+
 Route::get("test", function() {
     $branches = Branch::all();
     $mapper = [
