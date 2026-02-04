@@ -466,7 +466,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                             <label>Employee:</label>
                                                                             <span class="rflabelsteric"></span>
                                                                             <select name="employee_id" id="employee_id"
-                                                                                class="form-control">
+                                                                                class="form-control select2">
                                                                                 <option value="">Select Option</option>
                                                                                 @foreach(\App\Helpers\SalesHelper::get_all_unregistered_employees() as $employee)
                                                                                 <option value="{{ $employee->id }}"
