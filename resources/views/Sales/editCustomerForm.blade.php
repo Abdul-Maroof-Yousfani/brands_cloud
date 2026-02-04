@@ -59,7 +59,8 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                     <div class="panel">
                                                         <div class="panel-body">
-                                                            <form method="post" action="<?= url('sad/updateCreditCustomerDetail?m='.$m.'') ?>" id="submitadv">
+                                                            <form method="post" action="<?= url('sad/
+                                                            ?m='.$m.'') ?>" id="submitadv">
                                                                 <div class="row">
                                                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -247,7 +248,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                                 class="form-control ">
                                                                                 <option value="">Select Option</option>
                                                                                 <option value="yes"
-                                                                                    {{$Cusomter->regd_in_income_tax == "Yes" ? 'selected' : ''}}>
+                                                                                    {{$Cusomter->regd_in_income_tax == "yes" ? 'selected' : ''}}>
                                                                                     Yes</option>
                                                                                 <option value="no"
                                                                                     {{$Cusomter->regd_in_income_tax == "no" ? 'selected' : ''}}>
