@@ -40,7 +40,7 @@ use App\Helpers\CommonHelper;
         </div>
     @endif
 
-    <h2>Import Special Prices</h2>
+    <h2>Import Store Brand Discount</h2>
 
     <div class="card">
         <div class="card-body">
