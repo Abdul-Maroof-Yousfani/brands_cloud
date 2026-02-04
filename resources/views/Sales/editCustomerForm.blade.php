@@ -241,7 +241,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                                 value="{{$Cusomter->opening_balance_date}}"
                                                                                 class="form-control" />
                                                                         </div>
-
+                                                                        
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                             <label> Tax Filer Registered :</label>
                                                                             <span class="rflabelsteric"><strong>*</strong></span>
@@ -469,7 +469,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                             <br>
                                                                             <span class="rflabelsteric"></span>
                                                                             <select name="employee_id" id="employee_id"
-                                                                                class="form-control select2">
+                                                                                class="form-control">
                                                                                 <option value="">Select Option</option>
                                                                                 @foreach(\App\Helpers\SalesHelper::get_all_unregistered_employees() as $employee)
                                                                                 <option value="{{ $employee->id }}"
@@ -793,35 +793,18 @@ $(document).ready(function() {
     });
 });
 
-// $(document).ready(function() {
-//     $('#').select2({
-//         dropdownParent: $('body'),
-//         width: '100%'
-//     });
-// });
-
-// $(document).ready(function() {
-//     $('.select2').select2({
-//         width: '100%'
-//     });
-// });
-
-$(document).ready(function () {
-
-    // For normal select2
-    $('.select2').select2({
-        width: '100%'
-    });
-
-    // For select2 inside modal (example)
-    $('.select2-modal').select2({
+$(document).ready(function() {
+    $('#warehouse_from').select2({
         dropdownParent: $('body'),
         width: '100%'
     });
-
 });
 
-
+$(document).ready(function() {
+    $('#employee_id').select2({
+        width: '100%'
+    });
+});
 
 </script>
 
