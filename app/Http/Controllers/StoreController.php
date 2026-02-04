@@ -2277,7 +2277,7 @@ public function add_opening_import_post(Request $request)
 
 
                 //  $warehouse_quantities = [
-                //     10 => trim($row[9]),  // Make Up City North
+                //     35 => trim($row[7]),  // Make Up City North
                   
                 // ];
 
@@ -2291,7 +2291,7 @@ public function add_opening_import_post(Request $request)
 
 
                 $warehouse_quantities = [
-                    26 => trim($row[8]),  // Make Up City North
+                    35 => trim($row[8]),  // Make Up City North
                     // 22 => trim($row[9]), // Liquidation Stock RWL
                   
                    
