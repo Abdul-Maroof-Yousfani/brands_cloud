@@ -464,6 +464,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                         </div>
                                                                         <div id="only_emp" class="col-lg-12 col-md-12 col-sm-12 col-xs-12  @if($Cusomter->CustomerType != 2) hide @endif">
                                                                             <label>Employee:</label>
+                                                                            <br>
                                                                             <span class="rflabelsteric"></span>
                                                                             <select name="employee_id" id="employee_id"
                                                                                 class="form-control select2">
@@ -796,6 +797,15 @@ $(document).ready(function() {
         width: '100%'
     });
 });
+
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%'
+    });
+});
+
 </script>
+
+
 {{-- <script src="{{URL::asset('assets/js/select2/js_tabindex.js') }}"></script> --}}
 @endsection
