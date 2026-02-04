@@ -45,7 +45,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <a href="{{asset('/public/customer_special_prices.csv')}}" target="_blank" class="btn btn-primary" >Download Sample File</a>
+                                    <a href="{{asset('customer_special_prices.csv')}}" target="_blank" class="btn btn-primary" >Download Sample File</a>
                                 </div>
                                 <div class="col-md-6 text-right">
                                     <button type="submit" class="btn btn-success">Import</button>
