@@ -147,7 +147,8 @@ class BAFormationController extends Controller
             $baFormation = BAFormation::findorfail($id)->update($data);
 
             DB::commit();
-
+      return redirect()->back()->with(["success" => "Successfully saved"]);
+      
             return response()->json(['success' => 'Successfully Saved.', 'data' => $baFormation]);
         } catch (Exception $e) {
             DB::rollBack();
