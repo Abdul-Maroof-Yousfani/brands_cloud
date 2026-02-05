@@ -22,7 +22,7 @@ Route::auth();
 
 
 Route::get('testing', function () {
-    Auth::logout(); 
+    dd("testing");
     
 });
 
