@@ -205,46 +205,25 @@ class SalesHelper
     //         ->get();
     // }
 
-//     public static function get_all_unregistered_employees()
-// {
-//     $customer = (new Employees())->setConnection('mysql2');
-
-//     $existingEmails = User::whereNotNull('email')
-//         ->where('email', '!=', '')
-//         ->pluck('email')
-//         ->toArray();
-
-//     return $customer
-//         ->where('status', 1)
-//         ->where(function ($q) use ($existingEmails) {
-//             $q->whereNull('email')          // NULL email allow
-//               ->orWhere('email', '-')       // '-' email allow
-//               ->orWhereNotIn('email', $existingEmails);
-//         })
-//         ->select('emp_id as id', 'name', 'email')
-//         ->get();
-// }
-
-
-public static function get_all_unregistered_employees()
+    public static function get_all_unregistered_employees()
 {
-    $employee = (new Employees())->setConnection('mysql2');
+    $customer = (new Employees())->setConnection('mysql2');
 
-    return $employee
+    $existingEmails = User::whereNotNull('email')
+        ->where('email', '!=', '')
+        ->pluck('email')
+        ->toArray();
+
+    return $customer
         ->where('status', 1)
-        ->where(function ($q) {
-            $q->whereNull('email')
-              ->orWhere('email', '-')
-              ->orWhereNotExists(function ($sub) {
-                  $sub->selectRaw(1)
-                      ->from('users')
-                      ->whereColumn('users.email', 'employees.email');
-              });
+        ->where(function ($q) use ($existingEmails) {
+            $q->whereNull('email')          // NULL email allow
+              ->orWhere('email', '-')       // '-' email allow
+              ->orWhereNotIn('email', $existingEmails);
         })
         ->select('emp_id as id', 'name', 'email')
         ->get();
 }
-
 
 
     public static  function get_all_client()
