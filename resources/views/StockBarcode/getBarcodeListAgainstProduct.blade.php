@@ -6,8 +6,8 @@
     <div class="col-md-6 text-right">
         <input type="hidden" id="voucherItemQty" value="{{$voucherItemCount}}">
             <button class="btn-primary">Document QTY : <span class="voucher_qty">{{$voucherItemCount}}</span></button>
-            <button class="btn-{{count($barcode) == $voucherItemCount ? 'success' : 'danger'}}">Barcode Scanned : <span class="voucher_qty">{{count($barcode)}}</span></button>
-            <button class="btn-warning">Remaining for Scanning : <span class="voucher_qty">{{$voucherItemCount-count($barcode)}}</span></button>
+            <button class="btn-{{count($barcode) == $voucherItemCount ? 'success' : 'danger'}}">Barcode Scanned : <span class="voucher_qty scanned">{{count($barcode)}}</span></button>
+            <button class="btn-warning">Remaining for Scanning : <span class="voucher_qty remaining_qty">{{$voucherItemCount-count($barcode)}}</span></button>
     </div>
 </div>
 <table class="table table-bordered sf-table-list">
@@ -22,14 +22,14 @@
     </thead>
     <tbody>
     @foreach($stockbarcode as $key => $sb)
-        <tr>
+        <tr id="barcode-{{ $sb->id }}">
             <td>{{$key+1}}</td>
             <td>{{$sb->barcode}}</td>
 
             <td>{{$sb->product_name}}</td>
             <td class="text-uppercase">{{$sb->voucher_no}}</td>
             <td>
-                <button>Delete</button>
+                <button onclick="deleteBarcode('{{ $sb->id }}', '{{ $sb->barcode }}')">Delete</button>
             </td>
         </tr>
     @endforeach
@@ -48,5 +48,26 @@
     // Optionally, you can store it in localStorage for later use
     localStorage.setItem('existingBarcodes', JSON.stringify(existingBarcodes));
 
+    function deleteBarcode(id, barcode) {
+        $.ajax({
+            url: `/purchase/stockBarcode/${id}`, // Your endpoint
+            type: 'DELETE',                         // GET, POST, PUT, or DELETE
+            data: { id },                   // Data sent to the server
+            dataType: 'json',                    // Type of data you expect back
+            success: function(response) {
+                $(`#barcode-${id}`).remove();
+                existingBarcodes = existingBarcodes.filter(barcodeValue => barcodeValue != barcode);
+                localStorage.setItem('existingBarcodes', JSON.stringify(existingBarcodes));
+
+                $(".scanned").text(existingBarcodes.length);
+                $(".remaining_qty").text(existingBarcodes.length + 1);
+                
+                console.log('Success:', response);
+            },
+            error: function(xhr, status, error) {
+                alert("gdn is already approved, can not delete it");
+            }
+        });
+    }
 
 </script>
