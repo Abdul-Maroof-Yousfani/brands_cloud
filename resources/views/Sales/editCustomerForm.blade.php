@@ -59,8 +59,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                     <div class="panel">
                                                         <div class="panel-body">
-                                                            <form method="post" action="<?= url('sad/
-                                                            ?m='.$m.'') ?>" id="submitadv">
+                                                            <form method="post" action="<?= url('sad/updateCreditCustomerDetail?m='.$m.'') ?>" id="submitadv">
                                                                 <div class="row">
                                                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -241,7 +240,6 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                                 value="{{$Cusomter->opening_balance_date}}"
                                                                                 class="form-control" />
                                                                         </div>
-                                                                        
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                             <label> Tax Filer Registered :</label>
                                                                             <span class="rflabelsteric"><strong>*</strong></span>
@@ -249,7 +247,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                                 class="form-control ">
                                                                                 <option value="">Select Option</option>
                                                                                 <option value="yes"
-                                                                                    {{$Cusomter->regd_in_income_tax == "yes" ? 'selected' : ''}}>
+                                                                                    {{$Cusomter->regd_in_income_tax == "Yes" ? 'selected' : ''}}>
                                                                                     Yes</option>
                                                                                 <option value="no"
                                                                                     {{$Cusomter->regd_in_income_tax == "no" ? 'selected' : ''}}>
@@ -466,7 +464,6 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                         </div>
                                                                         <div id="only_emp" class="col-lg-12 col-md-12 col-sm-12 col-xs-12  @if($Cusomter->CustomerType != 2) hide @endif">
                                                                             <label>Employee:</label>
-                                                                            <br>
                                                                             <span class="rflabelsteric"></span>
                                                                             <select name="employee_id" id="employee_id"
                                                                                 class="form-control">
@@ -799,15 +796,6 @@ $(document).ready(function() {
         width: '100%'
     });
 });
-
-$(document).ready(function() {
-    $('#employee_id').select2({
-        width: '100%'
-    });
-});
-
 </script>
-
-
 {{-- <script src="{{URL::asset('assets/js/select2/js_tabindex.js') }}"></script> --}}
 @endsection

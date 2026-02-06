@@ -1031,6 +1031,9 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
         } else if ($selectVoucherStatus == '3' && empty($selectSubDepartmentId)) {
             $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '2')->get();
         }
+
+
+
         CommonHelper::reconnectMasterDatabase();
         return view('Purchase.AjaxPages.filterDemandVoucherList', compact('demandDetail'));
     }
@@ -1071,10 +1074,9 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
 
 
         $Master = DB::Connection('mysql2')->selectOne('select tr_no,tr_date  from stock_transfer where id = '.$DeleteId.'');
-        $Detail = DB::Connection('mysql2')->selectOne('select SUM(amount) amount from stock_transfer_data where master_id = '.$DeleteId.'');
-
-
-        CommonHelper::inventory_activity($Master->tr_no,$Master->tr_date,$Detail->amount,6,'Delete');
+        $Detail = DB::Connection('mysql2')->selectOne('select SUM(amount) amount, SUM(qty) qty, SUM(rate) rate from stock_transfer_data where master_id = '.$DeleteId.'');
+      
+        CommonHelper::inventory_activity($Master->tr_no,$Master->tr_date,$Detail->qty * ($Detail->rate ? $Detail->rate : 0),6,'Delete');
 
 
         $DeleteData['status'] = 2;
@@ -1085,6 +1087,9 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
         DB::Connection('mysql2')->table('stock_transfer_data')->where('master_id', $DeleteId)->update($DeleteData);
         DB::Connection('mysql2')->table('stock')->where('voucher_no', $TrNo)->update($DeleteData);
 
+        $type = "Stock Transfer";
+        \App\Helpers\CommonHelper::createNotification($type . " with " . $TrNo . " is deleted by " . auth()->user()->name, $type . "");
+        
         echo $DeleteId;
 
     }
@@ -1104,10 +1109,14 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
     {
         $DeleteId = $request->Id;
         $DeleteData['status'] = 2;
-        DB::Connection('mysql2')->table('goods_receipt_note')->where('id', $DeleteId)->update($DeleteData);
+        $grn = DB::Connection('mysql2')->table('goods_receipt_note')->where('id', $DeleteId);
+        $grn_no = $grn->grn_no;
+        $grn->update($DeleteData);
         DB::Connection('mysql2')->table('grn_data')->where('master_id', $DeleteId)->update($DeleteData);
         echo $DeleteId;
-
+     $type = "Goods Receipt Note";
+            \App\Helpers\CommonHelper::createNotification($type . " with " . $grn_no . " is deleted by " . auth()->user()->name, $type . "");
+     
     }
 
     public function MasterDeleteGrn(Request $request)
@@ -1147,6 +1156,9 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
 
 
         $grn_no = DB::Connection('mysql2')->selectOne('select grn_no,po_no from goods_receipt_note where id = '.$DeleteId.'');
+          $type = "Goods Receipt Note";
+            \App\Helpers\CommonHelper::createNotification($type . " with " . $grn_no->grn_no . " is deleted by " . auth()->user()->name, $type . "");
+   
         $DeleteData['status'] = 2;
         $Revers['purchase_request_status'] = 2;
         DB::Connection('mysql2')->table('goods_receipt_note')->where('id', $DeleteId)->update($DeleteData);
@@ -2518,6 +2530,7 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
         try
         {
             $id = $_GET['id'];
+            $grn = \Illuminate\Support\Facades\DB::connection("mysql2")->table("goods_receipt_note")->where("id", $id)->first();
             $data['grn_status'] = 3;
             $data['approve_username'] = Auth::user()->name;
 
@@ -2702,7 +2715,7 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
                 'status'=>1
             );
             DB::Connection('mysql2')->table('transactions')->insertGetId($data5);
-
+        
 
 
 
@@ -3831,6 +3844,9 @@ public function get_stock_location_wise(Request $request)
           $grn_no = $row->grn_no;
           $goods_rece=  DB::Connection('mysql2')->table('goods_receipt_note')->where('id', $id);
           $goods_rece->update($data);
+                    $type = "Goods Receipt Note";
+            \App\Helpers\CommonHelper::createNotification($type . " with " . $grn_no . " is approved by " . auth()->user()->name, $type . "");
+     
             DB::Connection('mysql2')->table('grn_data')->where('master_id', $id)->update($data);
 
 

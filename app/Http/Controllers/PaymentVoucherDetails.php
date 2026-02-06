@@ -1240,6 +1240,9 @@ class PaymentVoucherDetails extends Controller
             $subject = 'New Journal Voucher Created ' . $jv_no;
             NotificationHelper::send_email('Journal Voucher','Create',26,$jv_no,$subject);
             DB::Connection('mysql2')->commit();
+            $type = "Journal Voucher";
+            \App\Helpers\CommonHelper::createNotification($type . " with " . $jv_no . " is created by " . auth()->user()->name, $type . "");
+
 
         }
         catch(\Exception $e)

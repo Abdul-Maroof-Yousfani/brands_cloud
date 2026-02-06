@@ -2230,6 +2230,59 @@ public static function get_all_subitems()
         return $currency->get();
     }
 
+    public static function createNotification($message, $heading) {
+        DB::connection("mysql2")->table("notification")->insert([
+            "message" => $message,
+            "heading" => $heading,
+            "is_read" => 0,
+            "user_id" => auth()->user()->id,
+            "created_at" => now(),
+            "updated_at" => now()
+        ]);
+    }
+
+    public static function markAllAsRead() {
+        $notification = DB::connection("mysql2")
+            ->table("notification")
+            ->when(auth()->user()->acc_type != "client", function($query) {
+                $query->where("user_id", auth()->user()->id);
+            })
+            ->where("is_read", 0)
+            ->update([
+                "is_read" => 1
+            ]);
+    }
+    public static function getUnreadNotifications() {
+        $acc_type = auth()->user()->acc_type;
+
+        $notifications = DB::connection("mysql2")
+                                ->table("notification")
+                                ->when($acc_type != "client", function($query) {
+                                    $query->where("user_id", auth()->user()->id);
+                                })
+                                ->where("is_read", 0)
+                                ->get();
+
+
+        return $notifications;
+    }
+    public static function countOfUnreadMessages() {
+        $notifications = DB::connection("mysql2")
+                                ->table("notification")
+                                ->where("is_read", 0)
+                                ->when(auth()->user()->acc_type != "client", function($query) {
+                                    $query->where("user_id", auth()->user()->id);
+                                })
+                                ->count();
+
+        return $notifications;
+    }
+    public static function markAsRead($notification_id) {
+        $notification = DB::connection("mysql2")->table("notification")->find($notification_id);
+        $notification->is_read = true;
+        $notification->save();
+    }
+
     public static function get_subitem_detail($id)
     {
         $sub_iteme = new Subitem();

@@ -602,6 +602,7 @@ public function approve_transfer(Request $request)
     try {
         $id = $request->id;
 
+        $stock_transfer = \Illuminate\Support\Facades\DB::connection("mysql2")->table("stock_transfer")->where("id", $id)->first();
         $data = DB::connection('mysql2')->table('stock_transfer_data as a')
             ->join('stock_transfer as b','a.master_id','=','b.id')
             ->select('a.*','b.tr_date','b.tr_no')
@@ -643,6 +644,9 @@ public function approve_transfer(Request $request)
             DB::connection('mysql2')->table('stock')->insert($stock1);
         }
 
+        $type = "Stock Transfer";
+        \App\Helpers\CommonHelper::createNotification($type . " with " . $stock_transfer->tr_no . " is approved by " . auth()->user()->name, $type . "");
+        
         // Update transfer status
         DB::connection('mysql2')->table('stock_transfer')->where('id', $id)->update([
             'tr_status' => 2

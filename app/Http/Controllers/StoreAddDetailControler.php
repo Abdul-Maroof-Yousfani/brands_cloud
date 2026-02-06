@@ -712,6 +712,9 @@ class StoreAddDetailControler extends Controller
         }
 
         CommonHelper::inventory_activity($purchaseRequestNo, $po_date, $TotAmount + $SalesTaxAmount, 2, 'Insert');
+        $type = "Purchase Order";
+        \App\Helpers\CommonHelper::createNotification($type . " with " . $purchase_request->purchase_request_no . " is created by " . auth()->user()->name, $type . "");
+        
         DB::Connection('mysql2')->commit();
         
         Session::flash('dataInsert', 'Successfully saved.');
@@ -844,6 +847,9 @@ public function updateDirectPurchaseOrder(Request $request)
             }
         }
 
+        $type = "Purchase Order";
+        \App\Helpers\CommonHelper::createNotification($type . " with " . $purchase_request->purchase_request_no . " is edited by " . auth()->user()->name, $type . "");
+     
         // Update inventory activity log (use 'Update' action)
         CommonHelper::inventory_activity(
             $purchaseRequestNo,

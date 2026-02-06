@@ -65,6 +65,10 @@ endif;
    img.logo_m {
         width: 225px;
     }
+     .dropdown:hover>.dropdown-menu {
+        display: block;
+        margin-top: 0;
+    }
 </style>
 
 
@@ -195,69 +199,50 @@ endif;
            </ul>
            <ul class="profile-admin d-flex">
              
-              <li class="nav-item dropdown dropdown-notification me-25"><a class="nav-link bella" href="#" data-bs-toggle="dropdown"><i class="fa fa-bell" aria-hidden="true"></i><span class="badge rounded-pill bg-danger badge-up">5</span></a>
-                 <ul class="dropdown-menu dropdown-menu-media dropdown-menu-end">
-                     <li class="dropdown-menu-header">
-                         <div class="dropdown-header d-flex">
-                             <h4 class="notification-title mb-0 me-auto">Notifications</h4>
-                             <div class="badge rounded-pill badge-light-primary">6 New</div>
-                         </div>
-                     </li>
-                     <li class="scrollable-container  media-list ">
-                       <a class="d-flex" href="#">
-                             <div class="list-item d-flex align-items-start">
-                                
-                                 <div class="list-item-body flex-grow-1">
-                                     <p class="media-heading"><span class="fw-bolder">Congratulation Sam 🎉</span>winner!</p><small class="notification-text"> Won the monthly best seller badge.</small>
-                                 </div>
-                             </div>
-                         </a><a class="d-flex" href="#">
-                             <div class="list-item d-flex align-items-start">
-                                
-                                 <div class="list-item-body flex-grow-1">
-                                     <p class="media-heading"><span class="fw-bolder">New message</span>&nbsp;received</p><small class="notification-text"> You have 10 unread messages</small>
-                                 </div>
-                             </div>
-                         </a><a class="d-flex" href="#">
-                             <div class="list-item d-flex align-items-start">
-                               
-                                 <div class="list-item-body flex-grow-1">
-                                     <p class="media-heading"><span class="fw-bolder">Revised Order 👋</span>&nbsp;checkout</p><small class="notification-text"> MD Inc. order updated</small>
-                                 </div>
-                             </div>
-                         </a>
-                         <div class="list-item d-flex align-items-center">
-                             <h6 class="fw-bolder me-auto mb-0">System Notifications</h6>
-                             <div class="form-check form-check-primary form-switch">
-                                 <input class="form-check-input" id="systemNotification" type="checkbox" checked="">
-                                 <label class="form-check-label" for="systemNotification"></label>
-                             </div>
-                         </div><a class="d-flex" href="#">
-                             <div class="list-item d-flex align-items-start">
-                                
-                                 <div class="list-item-body flex-grow-1">
-                                     <p class="media-heading"><span class="fw-bolder">Server down</span>&nbsp;registered</p><small class="notification-text"> USA Server is down due to high CPU usage</small>
-                                 </div>
-                             </div>
-                         </a><a class="d-flex" href="#">
-                             <div class="list-item d-flex align-items-start">
-                                 
-                                 <div class="list-item-body flex-grow-1">
-                                     <p class="media-heading"><span class="fw-bolder">Sales report</span>&nbsp;generated</p><small class="notification-text"> Last month sales report generated</small>
-                                 </div>
-                             </div>
-                         </a><a class="d-flex" href="#">
-                             <div class="list-item d-flex align-items-start">
-                                 
-                                 <div class="list-item-body flex-grow-1">
-                                     <p class="media-heading"><span class="fw-bolder">High memory</span>&nbsp;usage</p><small class="notification-text"> BLR Server using high memory</small>
-                                 </div>
-                             </div>
-                         </a>
-                     </li>
-                     <li class="dropdown-menu-footer"><a class="btn btn-primary w-100" href="#">Read all notifications</a></li>
-                 </ul>
-             </li>
+              
+            <li class="nav-item dropdown dropdown-notification me-25">
+                <a class="nav-link bella" href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-bell" aria-hidden="true"></i>
+                    <span
+                        class="badge rounded-pill bg-danger badge-up notification-count">{{ App\Helpers\CommonHelper::countOfUnreadMessages() }}</span>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-media dropdown-menu-end">
+                    <li class="dropdown-menu-header">
+                        <div class="dropdown-header d-flex">
+                            <h4 class="notification-title mb-0 me-auto">Notifications</h4>
+                            <div class="badge rounded-pill badge-light-primary"><span
+                                    class="notification-count">{{ App\Helpers\CommonHelper::countOfUnreadMessages() }}</span>
+                                New</div>
+                        </div>
+                    </li>
+
+                    <li class="scrollable-container media-list">
+
+                        @foreach (App\Helpers\CommonHelper::getUnreadNotifications() as $notification)
+                            <a class="d-flex" href="javascript:void(0)">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">{{ $notification->heading }}</span>
+                                        </p>
+                                        <small class="notification-text">{{ $notification->message }}</small>
+                                        <br>
+                                        <small class="text-muted"
+                                            style="font-size: 0.75rem;">{{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+
+
+                    <li class="dropdown-menu-footer">
+                        <a class="btn btn-primary w-100 mark-all-as-read" onclick="markAllAsRead()">
+                            Mark all as read
+                        </a>
+                    </li>
+                </ul>
+            </li>
               <li>
                  <div class="pro-user d-flex">
                    

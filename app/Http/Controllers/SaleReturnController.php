@@ -395,7 +395,12 @@ $item_type = CommonHelper::get_item_type($request->product_id[$key]);
        
         
     ];
-
+    
+    $type = "Sale Return";
+    \App\Helpers\CommonHelper::createNotification(
+        $type . " with " . $so_no . " is created by " . auth()->user()->name, 
+        $type . ""
+    );
     DB::Connection('mysql2')->table('stock')->insert($stock_data);
 
 
@@ -693,6 +698,11 @@ DB::Connection('mysql2')->table('transaction_supply_chain')->insert($transaction
 
         // Update sales activity status to 1
         SalesHelper::sales_activity($sale_return->so_no, date('Y-m-d'), '0', 1, 'Approved');
+        $type = "Sale Return";
+        \App\Helpers\CommonHelper::createNotification(
+            $type . " with " . $sale_return->so_no . " is approved by " . auth()->user()->name, 
+            $type . ""
+        );
 
         DB::Connection('mysql2')->commit();
 
@@ -826,6 +836,12 @@ DB::Connection('mysql2')->table('transaction_supply_chain')->insert($transaction
 
             SalesHelper::sales_activity($sales_return->so_no, date('Y-m-d'), '0', 1, 'Update');
 
+            $type = "Sale Return";
+            \App\Helpers\CommonHelper::createNotification(
+                $type . " with " . $sales_return->so_no . " is edited by " . auth()->user()->name, 
+                $type . ""
+            );
+
             DB::connection('mysql2')->commit();
             
             return response()->json([
@@ -848,6 +864,7 @@ DB::Connection('mysql2')->table('transaction_supply_chain')->insert($transaction
 
       public function destroy($id)
         {
+            $sales_return = Sales_Return::find($id);
             // Set sale_order.status = 0)
             DB::connection('mysql2')->table('sales_return')
                 ->where('id', $id)
@@ -857,6 +874,12 @@ DB::Connection('mysql2')->table('transaction_supply_chain')->insert($transaction
             DB::connection('mysql2')->table('sales_return_data')
                 ->where('master_id', $id)
                 ->update(['status' => 0]);
+
+        $type = "Sale Return";
+        \App\Helpers\CommonHelper::createNotification(
+            $type . " with " . $sales_return->so_no . " is edited by " . auth()->user()->name, 
+            $type . ""
+        );
 
             return redirect()->back()->with('success', 'Sale order deleted successfully.');
         }

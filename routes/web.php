@@ -26,6 +26,18 @@ Route::get('testing', function () {
     
 });
 
+
+
+Route::get('/migrate-specific/{id}', function ($id) {
+    // Run a specific migration
+    $migrationPath = 'database/migrations/' . $id;
+    Artisan::call('migrate', [
+        '--path' => $migrationPath,
+    ]);
+
+    return 'Migration executed successfully.';
+});
+
 Route::get("privileges", function() {
     dd(\App\Helpers\CommonHelper::get_users_companies());
     // dd($privileges);
@@ -157,6 +169,10 @@ Route::group(['prefix' => 'vad', 'before' => 'csrf'], function () {
 
 Route::get('/dMaster', 'MasterController@index');
 Route::get('/dClient', 'ClientController@index')->name('dClient');
+Route::get("markAllAsRead", function() {
+    App\Helpers\CommonHelper::markAllAsRead();
+    return response()->json("Marked all as read!");
+})->name("markAsRead");
 Route::get('/fClient', 'ClientController@financeDashboard')->name('fClient');
 Route::get('/financeDashboardAjax', 'ClientController@financeDashboardAjax');
 Route::get('/production_dashboard', 'ClientController@production_dashboard')->name('production_dashboard');

@@ -319,8 +319,11 @@ class PurchaseDeleteController extends Controller
             $Pr = DB::Connection('mysql2')->table('demand')->where('id',$id)->first();
             $VoucherNo = $Pr->demand_no;
             $VoucherDate = $Pr->demand_date;
+            
             $Amount = 0;
-        }
+            \App\Helpers\CommonHelper::createNotification("Purchase Request with " . $Pr->demand_no . " is deleted by " . auth()->user()->name, "Purchase Request");
+      
+            }
         elseif($TableType == 2)
         {
             $Master = 'purchase_request';
@@ -329,6 +332,8 @@ class PurchaseDeleteController extends Controller
             $VoucherNo = $Po->purchase_request_no;
             $VoucherDate = $Po->purchase_request_date;
             $Amount = $Po->net_amount;
+            \App\Helpers\CommonHelper::createNotification("Purchase Order with " . $Po->purchase_request_no . " is deleted by " . auth()->user()->name, "Purchase Order");
+      
         }
 
         $data['status']=0;

@@ -102,6 +102,10 @@ class DebitNoteController extends Controller
             "rv_no" => $rv_no
         ]);
 
+        $type = "Debit Note";
+		\App\Helpers\CommonHelper::createNotification($type . " with " . $rv_no . " is created by " . auth()->user()->name, $type . "");
+
+
         return redirect()->route("debitnote.list");
     }
     

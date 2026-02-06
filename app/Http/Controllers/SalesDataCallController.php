@@ -314,6 +314,13 @@ class SalesDataCallController extends Controller
             DB::Connection('mysql2')->table('accounts')->where('id',$acc_id)->update($data);
         endif;
 
+        $customer = \Illuminate\Support\Facades\DB::connection("mysql2")->table("customers")->where("id", $CustomerId)->first();
+        $type = "Customer " . $customer->name;
+        \App\Helpers\CommonHelper::createNotification(
+            $type . " is deleted by " . auth()->user()->name,
+            "Customer"
+        );
+
         echo $CustomerId;
 
 
@@ -2827,6 +2834,12 @@ class SalesDataCallController extends Controller
             endif;
 
             DB::Connection('mysql2')->commit();
+
+            $type = "Sale Return";
+             \App\Helpers\CommonHelper::createNotification(
+                $type . " with " . $cr_on . " is deleted by " . auth()->user()->name, 
+                $type . ""
+            );
         }
         catch(\Exception $e)
         {

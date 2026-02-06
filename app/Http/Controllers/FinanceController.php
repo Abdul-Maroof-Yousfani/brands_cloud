@@ -2536,6 +2536,7 @@ public function importData(Request $request)
 		$PaidTo = $PaidTo::where('status','=','1')->get();
 		CommonHelper::reconnectMasterDatabase();
         $departments = Department::where([['status', '=', '1'], ])->select('id','department_name')->orderBy('id')->get();
+		
 		return view('Finance.createJournalVoucherNew',compact('accounts','PaidTo', 'departments'));
 	}
 

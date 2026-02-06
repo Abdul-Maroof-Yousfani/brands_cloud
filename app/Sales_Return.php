@@ -14,6 +14,9 @@ class Sales_Return extends Model
     // protected $primaryKey = 'id';
     public $timestamps = false;
 
+   
+
+
     public function customer()
     {
         return $this->hasOne(Customer::class,'id','buyers_id');

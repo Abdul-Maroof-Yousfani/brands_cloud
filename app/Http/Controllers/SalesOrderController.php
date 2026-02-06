@@ -468,6 +468,9 @@ class SalesOrderController extends Controller
                     ]);
                 
                 }
+
+                CommonHelper::createNotification("Sale Order with " . $data->so_no . " is approved by " . auth()->user()->name, "Sales Order");
+        
             } catch(\Exception $e) {
                 dd($e);
             }
@@ -639,6 +642,7 @@ class SalesOrderController extends Controller
             // $sales_order->total_amount_after_sale_tax = $request->grand_total_with_tax;
             // $sales_order->save();
             SalesHelper::sales_activity($so_no, date('Y-m-d'), '0', 1, 'Insert');
+            CommonHelper::createNotification("Sale Order with " . $so_no . " is created by " . auth()->user()->name, "Sales Order");
             $voucher_no = $so_no;
             $subject = 'Sales Order Created ' . $so_no;
 
@@ -1067,6 +1071,8 @@ class SalesOrderController extends Controller
             }
 
             SalesHelper::sales_activity($sales_order->so_no, date('Y-m-d'), '0', 1, 'Update');
+            \App\Helpers\CommonHelper::createNotification("Sale Order with " . $sales_order->so_no . " is updated by " . auth()->user()->name, "Sales Order");
+        
 
             DB::connection('mysql2')->commit();
             
@@ -1096,6 +1102,7 @@ class SalesOrderController extends Controller
      */
    public function destroy($id)
 {
+    $sale_order = DB::connection("mysql2")->table("sales_order")->where("id", $id)->first();
     // Set sale_order.status = 0
     DB::connection('mysql2')->table('sales_order')
         ->where('id', $id)
@@ -1105,6 +1112,9 @@ class SalesOrderController extends Controller
     DB::connection('mysql2')->table('sales_order_data')
         ->where('master_id', $id)
         ->update(['status' => 0]);
+
+    CommonHelper::createNotification("Sale Order with " . $sale_order->so_no . " is deleted by " . auth()->user()->name, "Sales Order");
+        
 
     return redirect()->back()->with('success', 'Sale order deleted successfully.');
 }

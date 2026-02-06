@@ -307,6 +307,10 @@ class CreditNoteController extends Controller
 
 			DB::Connection('mysql2')->commit();
 
+			$type = "Credit Note";
+			\App\Helpers\CommonHelper::createNotification($type . " with " . $rv_no . " is created by " . auth()->user()->name, $type . "");
+        
+
 		}
 		catch(\Exception $e)
 		{
@@ -374,6 +378,9 @@ class CreditNoteController extends Controller
         $debit->is_approved = true;
         $debit->save();
 
+	
+
+
         return back()->with("success", "Credit Note is approved");
     }
     public function destroy(Debit $debit) {
@@ -384,6 +391,7 @@ class CreditNoteController extends Controller
 		
         $debit->status = 0;
         $debit->save();
+
 
         return back()->with("success","Deleted");
     }
@@ -462,7 +470,9 @@ class CreditNoteController extends Controller
             
 			// $brig=$request->si_id;
 			$net_amount=0;
-			$tax_amount=0;
+			$tax_amount=0;	$type = "Credit Note";
+			\App\Helpers\CommonHelper::createNotification($type . " with " . $rv_no . " is created by " . auth()->user()->name, $type . "");
+        
 			$tax_acc_id=0;
 			$total_amount=0;
 			$discount_amount=0;
@@ -684,6 +694,10 @@ class CreditNoteController extends Controller
 		{
 			return Redirect::to('sales/receiptVoucherList?m='.$request->m);
 		}
+
+		$type = "Credit Note";
+		\App\Helpers\CommonHelper::createNotification($type . " with " . $rv_no . " is created by " . auth()->user()->name, $type . "");
+        
 
     }
 }

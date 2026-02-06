@@ -597,6 +597,9 @@ class PurchaseController extends Controller
         $demand_data=$demand_data->where('master_id',$id)->orderBy('id','ASC')->get();
         $departments = new Department;
         $departments = $departments::where([['company_id', '=', $_GET['m']], ['status', '=', '1'], ])->select('id','department_name')->orderBy('id')->get();
+        
+            
+
         return view('Purchase.editDemandVoucherForm',compact('demand','demand_data','id','departments'));
     }
 

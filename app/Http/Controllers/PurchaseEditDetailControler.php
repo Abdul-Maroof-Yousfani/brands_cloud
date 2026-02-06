@@ -1006,6 +1006,9 @@ class PurchaseEditDetailControler extends Controller
             }
 
 
+            $type = "Goods Receipt Note";
+            \App\Helpers\CommonHelper::createNotification($type . " with " . $grn_no . " is edited by " . auth()->user()->name, $type . "");
+     
             $Loop = Input::get('account_id');
 
             if($Loop !="")

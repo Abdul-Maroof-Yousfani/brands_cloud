@@ -3215,6 +3215,12 @@ if (in_array($user->acc_type, ['user'])) {
                 $subject = 'Sales Tax Invoice Approved For ' . $so_no;
                 NotificationHelper::send_email('Sales tax Invoice', $behavior, $dept_id, $voucher_no, $subject, $p_type);
             endif;
+            $type = "Sales Tax Invoice";
+            \App\Helpers\CommonHelper::createNotification(
+                $type . " with " . $gi_no . " is approved by " . auth()->user()->name, 
+                $type . ""
+            );
+        
             DB::Connection('mysql2')->commit();
         } catch (Exception $ex) {
 
