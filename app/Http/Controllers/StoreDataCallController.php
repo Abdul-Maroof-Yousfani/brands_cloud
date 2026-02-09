@@ -1173,7 +1173,6 @@ public function approve_transfer(Request $request)
         $PoNo = $request->PoNo;
         $m = $request->m;
         $purchaseRequestDetail = DB::Connection('mysql2')->table('purchase_request')->where('status',1)->where('purchase_request_no','like', '%' . $PoNo . '%')->get();
-        dd($purchaseRequestDetail);
         return view('Store.AjaxPages.getPoDataPoNoWise', compact('purchaseRequestDetail','m'));
     }
 

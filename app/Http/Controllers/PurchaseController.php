@@ -754,7 +754,7 @@ class PurchaseController extends Controller
         $purchase_voucher=$purchase_voucher->where('status',1)
         ->whereBetween('pv_date',[$first_day_this_month,$last_day_this_month])
         ->where('grn_id','!=',0)
-        ->orderBy('pv_date','DCS')->get();
+        ->orderBy('pv_date','desc')->get();
         $Supplier  = DB::Connection('mysql2')->table('supplier')->where('status',1)->get();
 
         return view('Purchase.viewPurchaseVoucherListThroughGrn',compact('purchase_voucher','Supplier','first_day_this_month','last_day_this_month', 'username'));

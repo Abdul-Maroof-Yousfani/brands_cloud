@@ -2252,6 +2252,26 @@ public static function get_all_subitems()
                 "is_read" => 1
             ]);
     }
+    
+    public static function pendingDocuments(
+        $table_name, 
+        $column_name, 
+        $pending_status, 
+        $conditional_column = null, 
+        $conditional_status = null
+    ) {
+        $query = DB::connection("mysql2")
+            ->table($table_name)
+            ->where($column_name, $pending_status);
+
+        // Only apply the second condition if both values are provided
+        if ($conditional_column !== null && $conditional_status !== null) {
+            $query->where($conditional_column, $conditional_status);
+        }
+
+        // Return the actual count (integer), not the query builder
+        return $query->count();
+    }
     public static function getUnreadNotifications() {
         $acc_type = auth()->user()->acc_type;
 
