@@ -305,7 +305,7 @@ endif;
                                 </div>
                             </a>
                         @endif
-                        @if($pending_purchase_invoices > 0)
+                        @if($pending_purchase_orders > 0)
                             <a class="d-flex" href="/store/viewPurchaseRequestList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
