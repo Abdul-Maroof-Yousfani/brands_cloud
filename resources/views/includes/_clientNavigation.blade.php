@@ -201,26 +201,7 @@ CommonHelper::reconnectMasterDatabase();
             </li>
 
         </ul>
-
-        <ul class="profile-admin d-flex">
-
-            <li class="nav-item dropdown dropdown-notification me-25">
-                <a class="nav-link bella" href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-bell" aria-hidden="true"></i>
-                    <span
-                        class="badge rounded-pill bg-danger badge-up notification-count">{{ App\Helpers\CommonHelper::countOfUnreadMessages() }}</span>
-                </a>
-
-                <ul class="dropdown-menu dropdown-menu-media dropdown-menu-end">
-                    <li class="dropdown-menu-header">
-                        <div class="dropdown-header d-flex">
-                            <h4 class="notification-title mb-0 me-auto">Notifications</h4>
-                            <div class="badge rounded-pill badge-light-primary"><span
-                                    class="notification-count">{{ App\Helpers\CommonHelper::countOfUnreadMessages() }}</span>
-                                New</div>
-                        </div>
-                    </li>
-                    @php
+  @php
                         $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
                         $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1, true);
                         $pending_sale_returns = \App\Helpers\CommonHelper::pendingDocuments("credit_note", "status", 0);
@@ -230,7 +211,36 @@ CommonHelper::reconnectMasterDatabase();
                         $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
                         $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
                         $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
+                        $total_pending = 
+                            $pending_delivery_notes +
+                            $pending_sale_tax_invoices +
+                            $pending_sale_returns +
+                            $pending_purchase_requests +
+                            $pending_purchase_quotations +
+                            $pending_purchase_orders +
+                            $pending_grns +
+                            $pending_purchase_invoices +
+                            $pending_stock_transfers;
                     @endphp
+        <ul class="profile-admin d-flex">
+
+            <li class="nav-item dropdown dropdown-notification me-25">
+                <a class="nav-link bella" href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-bell" aria-hidden="true"></i>
+                    <span
+                        class="badge rounded-pill bg-danger badge-up notification-count">{{ $total_pending }}</span>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-media dropdown-menu-end">
+                    <li class="dropdown-menu-header">
+                        <div class="dropdown-header d-flex">
+                            <h4 class="notification-title mb-0 me-auto">Notifications</h4>
+                            <div class="badge rounded-pill badge-light-primary"><span
+                                    class="notification-count">{{ $total_pending }}</span>
+                                New</div>
+                        </div>
+                    </li>
+                  
                     <li class="scrollable-container media-list">
 
                         {{-- @foreach (App\Helpers\CommonHelper::getUnreadNotifications() as $notification) --}}
