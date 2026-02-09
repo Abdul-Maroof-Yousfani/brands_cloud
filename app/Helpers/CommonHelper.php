@@ -2258,7 +2258,8 @@ public static function get_all_subitems()
         $column_name, 
         $pending_status, 
         $conditional_column = null, 
-        $conditional_status = null
+        $conditional_status = null,
+        $is_st_invoice = false
     ) {
         $query = DB::connection("mysql2")
             ->table($table_name)
@@ -2267,6 +2268,13 @@ public static function get_all_subitems()
         // Only apply the second condition if both values are provided
         if ($conditional_column !== null && $conditional_status !== null) {
             $query->where($conditional_column, $conditional_status);
+        }
+
+        if($is_st_invoice) {
+            $query->where(function($query) {
+                $query->where('sales_tax_invoice.pre_status', '!=', 1)
+                ->orWhereNull('sales_tax_invoice.pre_status');
+            });
         }
 
         // Return the actual count (integer), not the query builder

@@ -222,7 +222,7 @@ CommonHelper::reconnectMasterDatabase();
                     </li>
                     @php
                         $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
-                        $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1);
+                        $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1, true);
                         $pending_sale_returns = \App\Helpers\CommonHelper::pendingDocuments("credit_note", "status", 0);
                         $pending_purchase_requests = \App\Helpers\CommonHelper::pendingDocuments("demand", "demand_status", 1, "status", 1);
                         $pending_purchase_quotations = \App\Helpers\CommonHelper::pendingDocuments("quotation", "quotation_status", 1, "status", 1);
