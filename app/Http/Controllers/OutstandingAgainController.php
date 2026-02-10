@@ -19,6 +19,8 @@ class OutstandingAgainController extends Controller
     ->table("sales_tax_invoice")
     ->select(
         "sales_tax_invoice.gi_no",
+
+        'sales_tax_invoice.total AS invoice_amount',
         "new_rvs.rv_no",
         "new_rvs.pay_mode",
         "sales_order.so_no",
@@ -32,12 +34,7 @@ class OutstandingAgainController extends Controller
         "cr_no",
         "sales_order.branch",
 
-        // ✅ Correct invoice amount
-        DB::raw("(
-            SELECT COALESCE(SUM(stid.amount), 0)
-            FROM sales_tax_invoice_data stid
-            WHERE stid.master_id = sales_tax_invoice.id
-        ) AS invoice_amount"),
+      
 
         // ✅ Correct receipt amount
         DB::raw("(
