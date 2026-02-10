@@ -211,6 +211,7 @@ CommonHelper::reconnectMasterDatabase();
                         $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
                         $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
                         $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
+                        $delivery_note_creatable = \App\Helpers\CommonHelper::deliveryNoteCreatable();
                         $total_pending = 
                             $pending_delivery_notes +
                             $pending_sale_tax_invoices +
@@ -220,7 +221,8 @@ CommonHelper::reconnectMasterDatabase();
                             $pending_purchase_orders +
                             $pending_grns +
                             $pending_purchase_invoices +
-                            $pending_stock_transfers;
+                            $pending_stock_transfers +
+                            $delivery_note_creatable;
                     @endphp
         <ul class="profile-admin d-flex">
 
@@ -243,6 +245,19 @@ CommonHelper::reconnectMasterDatabase();
                   
                     <li class="scrollable-container media-list">
 
+                        @if($delivery_note_creatable > 0)
+                            <a class="d-flex" href="/sales/CreateDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Create Delivery Note</span>
+                                        </p>
+                                        <small class="notification-text">{{ $delivery_note_creatable }} Pending Delivery notes can be created</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
                         {{-- @foreach (App\Helpers\CommonHelper::getUnreadNotifications() as $notification) --}}
                         @if($pending_delivery_notes > 0)
                             <a class="d-flex" href="/sales/viewDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">

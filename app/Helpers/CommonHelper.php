@@ -3197,6 +3197,26 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         return $dept_allocation = $dept_allocation->where('Main_master_id', $id)->where('type', $type)->count();
     }
 
+    public static function deliveryNoteCreatable() {
+        
+      $territory_ids = json_decode(auth()->user()->territory_id);
+  $whereTerritories = array_map('intval', $territory_ids);
+      
+        $sale_order = new Sales_Order();
+        $sale_order = $sale_order
+        // ->where("status", 0)
+        ->join("customers", 'customers.id', "=", "sales_order.buyers_id")
+        // ->whereIn("customers.id", $territory_ids)
+        ->where("sales_order.status", "!=", 2)
+         ->whereIn("customers.territory_id", $whereTerritories) 
+   
+        ->where("sales_order.delivery_note_status", "!=", 1)
+        ->select('sales_order.*') // <-- explicitly select sales_order columns
+        ->orderBy('sales_order.id', 'desc')
+        ->count();
+        return $sale_order;
+    }
+
     public static function get_accounts_for_jvs()
     {
         return $accounts = DB::Connection('mysql2')->table('accounts as  a')

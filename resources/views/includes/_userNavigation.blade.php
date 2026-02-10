@@ -197,27 +197,29 @@ endif;
               </li>
              
            </ul>
-           @php
-                $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
-                $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1, true);
-                $pending_sale_returns = \App\Helpers\CommonHelper::pendingDocuments("credit_note", "status", 0);
-                $pending_purchase_requests = \App\Helpers\CommonHelper::pendingDocuments("demand", "demand_status", 1, "status", 1);
-                $pending_purchase_quotations = \App\Helpers\CommonHelper::pendingDocuments("quotation", "quotation_status", 1, "status", 1);
-                $pending_purchase_orders = \App\Helpers\CommonHelper::pendingDocuments("purchase_request", "purchase_request_status", 1, "status", 1);
-                $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
-                $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
-                $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
-                $total_pending = 
-                    $pending_delivery_notes +
-                    $pending_sale_tax_invoices +
-                    $pending_sale_returns +
-                    $pending_purchase_requests +
-                    $pending_purchase_quotations +
-                    $pending_purchase_orders +
-                    $pending_grns +
-                    $pending_purchase_invoices +
-                    $pending_stock_transfers;
-            @endphp
+             @php
+                        $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
+                        $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1, true);
+                        $pending_sale_returns = \App\Helpers\CommonHelper::pendingDocuments("credit_note", "status", 0);
+                        $pending_purchase_requests = \App\Helpers\CommonHelper::pendingDocuments("demand", "demand_status", 1, "status", 1);
+                        $pending_purchase_quotations = \App\Helpers\CommonHelper::pendingDocuments("quotation", "quotation_status", 1, "status", 1);
+                        $pending_purchase_orders = \App\Helpers\CommonHelper::pendingDocuments("purchase_request", "purchase_request_status", 1, "status", 1);
+                        $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
+                        $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
+                        $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
+                        $delivery_note_creatable = \App\Helpers\CommonHelper::deliveryNoteCreatable();
+                        $total_pending = 
+                            $pending_delivery_notes +
+                            $pending_sale_tax_invoices +
+                            $pending_sale_returns +
+                            $pending_purchase_requests +
+                            $pending_purchase_quotations +
+                            $pending_purchase_orders +
+                            $pending_grns +
+                            $pending_purchase_invoices +
+                            $pending_stock_transfers +
+                            $delivery_note_creatable;
+                    @endphp
            <ul class="profile-admin d-flex">
              
               
@@ -240,6 +242,20 @@ endif;
 
                     <li class="scrollable-container media-list">
 
+
+                        @if($delivery_note_creatable > 0)
+                            <a class="d-flex" href="/sales/CreateDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Create Delivery Note</span>
+                                        </p>
+                                        <small class="notification-text">{{ $delivery_note_creatable }} Pending Delivery notes can be created</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
                         @if($pending_delivery_notes > 0)
                             <a class="d-flex" href="/sales/viewDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
                                 <div class="list-item d-flex align-items-start">
