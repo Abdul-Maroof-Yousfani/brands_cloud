@@ -10,7 +10,7 @@ $parentCode = $_GET['parentCode'];
 use App\Helpers\CommonHelper;
 use App\Helpers\SalesHelper;
 
-$AccYearDate = DB::table('company')->select('accyearfrom', 'accyearto')->where('id', $_GET['m'])->first();
+$AccYearDate = DB::table('company')->select('accyearfrom', 'accyearto')->where('id', $_GET['m'] ? $_GET['m'] : 1)->first();
 $AccYearFrom = $AccYearDate->accyearfrom;
 $AccYearTo = $AccYearDate->accyearto;
 ?>

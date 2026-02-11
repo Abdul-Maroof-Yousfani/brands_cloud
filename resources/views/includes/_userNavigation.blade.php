@@ -239,9 +239,8 @@ endif;
                                 New</div>
                         </div>
                     </li>
-
+                  
                     <li class="scrollable-container media-list">
-
 
                         @if($delivery_note_creatable > 0)
                             <a class="d-flex" href="/sales/CreateDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
@@ -256,8 +255,9 @@ endif;
                                 </div>
                             </a>
                         @endif
+                        {{-- @foreach (App\Helpers\CommonHelper::getUnreadNotifications() as $notification) --}}
                         @if($pending_delivery_notes > 0)
-                            <a class="d-flex" href="/sales/viewDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex" href="/sales/viewDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -270,7 +270,7 @@ endif;
                             </a>
                         @endif
                         @if($pending_sale_tax_invoices > 0)
-                            <a class="d-flex" href="/sales/viewSalesTaxInvoiceList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex" href="/sales/viewSalesTaxInvoiceList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -283,7 +283,7 @@ endif;
                             </a>
                         @endif
                         @if($pending_sale_returns > 0)
-                             <a class="d-flex" href="/sales/viewCustomerCreditNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                             <a class="d-flex" href="/sales/viewCustomerCreditNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -296,7 +296,7 @@ endif;
                             </a>
                         @endif
                         @if($pending_purchase_requests > 0)
-                            <a class="d-flex" href="/purchase/viewDemandList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex" href="/purchase/viewDemandList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -309,7 +309,7 @@ endif;
                             </a>
                         @endif
                         @if($pending_purchase_quotations > 0)
-                            <a class="d-flex" href="/quotation/quotation_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex" href="/quotation/quotation_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -322,7 +322,7 @@ endif;
                             </a>
                         @endif
                         @if($pending_purchase_orders > 0)
-                            <a class="d-flex" href="/store/viewPurchaseRequestList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex" href="/store/viewPurchaseRequestList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -335,7 +335,7 @@ endif;
                             </a>
                         @endif
                         @if($pending_grns > 0)
-                            <a class="d-flex" href="/purchase/viewGoodsReceiptNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex" href="/purchase/viewGoodsReceiptNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -349,7 +349,7 @@ endif;
                         @endif
 
                         @if($pending_purchase_invoices > 0)
-                            <a class="d-flex" href="/purchase/viewPurchaseVoucherListThroughGrn?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex" href="/purchase/viewPurchaseVoucherListThroughGrn?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -363,7 +363,7 @@ endif;
                         @endif
 
                         @if($pending_stock_transfers > 0)
-                            <a class="d-flex" href="/store/stock_transfer_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex" href="/store/stock_transfer_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
@@ -375,6 +375,8 @@ endif;
                                 </div>
                             </a>
                         @endif
+                            
+                        {{-- @endforeach --}}
 
 
                     <li class="dropdown-menu-footer">

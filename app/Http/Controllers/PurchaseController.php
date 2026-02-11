@@ -560,11 +560,17 @@ class PurchaseController extends Controller
     }
 
     public function viewDemandList(){
+        $type = request()->type;
+        
+        
         $demand_detail= DB::Connection('mysql2')->table('demand')
                         ->leftJoin("demand_data", "demand.id", "=", "demand_data.master_id")
                         ->leftJoin("subitem", "subitem.id", "=", "demand_data.sub_item_id")
                         ->select("demand.id", "demand.status", "demand.demand_date", "demand_data.sub_item_id", "subitem.username")
                         ->where("demand.status", "!=", "0")
+                        ->when($type == 'pending', function($query) {
+                            $query->where("demand.demand_status", 1);
+                        })
                         ->groupBy("subitem.username")
                         ->get();
         return view('Purchase.viewDemandList', compact("demand_detail"));
@@ -749,14 +755,18 @@ class PurchaseController extends Controller
         $username= Subitem::select("username")->groupBy("username")->get();
         $first_day_this_month = date('Y-m-01');
         $last_day_this_month  = date('Y-m-t');
+        $type = request()->type;
         $purchase_voucher=new NewPurchaseVoucher();
         $purchase_voucher=$purchase_voucher->SetConnection('mysql2');
         $purchase_voucher=$purchase_voucher->where('status',1)
-        ->whereBetween('pv_date',[$first_day_this_month,$last_day_this_month])
-        ->where('grn_id','!=',0)
-        ->orderBy('pv_date','desc')->get();
+            ->whereBetween('pv_date',[$first_day_this_month,$last_day_this_month])
+            ->when($type == 'pending', function($query) {
+                $query->where("pv_status", 1);
+            })
+            ->where('grn_id','!=',0)
+            ->orderBy('pv_date','desc')->get();
         $Supplier  = DB::Connection('mysql2')->table('supplier')->where('status',1)->get();
-
+        
         return view('Purchase.viewPurchaseVoucherListThroughGrn',compact('purchase_voucher','Supplier','first_day_this_month','last_day_this_month', 'username'));
 
     }

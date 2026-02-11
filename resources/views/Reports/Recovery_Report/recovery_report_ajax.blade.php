@@ -7,7 +7,7 @@
         <td>{{ $data->customer_code }}</td>
         <td>{{ $data->name }}</td>
         <td>{{ $data->address }}</td>
-        <td>{{ 1 }}</td>
+        <td>SI</td>
         <td>{{ $data->gi_no }}</td>
         <td>{{ $data->brand_id ? \App\Helpers\CommonHelper::get_brand_by_id($data->brand_id) : "N/A" }}</td>
         <td>{{ \Carbon\Carbon::parse($data->gd_date)->format("d-M-y") }}</td>

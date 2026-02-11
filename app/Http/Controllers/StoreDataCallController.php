@@ -236,6 +236,7 @@ class StoreDataCallController extends Controller
         $fromDate = $_GET['fromDate'];
         $toDate = $_GET['toDate'];
         $m = $_GET['m'];
+        $type = $_GET['type'];
         $selectVoucherStatus = $_GET['selectVoucherStatus'];
         $selectSubDepartment = $_GET['selectSubDepartment'];
         $selectSubDepartmentId = $_GET['selectSubDepartmentId'];
@@ -263,7 +264,10 @@ class StoreDataCallController extends Controller
                                 ->where('purchase_request.purchase_request_status','!=','4')
                                 ->when($pr_no, function($query, $pr_no){ $query
                                 ->whereRaw('LOWER(purchase_request.pr_no) LIKE ?', ['%'.strtolower($pr_no).'%']); })
-                                ->orderBy('purchase_request.id','desc');
+                                ->orderBy('purchase_request.id','desc')
+                                ->when($type == 'pending', function($query) {
+                                    $query->where("purchase_request_status", 1);
+                                });
          if(!empty($search)){
             $purchaseRequestDetail = $purchaseRequestDetail->whereRaw('LOWER(subitem.product_name) LIKE ?', ['%'.strtolower($search).'%'])
                                     ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?',['%'.strtolower($search).'%'])
@@ -330,6 +334,7 @@ class StoreDataCallController extends Controller
             $purchaseRequestDetail = PurchaseRequest::whereBetween('purchase_request_date',[$fromDate,$toDate])->where('status','=','2')->where('demand_type','=','1')->where('supplier_id','=',$selectSupplierId)->where('sub_department_id','=',$selectSubDepartmentId)->where('purchase_request_status','!=','4')->get();
         }
         CommonHelper::reconnectMasterDatabase();
+    
         return view('Store.AjaxPages.filterPurchaseRequestVoucherList',compact('purchaseRequestDetail'));
     }
 
@@ -1172,6 +1177,7 @@ public function approve_transfer(Request $request)
     {
         $PoNo = $request->PoNo;
         $m = $request->m;
+        $type = $request->type;
         $purchaseRequestDetail = DB::Connection('mysql2')->table('purchase_request')->where('status',1)->where('purchase_request_no','like', '%' . $PoNo . '%')->get();
         return view('Store.AjaxPages.getPoDataPoNoWise', compact('purchaseRequestDetail','m'));
     }

@@ -9,7 +9,6 @@ window.onload=function () {
     }
 }
 var baseUrl = $('#baseUrl').val();
-
 function viewDataFilterOneParameter() {
     var paramOne = $('#paramOne').val();
     var functionName = $('#functionName').val();
@@ -22,7 +21,7 @@ function viewDataFilterOneParameter() {
     $.ajax({
         url: ''+baseUrl+'/'+functionName+'',
         method:'GET',
-        data:{fromDate:fromDate,toDate:toDate,m:m,parentCode:parentCode,paramOne:paramOne},
+        data:{fromDate:fromDate,toDate:toDate,m:m,parentCode:parentCode,paramOne:paramOne, type: $("#type").val()},
         error: function(){
             alert('error');
         },
@@ -57,7 +56,6 @@ function viewRangeWiseDataFilter() {
     filterVoucherList();
 }
 function filterVoucherList(){
-   
     var fromDate = $('#fromDate').val();
     var toDate = $('#toDate').val();
     var functionName = $('#functionName').val();
@@ -75,7 +73,7 @@ function filterVoucherList(){
         var selectSubDepartmentId = $('#selectSubDepartmentId').val();
         var selectSubDepartment = $('#selectSubDepartmentTwo').val();
         var selectVoucherStatus = $('#selectVoucherStatus').val();
-        $.getJSON(url, {fromDate: fromDate, toDate: toDate,orderby:orderby, m: m,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus}, function (result) {
+        $.getJSON(url, {fromDate: fromDate, toDate: toDate,orderby:orderby, m: m,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus, type: $("#type").val()}, function (result) {
             $.each(result, function (i, field) {
                 $('#' + tbodyId + '').html('' + field + '');
             });
@@ -86,7 +84,7 @@ function filterVoucherList(){
         var selectSupplierId = $('#selectSupplierId').val();
         var selectSupplier = $('#selectSupplierTwo').val();
         var selectVoucherStatus = $('#selectVoucherStatus').val();
-        $.getJSON(url, {fromDate: fromDate, toDate: toDate,orderby:orderby, m: m,selectSupplier:selectSupplier,selectSupplierId:selectSupplierId,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus}, function (result) {
+        $.getJSON(url, {fromDate: fromDate, toDate: toDate,orderby:orderby, m: m,selectSupplier:selectSupplier,selectSupplierId:selectSupplierId,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus, type: $("#type").val()}, function (result) {
             $.each(result, function (i, field) {
                 $('#' + tbodyId + '').html('' + field + '');
             });
@@ -111,7 +109,7 @@ function viewFilterDateWiseStockInventoryReport() {
     var m = $('#m').val();
     var url = ''+baseUrl+'/'+functionName+'';
     $('#'+tbodyId+'').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
-    $.getJSON(url, { categoryId:categoryId,subItemId:subItemId,paramTwo:paramTwo,m:m} ,function(result){
+    $.getJSON(url, { categoryId:categoryId,subItemId:subItemId,paramTwo:paramTwo,m:m, type: $("#type").val()} ,function(result){
         $.each(result, function(i, field){
             $('#'+tbodyId+'').html(''+field+'');
         });

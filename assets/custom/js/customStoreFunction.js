@@ -8,6 +8,7 @@ window.onload=function () {
         viewFilterDateWiseStockInventoryReport();
     }
 }
+alert("test");
 var baseUrl = $('#baseUrl').val();
 
 function viewDataFilterOneParameter() {
@@ -22,7 +23,7 @@ function viewDataFilterOneParameter() {
     $.ajax({
         url: ''+baseUrl+'/'+functionName+'',
         method:'GET',
-        data:{fromDate:fromDate,toDate:toDate,m:m,parentCode:parentCode,paramOne:paramOne},
+        data:{fromDate:fromDate,toDate:toDate,m:m,parentCode:parentCode,paramOne:paramOne, type: $("#type").val()},
         error: function(){
             alert('error');
         },
@@ -75,7 +76,7 @@ function filterVoucherList(){
         var selectSubDepartmentId = $('#selectSubDepartmentId').val();
         var selectSubDepartment = $('#selectSubDepartmentTwo').val();
         var selectVoucherStatus = $('#selectVoucherStatus').val();
-        $.getJSON(url, {fromDate: fromDate, toDate: toDate,orderby:orderby, m: m,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus}, function (result) {
+        $.getJSON(url, {fromDate: fromDate, toDate: toDate,orderby:orderby, m: m,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus, type: $("#type").val()}, function (result) {
             $.each(result, function (i, field) {
                 $('#' + tbodyId + '').html('' + field + '');
             });
@@ -111,7 +112,7 @@ function viewFilterDateWiseStockInventoryReport() {
     var m = $('#m').val();
     var url = ''+baseUrl+'/'+functionName+'';
     $('#'+tbodyId+'').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
-    $.getJSON(url, { categoryId:categoryId,subItemId:subItemId,paramTwo:paramTwo,m:m} ,function(result){
+    $.getJSON(url, { categoryId:categoryId,subItemId:subItemId,paramTwo:paramTwo,m:m, type: $("#type").val()} ,function(result){
         $.each(result, function(i, field){
             $('#'+tbodyId+'').html(''+field+'');
         });

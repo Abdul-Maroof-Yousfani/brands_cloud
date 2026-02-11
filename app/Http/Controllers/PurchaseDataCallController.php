@@ -990,7 +990,9 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
         $fromDate = $_GET['fromDate'];
         $toDate = $_GET['toDate'];
         $m = $_GET['m'];
-
+        $type  = $request->type;
+        
+        
         $selectVoucherStatus = $_GET['selectVoucherStatus'];
         $selectSubDepartment = $_GET['selectSubDepartment'];
         $selectSubDepartmentId = $_GET['selectSubDepartmentId'];
@@ -999,6 +1001,9 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
         if ($selectVoucherStatus == '0' && empty($selectSubDepartmentId)) {
             // $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '!=', 0)->get();
             $demandDetail = Demand::whereBetween('demand.demand_date', [$fromDate, $toDate])
+                            ->when($type == 'pending', function($query) {
+                                $query->where("demand.demand_status", 1);
+                            })
                             ->where('demand.status', '!=', 0)
                             ->leftJoin("demand_data", "demand_data.master_id", "=", "demand.id")
                             ->leftJoin("subitem", "subitem.id", "=", "demand_data.sub_item_id")
@@ -1419,10 +1424,14 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
 
 
         $m = $_GET['m'];
+        $type = $request->type;
         CommonHelper::companyDatabaseConnection($m);
         $grn_no=$request->GrnNo ;
         if ($grn_no!=''):
             $goodsReceiptNoteDetail= GoodsReceiptNote::where('grn_no', 'like', '%' . $grn_no . '%')
+                ->when($type == 'pending', function($query) {
+                    $query->where("grn_status", 1);
+                })
                 ->where('status',1)->get();
         return view('Purchase.AjaxPages.get_grn_by_grn_no', compact('goodsReceiptNoteDetail'));
         else:
@@ -1442,6 +1451,9 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
             $goodsReceiptNoteDetail = GoodsReceiptNote::whereBetween('goods_receipt_note.grn_date', [$fromDate, $toDate])
                                       // ->leftJoin("grn_data", "grn_data.master_id", "goods_receipt_note.id")
                                       // ->leftJoin("subitem", "subitem.id", "grn_data.sub_item_id")
+                                      ->when($type == 'pending', function($query) {
+                                        $query->where("grn_status", 1);
+                                      })
                                       ->where('goods_receipt_note.status', '=', '1')->orderBy('goods_receipt_note.id', 'desc');
 
             if(!empty($search)){

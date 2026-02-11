@@ -51,6 +51,7 @@ $currentMonthEndDate   = date('Y-m-t');
                                 </div>
                             </div>
                             <div class="lineHeight">&nbsp;</div>
+                            <input type="hidden" name="type" id="type" value="{{ request()->type }}" />
                             <input type="hidden" name="functionName" id="functionName" value="stdc/filterPurchaseRequestVoucherList" readonly="readonly" class="form-control" />
                             <input type="hidden" name="tbodyId" id="tbodyId" value="filterPurchaseRequestVoucherList" readonly="readonly" class="form-control" />
                             <input type="hidden" name="m" id="m" value="<?php echo $m?>" readonly="readonly" class="form-control" />
@@ -119,6 +120,7 @@ $currentMonthEndDate   = date('Y-m-t');
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
                                     <label for="">Po No</label>
                                     <input type="text" class="form-control" id="PoNo" name="PoNo" placeholder="PO NO">
+                                    <input type="hidden" class="form-control" id="type" value="{{ request()->type }}" />
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
                                     <input type="button" value="Search with PO NO" class="btn btn-sm btn-primary" onclick="getDataPoNoWise();" style="margin-top: 32px;" />
@@ -243,7 +245,7 @@ $currentMonthEndDate   = date('Y-m-t');
             $.ajax({
                 url: '/stdc/getPoDataPoNoWise',
                 type: 'Get',
-                data: {m:m,PoNo:PoNo},
+                data: {m:m,PoNo:PoNo, type: $("#type").val()},
 
                 success: function (response) {
 

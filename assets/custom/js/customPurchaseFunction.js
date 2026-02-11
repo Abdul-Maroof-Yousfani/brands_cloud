@@ -1,5 +1,6 @@
 window.onload=function () {
     var pageType = $('#pageType').val();
+   
     if(pageType == 0){
         filterVoucherList();
     }else if(pageType == 1){

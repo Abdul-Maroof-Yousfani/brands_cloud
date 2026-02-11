@@ -32,7 +32,7 @@ $currentMonthEndDate   = date('Y-m-t');
             <div class="well">
             
           
-
+              <input type="hidden" value="{{ request()->type }}" name="type" id="type" />
               <div class="row align-items-base ">
                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
                   <label>From Date</label>
@@ -157,7 +157,7 @@ $currentMonthEndDate   = date('Y-m-t');
       $.ajax({
               url: '{{ url("/quotation/quotation_list_ajax") }}',
               type: "GET",
-              data: {from: from,to,to},
+              data: {from: from,to,to, type: $("#type").val()},
               success: function (data)
               {
 

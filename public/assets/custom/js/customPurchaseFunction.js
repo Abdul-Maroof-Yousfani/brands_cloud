@@ -46,7 +46,7 @@ function filterVoucherList(){
         var selectSubDepartmentId = $('#selectSubDepartmentId').val();
         var selectSubDepartment = $('#selectSubDepartmentTwo').val();
         var selectVoucherStatus = $('#selectVoucherStatus').val();
-        $.getJSON(url, {fromDate: fromDate, toDate: toDate, m: m,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus}, function (result) {
+        $.getJSON(url, {fromDate: fromDate, toDate: toDate, m: m,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus, type: $("#type").val()}, function (result) {
             $.each(result, function (i, field) {
                 $('#' + tbodyId + '').html('' + field + '');
             });
@@ -57,7 +57,7 @@ function filterVoucherList(){
         var selectSupplierId = $('#selectSupplierId').val();
         var selectSupplier = $('#selectSupplierTwo').val();
         var selectVoucherStatus = $('#selectVoucherStatus').val();
-        $.getJSON(url, {fromDate: fromDate, toDate: toDate, m: m,selectSupplier:selectSupplier,selectSupplierId:selectSupplierId,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus}, function (result) {
+        $.getJSON(url, {fromDate: fromDate, toDate: toDate, m: m,selectSupplier:selectSupplier,selectSupplierId:selectSupplierId,selectSubDepartment:selectSubDepartment,selectSubDepartmentId:selectSubDepartmentId,selectVoucherStatus:selectVoucherStatus, type: $("#type").val()}, function (result) {
             $.each(result, function (i, field) {
                 $('#' + tbodyId + '').html('' + field + '');
             });
@@ -66,7 +66,7 @@ function filterVoucherList(){
         var selectBranchId = $('#selectBranchId').val();
         var selectBranch = $('#selectBranchTwo').val();
         var selectVoucherStatus = $('#selectVoucherStatus').val();
-        $.getJSON(url, {fromDate: fromDate, toDate: toDate, m: m,selectBranch:selectBranch,selectBranchId:selectBranchId,selectVoucherStatus:selectVoucherStatus}, function (result) {
+        $.getJSON(url, {fromDate: fromDate, toDate: toDate, m: m,selectBranch:selectBranch,selectBranchId:selectBranchId,selectVoucherStatus:selectVoucherStatus, type: $("#type").val()}, function (result) {
             $.each(result, function (i, field) {
                 $('#' + tbodyId + '').html('' + field + '');
             });
@@ -87,7 +87,7 @@ function viewDataFilterOneParameter() {
     $.ajax({
         url: ''+baseUrl+'/'+functionName+'',
         method:'GET',
-        data:{fromDate:fromDate,toDate:toDate,m:m,parentCode:parentCode,paramOne:paramOne},
+        data:{fromDate:fromDate,toDate:toDate,m:m,parentCode:parentCode,paramOne:paramOne, type: $("#type").val},
         error: function(){
             alert('error');
         },
@@ -98,7 +98,6 @@ function viewDataFilterOneParameter() {
         }
     });
 }
-
 function viewDataFilterTwoParameter() {
     var paramOne = $('#selectBranchId').val();
     var paramTwo = $('#selectBranchTwo').val();
@@ -112,7 +111,7 @@ function viewDataFilterTwoParameter() {
     $.ajax({
         url: ''+baseUrl+'/'+functionName+'',
         method:'GET',
-        data:{fromDate:fromDate,toDate:toDate,m:m,parentCode:parentCode,paramOne:paramOne,paramOne:paramOne},
+        data:{fromDate:fromDate,toDate:toDate,m:m,parentCode:parentCode,paramOne:paramOne,paramOne:paramOne, type: $("#type").val()},
         error: function(){
             alert('error');
         },

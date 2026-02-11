@@ -191,19 +191,23 @@ class QuotationController extends Controller
 
     public function quotation_list()
     {
-      
+
    
         return view($this->page);
     }
 
     public function quotation_query()
     {
+        $type = request()->type;
      return   DB::Connection('mysql2')->table('quotation as a')
             ->join('quotation_data as b','a.id','=','b.master_id')
             ->join('demand as c','a.pr_id','=','c.id')
             ->select('a.*',DB::Connection('mysql2')->raw('SUM(b.amount) As amount'),'c.demand_date','c.quotation_approve')
             ->where('a.status',1)
-             ->groupBy('a.id')
+            ->groupBy('a.id')
+            ->when($type == 'pending', function($query) {
+                $query->where("a.quotation_status", 1);
+            })
             ->orderBy('a.id','Desc')
             ->orderBy('a.pr_no')
             ->get();

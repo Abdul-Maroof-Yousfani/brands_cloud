@@ -13,6 +13,7 @@ $delete=ReuseableCode::check_rights(44);
 
 <?php
 
+$type = request()->type;
 $MasterData = DB::Connection('mysql2')->table('stock_transfer')->where('status', '=', 1)->whereBetween('tr_date',[$FromDate,$ToDate])->orderBy('id', 'desc')->get();
 
 

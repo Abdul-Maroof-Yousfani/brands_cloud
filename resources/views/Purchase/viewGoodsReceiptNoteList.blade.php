@@ -78,6 +78,7 @@ $currentMonthEndDate   = date('Y-m-t');
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
                                     <label>From Date</label>
+                                    <input type="hidden" name="type" id="type" value="{{ request()->type }}" />
                                     <input type="Date" name="fromDate" id="fromDate" max="<?php echo $current_date;?>" value="<?php echo $currentMonthStartDate;?>" class="form-control" />
                                 </div>
                                 <div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 text-center"><label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
@@ -187,7 +188,7 @@ $currentMonthEndDate   = date('Y-m-t');
                 $.ajax({
                     url: '/pdc/filterGoodsReceiptNoteList',
                     type: 'Get',
-                    data: {GrnNo: GrnNo,m:m},
+                    data: {GrnNo: GrnNo,m:m, type: $("#type").val()},
 
                     success: function (response) {
                         //alert(response);
