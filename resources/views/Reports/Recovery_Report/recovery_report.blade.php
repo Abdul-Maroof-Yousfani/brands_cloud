@@ -3,141 +3,98 @@ use App\Helpers\CommonHelper;
 use App\Helpers\SaleHelper;
 ?>
 <style>
-    p{margin:0;padding:0;font-size:13px;font-weight:500;}
-    input.form-control.form-control2{margin:0!important;}
-    .table-bordered > thead > tr > th,.table-bordered > tbody > tr > th,.table-bordered > tfoot > tr > th{vertical-align:inherit !important;text-align:left !important;padding: 7px 5px !important;}
-    .totlas{display:flex;justify-content:right;gap:70px;background:#ddd;width:18%;float:right;padding-right:8px;}
-    .totlas p{font-weight:bold;}
-    .psds{display:flex;justify-content:right;gap:88px;}
-    .psds p{font-weight:bold;}
-    .userlittab > thead > tr > td,.userlittab > tbody > tr > td,.userlittab > tfoot > tr > td{padding:10px 5px !important;}
-    .totlass{display:inline;background:transparent;margin-top:-25px;}
-    .totlass h2{font-size:13px !important;}
+    .form-horizontal .form-group {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+    }
 </style>
 @extends('layouts.default')
 @section('content')
 @include('select2')
 @include('modal')
 
-<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="well_N">
-        <div class="dp_sdw">
-
-        <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Outstanding Ageing Report</h1>
-             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-                <?php echo CommonHelper::displayPrintButtonInBlade('printDemandVoucherList','','1');?>
-                <?php if(true):?>
-                    <a id="dlink" style="display:none;"></a>
-                    <button type="button" class="btn btn-warning" onclick="ExportToExcel('xlsx')">Export <b>(xlsx)</b></button>
-                <?php endif;?>
-            </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">From Date</label>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="from" class="form-control" id="from" value="2025-10-28">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix">
+                            <h3 class="panel-title pull-left">Outstanding Ageing Report</h3>
+                            <div class="pull-right">
+                                <button type="button" onclick="exportBtn('Outstanding_Ageing_Report_{{ date('Y-m-d') }}')"
+                                    class="btn btn-success btn-sm">
+                                    <i class="fa fa-file-excel-o"></i> Export Excel
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">To Date</label>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="to" class="form-control" id="to" value="2025-10-28">
+                        <div class="panel-body">
+                            <form method="get" id="list_data" class="form-horizontal">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label">From Date</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                <input type="date" name="from" class="form-control" id="from" value="{{ date('Y-m-d', strtotime('-1 month')) }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label">To Date</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                <input type="date" name="to" class="form-control" id="to" value="{{ date('Y-m-d') }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label">Brands</label>
+                                            <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
+                                                @foreach(App\Helpers\CommonHelper::get_all_brand() as $brand)
+                                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label">Warehouses</label>
+                                            <select name="warehouse_id[]" id="warehouse_id" class="form-control select2" multiple>
+                                                @foreach(App\Helpers\CommonHelper::get_all_warehouse() as $warehouse)
+                                                    <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label">SI No</label>
+                                            <div class="input-group">
+                                                <input type="text" name="si" class="form-control" id="si">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group" style="margin-top: 25px;">
+                                            <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;margin-left: 20px;">
+                                                <i class="fa fa-refresh"></i> Generate
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-2">&nbsp;</div>
-                <div class="col-md-2">&nbsp;</div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">Brands</label>
-                        <select name="brand_id[]" id="brand_id" class="form-control select2">
-                            <option value="" selected>Select Brands</option>
-                            @foreach(App\Helpers\CommonHelper::get_all_brand() as $brand)
-                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">Warehouses</label>
-                        <select name="warehouse_id[]" id="warehouse_id" class="form-control select2">
-                            <option value="" selected>Select Warehouses</option>
-                            @foreach(App\Helpers\CommonHelper::get_all_warehouse() as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">SI No</label>
-                        <div class="input-group">
-                            <input type="text" name="si_no" class="form-control" id="si">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group" style="margin-top: 25px;">
-                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;margin-left: 20px;">
-                            <i class="fa fa-refresh"></i> Generate
-                        </button>
                     </div>
                 </div>
             </div>
-            <div style="line-height:5px;">&nbsp;</div>
-            <div class="row" >
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="well">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="printCashSaleVoucherDetail">
-                                <div class="table-responsive">
-                                    <table  class="table table-bordered table-striped table-condensed tableMargin">
-                                        <thead>
-                                        <tr>
-                                            <th>S No.</th>
-                                            <th>Branch</th>
-                                            <th>Region</th>
-                                            <th>Warehouse</th>
-                                            <th>Customer ID</th>
-                                            <th>Cust Name</th>
-                                            <th>Cust Address</th>
-                                            <th>Doc Type</th>
-                                            <th>Docno</th>
-                                            <th>Brand</th>
-                                            <th>Date</th>
-                                            <th>Sales Officer Name</th>
-                                            <th>Invoice Amount</th>
-                                            <th>Receipt Doc No</th>
-                                            <th>Receipt Amount</th>
-                                            <th>Receipt Mode</th>
-                                            <th>Sale Return Doc No</th>
-                                            <th>Sale Return Amount</th>
-                                            <th>Adjustment Doc No</th>
-                                            <th>Adjust Amount</th>
-                                            <th>Adjustment Remarks</th>
-                                            <th>Unadjusted Amount</th>
-                                            <th>Total Adjustment</th>
-                                            <th>Outstanding</th>
-                                            <th>Difference</th>
-                                            <th>&gt; 180</th>
-                                            <th>90-179</th>
-                                            <th>46-90</th>
-                                            <th>&lt;= 45</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="tbody">
-                                            
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div id="data"></div>
-                            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div id="data"></div>
                         </div>
                     </div>
                 </div>
@@ -146,47 +103,56 @@ use App\Helpers\SaleHelper;
     </div>
 </div>
 
- <script src="{{ URL::asset('assets/custom/js/exportToExcelXlsx.js') }}"></script>
-    <script !src="">
-          $('.select2').select2({
+    <script src="{{ URL::asset('assets/custom/js/exportToExcelXlsx.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
                 placeholder: "Select",
-                width: '100%' // ensures the dropdown matches container width
+                width: '100%'
             });
-        function ExportToExcel(type, fn, dl) {
-            var elt = document.getElementById('printCashSaleVoucherDetail');
-            var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
-            return dl ?
-                    XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
-                    XLSX.writeFile(wb, fn || ('Outstanding Ageing Report <?php echo date('d-m-Y')?>.' + (type || 'xlsx')));
+            get_ajax_data();
+        });
+
+        function get_ajax_data() {
+            $.ajax({
+                url: window.location.href,
+                type: "GET",
+                data: $("#list_data").serialize(),
+                beforeSend: function() {
+                    $('#data').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
+                },
+                success: function(response) {
+                    $('#data').html(response);
+                },
+                error: function(xhr) {
+                    $('#data').html('<div class="alert alert-danger">Error loading data</div>');
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        function exportExcel(filename) {
+            var table = document.getElementById('exportTable');
+            if (!table) {
+                alert('No data available to export');
+                return;
+            }
+            var ws = XLSX.utils.table_to_sheet(table, { raw: true });
+            Object.keys(ws).forEach(function(cell) {
+                if (cell[0] === '!') return;
+                let value = ws[cell].v;
+                if (typeof value === "string" && !isNaN(value) && value.trim() !== "") {
+                    ws[cell].v = Number(value);
+                    ws[cell].t = "n";
+                }
+            });
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
+            XLSX.writeFile(wb, filename + ".xlsx");
+        }
+
+        function exportBtn(title) {
+            exportExcel(title);
         }
     </script>
-<script>
-    function get_ajax_data() {
-        $.ajax({
-        url: window.location.href,  // sends to the same page
-        method: "GET",             // or "GET", "DELETE", etc.
-        data: {
-            from: $("#from").val(),
-            to: $("#to").val(),
-            si: $('#si').val(),
-            warehouse_id: $("#warehouse_id").val(),
-            brand_id: $("#brand_id").val()
-        },
-        beforeSend: function() {
-            $('#data').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
-            $("#tbody").html("");
-        },
-        success: function (response) {
-           $("#tbody").html(response);
-           $('#data').html('');
-        },
-        error: function(xhr) {
-            $('#data').html('<div class="alert alert-danger">Error loading data</div>');
-            console.error(xhr.responseText);
-        }
-    });
-    }
-
-
-</script>
 @endsection
