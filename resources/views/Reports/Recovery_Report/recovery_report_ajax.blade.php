@@ -29,6 +29,7 @@
     $totalLessThan45 = 0;
 
     $to = request('to') ?? date('Y-m-d');
+    $sum = 0;
 @endphp
 
 <div class="container-fluid">
@@ -119,9 +120,13 @@
                     <td>{{ number_format($data->adjustment_amount) }}</td>
                     <td>{{ $data->adjustment_remarks ?: "-" }}</td>
                     <td>0</td>
-                    <td>{{ number_format($data->receipt_amount - $data->sale_return_amount - $data->adjustment_amount) }}</td>
-                    <td>{{ number_format($data->invoice_amount - ($data->receipt_amount - $data->sale_return_amount - $data->adjustment_amount)) }}</td>
-                    <td>Difference</td>
+                    @php
+                        $inv_amount = $data->net_amount + (($data->net_amount * $data->adv_tax) / 100);
+                        $sum += $inv_amount;
+                    @endphp
+                    <td>{{ number_format($inv_amount - ($data->receipt_amount - $data->sale_return_amount - $data->adjustment_amount)) }}</td>
+                    <td>{{ number_format($inv_amount - $data->receipt_amount, 2) }}</td>
+                    <td>-</td>
                     <td>{{ number_format($data->more_than_one_eighty_days_due) }}</td>
                     <td>{{ number_format($data->ninety_one_to_one_seventy_nine_days_due) }}</td>
                     <td>{{ number_format($data->fourty_five_to_ninety_days_due) }}</td>
@@ -143,7 +148,7 @@
                 <td></td>
                 <td>0</td>
                 <td>{{ number_format($totalReceiptAmount - $totalSaleReturnAmount - $totalAdjustmentAmount) }}</td>
-                <td>{{ number_format($totalInvoiceAmount - ($totalReceiptAmount - $totalSaleReturnAmount - $totalAdjustmentAmount)) }}</td>
+                <td>{{ number_format($sum) }}</td>
                 <td></td>
                 <td>{{ number_format($totalMoreThan180) }}</td>
                 <td>{{ number_format($total90to179) }}</td>

@@ -54,13 +54,12 @@ class OutstandingAgainController extends Controller
 
         DB::raw("SUM(sales_tax_invoice_data.amount) AS net_amount"),
 
-        // ✅ Correct receipt amount
+        // ✅ Correct receipt amount (split value from received_paymet)
         DB::raw("(
-            SELECT COALESCE(SUM(nrd.amount), 0)
-            FROM new_rv_data nrd
-            JOIN new_rvs nr ON nr.id = nrd.master_id
-            WHERE FIND_IN_SET(sales_tax_invoice.gi_no, nr.ref_bill_no)
-            AND nrd.debit_credit = 0
+            SELECT COALESCE(SUM(rp.received_amount), 0)
+            FROM received_paymet rp
+            JOIN new_rvs nr ON nr.id = rp.receipt_id
+            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
         ) AS receipt_amount"),
 
         // ✅ Correct sale return amount
@@ -71,41 +70,37 @@ class OutstandingAgainController extends Controller
             WHERE cn.so_id = sales_order.id
         ) AS sale_return_amount"),
 
-        // ✅ Aging buckets (receipt based subqueries)
+        // ✅ Aging buckets (receipt based subqueries - split value aware)
         DB::raw("(
-            SELECT COALESCE(SUM(nrd.amount), 0)
-            FROM new_rv_data nrd
-            JOIN new_rvs nr ON nr.id = nrd.master_id
-            WHERE FIND_IN_SET(sales_tax_invoice.gi_no, nr.ref_bill_no)
+            SELECT COALESCE(SUM(rp.received_amount), 0)
+            FROM received_paymet rp
+            JOIN new_rvs nr ON nr.id = rp.receipt_id
+            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
             AND nr.rv_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 45 DAY) AND CURDATE()
-            AND nrd.debit_credit = 0
         ) AS one_to_fourty_five_days_due"),
 
         DB::raw("(
-            SELECT COALESCE(SUM(nrd.amount), 0)
-            FROM new_rv_data nrd
-            JOIN new_rvs nr ON nr.id = nrd.master_id
-            WHERE FIND_IN_SET(sales_tax_invoice.gi_no, nr.ref_bill_no)
+            SELECT COALESCE(SUM(rp.received_amount), 0)
+            FROM received_paymet rp
+            JOIN new_rvs nr ON nr.id = rp.receipt_id
+            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
             AND nr.rv_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 90 DAY) AND DATE_SUB(CURDATE(), INTERVAL 45 DAY)
-            AND nrd.debit_credit = 0
         ) AS fourty_five_to_ninety_days_due"),
 
         DB::raw("(
-            SELECT COALESCE(SUM(nrd.amount), 0)
-            FROM new_rv_data nrd
-            JOIN new_rvs nr ON nr.id = nrd.master_id
-            WHERE FIND_IN_SET(sales_tax_invoice.gi_no, nr.ref_bill_no)
+            SELECT COALESCE(SUM(rp.received_amount), 0)
+            FROM received_paymet rp
+            JOIN new_rvs nr ON nr.id = rp.receipt_id
+            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
             AND nr.rv_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 179 DAY) AND DATE_SUB(CURDATE(), INTERVAL 91 DAY)
-            AND nrd.debit_credit = 0
         ) AS ninety_one_to_one_seventy_nine_days_due"),
 
         DB::raw("(
-            SELECT COALESCE(SUM(nrd.amount), 0)
-            FROM new_rv_data nrd
-            JOIN new_rvs nr ON nr.id = nrd.master_id
-            WHERE FIND_IN_SET(sales_tax_invoice.gi_no, nr.ref_bill_no)
+            SELECT COALESCE(SUM(rp.received_amount), 0)
+            FROM received_paymet rp
+            JOIN new_rvs nr ON nr.id = rp.receipt_id
+            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
             AND nr.rv_date < DATE_SUB(CURDATE(), INTERVAL 180 DAY)
-            AND nrd.debit_credit = 0
         ) AS more_than_one_eighty_days_due"),
 
         // Adjustment doc numbers subquery
