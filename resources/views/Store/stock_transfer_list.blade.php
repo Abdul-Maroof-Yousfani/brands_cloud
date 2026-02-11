@@ -17,7 +17,7 @@ $edit=ReuseableCode::check_rights(43);
 $delete=ReuseableCode::check_rights(44);
 $export=ReuseableCode::check_rights(237);
 
-$AccYearDate = DB::table('company')->select('accyearfrom','accyearto')->where('id',$_GET['m'])->first();
+$AccYearDate = DB::table('company')->select('accyearfrom','accyearto')->where('id',$_GET['m'] ? $_GET['m'] : 1)->first();
 $AccYearFrom = $AccYearDate->accyearfrom;
 $AccYearTo = $AccYearDate->accyearto;
 
