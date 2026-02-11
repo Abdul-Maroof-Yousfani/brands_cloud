@@ -19,7 +19,7 @@ class OutstandingAgainController extends Controller
     ->table("sales_tax_invoice")
     ->select(
         "sales_tax_invoice.gi_no",
-        'sales_tax_invoice.total AS invoice_amount',
+        'sales_tax_invoice.adv_tax AS adv_tax',
         "sales_order.so_no",
         "sod.brand_id",
         "customers.warehouse_from",

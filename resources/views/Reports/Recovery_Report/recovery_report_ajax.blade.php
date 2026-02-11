@@ -97,7 +97,7 @@
                     <td>{{ $data->brand_id ? \App\Helpers\CommonHelper::get_brand_by_id($data->brand_id) : "N/A" }}</td>
                     <td>{{ \Carbon\Carbon::parse($data->gd_date)->format("d-M-y") }}</td>
                     <td>{{ $data->sales_person ?? "N/A" }}</td>
-                     <td>{{ number_format($data->net_amount) }}</td>
+                     <td>{{ number_format($data->net_amount + (($data->net_amount * $data->adv_tax) / 100), 2) }}</td>
                     <td class="receipt-nos">{{ $data->rv_numbers ?: "-" }}</td>
                     <td>{{ number_format($data->receipt_amount) }}</td>
                     <td>
