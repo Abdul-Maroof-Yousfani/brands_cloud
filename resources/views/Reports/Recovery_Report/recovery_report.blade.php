@@ -92,11 +92,26 @@ use App\Helpers\SaleHelper;
                                     </div>
                                 </div>
 
-                                <div class="row" style="margin-top: 20px;">
-                                    <div class="col-md-12 text-center">
-                                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary btn-lg" style="padding: 10px 40px; border-radius: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                                            <i class="fa fa-refresh"></i> Generate Report
-                                        </button>
+                                <div class="row" style="margin-top: 15px;">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Regions</label>
+                                            <select name="region_id[]" id="region_id" class="form-control select2" multiple>
+                                                @foreach(App\Helpers\CommonHelper::get_all_territories() as $territory)
+                                                    <option value="{{ $territory->id }}">{{ $territory->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">&nbsp;</label>
+                                            <div style="display: block;">
+                                                <button type="button" onclick="get_ajax_data()" class="btn btn-primary">
+                                                    <i class="fa fa-refresh"></i> Generate
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </form>

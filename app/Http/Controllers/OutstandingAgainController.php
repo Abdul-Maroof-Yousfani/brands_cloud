@@ -109,6 +109,7 @@ class OutstandingAgainController extends Controller
     ->when(isset($brand_id), fn ($q) => $q->whereIn("sod.brand_id", $brand_id))
     ->when(isset($warehouse_id), fn ($q) => $q->whereIn("customers.warehouse_from", $warehouse_id))
     ->when(request()->has('customer_id'), fn ($q) => $q->whereIn("customers.id", request()->customer_id))
+    ->when(request()->has('region_id'), fn ($q) => $q->whereIn("customers.territory_id", request()->region_id))
 
     ->whereBetween("sales_tax_invoice.gd_date", [$from, $to])
     ->groupBy("sales_tax_invoice.gi_no")
