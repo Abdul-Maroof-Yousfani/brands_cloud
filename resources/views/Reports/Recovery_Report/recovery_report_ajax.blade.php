@@ -119,8 +119,8 @@
                     <td>{{ number_format($data->adjustment_amount) }}</td>
                     <td>{{ $data->adjustment_remarks ?: "-" }}</td>
                     <td>0</td>
-                    <td>{{ number_format($data->sale_return_amount + $data->adjustment_amount) }}</td>
-                    <td>{{ number_format($data->invoice_amount - ($data->receipt_amount + $data->sale_return_amount + $data->adjustment_amount)) }}</td>
+                    <td>{{ number_format($data->receipt_amount - $data->sale_return_amount - $data->adjustment_amount) }}</td>
+                    <td>{{ number_format($data->invoice_amount - ($data->receipt_amount - $data->sale_return_amount - $data->adjustment_amount)) }}</td>
                     <td>Difference</td>
                     <td>{{ number_format($data->more_than_one_eighty_days_due) }}</td>
                     <td>{{ number_format($data->ninety_one_to_one_seventy_nine_days_due) }}</td>
@@ -142,8 +142,8 @@
                 <td>{{ number_format($totalAdjustmentAmount) }}</td>
                 <td></td>
                 <td>0</td>
-                <td>{{ number_format($totalSaleReturnAmount + $totalAdjustmentAmount) }}</td>
-                <td></td>
+                <td>{{ number_format($totalReceiptAmount - $totalSaleReturnAmount - $totalAdjustmentAmount) }}</td>
+                <td>{{ number_format($totalInvoiceAmount - ($totalReceiptAmount - $totalSaleReturnAmount - $totalAdjustmentAmount)) }}</td>
                 <td></td>
                 <td>{{ number_format($totalMoreThan180) }}</td>
                 <td>{{ number_format($total90to179) }}</td>
