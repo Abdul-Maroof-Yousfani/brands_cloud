@@ -19,6 +19,7 @@ class OutstandingAgainController extends Controller
     ->table("sales_tax_invoice")
     ->select(
         "sales_tax_invoice.gi_no",
+        "sales_tax_invoice.gi_date AS invoice_date",
         'sales_tax_invoice.total AS invoice_amount',
         'sales_tax_invoice.adv_tax AS adv_tax',
         "sales_order.so_no",
@@ -69,39 +70,6 @@ class OutstandingAgainController extends Controller
             JOIN credit_note cn ON cn.id = cnd.master_id
             WHERE cn.so_id = sales_order.id
         ) AS sale_return_amount"),
-
-        // ✅ Aging buckets (receipt based subqueries - split value aware)
-        DB::raw("(
-            SELECT COALESCE(SUM(rp.received_amount), 0)
-            FROM received_paymet rp
-            JOIN new_rvs nr ON nr.id = rp.receipt_id
-            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
-            AND nr.rv_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 45 DAY) AND CURDATE()
-        ) AS one_to_fourty_five_days_due"),
-
-        DB::raw("(
-            SELECT COALESCE(SUM(rp.received_amount), 0)
-            FROM received_paymet rp
-            JOIN new_rvs nr ON nr.id = rp.receipt_id
-            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
-            AND nr.rv_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 90 DAY) AND DATE_SUB(CURDATE(), INTERVAL 45 DAY)
-        ) AS fourty_five_to_ninety_days_due"),
-
-        DB::raw("(
-            SELECT COALESCE(SUM(rp.received_amount), 0)
-            FROM received_paymet rp
-            JOIN new_rvs nr ON nr.id = rp.receipt_id
-            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
-            AND nr.rv_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 179 DAY) AND DATE_SUB(CURDATE(), INTERVAL 91 DAY)
-        ) AS ninety_one_to_one_seventy_nine_days_due"),
-
-        DB::raw("(
-            SELECT COALESCE(SUM(rp.received_amount), 0)
-            FROM received_paymet rp
-            JOIN new_rvs nr ON nr.id = rp.receipt_id
-            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
-            AND nr.rv_date < DATE_SUB(CURDATE(), INTERVAL 180 DAY)
-        ) AS more_than_one_eighty_days_due"),
 
         // Adjustment doc numbers subquery
         DB::raw("(

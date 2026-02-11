@@ -78,14 +78,42 @@
         <tbody>
             @foreach($payments as $data)
                 @php
-                    $totalInvoiceAmount += $data->invoice_amount;
                     $totalReceiptAmount += $data->receipt_amount;
                     $totalSaleReturnAmount += $data->sale_return_amount;
                     $totalAdjustmentAmount += $data->adjustment_amount;
-                    $totalMoreThan180 += $data->more_than_one_eighty_days_due;
-                    $total90to179 += $data->ninety_one_to_one_seventy_nine_days_due;
-                    $total46to90 += $data->fourty_five_to_ninety_days_due;
-                    $totalLessThan45 += $data->one_to_fourty_five_days_due;
+                    
+                    $inv_amount = $data->net_amount + (($data->net_amount * $data->adv_tax) / 100);
+                    $totalInvoiceAmount += $inv_amount;
+                    $sum += $inv_amount;
+
+                    // Aging Logic
+                    $outstanding = $inv_amount - $data->receipt_amount;
+                    $bucket180 = 0; $bucket90 = 0; $bucket46 = 0; $bucket45 = 0;
+                    
+                    if($outstanding > 0 && !empty($data->invoice_date) && $data->invoice_date != "0000-00-00") {
+                        $date = \Carbon\Carbon::parse($data->invoice_date)->startOfDay();
+                        $today = \Carbon\Carbon::today();
+                        $days = $date->diffInDays($today);
+                        
+                        if ($days > 180) {
+                            $bucket180 = $outstanding;
+                        } elseif ($days >= 90) {
+                            $bucket90 = $outstanding;
+                        } elseif ($days >= 46) {
+                            $bucket46 = $outstanding;
+                        } else {
+                            $bucket45 = $outstanding;
+                        }
+                    } elseif ($outstanding > 0) {
+                        // If no valid date, default to oldest bucket or handle as error? 
+                        // Defaulting to <= 45 for now if date is missing but outstanding exists
+                        $bucket45 = $outstanding;
+                    }
+                    
+                    $totalMoreThan180 += $bucket180;
+                    $total90to179 += $bucket90;
+                    $total46to90 += $bucket46;
+                    $totalLessThan45 += $bucket45;
                 @endphp
                 <tr>
                     <td>{{ $loop->iteration }}</td>
@@ -98,9 +126,9 @@
                     <td>SI</td>
                     <td>{{ $data->gi_no }}</td>
                     <td>{{ $data->brand_id ? \App\Helpers\CommonHelper::get_brand_by_id($data->brand_id) : "N/A" }}</td>
-                    <td>{{ \Carbon\Carbon::parse($data->gd_date)->format("d-M-y") }}</td>
+                    <td>{{ $date->format("d-M-y") }}</td>
                     <td>{{ $data->sales_person ?? "N/A" }}</td>
-                     <td>{{ number_format($data->net_amount + (($data->net_amount * $data->adv_tax) / 100), 2) }}</td>
+                    <td>{{ number_format($inv_amount, 2) }}</td>
                     <td class="receipt-nos">{{ $data->rv_numbers ?: "-" }}</td>
                     <td>{{ number_format($data->receipt_amount) }}</td>
                     <td>
@@ -120,17 +148,13 @@
                     <td>{{ number_format($data->adjustment_amount) }}</td>
                     <td>{{ $data->adjustment_remarks ?: "-" }}</td>
                     <td>0</td>
-                    @php
-                        $inv_amount = $data->net_amount + (($data->net_amount * $data->adv_tax) / 100);
-                        $sum += $inv_amount;
-                    @endphp
                     <td>{{ number_format($inv_amount - ($data->receipt_amount - $data->sale_return_amount - $data->adjustment_amount)) }}</td>
-                    <td>{{ number_format($inv_amount - $data->receipt_amount, 2) }}</td>
+                    <td>{{ number_format($outstanding, 2) }}</td>
                     <td>-</td>
-                    <td>{{ number_format($data->more_than_one_eighty_days_due) }}</td>
-                    <td>{{ number_format($data->ninety_one_to_one_seventy_nine_days_due) }}</td>
-                    <td>{{ number_format($data->fourty_five_to_ninety_days_due) }}</td>
-                    <td>{{ number_format($data->one_to_fourty_five_days_due) }}</td>
+                    <td>{{ number_format($bucket180) }}</td>
+                    <td>{{ number_format($bucket90) }}</td>
+                    <td>{{ number_format($bucket46) }}</td>
+                    <td>{{ number_format($bucket45) }}</td>
                 </tr>
             @endforeach
         </tbody>
@@ -148,7 +172,7 @@
                 <td></td>
                 <td>0</td>
                 <td>{{ number_format($totalReceiptAmount - $totalSaleReturnAmount - $totalAdjustmentAmount) }}</td>
-                <td>{{ number_format($sum) }}</td>
+                <td>{{ number_format($totalInvoiceAmount - $totalReceiptAmount) }}</td>
                 <td></td>
                 <td>{{ number_format($totalMoreThan180) }}</td>
                 <td>{{ number_format($total90to179) }}</td>
