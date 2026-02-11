@@ -27,10 +27,10 @@ use App\Helpers\SaleHelper;
                                 </button>
                             </div>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body" style="padding: 20px;">
                             <form method="get" id="list_data" class="form-horizontal">
                                 <div class="row">
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">From Date</label>
                                             <div class="input-group">
@@ -39,7 +39,7 @@ use App\Helpers\SaleHelper;
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">To Date</label>
                                             <div class="input-group">
@@ -48,7 +48,19 @@ use App\Helpers\SaleHelper;
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">SI No</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+                                                <input type="text" name="si" class="form-control" id="si" placeholder="Search SI Number...">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 15px;">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Brands</label>
                                             <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
@@ -58,7 +70,7 @@ use App\Helpers\SaleHelper;
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Warehouses</label>
                                             <select name="warehouse_id[]" id="warehouse_id" class="form-control select2" multiple>
@@ -68,20 +80,23 @@ use App\Helpers\SaleHelper;
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="control-label">SI No</label>
-                                            <div class="input-group">
-                                                <input type="text" name="si" class="form-control" id="si">
-                                            </div>
+                                            <label class="control-label">Customers</label>
+                                            <select name="customer_id[]" id="customer_id" class="form-control select2" multiple>
+                                                @foreach(App\Helpers\CommonHelper::get_all_customers() as $customer)
+                                                    <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group" style="margin-top: 25px;">
-                                            <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;margin-left: 20px;">
-                                                <i class="fa fa-refresh"></i> Generate
-                                            </button>
-                                        </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 20px;">
+                                    <div class="col-md-12 text-center">
+                                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary btn-lg" style="padding: 10px 40px; border-radius: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                            <i class="fa fa-refresh"></i> Generate Report
+                                        </button>
                                     </div>
                                 </div>
                             </form>
