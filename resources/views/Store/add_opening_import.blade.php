@@ -85,14 +85,12 @@
                 </div>
 
                 <div class="modal-footer d-flex justify-content-between flex-wrap">
-                    <a  style="
-    width: 43%;
-"target="_blank" href="{{ asset('public/Closing_Inventory_opning.csv') }}" class="btn btn-dark">
+                    <a  style="width: 43%;" target="_blank" href="{{ asset('Closing_Inventory_opning.csv') }}" class="btn btn-dark">
                         <i class="fa fa-download mr-1"></i> Download Sample File
                     </a>
                     <div>
                         <button style="
-    margin-left: 5px;
+margin-left: 5px;
 " type="button" id="importButton" class="btn btn-primary">
                             <i class="fa fa-file-import mr-1"></i> Import
                         </button>
