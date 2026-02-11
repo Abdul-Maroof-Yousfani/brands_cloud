@@ -22,6 +22,7 @@
     $totalInvoiceAmount = 0;
     $totalReceiptAmount = 0;
     $totalSaleReturnAmount = 0;
+    $totalAdjustmentAmount = 0;
     $totalMoreThan180 = 0;
     $total90to179 = 0;
     $total46to90 = 0;
@@ -79,6 +80,7 @@
                     $totalInvoiceAmount += $data->invoice_amount;
                     $totalReceiptAmount += $data->receipt_amount;
                     $totalSaleReturnAmount += $data->sale_return_amount;
+                    $totalAdjustmentAmount += $data->adjustment_amount;
                     $totalMoreThan180 += $data->more_than_one_eighty_days_due;
                     $total90to179 += $data->ninety_one_to_one_seventy_nine_days_due;
                     $total46to90 += $data->fourty_five_to_ninety_days_due;
@@ -111,14 +113,14 @@
                             N/A
                         @endif
                     </td>
-                    <td>{{ $data->cr_no ?? "-"  }}</td>
+                    <td class="receipt-nos">{{ $data->cr_numbers ?: "-"  }}</td>
                     <td>{{ number_format($data->sale_return_amount) }}</td>
-                    <td>Adjustment Doc No</td>
-                    <td>{{ number_format($data->sale_return_amount) }}</td>
-                    <td>Remarks</td>
+                    <td class="receipt-nos">{{ $data->adjustment_doc_nos ?: "-" }}</td>
+                    <td>{{ number_format($data->adjustment_amount) }}</td>
+                    <td>{{ $data->adjustment_remarks ?: "-" }}</td>
                     <td>0</td>
-                    <td>{{ number_format($data->sale_return_amount) }}</td>
-                    <td>Outstanding</td>
+                    <td>{{ number_format($data->sale_return_amount + $data->adjustment_amount) }}</td>
+                    <td>{{ number_format($data->invoice_amount - ($data->receipt_amount + $data->sale_return_amount + $data->adjustment_amount)) }}</td>
                     <td>Difference</td>
                     <td>{{ number_format($data->more_than_one_eighty_days_due) }}</td>
                     <td>{{ number_format($data->ninety_one_to_one_seventy_nine_days_due) }}</td>
@@ -137,10 +139,10 @@
                 <td></td>
                 <td>{{ number_format($totalSaleReturnAmount) }}</td>
                 <td></td>
-                <td>{{ number_format($totalSaleReturnAmount) }}</td>
+                <td>{{ number_format($totalAdjustmentAmount) }}</td>
                 <td></td>
                 <td>0</td>
-                <td>{{ number_format($totalSaleReturnAmount) }}</td>
+                <td>{{ number_format($totalSaleReturnAmount + $totalAdjustmentAmount) }}</td>
                 <td></td>
                 <td></td>
                 <td>{{ number_format($totalMoreThan180) }}</td>

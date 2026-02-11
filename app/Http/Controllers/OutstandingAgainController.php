@@ -29,7 +29,6 @@ class OutstandingAgainController extends Controller
         "customers.address",
         "sales_tax_invoice.gd_date",
         "sales_person",
-        "cr_no",
         "sales_order.branch",
 
         // Receipt numbers subquery
@@ -38,6 +37,13 @@ class OutstandingAgainController extends Controller
             FROM new_rvs nr
             WHERE FIND_IN_SET(sales_tax_invoice.gi_no, nr.ref_bill_no)
         ) AS rv_numbers"),
+
+        // Sale Return numbers subquery
+        DB::raw("(
+            SELECT GROUP_CONCAT(DISTINCT cn.cr_no SEPARATOR '\n')
+            FROM credit_note cn
+            WHERE cn.so_id = sales_order.id
+        ) AS cr_numbers"),
 
         // Pay mode subquery
         DB::raw("(
@@ -102,6 +108,30 @@ class OutstandingAgainController extends Controller
             AND nrd.debit_credit = 0
         ) AS more_than_one_eighty_days_due"),
 
+        // Adjustment doc numbers subquery
+        DB::raw("(
+            SELECT GROUP_CONCAT(DISTINCT cd.rv_no SEPARATOR '\n')
+            FROM received_paymet rp
+            JOIN credits_data cd ON cd.id = rp.receipt_id
+            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
+        ) AS adjustment_doc_nos"),
+
+        // Adjustment amount subquery
+        DB::raw("(
+            SELECT COALESCE(SUM(rp.received_amount), 0)
+            FROM received_paymet rp
+            JOIN credits_data cd ON cd.id = rp.receipt_id
+            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
+        ) AS adjustment_amount"),
+
+        // Adjustment remarks subquery
+        DB::raw("(
+            SELECT GROUP_CONCAT(DISTINCT cd.description SEPARATOR ' | ')
+            FROM received_paymet rp
+            JOIN credits_data cd ON cd.id = rp.receipt_id
+            WHERE rp.sales_tax_invoice_id = sales_tax_invoice.id
+        ) AS adjustment_remarks"),
+
         "territories.name AS territory_name"
     )
 
@@ -110,11 +140,10 @@ class OutstandingAgainController extends Controller
     ->leftJoin(DB::raw("(SELECT master_id, brand_id FROM sales_order_data GROUP BY master_id) AS sod"), "sod.master_id", "=", "sales_order.id")
     ->leftJoin("brands", "sod.brand_id", "=", "brands.id")
     ->join("customers", "sales_order.buyers_id", "=", "customers.id")
-    ->leftJoin("credit_note", "credit_note.so_id", "=", "sales_order.id")
     ->leftJoin("territories", "customers.territory_id", "=", "territories.id")
 
     ->when(isset($si_no), fn ($q) => $q->where("sales_tax_invoice.gi_no", "like", "%$si_no%"))
-    ->when(isset($brand_id), fn ($q) => $q->where("sales_order_data.brand_id", $brand_id))
+    ->when(isset($brand_id), fn ($q) => $q->where("sod.brand_id", $brand_id))
     ->when(isset($warehouse_id), fn ($q) => $q->where("customers.warehouse_from", $warehouse_id))
 
     ->whereBetween("sales_tax_invoice.gd_date", [$from, $to])

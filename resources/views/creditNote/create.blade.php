@@ -331,7 +331,7 @@
                 return;
             }
 
-            if(!invoice_required && !$("#amount_val").val()) {
+            if(!invoice_required && type !== "against-invoice" && !$("#amount_val").val()) {
                 alert("Amount field is required");
                 return;
             }

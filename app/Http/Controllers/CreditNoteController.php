@@ -415,9 +415,7 @@ class CreditNoteController extends Controller
 		];
 
 		if($request->type === 'without-invoice') {
-			array_merge($rules, [
-				'amount' => "required"
-			]);
+			$rules['amount'] = "required";
 		}
 
 		$request->validate($rules);
@@ -431,7 +429,7 @@ class CreditNoteController extends Controller
             "store" => $request->store,
             "delivery_man" => $request->delivery_man,
             "date" => $request->date_and_time,
-            "amount" => $request->amount ?? "",
+            "amount" => $request->amount ?? 0,
             "details" => $request->details,
             "credit" => "-",
             "debit" => $request->debit,
@@ -470,8 +468,8 @@ class CreditNoteController extends Controller
             
 			// $brig=$request->si_id;
 			$net_amount=0;
-			$tax_amount=0;	$type = "Credit Note";
-			\App\Helpers\CommonHelper::createNotification($type . " with " . $rv_no . " is created by " . auth()->user()->name, $type . "");
+			$tax_amount=0;	$notifyType = "Credit Note";
+			\App\Helpers\CommonHelper::createNotification($notifyType . " with " . $rv_no . " is created by " . auth()->user()->name, $notifyType . "");
         
 			$tax_acc_id=0;
 			$total_amount=0;
@@ -480,7 +478,7 @@ class CreditNoteController extends Controller
             $brig=$request->si_id;
             $master_id = $credit->id;
 
-			if($type == 'against-invoice'):
+			if($request->type == 'against-invoice'):
 				foreach($brig as $key=>$row):
 					$data1=array
 					(
@@ -535,7 +533,7 @@ class CreditNoteController extends Controller
 
 
 			
-			if($type === 'against-invoice'):
+			if($request->type === 'against-invoice'):
 				foreach($brig as $key=>$row):
 					$data2=array
 					(
@@ -558,7 +556,7 @@ class CreditNoteController extends Controller
 					'master_id' => $master_id,
 					'rv_no'=>$rv_no,
 					'acc_id' => $request->debit,
-					'amount' => $request->amount,
+					'amount' => $request->amount ?? 0,
 					'debit_credit' => 1,
 					'status' => 1,
 					'rv_status' => 1,
@@ -606,7 +604,7 @@ class CreditNoteController extends Controller
 			if ($discount_amount>0):
 			$disc_acc_id=DB::Connection('mysql2')->table('accounts')->where('status',1)->where('name','Sales Discount')->first()->id;
         		
-			if($type === 'against-invoice'):
+			if($request->type === 'against-invoice'):
 				foreach($brig as $key=>$row):
 					$data6=array
 					(
@@ -630,7 +628,7 @@ class CreditNoteController extends Controller
 		$customer_acc_id=	SalesHelper::get_customer_acc_id($request->store);
        
 
-		if($type === 'against-invoice'):
+		if($request->type === 'against-invoice'):
 			foreach($brig as $key=>$row):
 				$data6=array
 				(
@@ -653,7 +651,7 @@ class CreditNoteController extends Controller
 					'master_id' => $master_id,
 					'rv_no'=>$rv_no,
 					'acc_id' => $customer_acc_id,
-					'amount' => $request->amount,
+					'amount' => $request->amount ?? 0,
 					'debit_credit' => 0,
 					'status' => 1,
 					'rv_status' => 1,
@@ -695,8 +693,8 @@ class CreditNoteController extends Controller
 			return Redirect::to('sales/receiptVoucherList?m='.$request->m);
 		}
 
-		$type = "Credit Note";
-		\App\Helpers\CommonHelper::createNotification($type . " with " . $rv_no . " is created by " . auth()->user()->name, $type . "");
+		$notifyType = "Credit Note";
+		\App\Helpers\CommonHelper::createNotification($notifyType . " with " . $rv_no . " is created by " . auth()->user()->name, $notifyType . "");
         
 
     }
