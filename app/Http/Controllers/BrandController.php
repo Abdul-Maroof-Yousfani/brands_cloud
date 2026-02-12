@@ -71,9 +71,15 @@ public function index()
     public function get_brand_by_principal_group(Request $request) {
     $principal_group_id = $request->principal_group_id;
 
-    $brands = Brand::where('principal_group_id', $principal_group_id)
-                   ->where('status', 1)
-                   ->get();
+    $query = Brand::where('status', 1);
+
+    if (is_array($principal_group_id)) {
+        $query->whereIn('principal_group_id', $principal_group_id);
+    } else {
+        $query->where('principal_group_id', $principal_group_id);
+    }
+
+    $brands = $query->get();
 
     $data = [];
 

@@ -16,6 +16,7 @@ use App\Helpers\SalesHelper;
 use App\Models\Contact;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SubDepartment;
 use Config;
 use Redirect;
 use Session;
@@ -387,18 +388,22 @@ class SalesOrderController extends Controller
      */
     public function createSaleOrder()
     {
-        return view($this->path . 'createSaleOrder');
+        $salesmen = SubDepartment::where('status', 1)->get();
+        return view($this->path . 'createSaleOrder', compact('salesmen'));
     }
 
     // new code
     public function viewSaleOrdernew(Request $request)
     {
         $sale_order = Sales_Order::where('id', $request->id)->first();
-
-        
         $sale_order_data = Sales_Order_Data::where('master_id', $request->id)->get();
 
-        return view('selling.saleorder.viewSaleOrdernew', compact('sale_order', 'sale_order_data'));
+        $salesman = null;
+        if ($sale_order && $sale_order->sales_person_id) {
+            $salesman = SubDepartment::find($sale_order->sales_person_id);
+        }
+
+        return view('selling.saleorder.viewSaleOrdernew', compact('sale_order', 'sale_order_data', 'salesman'));
     }
 
     public function approveSaleOrder(Request $request)
@@ -530,7 +535,16 @@ class SalesOrderController extends Controller
             $sales_order->phone_no = $request->phone_no ?? null;
             $sales_order->address = $request->address ?? null;
             $sales_order->branch = $request->branch ?? null;
-            $sales_order->sales_person = $request->saleperson ?? null;
+
+            $sales_person_id = $request->saleperson_id ?? null;
+            $sales_order->sales_person_id = $sales_person_id;
+            if ($sales_person_id) {
+                $salesman = SubDepartment::find($sales_person_id);
+                $sales_order->sales_person = $salesman ? $salesman->sub_department_name : ($request->saleperson ?? null);
+            } else {
+                $sales_order->sales_person = $request->saleperson ?? null;
+            }
+
             $sales_order->balance_amount = $request->balance_amount ?? 0.0;
             $sales_order->credit_limit = $request->credit_limit ?? 0.0;
             $sales_order->current_balance_due = $request->balance_amount + $request->total_amount_after_sale_tax ?? 0.0;
@@ -546,7 +560,15 @@ class SalesOrderController extends Controller
             $sales_order->sale_taxes_amount_total = $request->sale_taxes_amount_total ?? 0;
             $sales_order->sale_taxes_amount_rate = $request->sale_taxes_amount_rate ?? 0;
             $sales_order->warehouse_from = $request->warehouse;
-            $sales_order->principal_group_id = $request->principal_group;
+
+            $principal_groups = $request->principal_group;
+            if (is_array($principal_groups)) {
+                $sales_order->principal_group_id = $principal_groups[0] ?? null;
+                $sales_order->principal_group_ids = implode(',', $principal_groups);
+            } else {
+                $sales_order->principal_group_id = $principal_groups;
+                $sales_order->principal_group_ids = $principal_groups;
+            }
             // $sales_order->purchase_order_no=$request->purchase_order_no ?? '';
             // $sales_order->purchase_order_date=$request->purchase_order_date;
             // $sales_order->purchase_order_contract=$request->quotation_id ?? '';
@@ -802,7 +824,9 @@ class SalesOrderController extends Controller
         // print_r($sales_order_data);
         // exit();
 
-        return view($this->path . 'editSaleOrder', compact('sale_orders', 'sales_order_data', 'data'));
+
+        $salesmen = SubDepartment::where('status', 1)->get();
+        return view($this->path . 'editSaleOrder', compact('sale_orders', 'sales_order_data', 'data', 'salesmen'));
     }
     /**
      * Update the specified resource in storage.
@@ -1013,9 +1037,19 @@ class SalesOrderController extends Controller
             $sales_order->phone_no = $request->phone_no ?? null;
             $sales_order->address = $request->address ?? null;
             $sales_order->branch = $request->branch ?? null;
-            $sales_order->sales_person = $request->saleperson ?? null;
+
+            $sales_person_id = $request->saleperson_id ?? null;
+            $sales_order->sales_person_id = $sales_person_id;
+            if ($sales_person_id) {
+                $salesman = SubDepartment::find($sales_person_id);
+                $sales_order->sales_person = $salesman ? $salesman->sub_department_name : ($request->saleperson ?? null);
+            } else {
+                $sales_order->sales_person = $request->saleperson ?? null;
+            }
+
             $sales_order->balance_amount = $request->balance_amount ?? 0.0;
-            $sales_order->principal_group_id = $request->principal_group;
+            $sales_order->principal_group_id = is_array($request->principal_group) ? ($request->principal_group[0] ?? null) : $request->principal_group;
+            $sales_order->principal_group_ids = is_array($request->principal_group) ? implode(',', $request->principal_group) : $request->principal_group;
             $sales_order->credit_limit = $request->credit_limit ?? 0.0;
             $sales_order->current_balance_due = $request->balance_amount + $request->total_amount_after_sale_tax ?? 0.0;
             $sales_order->virtual_warehouse_check = $virtualWarehouseCheck;

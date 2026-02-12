@@ -67,7 +67,11 @@ jQuery(document).ready(function ($) {
     // Focus on Select2
     docBody.on('focus', '.select2', function () {
         var elSelect = $(this).siblings('select');
-        if (!elSelect.prop('disabled') && !elSelect.data('select2-open')) {
+        // Only auto-open single-select Select2 instances that are not disabled and don't have .no-tab-focus
+        if (!elSelect.prop('disabled') && 
+            !elSelect.data('select2-open') && 
+            !elSelect.hasClass('no-tab-focus') &&
+            $(this).has('.select2-selection--single').length > 0) {
             elSelect.attr('data-s2open', 1).select2('open');
         }
     });

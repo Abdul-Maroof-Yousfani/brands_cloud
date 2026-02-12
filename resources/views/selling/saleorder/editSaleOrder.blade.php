@@ -120,8 +120,12 @@
                                                 <div class="col-md-6 col-md-6 col-sm-12 col-xs-12">
                                                     <div class="form-group">
                                                         <label class="control-label" style="margin-bottom: 0;">Sales Person </label>
-                                                       <input name="saleperson" id="saleperson" class="form-control"   value="{{$sale_orders->sales_person}}"
-                                                               type="text">
+                                                        <select name="saleperson_id" id="saleperson_id" class="form-control select2">
+                                                            <option value="">Select Sales Person</option>
+                                                            @foreach($salesmen as $salesman)
+                                                                <option value="{{ $salesman->id }}" {{ $sale_orders->sales_person_id == $salesman->id ? 'selected' : '' }}>{{ $salesman->sub_department_name }}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                 </div>
 
@@ -162,11 +166,13 @@
 
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                 <label class="control-label" style="margin-bottom: 0;">Select Principal Groups</label>
-                                                <select style="wiidth: 100%;" id="principal_group"
-                                                        name="principal_group" onchange="get_brand_by_principal_group(this)" class="form-control select2 principal_group form-group">
-                                                    <option value="">Select Principal group</option>
+                                                <select style="width: 100%;" id="principal_group"
+                                                        name="principal_group[]" multiple="multiple" data-placeholder="Select Principal Groups" onchange="get_brand_by_principal_group(this)" class="form-control select2 principal_group">
+                                                    @php
+                                                        $selected_groups = explode(',', $sale_orders->principal_group_ids);
+                                                    @endphp
                                                     @foreach(CommonHelper::get_all_principal_groups() as $group)
-                                                        <option value="{{$group->id}}" {{ $sale_orders->principal_group_id == $group->id ? 'selected' : '' }}>{{$group->products_principal_group}}</option>
+                                                        <option value="{{$group->id}}" {{ in_array($group->id, $selected_groups) ? 'selected' : '' }}>{{$group->products_principal_group}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -1818,6 +1824,16 @@ function get_product_by_brand(element, number) {
 
         $('#customer').select2();
         $('#customer_name').select2();
+        $('#saleperson_id').select2();
+        try {
+            jQuery('#principal_group').select2({
+                placeholder: "Select Principal Groups",
+                allowClear: true,
+                width: '100%'
+            });
+        } catch (e) {
+            console.error("Select2 initialization failed for principal_group:", e);
+        }
     })
 
     $('body').on('click', '.removerow', function() {

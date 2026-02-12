@@ -123,8 +123,12 @@
                                                 <div class="col-md-6 col-md-6 col-sm-12 col-xs-12">
                                                     <div class="form-group">
                                                         <label class="control-label" style="margin-bottom: 0;">Sales Person </label>
-                                                        <input name="saleperson" id="saleperson" class="form-control"
-                                                               type="text">
+                                                        <select name="saleperson_id" id="saleperson_id" class="form-control select2">
+                                                            <option value="">Select Sales Person</option>
+                                                            @foreach($salesmen as $salesman)
+                                                                <option value="{{ $salesman->id }}">{{ $salesman->sub_department_name }}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                 </div>
 
@@ -152,9 +156,8 @@
 
                                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                     <label class="control-label" style="margin-bottom: 0;">Select Principal Groups</label>
-                                                    <select style="wiidth: 100%;" id="principal_group"
-                                                            name="principal_group" onchange="get_brand_by_principal_group(this)" class="form-control select2 principal_group form-group">
-                                                        <option value="">Select Principal group</option>
+                                                    <select style="width: 100%;" id="principal_group"
+                                                            name="principal_group[]" multiple data-placeholder="Select Principal Groups" onchange="get_brand_by_principal_group(this)" class="form-control select2 principal_group">
                                                         @foreach(CommonHelper::get_all_principal_groups() as $group)
                                                             <option value="{{$group->id}}">{{$group->products_principal_group}}</option>
                                                         @endforeach
@@ -494,98 +497,6 @@ function applySaleTax(selectElement) {
 let warehouses = [];
 
 jQuery(document).ready(function($) {
-    
-    var docBody = $(document.body);
-    var shiftPressed = false;
-    var clickedOutside = false;
-
-    // Track Shift key
-    docBody.on('keydown', function(e) {
-        if ((e.keyCode || e.which) === 16) { shiftPressed = true; }
-    });
-    docBody.on('keyup', function(e) {
-        if ((e.keyCode || e.which) === 16) { shiftPressed = false; }
-    });
-
-    // Detect click outside Select2
-    docBody.on('mousedown', function(e){
-        clickedOutside = !$(e.target).is('[class*="select2"]');
-    });
-
-    // Select2 state handlers
-    docBody.on('select2:opening', function(e) {
-        clickedOutside = false;
-        $(e.target).attr('data-s2open', 1);
-    });
-    docBody.on('select2:closing', function(e) {
-        $(e.target).removeAttr('data-s2open');
-    });
-
-    docBody.on('select2:close', function(e) {
-        var elSelect = $(e.target);
-        elSelect.removeAttr('data-s2open');
-
-        var currentForm = elSelect.closest('form');
-        var othersOpen = currentForm.find('[data-s2open]').length;
-
-        if (othersOpen === 0 && clickedOutside === false) {
-            // Filter valid inputs
-            var inputs = currentForm.find(':input:enabled:not([readonly], input:hidden, button:hidden, textarea:hidden)')
-                .not(function () {
-                    return $(this).parent().is(':hidden');
-                })
-                .not('.no-tab-focus'); // EXCLUDE .no-tab-focus inputs
-
-            var elFocus = null;
-            $.each(inputs, function (index) {
-                var elInput = $(this);
-                if (elInput.attr('id') === elSelect.attr('id')) {
-                    elFocus = shiftPressed ? inputs.eq(index - 1) : inputs.eq(index + 1);
-                    return false;
-                }
-            });
-
-            if (elFocus) {
-                var isSelect2 = elFocus.siblings('.select2').length > 0;
-                if (isSelect2) {
-                    elFocus.select2('open');
-                } else {
-                    elFocus.focus();
-                }
-            }
-        }
-    });
-
-    // Focus on Select2 from its container
-    docBody.on('focus', '.select2', function(e) {
-        var elSelect = $(this).siblings('select');
-        if (!elSelect.is('[disabled]') && !elSelect.is('[data-s2open]') && $(this).has('.select2-selection--single').length > 0) {
-            elSelect.attr('data-s2open', 1);
-            elSelect.select2('open');
-        }
-    });
-
-    // Prevent tabbing out of last input (add row)
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Tab') {
-            let activeElement = document.activeElement;
-            let lastRow = document.querySelector('table tr:last-child');
-            let lastInput = lastRow ? lastRow.querySelector('input:last-child') : null;
-
-            if (activeElement === lastInput) {
-                event.preventDefault();
-                AddMoreDetails();
-                getTableRowCount();
-
-                let newRow = document.querySelector('table tr:last-child');
-                if (newRow) {
-                    let firstInput = newRow.querySelector('input:not([readonly]):not(.no-tab-focus)');
-                    if (firstInput) firstInput.focus();
-                }
-            }
-        }
-    });
-
     // Initialize row count
     getTableRowCount();
 });
@@ -1824,6 +1735,16 @@ function get_product_by_brand(element, number) {
 
         $('#customer').select2();
         $('#customer_name').select2();
+        $('#saleperson_id').select2();
+        try {
+            jQuery('#principal_group').select2({
+                placeholder: "Select Principal Groups",
+                allowClear: true,
+                width: '100%'
+            });
+        } catch (e) {
+            console.error("Select2 initialization failed for principal_group:", e);
+        }
 
           $('#warehouse_from').select2({
             matcher: function(params, data) {

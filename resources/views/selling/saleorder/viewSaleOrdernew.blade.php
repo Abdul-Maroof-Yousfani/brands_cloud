@@ -132,7 +132,7 @@ input.form-control.form-control2{margin:0!important;}
                                                             @endphp
                                                             <p>Warehouse: {{ $warehouse_name }}</p>
                                                             <p>Payment Terms: 30 Days</p>
-                                                            <p>Salesperson Mobile #</p>
+                                                            <p>Salesperson Mobile # {{ $salesman ? $salesman->phone_number : '' }}</p>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
@@ -140,7 +140,7 @@ input.form-control.form-control2{margin:0!important;}
                                                             <p>SO #: {{$sale_order->so_no}}</p>
                                                             <p>GDN #:</p>
                                                             <p>Branch: {{$sale_order->branch}}</p>
-                                                            <p>Salesperson: {{$buyer_detail->SaleRep}}</p>
+                                                            <p>Salesperson: {{ $salesman ? $salesman->sub_department_name : ($sale_order->sales_person ?? $buyer_detail->SaleRep) }}</p>
                                                             <p><strong></strong></p>
                                                         </div>
                                                     </div>
