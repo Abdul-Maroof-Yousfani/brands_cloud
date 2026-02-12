@@ -74,7 +74,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <a href="{{asset('/public/brand_item_wise_discount_import.csv')}}" target="_blank" class="btn btn-primary" >Download Sample File</a>
+                                    <a href="{{asset('brand_item_wise_discount_import.csv')}}" target="_blank" class="btn btn-primary" >Download Sample File</a>
                                 </div>
                                 <div class="col-md-6 text-right">
                                     <button type="submit" class="btn btn-success">Import</button>
@@ -113,7 +113,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <a href="{{asset('/public/brand_wise_discount_import.csv')}}" target="_blank" class="btn btn-primary" >Download Sample File</a>
+                                    <a href="{{asset('brand_wise_discount_import.csv')}}" target="_blank" class="btn btn-primary" >Download Sample File</a>
                                 </div>
                                 <div class="col-md-6 text-right">
                                     <button type="submit" class="btn btn-success">Import</button>
@@ -164,7 +164,7 @@
                             <!-- Customer Selection -->
                             <div class="mb-3">
                                 <label for="customers" class="form-label">Customers</label>
-                                <select class="form-select" id="customers" name="customers[]" multiple="multiple" style="width: 100%;">
+                                <select class="form-select" id="customers_create" name="customers[]" multiple="multiple" style="width: 100%;">
                                     <option value="all">All Customers</option>
                                     @foreach(App\Helpers\SalesHelper::get_all_customer() as $row)
                                         <option value="{{$row->id.'*'.$row->cnic_ntn.'*'.$row->strn.'*'.$row->terms_of_payment}}">{{$row->name}}</option>
@@ -381,76 +381,88 @@
               
                 let formData = $(this).serialize();
 
-                // Show processing Swal loader
                 Swal.fire({
-                    title: 'Processing...',
-                    text: 'Please wait while we apply the discount',
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                $.ajax({
-                    url: '{{route('customerDiscount.store')}}', // Adjust the URL to your route
-                    type: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        // Close the loader and show success message
+                    title: 'Are you sure?',
+                    text: "Do you want to apply this discount?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, apply it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show processing Swal loader
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message,
-                        }).then(() => {
-                            // Refresh the page after the alert is closed
-                            location.reload();
+                            title: 'Processing...',
+                            text: 'Please wait while we apply the discount',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
                         });
-                    },
-                    error: function (xhr) {
-                        // Handle validation errors (422 Unprocessable Entity)
-                        if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            let errorMessage = 'Please fix the following errors:';
-                            $.each(errors, function (key, value) {
-                                errorMessage += '\n' + value;
-                            });
 
-                            // Show validation error message
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Validation Error',
-                                text: errorMessage,
-                            });
+                        $.ajax({
+                            url: '{{route('customerDiscount.store')}}', // Adjust the URL to your route
+                            type: 'POST',
+                            data: formData,
+                            success: function (response) {
+                                // Close the loader and show success message
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                }).then(() => {
+                                    // Refresh the page after the alert is closed
+                                    location.reload();
+                                });
+                            },
+                            error: function (xhr) {
+                                // Handle validation errors (422 Unprocessable Entity)
+                                if (xhr.status === 422) {
+                                    let errors = xhr.responseJSON.errors;
+                                    let errorMessage = 'Please fix the following errors:';
+                                    $.each(errors, function (key, value) {
+                                        errorMessage += '\n' + value;
+                                    });
 
-                            // Handle 404 Not Found errors
-                        } else if (xhr.status === 404) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error 404',
-                                text: 'The requested resource was not found.',
-                            });
+                                    // Show validation error message
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Validation Error',
+                                        text: errorMessage,
+                                    });
 
-                            // Handle 500 Internal Server Error
-                        } else if (xhr.status === 500) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Server Error',
-                                text: 'An internal server error occurred. Please try again later.',
-                            });
+                                    // Handle 404 Not Found errors
+                                } else if (xhr.status === 404) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error 404',
+                                        text: 'The requested resource was not found.',
+                                    });
 
-                            // Handle other errors (fallback for other status codes)
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: `An unexpected error occurred (Error code: ${xhr.status}). Please try again later.`,
-                            });
-                        }
-                    },
-                    complete: function () {
-                        // Always close the loader if there's success or error
-                        Swal.close();
+                                    // Handle 500 Internal Server Error
+                                } else if (xhr.status === 500) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Server Error',
+                                        text: 'An internal server error occurred. Please try again later.',
+                                    });
+
+                                    // Handle other errors (fallback for other status codes)
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: `An unexpected error occurred (Error code: ${xhr.status}). Please try again later.`,
+                                    });
+                                }
+                            },
+                            complete: function () {
+                                // Always close the loader if there's success or error
+                                // Swal.close();
+                            }
+                        });
                     }
                 });
             });
@@ -464,15 +476,22 @@
         // Initialize Select2 on all dropdowns
         $('#brands').select2({
             placeholder: 'Select Brands',
-            allowClear: true
+            allowClear: true,
+            dropdownParent: $('#exampleModal')
         });
-        $('#products').({
+        $('#products').select2({
             placeholder: 'Select Products',
-            allowClear: true
+            allowClear: true,
+            dropdownParent: $('#exampleModal')
         });
         $('#customers').select2({
             placeholder: 'Select Customers',
             allowClear: true
+        });
+        $('#customers_create').select2({
+            placeholder: 'Select Customers',
+            allowClear: true,
+            dropdownParent: $('#exampleModal')
         });
         $('#customers2').select2({
             placeholder: 'Select Customers',

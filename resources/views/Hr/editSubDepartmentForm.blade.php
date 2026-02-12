@@ -16,7 +16,7 @@ $subDepartmentDetail = DB::selectOne('select * from `sub_department` where `id` 
 								<input type="hidden" name="pageType" value="<?php echo $_GET['pageType']?>">
 								<input type="hidden" name="parentCode" value="<?php echo $_GET['parentCode']?>">
 								<div class="panel">
-									<div class="panel-body">sa
+									<div class="panel-body">
 										<div class="row">
 											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 												<input type="hidden" name="subDepartmentSection[]" class="form-control" id="subDepartmentSection" value="1" />
@@ -32,8 +32,19 @@ $subDepartmentDetail = DB::selectOne('select * from `sub_department` where `id` 
 		                                    		@foreach($departments as $key => $y)
 		                                    			<option value="{{ $y->id}}" {{ $subDepartmentDetail->department_id == $y->id ? 'selected="selected"' : '' }}>{{ $y->department_name}}</option>
 		                                    		@endforeach
-
 		                                    	</select>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+												<label>Select Region:</label>
+												<span class="rflabelsteric"><strong>*</strong></span>
+												<select class="form-control requiredField select2" name="territory_id_1" id="territory_id_1">
+													<option value="">Select Region</option>
+													@foreach($territories as $territory)
+														<option value="{{ $territory->id }}" {{ $subDepartmentDetail->territory_id == $territory->id ? 'selected="selected"' : '' }}>{{ $territory->name }}</option>
+													@endforeach
+												</select>
 											</div>
 										</div>
 										<div class="lineHeight">&nbsp;</div>
@@ -48,14 +59,14 @@ $subDepartmentDetail = DB::selectOne('select * from `sub_department` where `id` 
 											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 												<label>Designation:</label>
 												<span class="rflabelsteric"><strong>*</strong></span>
-												<input type="text" name="designation" id="designation" value="{{$subDepartmentDetail->designation}}" class="form-control requiredField" />
+												<input type="text" name="designation_1" id="designation_1" value="{{$subDepartmentDetail->designation}}" class="form-control requiredField" />
 											</div>
 										</div>
 										<div class="row">
 											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 												<label>Phone Number:</label>
 												<span class="rflabelsteric"><strong>*</strong></span>
-												<input type="text" name="phone_number" id="phone_number" value="{{$subDepartmentDetail->phone_number}}" class="form-control requiredField" />
+												<input type="text" name="phone_number_1" id="phone_number_1" value="{{$subDepartmentDetail->phone_number}}" class="form-control requiredField" />
 											</div>
 										</div>
 						
@@ -77,6 +88,14 @@ $subDepartmentDetail = DB::selectOne('select * from `sub_department` where `id` 
 		</div>
 	</div>
 	<script type="text/javascript">
+		$(document).ready(function() {
+			$('.select2').select2({
+				placeholder: "Select",
+				allowClear: true,
+				width: '100%'
+			});
+		});
+
 		$(".btn-success").click(function(e){
 			var subDepartmentSection = new Array();
 			var val;

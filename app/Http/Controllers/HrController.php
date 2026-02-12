@@ -80,6 +80,7 @@ use App\Models\TrainingCertificate;
 use App\Models\TransferEmployeeProject;
 use App\Models\Buildings;
 use App\Models\AllowanceType;
+use App\Models\Territory;
 
 use Input;
 use Auth;
@@ -145,19 +146,31 @@ class HrController extends Controller
     public function createSubDepartmentForm()
     {
         $departments = Department::where('company_id','=',$_GET['m'])->where('status','=','1')->orderBy('id')->get();
-        return view('Hr.createSubDepartmentForm',compact('departments'));
+        $territories = Territory::where('status','=', 1)->get();
+        return view('Hr.createSubDepartmentForm',compact('departments', 'territories'));
     }
 
     public function viewSubDepartmentList()
     {
-        $SubDepartments = SubDepartment::where([['company_id','=',Input::get('m')],['status','=', 1]])->orderBy('id')->get();
-        return view('Hr.viewSubDepartmentList', compact('SubDepartments'));
+        $m = Input::get('m');
+        $territory_id = Input::get('territory_id');
+        $query = SubDepartment::where([['company_id','=',$m],['status','=', 1]]);
+        
+        if ($territory_id) {
+            $query->where('territory_id', $territory_id);
+        }
+
+        $SubDepartments = $query->orderBy('id')->get();
+        $territories = Territory::where('status','=', 1)->get();
+
+        return view('Hr.viewSubDepartmentList', compact('SubDepartments', 'territories'));
     }
 
     public function editSubDepartmentForm()
     {
         $departments = Department::where([['company_id','=',Input::get('m')],['status','=', 1]])->orderBy('id')->get();
-        return view('Hr.editSubDepartmentForm',compact('departments'));
+        $territories = Territory::where('status','=', 1)->get();
+        return view('Hr.editSubDepartmentForm',compact('departments', 'territories'));
     }
 
     public function editUOM(int $id)

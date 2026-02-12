@@ -89,12 +89,14 @@ class HrAddDetailControler extends Controller
         foreach ($subDepartmentSection as $row) {
             $department_id = Input::get('department_id_' . $row . '');
             $sub_department_name = Input::get('sub_department_name_' . $row . '');
+            $territory_id = Input::get('territory_id_' . $row . '');
             $data1['department_id'] = strip_tags($department_id);
             $data1['sub_department_name'] = strip_tags($sub_department_name);
+            $data1['territory_id'] = strip_tags($territory_id);
             $data1['username'] = Auth::user()->name;
             $data1['company_id'] = $_GET['m'];
-            $data1["designation"] = Input::get("designation");
-            $data1["phone_number"] = Input::get("phone_number");
+            $data1["designation"] = Input::get("designation_" . $row);
+            $data1["phone_number"] = Input::get("phone_number_" . $row);
          
             $data1['date'] = date("Y-m-d");
             $data1['time'] = date("H:i:s");

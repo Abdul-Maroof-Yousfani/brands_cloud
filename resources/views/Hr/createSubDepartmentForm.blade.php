@@ -48,6 +48,18 @@ $currentDate = date('Y-m-d');
 										</select>
 									</div>
 								</div>
+								<div class="row">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<label>Select Region:</label>
+										<span class="rflabelsteric"><strong>*</strong></span>
+										<select class="form-control requiredField select2" name="territory_id_1" id="territory_id_1">
+											<option value="">Select Region</option>
+											@foreach($territories as $territory)
+												<option value="{{ $territory->id }}">{{ $territory->name }}</option>
+											@endforeach
+										</select>
+									</div>
+								</div>
 								<div class="lineHeight">&nbsp;</div>
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -60,14 +72,14 @@ $currentDate = date('Y-m-d');
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 										<label>Designation:</label>
 										<span class="rflabelsteric"><strong>*</strong></span>
-										<input type="text" name="designation" id="designation" value="" class="form-control requiredField" />
+										<input type="text" name="designation_1" id="designation_1" value="" class="form-control requiredField" />
 									</div>
 								</div>
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 										<label>Phone Number:</label>
 										<span class="rflabelsteric"><strong>*</strong></span>
-										<input type="tel" name="phone_number" id="phone_number" value="" class="form-control requiredField" />
+										<input type="tel" name="phone_number_1" id="phone_number_1" value="" class="form-control requiredField" />
 									</div>
 								</div>
 							</div>
@@ -93,6 +105,12 @@ $currentDate = date('Y-m-d');
 
 <script>
     $(document).ready(function() {
+		// Initialize Select2 on existing fields
+		$('.select2').select2({
+			placeholder: "Select",
+			allowClear: true,
+			width: '100%'
+		});
 
 		// Wait for the DOM to be ready
 		$(".btn-success").click(function(e){
@@ -126,6 +144,18 @@ $currentDate = date('Y-m-d');
 				data: { id:subDepartment,companyId:companyId},
 				success:function(data) {
 					$('.subDepartmentSection').append('<div id="sectionSubDepartment_'+subDepartment+'"><a href="#" onclick="removeSubDepartmentSection('+subDepartment+')" class="btn btn-sm btn-danger">Remove</a><div class="lineHeight">&nbsp;</div><div class="panel"><div class="panel-body">'+data+'</div></div></div>');
+					
+					// Initialize Select2 on newly added fields
+					$('#territory_id_'+subDepartment).select2({
+						placeholder: "Select Region",
+						allowClear: true,
+						width: '100%'
+					});
+					$('#department_id_'+subDepartment).select2({
+						placeholder: "Select Department",
+						allowClear: true,
+						width: '100%'
+					});
               	}
           	});
 		});

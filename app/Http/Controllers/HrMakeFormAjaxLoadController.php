@@ -22,6 +22,7 @@ use App\Models\Qualification;
 use App\Models\Tax;
 use App\Models\Eobi;
 use App\Models\Employee;
+use App\Models\Territory;
 class HrMakeFormAjaxLoadController extends Controller
 {
     /**
@@ -78,6 +79,19 @@ class HrMakeFormAjaxLoadController extends Controller
 						<option value="<?php echo $row['id'];?>"><?php echo $row['department_name'];?></option>
 					<?php }?>
 		      	</select>
+		<div class="lineHeight">&nbsp;</div>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<label>Select Region:</label>
+				<span class="rflabelsteric"><strong>*</strong></span>
+				<select class="form-control requiredField select2" name="territory_id_<?php echo $_GET['id']?>" id="territory_id_<?php echo $_GET['id']?>">
+					<option value="">Select Region</option>
+					<?php 
+					$territories = Territory::where('status','=', 1)->get();
+					foreach($territories as $territory){?>
+						<option value="<?php echo $territory->id;?>"><?php echo $territory->name;?></option>
+					<?php }?>
+				</select>
 			</div>
 		</div>
 		<div class="lineHeight">&nbsp;</div>
@@ -86,6 +100,22 @@ class HrMakeFormAjaxLoadController extends Controller
 				<label>Sub Department Name:</label>
 				<span class="rflabelsteric"><strong>*</strong></span>
 				<input type="text" name="sub_department_name_<?php echo $_GET['id']?>" id="sub_department_name_<?php echo $_GET['id']?>" value="" class="form-control requiredField" />
+			</div>
+		</div>
+		<div class="lineHeight">&nbsp;</div>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<label>Designation:</label>
+				<span class="rflabelsteric"><strong>*</strong></span>
+				<input type="text" name="designation_<?php echo $_GET['id']?>" id="designation_<?php echo $_GET['id']?>" value="" class="form-control requiredField" />
+			</div>
+		</div>
+		<div class="lineHeight">&nbsp;</div>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<label>Phone Number:</label>
+				<span class="rflabelsteric"><strong>*</strong></span>
+				<input type="tel" name="phone_number_<?php echo $_GET['id']?>" id="phone_number_<?php echo $_GET['id']?>" value="" class="form-control requiredField" />
 			</div>
 		</div>
 	<?php

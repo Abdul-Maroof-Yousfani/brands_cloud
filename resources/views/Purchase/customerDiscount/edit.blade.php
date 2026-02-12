@@ -1,5 +1,4 @@
 @extends('layouts.default')
-@include("select2")
 @section('content')
     <div class="well_N">
         <h2>Customer Discount</h2>
@@ -9,7 +8,7 @@
             <div class="form-group">
                 <label for="name">Brands</label>
                 <select
-                        name="brand_id" id="brand_id"
+                        name="brand_id" id="brand_id" onChange="get_product_by_brand(this,1)"
                         class="form-control WrequiredField select2 d-block select2"
                        >
                     <option value="">Select Brands</option>
@@ -64,4 +63,43 @@
 
         </form>
     </div>
+@endsection
+@section('script')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#brand_id').select2({
+                placeholder: 'Select Brands',
+                allowClear: true
+            });
+            $('#product_id').select2({
+                placeholder: 'Select Products',
+                allowClear: true
+            });
+            $('#customer_id').select2({
+                placeholder: 'Select Customer',
+                allowClear: true
+            });
+        });
+
+        function get_product_by_brand(element, number) {
+            var value = element.value;
+            $('#product_id').empty();
+            $.ajax({
+                url: '{{ url("/getSubItemByBrand") }}',
+                type: 'Get',
+                data: {
+                    id: value
+                },
+                success: function(data) {
+                    $('#product_id').append(data);
+                }
+            });
+        }
+    </script>
 @endsection
