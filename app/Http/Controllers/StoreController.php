@@ -1871,28 +1871,28 @@ public function getBrandsByWarehouse(Request $request)
                 })->toArray();
 
             $query = \Illuminate\Support\Facades\DB::connection("mysql2")->table("subitem");
-            $query = DB::connection('mysql2')->table('ba_stock as s')
-                ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
-                ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
+            // $query = DB::connection('mysql2')->table('ba_stock as s')
+            //     ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
+            //     ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
 
-                ->leftJoin('category as c', 'si.main_ic_id', '=', 'c.id')
-                ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
-                ->select(
-                    'si.id as product_id',
-                    'si.sku_code',
-                    'si.product_name',
-                    'si.product_barcode as barcode',
-                    'pt.type as item_type',
-                    // 'si.type as item_type',
-                    'si.pack_size as packing',
-                    'b.name as brand',
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,9) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock'),
-                )
-                ->where('s.status', 1)
+            //     ->leftJoin('category as c', 'si.main_ic_id', '=', 'c.id')
+            //     ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
+            //     ->select(
+            //         'si.id as product_id',
+            //         'si.sku_code',
+            //         'si.product_name',
+            //         'si.product_barcode as barcode',
+            //         'pt.type as item_type',
+            //         // 'si.type as item_type',
+            //         'si.pack_size as packing',
+            //         'b.name as brand',
+            //         DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,9) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
+            //         DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock'),
+            //     )
+            //     ->where('s.status', 1)
                 
-                ->whereBetween('s.created_date', [$from_date, $to_date])
-                ->groupBy('si.id');
+            //     ->whereBetween('s.created_date', [$from_date, $to_date])
+            //     ->groupBy('si.id');
 
 
               
