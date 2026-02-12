@@ -388,7 +388,15 @@ class SalesOrderController extends Controller
      */
     public function createSaleOrder()
     {
-        $salesmen = SubDepartment::where('status', 1)->get();
+        $user = auth()->user();
+        $territory_ids = json_decode($user->territory_id, true);
+        if (!is_array($territory_ids)) {
+            $territory_ids = [$user->territory_id];
+        }
+
+        $salesmen = SubDepartment::where('status', 1)
+            ->whereIn('territory_id', $territory_ids)
+            ->get();
         return view($this->path . 'createSaleOrder', compact('salesmen'));
     }
 
@@ -825,7 +833,15 @@ class SalesOrderController extends Controller
         // exit();
 
 
-        $salesmen = SubDepartment::where('status', 1)->get();
+        $user = auth()->user();
+        $territory_ids = json_decode($user->territory_id, true);
+        if (!is_array($territory_ids)) {
+            $territory_ids = [$user->territory_id];
+        }
+
+        $salesmen = SubDepartment::where('status', 1)
+            ->whereIn('territory_id', $territory_ids)
+            ->get();
         return view($this->path . 'editSaleOrder', compact('sale_orders', 'sales_order_data', 'data', 'salesmen'));
     }
     /**
