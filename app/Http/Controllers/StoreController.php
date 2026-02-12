@@ -1584,11 +1584,11 @@ public function getBrandsByWarehouse(Request $request)
             $from_date = $request->from ?? date('Y-m-d', strtotime('-2 years'));
 
             $to_date = $request->to ?? date('Y-m-d');
-            $warehouse_ids = (array) $request->input('warehouse_id', []);
-            $customer_ids = (array) $request->input('customer_id', []);
-            $product_id = $request->product_id ?? null;
-            $brand_ids = (array) $request->input('brand_id', []);
-            $territory_id = $request->territory_id ?? null;
+            $warehouse_ids = array_filter((array) $request->input('warehouse_id', []));
+        $customer_ids = array_filter((array) $request->input('customer_id', []));
+        $product_id = $request->product_id ?? null;
+        $brand_ids = array_filter((array) $request->input('brand_id', []));
+        $territory_id = $request->territory_id ?? null;
 
             $user = Auth::user();
             $isUser = $user && $user->acc_type == 'user';
