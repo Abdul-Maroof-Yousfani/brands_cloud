@@ -19,7 +19,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                 <th  style="width: 80px !important;" class="text-center sorting_asc">Order No</th>
                 <th style="width: 300px !important;"  class="text-center ">Customer Name</th>
                 <th style="width: 150px !important;"  class="text-center ">Sales Person</th>
-                <th style="width: 100px !important;" class="text-center sorting_asc">Order Date</th>
+                <th style="width: 100px !important;" class="text-center sorting_asc">Creation Date</th>
                 <th style="width: 100px !important;" class="text-center sorting_asc">SO Date</th>
                 <th  style="width: 82px !important;" class="text-center ">Amount</th>
                 <th   style="width: 92px !important;" class="text-center ">Status</th>
