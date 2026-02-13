@@ -431,7 +431,7 @@ public static function get_stock_new($item_id, $warehouse_id, $qty = null, $batc
     }
 
 
-    public static function hit_ledger_vendor_opening($id)
+    public static function hit_ledger_vendor_opening($id, $VoDate = null)
     {
         $acc_id=CommonHelper::get_supplier_acc_id($id);
        
@@ -447,7 +447,6 @@ public static function get_stock_new($item_id, $warehouse_id, $qty = null, $batc
             $debit_credit=1;
         endif;
         $count=DB::Connection('mysql2')->table('transactions')->where('acc_id',$acc_id)->where('opening_bal',1)->count();
-
         $data =array
         (
             'acc_id'=>$acc_id,
@@ -458,6 +457,7 @@ public static function get_stock_new($item_id, $warehouse_id, $qty = null, $batc
             'amount'=>$vendor_oprning_data->bal,
             'username'=>'Amir Murshad@',
             'status'=>1,
+            'v_date'=>$VoDate[0],
         );
 
         try {
@@ -465,10 +465,9 @@ public static function get_stock_new($item_id, $warehouse_id, $qty = null, $batc
                 DB::connection('mysql2')->table('transactions')->where('acc_id',$acc_id)->where('opening_bal',1)->update($data);
             else:
                 $is_inserted = DB::connection('mysql2')->table('transactions')->insert($data);
-            
             endif;
         } catch(\Exception $e) {
-            dd($e);
+            
         }
 
     }

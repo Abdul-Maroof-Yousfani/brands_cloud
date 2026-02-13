@@ -52,6 +52,7 @@ Route::get('testing', function () {
                         ->where("level1", 2)
                         ->orderBy("level2", "desc")
                         ->first();
+                        
     $latest_level = $account->level2;
    
     DB::beginTransaction();

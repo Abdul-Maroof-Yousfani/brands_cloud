@@ -1747,10 +1747,10 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
             CommonHelper::companyDatabaseConnection($m);
              $debit=	DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="'.$acc_id.'"
-		    	and v_date between "'.$new_from.'" and "'.$new_to.'"  and debit_credit=1')->amount;
+		    	and v_date between "'.$from.'" and "'.$to.'"  and debit_credit=1')->amount;
 
             $credit=	DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="'.$acc_id.'"
-			    and v_date between "'.$new_from.'" and "'.$new_to.'"  and debit_credit=0')->amount;
+			    and v_date between "'.$from.'" and "'.$to.'"  and debit_credit=0')->amount;
 
 
 

@@ -5643,7 +5643,6 @@ class SalesAddDetailControler extends Controller
 
 
             $VendorId = $request->vendor_id;
-         
             $VoDate = $request->vo_date;
             $PiNo = $request->pi_no;
             $PoNo = $request->po_no;
@@ -5662,11 +5661,11 @@ class SalesAddDetailControler extends Controller
                 $balance_amount += $BalanceAmount[$key];
                 $invoice_amount += $BalanceAmount[$key];
                 DB::Connection('mysql2')->table('vendor_opening_balance')->insert($InsertData);
-                ReuseableCode::insert_pv($PiNo);
+                ReuseableCode::insert_pv($PiNo[$key]);
            
             endforeach;
 
-            ReuseableCode::hit_ledger_vendor_opening($VendorId);
+            ReuseableCode::hit_ledger_vendor_opening($VendorId, $VoDate);
 
 
 
