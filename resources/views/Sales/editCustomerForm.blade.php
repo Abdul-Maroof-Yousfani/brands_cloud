@@ -380,6 +380,20 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                             </div>
 
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                                            <label>Customer Group :</label>
+                                                                            <span class="rflabelsteric"></span>
+                                                                            <select name="customer_group_id" id="customer_group_id" class="form-control select2">
+                                                                                <option value="">-- Select Customer Group --</option>
+                                                                                @foreach($customerGroups as $group)
+                                                                                    <option value="{{ $group->id }}" 
+                                                                                        {{ $Cusomter->customer_group_id == $group->id ? 'selected' : '' }}>
+                                                                                        {{ $group->customer_group }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+
+                                                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                             <label>Accept Cheque :</label>
                                                                             <span class="rflabelsteric"></span>
                                                                             <select onChange="checkCheque(this)"

@@ -237,6 +237,14 @@ Route::get('editProductsPrincipalGroup/{id}', 'ProductsPrincipalGroupController@
 Route::post('updateProductsPrincipalGroup/{id}', 'ProductsPrincipalGroupController@updateProductsPrincipalGroup')->name('updateProductsPrincipalGroup');
 Route::get('deleteProductsPrincipalGroup/{id}', 'ProductsPrincipalGroupController@deleteProductsPrincipalGroup')->name('deleteProductsPrincipalGroup');
 
+// ---- --------------      ----- Customer Group CRUD   ----        --------------------//
+Route::get('listCustomerGroup', 'CustomerGroupController@listCustomerGroup')->name('listCustomerGroup');
+Route::get('createCustomerGroup', 'CustomerGroupController@createCustomerGroup')->name('createCustomerGroup');
+Route::post('storeCustomerGroup', 'CustomerGroupController@storeCustomerGroup')->name('storeCustomerGroup');
+Route::get('editCustomerGroup/{id}', 'CustomerGroupController@editCustomerGroup')->name('editCustomerGroup');
+Route::post('updateCustomerGroup/{id}', 'CustomerGroupController@updateCustomerGroup')->name('updateCustomerGroup');
+Route::get('deleteCustomerGroup/{id}', 'CustomerGroupController@deleteCustomerGroup')->name('deleteCustomerGroup');
+
 Route::get('rmplaningReport','ReportsController@rmplaningReport')->name('rmplaningReport');
 });
 

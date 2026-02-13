@@ -398,6 +398,17 @@ $m=Session::get('run_company');
                                                                         </select>
                                                                     </div>
 
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <label>Customer Group :</label>
+                                            <span class="rflabelsteric"></span>
+                                            <select name="customer_group_id" id="customer_group_id" class="form-control select2">
+                                                <option value="">-- Select Customer Group --</option>
+                                                @foreach($customerGroups as $group)
+                                                    <option value="{{ $group->id }}">{{ $group->customer_group }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
 
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                         <label>Accept Cheque :</label>
@@ -907,6 +918,11 @@ $m=Session::get('run_company');
                                         </th>
                                     </tr>
                                     <tr>
+                                        <td>Customer Group</td>
+                                        <th><span class="badge badge-outline-success">This Field is required</span>
+                                        </th>
+                                    </tr>
+                                    <tr>
                                         <td>Accept Cheque</td>
                                         <th><span class="badge badge-outline-success">This Field is optional</span>
                                         </th>
@@ -973,6 +989,11 @@ $m=Session::get('run_company');
                                     </tr>
                                      <tr>
                                         <td>Region</td>
+                                        <th><span class="badge badge-outline-success">This Field is required</span>
+                                        </th>
+                                    </tr>
+                                  <tr>
+                                        <td>Customer Group</td>
                                         <th><span class="badge badge-outline-success">This Field is required</span>
                                         </th>
                                     </tr>

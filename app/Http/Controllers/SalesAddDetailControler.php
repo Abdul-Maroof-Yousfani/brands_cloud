@@ -442,6 +442,7 @@ class SalesAddDetailControler extends Controller
         $data2['store_category']     = Input::get('store_category') ?? 0;
         $data2['territory_id']     = Input::get('territory_id') ?? 0;
         $data2['SaleRep']     = Input::get('sale_person') ?? 0;
+        $data2['customer_group_id']     = Input::get('customer_group_id') ?? NULL;
         $data2['accept_cheque']     = Input::get('accept_cheque') ?? "no";
         $data2['display_pending_payment_invoice']     = Input::get('display_pending_payment_invoice') ?? 0;
         
@@ -704,6 +705,7 @@ class SalesAddDetailControler extends Controller
                 'store_category' => $request->input('store_category', $customer->store_category),
                 'territory_id' => $request->input('territory_id', $customer->territory_id),
                 'SaleRep' => $request->input('sale_person', $customer->SaleRep),
+                'customer_group_id' => $request->input('customer_group_id', $customer->customer_group_id),
                 'accept_cheque' => $request->input('accept_cheque', $customer->accept_cheque),
                 'display_pending_payment_invoice' => $request->input('display_pending_payment_invoice', $customer->display_pending_payment_invoice),
                 'CustomerType' => $request->input('customer_type', $customer->CustomerType),
