@@ -41,7 +41,7 @@
                 @foreach($stocks as $row)
                     @php
                         [$overall_qty, $sale_order_amount, $sales_return_amount] = \App\Helpers\ReuseableCode::get_ba_stock_quantities($row["item_id"]);
-                        $overall_qty = \App\Helpers\ReuseableCode::get_ba_stock_wo_warehouse($row["item_id"]);
+                        $overall_qty = \App\Helpers\ReuseableCode::get_ba_stock_wo_warehouse_in($row["item_id"]);
                         $sale_order_amount = $row["sale_order_amount"];
                         $sales_return_amount = $row["sale_return_amount"];
                     @endphp
