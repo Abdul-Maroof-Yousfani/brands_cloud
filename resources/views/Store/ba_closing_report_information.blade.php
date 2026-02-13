@@ -59,7 +59,7 @@ if (isset($_GET['item_id'])) {
                                         </div>
                                     </div> -->
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">As on</label>
                                             <div class="input-group">
@@ -69,7 +69,7 @@ if (isset($_GET['item_id'])) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Territory</label>
                                             <select name="territory_id" id="territory_id" class="form-control select2"
@@ -85,10 +85,11 @@ if (isset($_GET['item_id'])) {
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Brand</label>
                                             <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
+                                                <option value="">All Brands</option>
                                                 @foreach ($brands as $brand)
                                                     <option value="{{ $brand->id }}"
                                                         {{ collect(request('brand_id'))->contains($brand->id) ? 'selected' : '' }}>
@@ -98,6 +99,8 @@ if (isset($_GET['item_id'])) {
                                             </select>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <!--
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -112,22 +115,13 @@ if (isset($_GET['item_id'])) {
                                             </select>
                                         </div>
                                     </div> -->
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Product</label>
 
-                                            <!-- <select name="product_id" id="product_id" class="form-control" style="width: 100%">
-                                                @if (request('product_id'))
-    <option value="{{ request('product_id') }}" selected>
-                                                        {{ \App\Models\Subitem::find(request('product_id'))->product_name ?? 'Selected Product' }}
-                                                    </option>
-    @endif
-                                            </select> -->
-
-
                                             <select name="product_id" id="product_id" class="form-control select2-ajax"
                                                 style="width: 100%">
-                                                <option value="">Select Product</option>
+                                                <option value="">All Product</option>
 
                                                 @foreach ($defaultProducts as $product)
                                                     <option value="{{ $product->id }}"
@@ -150,7 +144,7 @@ if (isset($_GET['item_id'])) {
 
 
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="form-group" style="margin-top: 25px;">
                                             <button type="button" onclick="get_ajax_data()" class="btn btn-primary"
                                                 style="margin-top: 11px;margin-left: 20px;">
@@ -281,8 +275,8 @@ if (isset($_GET['item_id'])) {
             console.log("jQuery working...");
 
             $('#product_id').select2({
-                placeholder: 'Search Product',
-                allowClear: true
+                // Removed placeholder to ensure "All Product" is visible
+                width: '100%'
             });
 
             // Dynamically bind input event when dropdown opens
@@ -310,8 +304,12 @@ if (isset($_GET['item_id'])) {
                 success: function(response) {
                     let productDropdown = $('#product_id');
 
-                    // Only remove options that are not selected
-                    productDropdown.find('option:not(:selected)').remove();
+                    // Only remove options that are not selected and don't have empty values (like "All Product")
+                    productDropdown.find('option:not(:selected)').each(function() {
+                        if ($(this).val() !== "") {
+                            $(this).remove();
+                        }
+                    });
 
                     // Add new options using the 'text' field returned by backend
                     response.forEach(function(item) {
