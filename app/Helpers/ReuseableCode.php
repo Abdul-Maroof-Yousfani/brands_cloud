@@ -305,7 +305,7 @@ public static function get_purchased_amount($id)
             ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
             ->first();
 
-            
+
      
 
           
@@ -434,7 +434,7 @@ public static function get_stock_new($item_id, $warehouse_id, $qty = null, $batc
     public static function hit_ledger_vendor_opening($id)
     {
         $acc_id=CommonHelper::get_supplier_acc_id($id);
-
+       
 
         $vendor_oprning_data= DB::Connection('mysql2')->table('vendor_opening_balance')->where('vendor_id',$id)->
         select(DB::raw('sum(balance_amount) as bal'),DB::raw('sum(invoice_amount) as invoice_amount'))->first();
@@ -460,11 +460,16 @@ public static function get_stock_new($item_id, $warehouse_id, $qty = null, $batc
             'status'=>1,
         );
 
-        if($count>0):
-            DB::Connection('mysql2')->table('transactions')->where('acc_id',$acc_id)->where('opening_bal',1)->update($data);
-        else:
-            DB::Connection('mysql2')->table('transactions')->insert($data);
-        endif;
+        try {
+            if($count>0):
+                DB::connection('mysql2')->table('transactions')->where('acc_id',$acc_id)->where('opening_bal',1)->update($data);
+            else:
+                $is_inserted = DB::connection('mysql2')->table('transactions')->insert($data);
+            
+            endif;
+        } catch(\Exception $e) {
+            dd($e);
+        }
 
     }
 
