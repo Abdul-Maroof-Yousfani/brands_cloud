@@ -110,7 +110,7 @@ if (isset($_GET['item_id'])) {
                                             <label class="control-label">Product</label>
                                             <select name="product_id" id="product_id" class="form-control select2-ajax"
                                                 style="width: 100%">
-                                                <option value="">all products</option>
+                                                <option value="">All Products</option>
                                                 @foreach ($defaultProducts as $product)
                                                     <option value="{{ $product->id }}"
                                                         {{ request('product_id') == $product->id ? 'selected' : '' }}>
