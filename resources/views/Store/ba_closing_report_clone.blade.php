@@ -61,10 +61,10 @@ if (isset($_GET['item_id'])) {
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="control-label">Territory</label>
+                                            <label class="control-label">Region</label>
                                             <select name="territory_id" id="territory_id" class="form-control select2"
                                                 onchange="getWarehousesByTerritory()">
-                                                <option value="">All Territories</option>
+                                                <option value="">All Regions</option>
                                                 @foreach ($territories as $territory)
                                                     <option value="{{ $territory->id }}"
                                                         {{ request('territory_id') == $territory->id ? 'selected' : '' }}>
@@ -79,7 +79,7 @@ if (isset($_GET['item_id'])) {
                                             <label class="control-label">Customers</label>
                                             <select name="customer_id[]" id="customer_id" class="form-control select2"
                                                 multiple>
-                                                <option value="">all customers</option>
+                                                <option value="">All Customers</option>
                                                 @foreach (App\Helpers\CommonHelper::get_all_customers() as $customer)
                                                     <option value="{{ $customer->id }}">
                                                         {{ $customer->name }}
@@ -95,7 +95,7 @@ if (isset($_GET['item_id'])) {
                                         <div class="form-group">
                                             <label class="control-label">Brand</label>
                                             <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
-                                                <option value="">all brands</option>
+                                                <option value="">All Brands</option>
                                                 @foreach ($brands as $brand)
                                                     <option value="{{ $brand->id }}"
                                                         {{ collect(request('brand_id'))->contains($brand->id) ? 'selected' : '' }}>
