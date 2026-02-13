@@ -294,6 +294,22 @@ public static function get_purchased_amount($id)
             return  abs($in->qty-$out);
 
     }
+    public static function get_ba_stock_wo_warehouse_in($item_id,$qty=null,$batch_code=null)
+    {
+            $item= $item_id;
+
+        $in= DB::Connection('mysql2')->table('ba_stock')->whereIn('status',array(1,3))
+            ->whereIn('voucher_type',[51,1,9])
+             ->where('sub_item_id',$item)
+            //  ->where('batch_code',$batch_code)
+            ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+            ->first();
+
+     
+
+          
+            return  abs($in->qty);
+    }
 
      public static function get_reserved_so($item_id, $custId)
     {
