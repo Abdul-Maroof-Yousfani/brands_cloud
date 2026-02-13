@@ -37,7 +37,7 @@ use App\Helpers\CommonHelper;
             <div class="well_N">
                 @if(Session::has("success"))
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
-                    <div class="alert-success"><span class="glyphicon glyphicon-remove"></span><em>
+                    <div class="alert-success"><span class="glyphicon glyphicon-ok"></span><em>
                             successfully created</em></div>
                 </div>
                 @endif
