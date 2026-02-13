@@ -305,6 +305,7 @@ public static function get_purchased_amount($id)
             ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
             ->first();
 
+            
      
 
           
