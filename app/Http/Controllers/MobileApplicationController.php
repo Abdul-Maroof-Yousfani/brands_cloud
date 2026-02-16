@@ -121,6 +121,42 @@ public function login(Request $request)
     ], 200);
 }
 
+public function loginById(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'user_id' => 'required|numeric'
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    // ✅ Find user
+    $user = User::find($request->user_id);
+
+    if (!$user) {
+        return response()->json(['message' => 'Invalid user id'], 401);
+    }
+
+
+    // ✅ Account type check
+    if ($user->acc_type !== 'ba') {
+        return response()->json(['message' => 'Unauthorized account type'], 403);
+    }
+
+    // ✅ Generate token
+    $token = $user->generateApiToken();
+
+    return response()->json([
+        'message' => 'Login successful',
+        'user'    => $user,
+        'token'   => $token,
+    ], 200);
+}
+
 // public function login(Request $request)
 // {
 //     // ✅ Validation rules
