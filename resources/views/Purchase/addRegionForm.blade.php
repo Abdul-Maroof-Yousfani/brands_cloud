@@ -36,7 +36,7 @@ if($accType == 'client'){
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                                     <label>Region Code :</label>
                                                     <span class="rflabelsteric"><strong>*</strong></span>
-                                                    <input type="text" name="region_code" id="region_code" value="" class="form-control requiredField" placeholder="REGION CODE"/>
+                                                    <input type="text" name="region_code" id="region_code" class="form-control requiredField" placeholder="REGION CODE" readonly value="REGION-{{ $regionNo }}"/>
                                                 </div>
                                                 
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">

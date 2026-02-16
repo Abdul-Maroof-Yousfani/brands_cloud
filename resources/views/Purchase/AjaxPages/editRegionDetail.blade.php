@@ -22,7 +22,7 @@
 
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                             <label class="sf-label">Region Code<span class="rflabelsteric"><strong>*</strong></span></label>
-                                            <input autofocus type="text" class="form-control requiredField" placeholder="REGION CODE" name="region_code" id="region_code" value="<?php echo $Region->region_code ?>" />
+                                            <input autofocus type="text" class="form-control requiredField" placeholder="REGION CODE" name="region_code" id="region_code" value="<?php echo $Region->region_code ?>" readonly />
                                             <input type="hidden" name="edit_id" id="edit_id" value="<?php echo $Region->id ?>">
                                             <input type="hidden" name="CompanyId" id="CompanyId" value="<?php echo $_GET['m']?>">
                                         </div>
