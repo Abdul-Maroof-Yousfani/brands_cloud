@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\BAFormation;
 use App\Employees;
+use Doctrine\DBAL\Query\QueryException;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -52,13 +53,9 @@ class BAFormationController extends Controller
         $validator = Validator::make($request->all(), [
             'customer' => 'nullable|integer', // Check customer ID in the mysql2 database connection
             'brands' => 'required',
-            'employee' => 'required|integer', // Check employee ID in the mysql2 database connection
+            'employee' => 'required|integer|unique:b_a_formations,employee_id', // Check employee ID in the mysql2 database connection
             'status' => 'required|integer',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
 
         DB::beginTransaction();
         try {
@@ -86,7 +83,16 @@ class BAFormationController extends Controller
 
             return redirect()->back()->with(["success" => "Successfully saved"]);
             return response()->json(['success' => 'Successfully Saved.', 'data' => $baFormation]);
-        } catch (Exception $e) {
+        } catch(\Illuminate\Database\QueryException $e) { 
+            DB::rollBack();
+            
+            if($e->errorInfo[1] == 1062) {
+                return back()->with("error", 'This record is already created');
+            }
+
+            return back()->with(["error", "Database error occured"]);
+
+        } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()]);
         }
