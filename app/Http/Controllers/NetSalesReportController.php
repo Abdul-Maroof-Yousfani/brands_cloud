@@ -18,7 +18,6 @@ class NetSalesReportController extends Controller
         $cogs = true;
 
         if($request->ajax()) {
-            
          $returnSub = DB::connection("mysql2")
                             ->table("credit_note_data")
                             ->join("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
@@ -112,20 +111,22 @@ class NetSalesReportController extends Controller
 
 
     public function NetSalesExecutiveReport(Request $request) {
-         $sku = $request->sku;
+        $sku = $request->sku;
         $from = $request->from;
         $to = $request->to;
         $brand_id = $request->brand_id;
         $customer_id = $request->customer_id;
         $region_id = $request->region_id;
         $warehouse_id = $request->warehouse_id;
-        $cogs = false;
+        $cogs = true;
 
         if($request->ajax()) {
          $returnSub = DB::connection("mysql2")
                             ->table("credit_note_data")
+                            ->join("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
                             ->select(
                                 "item",
+                                "credit_note.buyer_id",
                                 DB::raw("SUM(qty) as sales_return_qty"),
                                 DB::raw("SUM(amount) as gross_return_amount")
                             )
@@ -148,6 +149,7 @@ class NetSalesReportController extends Controller
                                 "product_type.type AS product_type",
                                 "territories.name AS territory_name",
                                 "territories.id",
+                                'sales_order.buyers_id',
                                 "sales_order.warehouse_from",
 
                                 DB::raw("SUM(sales_order_data.qty) AS qty"),
@@ -166,11 +168,12 @@ class NetSalesReportController extends Controller
                             ->join("sales_order", "sales_order.id", "=", "sales_order_data.master_id")
 
                             // FIXED: Aggregated return data join
-                            ->join(
+                            ->leftJoin(
                                 DB::raw("(" . $returnSub . ") as sr"),
                                 function ($join)  {
                                     $join->on("sr.item", "=", "subitem.id")
-                                        ->where("sr.buyer_id", "=", 'sales_order.buyers_id');
+                                        ->on('sr.buyer_id', "=", "sales_order.buyers_id");
+                                        // where("sr.buyer_id", "=", 'sales_order.buyers_id');
                                 }
                             )
 
@@ -196,7 +199,10 @@ class NetSalesReportController extends Controller
                                 $q->where("sales_order.warehouse_from", $warehouse_id);
                             })
 
-                            ->groupBy("subitem.id")
+                            ->groupBy(
+                                "subitem.id",
+                                "sales_order.buyers_id",
+                            )
                             ->get();
 
 
@@ -205,5 +211,6 @@ class NetSalesReportController extends Controller
 
         return view("Reports.net_sales_report.custom_sales_tax_report", compact("cogs"));
     }
+
     
 }
