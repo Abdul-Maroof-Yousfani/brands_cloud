@@ -7,11 +7,13 @@ $id = $_GET['id'];
 
 $m = Session::get('run_company');
 $approve=ReuseableCode::check_rights(16);
-// $approve = true;
 
 $currentDate = date('Y-m-d');
 CommonHelper::companyDatabaseConnection($m);
 $purchaseRequestDetail = DB::table('purchase_request')->where('purchase_request_no','=',$id)->get();
+$purchaseRequestDataDetail = DB::table("purchase_request_data")->where("master_id", $purchaseRequestDetail[0]->id)->get();
+// dd($id);
+
 
 // dd($id);
 CommonHelper::reconnectMasterDatabase();
@@ -24,7 +26,7 @@ if($_GET['pageType']=='viewlist'){
 ?>
 
 <div id="Pdfsetting" <?php if($EmailPrintSetting==2){ ?> style="display: none;" <?php } ?> >
-    <button onclick="change()" type="button" class="btn btn-primary btn-xs">Show PKR</button>
+    <!-- <button onclick="change()" type="button" class="btn btn-primary btn-xs">Show PKR</button> -->
 
     <style>
         textarea {
@@ -40,18 +42,18 @@ if($_GET['pageType']=='viewlist'){
     foreach ($purchaseRequestDetail as $row) {
 ?>
 <div class="row" >
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 printHide">
+    <!-- <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 printHide">
         <input type="text" name="email" id="email" value="" class="form-control" placeholder="Enter Email Address">
     </div>
     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 printHide">
         <button class="btn btn-primary btn-sm" onclick="EmailSent()"> Email Sent </button>
     </div> -->
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-       
-       <?php if ($approve==true):
+        <!-- <?php
+        if ($approve==true):
         echo StoreHelper::displayApproveDeleteRepostButtonPurchaseRequest($m,$row->purchase_request_status,$row->status,$row->id,'purchase_request_no','purchase_request_status','status','purchase_request','purchase_request_data');
         endif;
-        ?>
+        ?> -->
         <?php CommonHelper::displayPrintButtonInView('po_detail','LinkHide','1');?>
     </div>
     <div style="line-height:5px;">&nbsp;</div>
@@ -177,6 +179,7 @@ if($_GET['pageType']=='viewlist'){
                                 <th class="text-center">Product Name</th>
                                 <th class="text-center">UOM</th>
 
+                                
 
                                 <th class="text-center" >Approved. Qty. <span class="rflabelsteric"><strong>*</strong></span></th>
                                 <!-- <th class="text-center" >No Of Carton <span class="rflabelsteric"><strong>*</strong></span></th> -->
@@ -195,12 +198,13 @@ if($_GET['pageType']=='viewlist'){
                             <tbody>
                             <?php
                             CommonHelper::companyDatabaseConnection($m);
-                            $purchaseRequestDataDetail = DB::table('purchase_request_data')->where('master_id','=',$id)->get();
+                            // $purchaseRequestDataDetail = DB::table('purchase_request_data')->where('master_id','=',$id)->get();
                             CommonHelper::reconnectMasterDatabase();
                             $counter = 1;
                                     $total=0;
                             $total_exchange=0;
                             $actual_amount =0;
+                            $approved_qty_sum = 0;
                             foreach ($purchaseRequestDataDetail as $row1){
                             ?>
                             <tr>
@@ -228,7 +232,10 @@ if($_GET['pageType']=='viewlist'){
                                 <td> <?php echo CommonHelper::get_uom_name($sub_ic_detail[0]);?>
                                     <input type="hidden" value="<?php echo $row1->sub_item_id?>" id="sub_<?php echo $counter?>">
                                 </td>
-                                <td class="text-center"><?php echo $row1->purchase_approve_qty;?></td>
+                                @php
+                                    $approved_qty_sum += (int)$row1->purchase_approve_qty;
+                                @endphp
+                                <td class="text-center"><?php echo (int)$row1->purchase_approve_qty;?></td>
                                 <!-- <td class="text-center"><?php echo $row1->no_of_carton;?></td> -->
                                 <td class="text-center"><?php echo number_format($row1->rate,2);?></td>
                                 <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty * $row->currency_rate,2);?></td>
@@ -249,7 +256,8 @@ if($_GET['pageType']=='viewlist'){
 
                             <tr>
 
-                                <td style="background-color: darkgray" class="text-center" colspan="6">Total</td>
+                                <td style="background-color: darkgray" class="text-center" colspan="3">Total</td>
+                                <td style="background-color: darkgray" class="text-center">{{ $approved_qty_sum }}</td>
                                 <td style="background-color: darkgray" class="text-right"  >{{number_format($actual_amount,2)}} ({{$currency}})</td>
                                 <td  style="background-color: darkgray" class="text-right"  colspan="4">{{number_format($total,2)}}</td>
                                 <td  style="background-color: darkgray;display: none" class="text-right showw"  colspan="1">{{number_format($total_exchange,2)}}</td>
