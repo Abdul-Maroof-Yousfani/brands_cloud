@@ -1,6 +1,7 @@
 @foreach($net_sales_reports as $index => $data)
     <tr>
         <td>{{ ++$index }}</td>
+        <td>{{ $data->so_no }}</td>
         <td>{{ $data->customer_code }}</td>
         <td>{{ $data->customer_name }}</td>
         <td>{{ $data->territory_name }}</td>

@@ -48,6 +48,7 @@ class NetSalesReportController extends Controller
                                 "territories.id",
                                 'sales_order.buyers_id',
                                 "sales_order.warehouse_from",
+                                "sales_order.so_no",
 
                                 DB::raw("SUM(sales_order_data.qty) AS qty"),
                                 DB::raw("SUM(sales_order_data.amount) AS amount"),
@@ -151,6 +152,7 @@ class NetSalesReportController extends Controller
                                 "territories.id",
                                 'sales_order.buyers_id',
                                 "sales_order.warehouse_from",
+                                "sales_order.so_no",
 
                                 DB::raw("SUM(sales_order_data.qty) AS qty"),
                                 DB::raw("SUM(sales_order_data.amount) AS amount"),

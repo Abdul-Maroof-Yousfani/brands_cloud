@@ -177,6 +177,7 @@ use App\Helpers\SaleHelper;
                                         <thead style="position: sticky; top: 0;">
                                             <tr>
                                                 <th class="text-center" style="width:150px;">S. No</th>
+                                                <th class="text-center" style="width:150px;">So No</th>
                                                 <th class="text-center" style="width:150px;">Customer Code</th>
                                                 <th class="text-center" style="width:150px;">Customer</th>
                                                 <th class="text-center" style="width:150px;">Zone</th>
