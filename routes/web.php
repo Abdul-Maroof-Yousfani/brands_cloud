@@ -28,7 +28,7 @@ Route::get('testing', function () {
                             ->where("item_id", 4258)
                             ->where('date', '>=', '2025-10-01')
                             ->where('date', '<=', '2025-10-31')
-                            ->sum("qty");
+                            ->get();
                             dd($sales_order_data);
 });
 
