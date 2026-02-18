@@ -24,9 +24,10 @@ Route::auth();
 
 Route::get('teste', function () {
     $sales_order_data = DB::connection("mysql2")->table("sales_order_data")
+                            ->where("item_id", 4258)
                             ->where('date', '>=', '2025-10-01')
                             ->where('date', '<=', '2025-10-31')
-                            ->get();
+                            ->sum("qty");
     dd($sales_order_data);
 });
 
