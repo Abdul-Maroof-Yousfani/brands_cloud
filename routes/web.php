@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 Route::auth();
 
 
-Route::get('testing', function () {
+Route::get('teste', function () {
 
     
   $sales_order_data = DB::connection("mysql2")->table("sales_order_data")
