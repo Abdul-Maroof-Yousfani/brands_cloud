@@ -16,7 +16,7 @@ class SalesReportsController extends Controller
             $sales_order_datas = DB::connection("mysql2")->table("sales_order_data")
                 ->join("subitem", "subitem.id", "=", "sales_order_data.item_id")
                 ->join("category", "category.id", "=", "subitem.main_ic_id")
-                ->join("brands", "brands.id", "=", "sales_order_data.brand_id")
+                ->join("brands", "brands.id", "=", "subitem.brand_id")
                 ->when($so, function ($q) use ($so) {
                     $q->where("so_no", "like", "%$so%");
                 })
