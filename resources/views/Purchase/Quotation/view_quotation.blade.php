@@ -16,9 +16,9 @@ use App\Helpers\SalesHelper;?>
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
         <?php echo CommonHelper::displayPrintButtonInView('printMachineDetail','','1');?>
-        <!-- @if($quotation->quotation_status==1)
+        @if($quotation->quotation_status==1)
             <button onclick="approve('{{ $id }}','{{ $quotation->pr_id  }}')" type="button" class="btn btn-success">Approve</button>
-            @endif -->
+        @endif  
     </div>
 </div>
 <div style="line-height:5px;">&nbsp;</div>
