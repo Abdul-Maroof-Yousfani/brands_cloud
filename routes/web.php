@@ -28,7 +28,6 @@ Route::get('teste', function () {
                             ->where('date', '>=', '2025-10-01')
                             ->where('date', '<=', '2025-10-31')
                             ->get();
-    dd($sales_order_data);
 });
 
 
@@ -43,6 +42,15 @@ Route::get('/migrate-specific/{id}', function ($id) {
     return 'Migration executed successfully.';
 });
 
+Route::get("delete-suppliers", function() {
+    $suppliers = DB::connection("mysql2")->table("accounts")
+                        ->where("level1", 2)
+                        ->where("level2", ">=", 53)
+                        ->where('level2', "<=", 201)
+                        ->delete();
+    dd("Suppliers deleted");
+});
+
 Route::get("privileges", function() {
     dd(\App\Helpers\CommonHelper::get_users_companies());
     // dd($privileges);
@@ -50,7 +58,27 @@ Route::get("privileges", function() {
 
 
 Route::get('testing', function () {
+    $latestSupplier = DB::connection("mysql2")
+                            ->table("accounts")
+                            ->where("level1", 2)
+                            ->orderBy("level2", "desc")
+                            ->first();
+                            
+    $latestRecord = $latestSupplier->level2;
     
+    $account = DB::connection("mysql2")
+                    ->table("accounts")
+                    ->insert([
+                        "code" => "2-" . $latestRecord+1,
+                        "parent_code" => 2,
+                        "level1" => 2,
+                        "level2" => $latestRecord+1,
+                        "name" => "Supplier",
+                        "status" =>1,
+                        "username" => "Amir",
+                        "operational" => 1
+                    ]);
+   
     $suppliers = Supplier::all();
     $account = DB::connection("mysql2")
                         ->table("accounts")
@@ -62,17 +90,23 @@ Route::get('testing', function () {
    
     DB::beginTransaction();
     try {
+        $index = 0;
         foreach($suppliers as $supplier) {
-            $level = $latest_level++;
-            $code = "2-$level";
+            $level2 = $latestRecord+1;
+            
+            $index++;
+            $code = "2-$level2-{$index}";
+
             $accountId = DB::connection("mysql2")->table("accounts")->insertGetId([
                 "code" => $code,
                 "parent_code" => 2,
                 "level1" => 2,
-                "level2" => $level,
+                "level2" => $latestRecord+1,
+                "level3" => $level,
                 "name" => $supplier->name,
                 "status" => 1,
                 "username" => "Amir",
+                "type" => 1,
                 "operational" => 1
             ]);
     
