@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 Route::auth();
 
 
-Route::get('test', function () {
+Route::get('teste', function () {
     $sales_order_data = DB::table("sales_order_data")
                             ->where('date', '>=', '2025-10-01')
                             ->where('date', '<=', '2025-10-31')
