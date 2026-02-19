@@ -69,7 +69,7 @@ Route::get("add-head-account", function() {
     foreach($suppliers as $supplier) {
         $account_id = $supplier->acc_id;
         $account = DB::connection("mysql2")->table("accounts")->where("id", $account_id)->first();
-        $account = DB::connection("mysql2")->table("accounts")->where("id", $account_id)->update([
+        DB::connection("mysql2")->table("accounts")->where("id", $account_id)->update([
             "parent_code" => "2-281",
             "level2" => "281",
             'level3' => $account->level2
