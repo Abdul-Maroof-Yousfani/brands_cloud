@@ -66,7 +66,7 @@ Route::get("link-to-master", function() {
 Route::get("add-head-account", function() {
     $suppliers = DB::connection("mysql2")->table("supplier")->get();
 
-    $index = 0;
+    $index = 1;
     foreach($suppliers as $supplier) {
         $account_id = $supplier->acc_id;
         $account = DB::connection("mysql2")->table("accounts")->where("id", $account_id)->first();
