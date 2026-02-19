@@ -72,7 +72,8 @@ Route::get("add-head-account", function() {
         DB::connection("mysql2")->table("accounts")->where("id", $account_id)->update([
             "parent_code" => "2-281",
             "level2" => "281",
-            'level3' => $account->level2
+            'level3' => $account->level2,
+            "code" => "2-281-" . $account->level2
         ]);
     }
 });
