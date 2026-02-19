@@ -52,12 +52,12 @@ Route::get("privileges", function() {
 });
 
 Route::get("link-to-master", function() {
-    $suppliers = DB::table("supplier")->get();
+    $suppliers = DB::connection("mysql2")->table("supplier")->get();
 
     foreach($suppliers as $supplier) {
         $account_id = $supplier->acc_id;
 
-        $account = DB::table("accounts")->find($account_id);
+        $account = DB::connection("mysql2")->table("accounts")->find($account_id);
         $account->type = 1;
         $account->save();
     }
