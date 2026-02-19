@@ -11,12 +11,14 @@
 */
 use App\Helpers\CommonHelper;
 use App\Http\Controllers\StoreController;
+use App\Models\Account;
 use App\Models\Branch;
 use App\Models\Stock;
 use App\Models\Subitem;
 use App\Models\Supplier;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 Route::auth();
 
@@ -49,6 +51,17 @@ Route::get("privileges", function() {
     // dd($privileges);
 });
 
+Route::get("link-to-master", function() {
+    $suppliers = DB::table("supplier")->get();
+
+    foreach($suppliers as $supplier) {
+        $account_id = $supplier->acc_id;
+
+        $account = DB::table("accounts")->find($account_id);
+        $account->type = 1;
+        $account->save();
+    }
+});
 
 Route::get('testing', function () {
     
