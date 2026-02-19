@@ -66,6 +66,7 @@ Route::get("link-to-master", function() {
 Route::get("add-head-account", function() {
     $suppliers = DB::connection("mysql2")->table("supplier")->get();
 
+    $index = 0;
     foreach($suppliers as $supplier) {
         $account_id = $supplier->acc_id;
         $account = DB::connection("mysql2")->table("accounts")->where("id", $account_id)->first();
@@ -73,7 +74,7 @@ Route::get("add-head-account", function() {
             "parent_code" => "2-281",
             "level2" => "281",
             'level3' => $account->level2,
-            "code" => "2-281-" . $account->level2
+            "code" => "2-281-" . $index++
         ]);
     }
 });
