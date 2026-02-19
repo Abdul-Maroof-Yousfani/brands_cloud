@@ -196,7 +196,7 @@ foreach ($goodsReceiptNoteDetail as $row)
     endif;
 
     $purchaseRequest = PurchaseRequest::where(['purchase_request_no'=> $row->po_no ], ['status'=>1])->first();
-    if(isset($purchaseRequest->purchase_request_status) && $purchaseRequest->purchase_request_status != 3 && $grn_data->received_type == "Partial"){
+    if(isset($purchaseRequest->purchase_request_status) && $purchaseRequest->purchase_request_status != 3 && $grn_data && $grn_data->received_type == "Partial"){
         if($close){
             $data .= '<a href="' . url("pdc/closeGrn/$row->id") . '" type="button" class="btn btn-primary btn-xs">Close</a>';
         }
