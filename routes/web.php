@@ -57,9 +57,9 @@ Route::get("link-to-master", function() {
     foreach($suppliers as $supplier) {
         $account_id = $supplier->acc_id;
 
-        $account = DB::connection("mysql2")->table("accounts")->find($account_id);
-        $account->type = 1;
-        $account->save();
+        $account = DB::connection("mysql2")->table("accounts")->find($account_id)->update([
+            'type' => 1
+        ]);
     }
 });
 
