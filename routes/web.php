@@ -63,6 +63,22 @@ Route::get("link-to-master", function() {
     }
 });
 
+Route::get("add-head-account", function() {
+    $suppliers = DB::connection("mysql2")->table("supplier")->get();
+
+    foreach($suppliers as $supplier) {
+        $account_id = $supplier->acc_id;
+        $account = DB::connection("mysql2")->table("accounts")->where("id", $account_id)->first();
+        $account = DB::connection("mysql2")->table("accounts")->where("id", $account_id)->update([
+            "parent_code" => "2-281",
+            "level2" => "281",
+            'level3' => $account->level2
+        ]);
+    }
+});
+
+
+
 Route::get('testing', function () {
     
     $suppliers = Supplier::all();
