@@ -29,7 +29,7 @@ if(empty($paramOne)){
              ->where('a.status',1)
              ->where('b.status',1)
              ->where('c.quotation_status',2)
-             ->select('b.id','b.sub_item_id','c.voucher_no as quotation_no','d.demand_no','d.demand_date','a.vendor','b.qty','c.dept_id')
+             ->select('b.id','b.sub_item_id','c.comparative_number','c.voucher_no as quotation_no','d.demand_no','d.demand_date','a.vendor','b.qty','c.dept_id')
              ->orderBy('vendor')
             ->get()->toArray();
 
@@ -51,6 +51,7 @@ if(empty($paramOne)){
                                     <th class="text-center">Select</th>
                                     <th class="text-center">S.No</th>
                                     <th class="text-center">Quotation NO.</th>
+                                    <th class="text-center">Comparative Number</th>
                                     <th class="text-center">PR NO.</th>
                                     <th class="text-center">PR Date</th>
                                     <th class="text-center">Product Name</th>
@@ -79,6 +80,7 @@ if(empty($paramOne)){
                                             </td>
                                             <td>{{ $counter++ }}</td>
                                             <td>{{ strtoupper($row->quotation_no) }}</td>
+                                            <td>{{ strtoupper($row->comparative_number) }}</td>
                                             <td>{{ strtoupper($row->demand_no) }}</td>
                                             <td>{{ CommonHelper::changeDateFormat($row->demand_date) }}</td>
                                             <td>{{ CommonHelper::get_product_name($row->sub_item_id) }}</td>
