@@ -213,7 +213,9 @@ use App\Helpers\SalesHelper;?>
                         return false;
                     }
                     $('#'+id).html('Approved');
+                     get_data();
                     $('#showDetailModelOneParamerter').modal('hide');
+                    
                 },
                 err:function(err)
                 {
