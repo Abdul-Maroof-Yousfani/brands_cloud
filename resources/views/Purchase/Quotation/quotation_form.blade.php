@@ -142,7 +142,9 @@ use App\Helpers\ReuseableCode;
                                                         </tr>
                                                         <tr>
                                                             <th class="text-center">SR NO</th>
+                                                            <th class="text-center">SKU</th>
                                                             <th class="text-center">Product</th>
+                                                            <th class="text-center">Barcode</th>
                                                             <th style="width: 100px" class="text-center">UOM<span
                                                                         class="rflabelsteric"><strong>*</strong></span></th>
                                                             <th style="" class="text-center">Rate<span
@@ -180,8 +182,11 @@ use App\Helpers\ReuseableCode;
                                                                 ?>
                                                             <tr class="text-center">
                                                                 <td>{{ $count }}</td>
+                                                                <td>{{ CommonHelper::get_product_sku($row->sub_item_id) }}</td>
                                                                 <td>{{ CommonHelper::get_product_name($row->sub_item_id) }}
                                                                 </td>
+                                                                <td>{{ CommonHelper::product_barcode($row->sub_item_id) }}</td>
+
                                                                 <td>{{ CommonHelper::get_uom($row->sub_item_id) }}</td>
 
                                                                 <td><input onkeyup="calc_tax_per_product({{$count}})"
