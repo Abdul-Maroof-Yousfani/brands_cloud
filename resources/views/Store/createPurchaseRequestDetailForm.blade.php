@@ -89,9 +89,13 @@ var counter = 1;
 
                  $implodedVoucherNos = implode(',', $voucherNos);
 
+$comparativeNumbers = [];
+
 foreach($data as $row){
     $comparativeNumbers[] = $row->comparative_number;
 }
+
+$comparativeNumbers = array_unique($comparativeNumbers);
 
 //                $quotation = DB::connection('mysql2')
 //     ->table('quotation_data as qd')
