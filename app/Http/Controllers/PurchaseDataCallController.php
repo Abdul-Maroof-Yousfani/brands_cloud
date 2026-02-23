@@ -982,6 +982,67 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
         return view("Purchase.AjaxPages.UOMAjax", compact("uoms"));
     }
 
+    // public function filterDemandVoucherList(Request $request)
+    // {
+    //     // dd($request);
+    //     $username= $request->username;
+    //     $search= $request->search;
+    //     $fromDate = $_GET['fromDate'];
+    //     $toDate = $_GET['toDate'];
+    //     $m = $_GET['m'];
+    //     $type  = $request->type;
+        
+        
+    //     $selectVoucherStatus = $_GET['selectVoucherStatus'];
+    //     $selectSubDepartment = $_GET['selectSubDepartment'];
+    //     $selectSubDepartmentId = $_GET['selectSubDepartmentId'];
+
+    //     CommonHelper::companyDatabaseConnection($m);
+    //     if ($selectVoucherStatus == '0' && empty($selectSubDepartmentId)) {
+    //         // $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '!=', 0)->get();
+    //         $demandDetail = Demand::whereBetween('demand.demand_date', [$fromDate, $toDate])
+    //                         ->when($type == 'pending', function($query) {
+    //                             $query->where("demand.demand_status", 1);
+    //                         })
+    //                         ->where('demand.status', '!=', 0)
+    //                         ->leftJoin("demand_data", "demand_data.master_id", "=", "demand.id")
+    //                         ->leftJoin("subitem", "subitem.id", "=", "demand_data.sub_item_id")
+    //                         ->select('demand.*', 'demand_data.sub_item_id');
+    //         if (!empty($search)) {
+    //             $searchTerm = strtolower($search);
+    //             $demandDetail = $demandDetail->whereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+    //                             ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+    //                             ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+    //                             ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+    //                             ->orWhereRaw('LOWER(demand.demand_no) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+    //         }
+    //         if (!empty($username) && $username !==0) {
+    //             $searchTerm = strtolower($username);
+    //             $demandDetail = $demandDetail->whereRaw('LOWER(subitem.username) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+    //         }
+    //         $demandDetail = $demandDetail->get();
+    //     } else if ($selectVoucherStatus == '0' && !empty($selectSubDepartmentId)) {
+    //         $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->whereIn('status', array(1, 2))->where('sub_department_id', '=', $selectSubDepartmentId)->get();
+    //     } else if ($selectVoucherStatus == '1' && !empty($selectSubDepartmentId)) {
+    //         $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '1')->where('demand_status', '=', '1')->where('sub_department_id', '=', $selectSubDepartmentId)->get();
+    //     } else if ($selectVoucherStatus == '2' && !empty($selectSubDepartmentId)) {
+    //         $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '1')->where('demand_status', '=', '2')->where('sub_department_id', '=', $selectSubDepartmentId)->get();
+    //     } else if ($selectVoucherStatus == '3' && !empty($selectSubDepartmentId)) {
+    //         $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '2')->where('sub_department_id', '=', $selectSubDepartmentId)->get();
+    //     } else if ($selectVoucherStatus == '1' && empty($selectSubDepartmentId)) {
+    //         $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '1')->where('demand_status', '=', '1')->get();
+    //     } else if ($selectVoucherStatus == '2' && empty($selectSubDepartmentId)) {
+    //         $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '1')->where('demand_status', '=', '2')->get();
+    //     } else if ($selectVoucherStatus == '3' && empty($selectSubDepartmentId)) {
+    //         $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '2')->get();
+    //     }
+
+
+
+    //     CommonHelper::reconnectMasterDatabase();
+    //     return view('Purchase.AjaxPages.filterDemandVoucherList', compact('demandDetail'));
+    // }
+
     public function filterDemandVoucherList(Request $request)
     {
         // dd($request);
@@ -998,8 +1059,9 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
         $selectSubDepartmentId = $_GET['selectSubDepartmentId'];
 
         CommonHelper::companyDatabaseConnection($m);
+        
         if ($selectVoucherStatus == '0' && empty($selectSubDepartmentId)) {
-            // $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '!=', 0)->get();
+            // Use distinct or group by to avoid duplicates
             $demandDetail = Demand::whereBetween('demand.demand_date', [$fromDate, $toDate])
                             ->when($type == 'pending', function($query) {
                                 $query->where("demand.demand_status", 1);
@@ -1007,37 +1069,70 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
                             ->where('demand.status', '!=', 0)
                             ->leftJoin("demand_data", "demand_data.master_id", "=", "demand.id")
                             ->leftJoin("subitem", "subitem.id", "=", "demand_data.sub_item_id")
-                            ->select('demand.*', 'demand_data.sub_item_id');
+                            ->select('demand.*')  // Only select demand fields to avoid duplicates
+                            ->distinct(); // Add distinct to remove duplicates
+            
             if (!empty($search)) {
                 $searchTerm = strtolower($search);
-                $demandDetail = $demandDetail->whereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                                ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                                ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                                ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                                ->orWhereRaw('LOWER(demand.demand_no) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                $demandDetail = $demandDetail->where(function($query) use ($searchTerm) {
+                    $query->whereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                          ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                          ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                          ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                          ->orWhereRaw('LOWER(demand.demand_no) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                });
             }
+            
             if (!empty($username) && $username !==0) {
                 $searchTerm = strtolower($username);
                 $demandDetail = $demandDetail->whereRaw('LOWER(subitem.username) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
             }
+            
             $demandDetail = $demandDetail->get();
+            
         } else if ($selectVoucherStatus == '0' && !empty($selectSubDepartmentId)) {
-            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->whereIn('status', array(1, 2))->where('sub_department_id', '=', $selectSubDepartmentId)->get();
+            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])
+                            ->whereIn('status', array(1, 2))
+                            ->where('sub_department_id', '=', $selectSubDepartmentId)
+                            ->get();
+                            
         } else if ($selectVoucherStatus == '1' && !empty($selectSubDepartmentId)) {
-            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '1')->where('demand_status', '=', '1')->where('sub_department_id', '=', $selectSubDepartmentId)->get();
+            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])
+                            ->where('status', '=', '1')
+                            ->where('demand_status', '=', '1')
+                            ->where('sub_department_id', '=', $selectSubDepartmentId)
+                            ->get();
+                            
         } else if ($selectVoucherStatus == '2' && !empty($selectSubDepartmentId)) {
-            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '1')->where('demand_status', '=', '2')->where('sub_department_id', '=', $selectSubDepartmentId)->get();
+            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])
+                            ->where('status', '=', '1')
+                            ->where('demand_status', '=', '2')
+                            ->where('sub_department_id', '=', $selectSubDepartmentId)
+                            ->get();
+                            
         } else if ($selectVoucherStatus == '3' && !empty($selectSubDepartmentId)) {
-            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '2')->where('sub_department_id', '=', $selectSubDepartmentId)->get();
+            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])
+                            ->where('status', '=', '2')
+                            ->where('sub_department_id', '=', $selectSubDepartmentId)
+                            ->get();
+                            
         } else if ($selectVoucherStatus == '1' && empty($selectSubDepartmentId)) {
-            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '1')->where('demand_status', '=', '1')->get();
+            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])
+                            ->where('status', '=', '1')
+                            ->where('demand_status', '=', '1')
+                            ->get();
+                            
         } else if ($selectVoucherStatus == '2' && empty($selectSubDepartmentId)) {
-            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '1')->where('demand_status', '=', '2')->get();
+            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])
+                            ->where('status', '=', '1')
+                            ->where('demand_status', '=', '2')
+                            ->get();
+                            
         } else if ($selectVoucherStatus == '3' && empty($selectSubDepartmentId)) {
-            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])->where('status', '=', '2')->get();
+            $demandDetail = Demand::whereBetween('demand_date', [$fromDate, $toDate])
+                            ->where('status', '=', '2')
+                            ->get();
         }
-
-
 
         CommonHelper::reconnectMasterDatabase();
         return view('Purchase.AjaxPages.filterDemandVoucherList', compact('demandDetail'));
