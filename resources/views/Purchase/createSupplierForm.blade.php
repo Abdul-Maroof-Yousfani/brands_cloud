@@ -49,14 +49,14 @@ if($accType == 'client'){
                                                     <label>Account Head :</label>
                                                     <span class="rflabelsteric"><strong>*</strong></span>
 
-                                                    <input type="hidden" name="account_head" value="2" />
+                                                    <input type="hidden" name="account_head" value="2-281" />
                                                     <select onchange="get_nature_type()" 
                                                         id="account_id" class="form-control requiredField select2" disabled>
 
 
                                                         <option value="">Select Account</option>
                                                         @foreach($accounts as $key => $y)
-                                                        <option {{ $y->code == '2' ? 'selected' :'' }}
+                                                        <option {{ $y->code == '2-281' ? 'selected' :'' }}
                                                             value="{{ $y->code}}">{{ $y->code .' ---- '. $y->name}}
                                                         </option>
                                                         @endforeach
@@ -297,7 +297,7 @@ if($accType == 'client'){
                                                         </div>
 
 
-                                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hide">
                                                             <div class="row">
                                                                 <div class="col-sm-6">
                                                                     <label>Category</label>
