@@ -56,7 +56,9 @@ use App\Helpers\SalesHelper;?>
                             <th class="text-center" style="width:50px;"></th>
                             <th class="text-center" style="width:50px;">S.No</th>
                      
+                                <th class="text-center">SKU</th>
                                 <th class="text-center">Product</th>
+                                <th class="text-center">Barcode</th>
                                 <!-- <th class="text-center">Description</th> -->
                                 <th class="text-center">PR No#</th>
                                 <th class="text-center">QTY</th>
@@ -91,7 +93,9 @@ use App\Helpers\SalesHelper;?>
                                <?php  $validate = true; ?>
                                 @endif
                             <td class="text-center"><?php echo $counter++;?></td>
+                            <td class="text-center"><?php echo $row1->sku_code;?></td>
                             <td class="text-center"><?php echo $row1->product_name != "" ? $row1->product_name :$row1->sub_ic;?></td>
+                            <td class="text-center"><?php echo $row1->product_barcode;?></td>
                             <!-- <td class="text-center">{{ $row1->description }}</td> -->
                             <td class="text-center">{{ $row1->demand_no }}</td>
                             <td class="text-center">{{ $row1->qty }}</td>

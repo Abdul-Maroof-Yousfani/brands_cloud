@@ -273,12 +273,13 @@ class QuotationController extends Controller
         ->join('demand as c','c.id','=','a.pr_id')
         ->select('a.pr_id','a.pr_no','b.name','a.vendor_id','c.id as demand_id','a.dept_id','c.demand_no','a.p_type')
         ->where('a.pr_id',$request->id)
+        ->where('a.quotation_status',2)
         ->get();
 
        $demand_data= DB::Connection('mysql2')->table('demand_data as a')
        ->join('quotation_data as c','c.pr_data_id','=','a.id')
        ->join('subitem as b','a.sub_item_id','=','b.id')
-       ->select('b.sub_ic','b.product_name','a.id','a.demand_no','c.quotation_status','a.qty','c.vendor','c.id as quotation_id','a.master_id','c.description')
+       ->select('b.sku_code','b.product_barcode','b.sub_ic','b.product_name','a.id','a.demand_no','c.quotation_status','a.qty','c.vendor','c.id as quotation_id','a.master_id','c.description')
        ->where('a.master_id',$request->id)
        ->where('c.status',1)
        ->groupBy('a.id')

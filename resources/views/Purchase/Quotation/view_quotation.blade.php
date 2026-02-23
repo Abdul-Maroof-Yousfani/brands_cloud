@@ -105,7 +105,9 @@ use App\Helpers\SalesHelper;?>
                         <thead>
                         <tr>
                             <th class="text-center" style="width:50px;">S.No</th>
+                            <th class="text-center">SKU</th>
                             <th class="text-center">Product</th>
+                            <th class="text-center">Barcode</th>
                             <th class="text-center">UOM</th>
                             <th class="text-center">QTY</th>
                             <th class="text-center">Rate</th>
@@ -123,7 +125,9 @@ use App\Helpers\SalesHelper;?>
                         ?>
                         <tr class="tex-center">
                             <td class="tex-center"><?php echo $counter++;?></td>
+                            <td  class="text-center"> <?php echo CommonHelper::get_product_sku($row->sub_item_id);?></td>
                             <td  class="text-center"> <?php echo CommonHelper::get_product_name($row->sub_item_id);?></td>
+                            <td  class="text-center"> <?php echo CommonHelper::product_barcode($row->sub_item_id);?></td>
                             <td class="text-center"><?php echo  CommonHelper::get_uom($row->sub_item_id) ?></td>
                             <td class="text-center "><?php echo number_format($row->qty,2)?></td>
                             <td class="text-center"><?php echo number_format($row->rate,2)?></td>
@@ -138,12 +142,12 @@ use App\Helpers\SalesHelper;?>
                         endforeach
                         ?>
                         <tr class="text-center">
-                            <td class="bold" colspan="5">Total</td>
+                            <td class="bold" colspan="7">Total</td>
                             <td class="bold" colspan="1">{{ number_format($total_amount,2) }}</td>
                         </tr>
                        @if($quotation->gst_amount > 0)     
                         <tr class="text-center">
-                            <td class="bold" colspan="5">Sales Tax {{ number_format($quotation->gst).' %' }}</td>
+                            <td class="bold" colspan="7">Sales Tax {{ number_format($quotation->gst).' %' }}</td>
                             <td class="bold" colspan="1">{{ number_format($quotation->gst_amount,2) }}</td>
                         </tr>
 
