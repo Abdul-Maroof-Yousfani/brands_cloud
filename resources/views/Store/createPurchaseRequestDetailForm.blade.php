@@ -75,10 +75,12 @@ var counter = 1;
                  ->where('c.quotation_status',1)
                  ->where('b.status',1)->where('d.quotation_status',2)
 
-                 ->select('a.sub_item_id','a.id','c.vendor','a.demand_no'
+                 ->select('a.sub_item_id','d.comparative_number','a.id','c.vendor','a.demand_no'
                  ,'a.demand_date','a.qty','c.rate','c.tax_percent','c.amount','c.tax_per_item_amount','c.tax_total_amount','b.sub_department_id','d.gst','b.p_type','d.vendor_id')
-                ->groupBy('a.id')
-                 ->get();     
+                ->groupBy('a.id');
+$comparativeNumbers = $data->pluck('comparative_number')->toArray();
+
+                $data = $data->get();     
                  
                
          
@@ -90,19 +92,42 @@ var counter = 1;
 
 
 
-               $quotation = DB::connection('mysql2')
+//                $quotation = DB::connection('mysql2')
+//     ->table('quotation_data as qd')
+//     ->join('quotation as q', 'qd.master_id', '=', 'q.id')
+//     ->where('qd.pr_data_id', $data[0]->id)
+//     ->select('q.comparative_number')
+//     ->first();
+
+//     // dd($quotation);
+
+// $comparative = $quotation ? $quotation->comparative_number : null;
+
+
+// $implodedComparatives = $comparative;
+
+
+$quotations = DB::connection('mysql2')
     ->table('quotation_data as qd')
     ->join('quotation as q', 'qd.master_id', '=', 'q.id')
     ->where('qd.pr_data_id', $data[0]->id)
     ->select('q.comparative_number')
-    ->first();
+    ->get(); // <-- all records
 
-    // dd($quotation);
+    // dd($quotations);
+// Convert to array of comparative numbers
+// $comparativeNumbers = $data->plu;
 
-$comparative = $quotation ? $quotation->comparative_number : null;
+// Optional: implode into comma separated string
+$implodedComparatives = implode(', ', $comparativeNumbers);
+
+// Now you can use $comparativeNumbers array to show individually
+foreach ($comparativeNumbers as $num) {
+    echo $num . '<br>'; // alag-alag show
+}
 
 
-$implodedComparatives = $comparative;
+
             
                 $vendor_id= $data[0]->vendor;        
                 $dept_id= $data[0]->sub_department_id;  
