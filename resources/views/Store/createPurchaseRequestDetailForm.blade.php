@@ -107,12 +107,6 @@ $comparativeNumbers = $data->groupby('comparative_number')->pluck('comparative_n
 // $implodedComparatives = $comparative;
 
 
-$quotations = DB::connection('mysql2')
-    ->table('quotation_data as qd')
-    ->join('quotation as q', 'qd.master_id', '=', 'q.id')
-    ->where('qd.pr_data_id', $data[0]->id)
-    ->select('q.comparative_number')
-    ->get(); // <-- all records
 
     // dd($quotations);
 // Convert to array of comparative numbers
