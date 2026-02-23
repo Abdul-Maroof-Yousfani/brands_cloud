@@ -96,6 +96,7 @@ $currentMonthEndDate   = date('Y-m-t');
                                   <th class="text-center">Vendor</th>
                                   <th class="text-center">Ref No</th>
                                   <th class="text-center">Total Amount</th>
+                                  <th class="text-center">Status</th>
                                   <th class="text-center hidden-print">
                                     Action
                                   </th>

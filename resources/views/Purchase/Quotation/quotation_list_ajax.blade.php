@@ -41,6 +41,7 @@ $pr_no = [];
     <td>{{ CommonHelper::get_supplier_name($row->vendor_id) }}</td>
     <td>{{ $row->ref_no }}</td>
     <td>{{ number_format($row->amount,3) }}</td>
+    <td>{{ $row->quotation_approve == 2 ? 'Pending' : 'Approved' }}</td>
 
     <td>
 
