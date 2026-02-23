@@ -65,7 +65,8 @@
 			$accountName='';
 			if ($param1!=0):
 			static::companyDatabaseConnection($param2);
-			 $accountName = DB::selectOne('select `name` from `accounts` where `id` = '.$param1.'')->name;
+			 $account = DB::selectOne('select `name` from `accounts` where `id` = '.$param1.'');
+			 $accountName = $account ? $account->name : null;
 			static::reconnectMasterDatabase();
 			
 			endif;
