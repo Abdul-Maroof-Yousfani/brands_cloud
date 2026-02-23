@@ -241,10 +241,10 @@ class QuotationController extends Controller
 
     public function approve(Request $request)
     {
-        if ($this->check_pr_status($request->pr_id)>0):
-            echo 'no';
-            die;
-        endif;
+        // if ($this->check_pr_status($request->pr_id)>0):
+        //     echo 'no';
+        //     die;
+        // endif;
         $quotation = Quotation::find($request->id);
         $quotation->quotation_status = 2;
         $quotation->approve_username = Auth::user()->name;
