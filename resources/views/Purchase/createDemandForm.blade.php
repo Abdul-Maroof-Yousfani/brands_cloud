@@ -199,8 +199,10 @@
                                                                 <input readonly type="text" class="form-control" name="last_received_qty[]" id="last_received_qty1">
                                                             </td>
                                                             <td class="text-center hide"><input onclick="view_history(1)" type="checkbox" id="view_history1"></td>
-                                                            <td>
-                                                                <a href="#" class="btn btn-sm btn-primary" onclick="AddMoreDetails()"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                                            <td class="text-center">
+                                                                <div style="display: flex; justify-content: center; gap: 5px;">
+                                                                    <a href="#" class="btn btn-sm btn-primary" onclick="AddMoreDetails()"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -353,8 +355,11 @@ function AddMoreDetails() {
         ')" type="checkbox" id="view_history' + Counter + '">' +
         '</td>' +
         '<td class="text-center">' +
+        '<div style="display: flex; justify-content: center; gap: 5px;">' +
         '<button type="button" class="btn btn-danger" id="BtnRemove' + Counter + '" onclick="RemoveSection(' +
         Counter + ')"><span class="glyphicon glyphicon-trash"></span></button>' +
+        '<a href="#" class="btn btn-sm btn-primary" onclick="AddMoreDetails()"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+        '</div>' +
         '</td>' +
         '</tr>'
     );

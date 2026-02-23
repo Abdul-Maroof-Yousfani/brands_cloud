@@ -287,19 +287,20 @@ use App\Helpers\CommonHelper;
                                                                         onclick="view_history(1)" type="checkbox"
                                                                         id="view_history{{ $Counter }}">
                                                                 </td>
-                                                                <td class="text-center " style="">
-                                                                    <?php if($Counter > 1):?>
-                                                                    <button type="button" class="btn btn-xs btn-danger"
-                                                                        id="BtnRemove'+Counter+'"
-                                                                        onclick="RemoveSection('<?php echo $Counter; ?>')">Remove</button>
+                                                                <td class="text-center">
+                                                                    <div style="display: flex; justify-content: center; gap: 5px;">
+                                                                        <?php if($Counter > 1):?>
+                                                                        <button type="button" class="btn btn-xs btn-danger"
+                                                                            id="BtnRemove'+Counter+'"
+                                                                            onclick="RemoveSection('<?php echo $Counter; ?>')"><span class="glyphicon glyphicon-trash"></span></button>
 
-                                                                    <?php endif;?>
+                                                                        <?php endif;?>
 
 
-                                                                    <a href="#" class="btn btn-sm btn-primary"
-                                                                        onclick="AddMoreDetails()"><span
-                                                                            class="glyphicon glyphicon-plus-sign"></span></a>
-
+                                                                        <a href="#" class="btn btn-sm btn-primary"
+                                                                            onclick="AddMoreDetails()"><span
+                                                                                class="glyphicon glyphicon-plus-sign"></span></a>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
 
@@ -432,8 +433,11 @@ use App\Helpers\CommonHelper;
                 ')" type="checkbox" id="view_history' + Counter + '">' +
                 '</td>' +
                 '<td class="text-center">' +
+                '<div style="display: flex; justify-content: center; gap: 5px;">' +
                 '<button type="button" class="btn btn-danger" id="BtnRemove' + Counter + '" onclick="RemoveSection(' +
                 Counter + ')"><span class="glyphicon glyphicon-trash"></span></button>' +
+                '<a href="#" class="btn btn-sm btn-primary" onclick="AddMoreDetails()"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                '</div>' +
                 '</td>' +
                 '</tr>'
             );
