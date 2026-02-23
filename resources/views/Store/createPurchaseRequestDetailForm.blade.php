@@ -89,7 +89,7 @@ var counter = 1;
                  ->select('a.sub_item_id','d.comparative_number','a.id','c.vendor','a.demand_no'
                  ,'a.demand_date','a.qty','c.rate','c.tax_percent','c.amount','c.tax_per_item_amount','c.tax_total_amount','b.sub_department_id','d.gst','b.p_type','d.vendor_id')
                 ->groupBy('a.id');
-$comparativeNumbers = $datas->groupby('comparative_number')->pluck('comparative_number')->toArray();
+$comparativeNumbers = $datas->groupby('d.comparative_number')->pluck('d.comparative_number')->toArray();
 
                  
                
