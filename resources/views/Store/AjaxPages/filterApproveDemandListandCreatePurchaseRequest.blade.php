@@ -22,6 +22,7 @@ if(empty($paramOne)){
                 <?php
              
                
+             
              $data= DB::Connection('mysql2')->table('quotation_data as a')
              ->join('demand_data as b','a.pr_data_id','=','b.id')
              ->join('quotation as c','a.master_id','=','c.id')
