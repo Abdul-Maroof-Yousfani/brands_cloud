@@ -453,19 +453,34 @@ use App\Helpers\ReuseableCode;
             total_amount();
         }
 
+        // function total_amount() {
+        //     var amount = 0;
+        //     $('.amount').each(function() {
+
+        //         amount += +$(this).val();
+
+        //     });
+        //     $('#net').val(amount);
+        //     // var sales_tax = parseFloat($('#sales_amount_td').val());
+        //     $('#net_after_tax').text(amount);
+        //     $('#net_after_tax_value_hidden').val(amount);
+
+        // }
+
         function total_amount() {
-            var amount = 0;
-            $('.amount').each(function() {
+    var amount = 0;
+    $('.amount').each(function() {
+        amount += parseFloat($(this).val()) || 0;
+    });
 
-                amount += +$(this).val();
+    // 2 decimal formatting
+    amount = parseFloat(amount).toFixed(2);
 
-            });
-            $('#net').val(amount);
-            // var sales_tax = parseFloat($('#sales_amount_td').val());
-            $('#net_after_tax').text(amount);
-            $('#net_after_tax_value_hidden').val(amount);
+    $('#net').val(amount);
+    $('#net_after_tax').text(amount);
+    $('#net_after_tax_value_hidden').val(amount);
+}
 
-        }
     </script>
     <script src="{{ URL::asset('assets/js/select2/js_tabindex.js') }}"></script>
 @endsection
