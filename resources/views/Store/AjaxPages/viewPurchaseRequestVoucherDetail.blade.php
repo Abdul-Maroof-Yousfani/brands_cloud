@@ -5,6 +5,13 @@ use App\Helpers\ReuseableCode;
 
 $id = $_GET['id'];
 
+
+
+
+
+
+
+
 $m = Session::get('run_company');
 $approve=ReuseableCode::check_rights(16);
 
@@ -175,17 +182,19 @@ if($_GET['pageType']=='viewlist'){
                                 <th class="text-center">S.NO</th>
                                 {{--<th class="text-center">PR NO</th>--}}
                                 {{--<th style="font-size: 13px;" class="text-center">PR  Date </th>--}}
-
+                                <th>SKU</th>
                                 <th class="text-center">Product Name</th>
+                                <th>Barcode</th>
                                 <th class="text-center">UOM</th>
 
                                 
 
-                                <th class="text-center" >Approved. Qty. <span class="rflabelsteric"><strong>*</strong></span></th>
-                                <!-- <th class="text-center" >No Of Carton <span class="rflabelsteric"><strong>*</strong></span></th> -->
-                                <th class="text-center" >Rate. <span class="rflabelsteric"><strong>*</strong></span></th>
+                                <th class="text-center" >Qty</th>
+                                <!-- <th class="text-center" >No Of Carton </th> -->
+                                <th class="text-center" >Rate </th>
                                 <th class="text-center">Amount(PKR)</th>
-                                <th class="text-center">Amount</th>
+                                <!-- <th class="text-center">Tax</th> -->
+                                <th class="text-center">Discount</th>
 
                                 {{-- <th class="text-center">Discount%</th>
                                 <th class="text-center">Discount Amount</th> --}}
@@ -212,6 +221,7 @@ if($_GET['pageType']=='viewlist'){
                                 {{--<td class="text-center">< ?php echo strtoupper($row1->demand_no);?></td>--}}
                                 {{--<td class="text-center">< ?php echo  CommonHelper::changeDateFormat($row1->demand_date);?></td>--}}
 
+                                <td><?php echo CommonHelper::get_product_sku($row1->sub_item_id); ?></td>
                                 <td title="item_name={{CommonHelper::get_product_name($row1->sub_item_id)}}">
                                     <?php $accType = Auth::user()->acc_type;
                                     if($accType == 'client'):
@@ -223,6 +233,7 @@ if($_GET['pageType']=='viewlist'){
                                     <?php echo CommonHelper::get_product_name($row1->sub_item_id);?>
                                     <?php endif;?>
                                 </td>
+                                <td><?php echo CommonHelper::product_barcode($row1->sub_item_id); ?></td>
 
 
                                 <?php $sub_ic_detail=CommonHelper::get_subitem_detail($row1->sub_item_id);
@@ -239,9 +250,11 @@ if($_GET['pageType']=='viewlist'){
                                 <!-- <td class="text-center"><?php echo $row1->no_of_carton;?></td> -->
                                 <td class="text-center"><?php echo number_format($row1->rate,2);?></td>
                                 <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty * $row->currency_rate,2);?></td>
-                                <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty,2);?></td>
+                                <!-- <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty,2);?></td> -->
 
-                                <td class="text-right"><?php echo number_format($row1->net_amount,2);?></td>
+                             
+                                <td class="text-right"><?php echo number_format($row1->discount_amount,2);?></td>
+                                   <td class="text-right"><?php echo number_format($row1->net_amount,2);?></td>
                                 <td style="display: none"  class="text-right showw"><?php echo number_format($row1->net_amount*$row->currency_rate,2);?></td>
                                 <!-- <td style="background-color: #ccc" class="printHide">
                                     <input onclick="view_history(<?php echo $counter?>)" type="checkbox" id="view_history<?php echo $counter?>">
@@ -256,22 +269,25 @@ if($_GET['pageType']=='viewlist'){
 
                             <tr>
 
-                                <td style="background-color: darkgray" class="text-center" colspan="3">Total</td>
+                                <td style="background-color: darkgray" class="text-center" colspan="5">Total</td>
                                 <td style="background-color: darkgray" class="text-center">{{ $approved_qty_sum }}</td>
+                                <td style="background-color: darkgray" class="text-center"></td>
                                 <td style="background-color: darkgray" class="text-right"  >{{number_format($actual_amount,2)}} ({{$currency}})</td>
+                                  <td style="background-color: darkgray" class="text-right"  ></td>
                                 <td  style="background-color: darkgray" class="text-right"  colspan="4">{{number_format($total,2)}}</td>
                                 <td  style="background-color: darkgray;display: none" class="text-right showw"  colspan="1">{{number_format($total_exchange,2)}}</td>
                             </tr>
                             </tbody>
 
+
                             <tr>
-                                <td class="text-center" colspan="6">{{ 'Sales Tax :'. $row->sales_tax.' %' }}</td>
-                                <td class="text-right" colspan="6">{{   number_format($row->sales_tax_amount,2)}}</td>
+                                <td class="text-center" colspan="9">{{ 'Sales Tax :'. $row->sales_tax.' %' }}</td>
+                                <td class="text-right" colspan="9">{{   number_format($row->sales_tax_amount,2)}}</td>
                             </tr>
 
                             <tr>
 
-                                <td style="background-color: darkgray" class="text-center" colspan="6">Grand Total</td>
+                                <td style="background-color: darkgray" class="text-center" colspan="9">Grand Total</td>
                                 <td style="background-color: darkgray"  class="text-right" colspan="5">{{number_format($total+$row->sales_tax_amount,2)}}
                                     @php if ($currency==''):echo 'PKR';else:echo $currency;endif; @endphp</td>
                                 <td style="background-color: darkgray;display: none"  class="text-right showw" colspan="6">{{number_format($total_exchange+$row->sales_tax_amount,2)}}
