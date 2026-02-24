@@ -256,7 +256,9 @@ use App\Helpers\ReuseableCode;
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th style="width: 200px;" class="text-center">Amount. <span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
-                                                        <th style="width: 200px;" class="text-center">Tax. <span
+                                                        <th style="width: 200px;" class="text-center">Tax% <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Tax Amount <span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th style="width: 200px;" class="text-center">Discount Amount
                                                             <span class="rflabelsteric"><strong>*</strong></span></th>
@@ -301,17 +303,17 @@ use App\Helpers\ReuseableCode;
                                                         //   $net_amount=$amount-$discount_amount;
                                                         //   $TotAmt+=$net_amount;
 
-                                                         $amount_after_discount = $amount - $discount_amount;
+                             $amount_after_discount = $amount - $discount_amount;
+                            
+                            // TAX CALCULATION - IMPORTANT
+                            $item_tax_amount = ($amount_after_discount / 100) * $tax_rate;
+                            
+                            // Net amount after tax
+                            $net_amount = $amount_after_discount + $item_tax_amount;
     
-    // TAX CALCULATION - IMPORTANT
-    $item_tax_amount = ($amount_after_discount / 100) * $tax_rate;
-    
-    // Net amount after tax
-    $net_amount = $amount_after_discount + $item_tax_amount;
-    
-    $TotAmt += $amount_after_discount;  // Total without tax for items
-     $TotalTaxAmount += $item_tax_amount;  // Total tax
-    $TotalNetWithTax += $net_amount;  // Total with tax
+                            $TotAmt += $amount_after_discount;  // Total without tax for items
+                            $TotalTaxAmount += $item_tax_amount;  // Total tax
+                            $TotalNetWithTax += $net_amount;  // Total with tax
 
 
 
@@ -369,6 +371,8 @@ use App\Helpers\ReuseableCode;
                                                         <td>
                                                             <?php
 
+                                                         
+
                                                                     if($row1->po_data_id !="")
                                                                     {
                                                                         $Rate = CommonHelper::get_rate($row1->po_data_id);
@@ -398,10 +402,27 @@ use App\Helpers\ReuseableCode;
                                                                 class="form-control requiredField tax_rate<?php echo $row1->grn_no?>"
                                                                 value="<?php echo $tax_rate;?>" readonly />
                                                         </td>
+                                                       <td>
+                                                    <?php
+                                                    // Tax Amount Calculation
+                                                    $tax_amount = ($amount * $tax_rate) / 100;
+                                                    ?>
+                                                    <input type="text" name="tax_amount<?php echo $count ?>"
+                                                        id="tax_amount<?php echo $count ?>"
+                                                        class="form-control requiredField tax_amount<?php echo $row1->grn_no?>"
+                                                        value="<?php echo number_format($tax_amount, 2); ?>" readonly />
+                                                </td>
+
+                                                <?php 
+
+   $total_with_tax = $amount + $tax_amount;
+  
+                                                        $discount_amount = ($total_with_tax * $discount_percent) / 100;
+                                                    ?>
                                                         <td><input readonly class="form-control" type="text"
                                                                 id="discount_amount{{$count}}"
                                                                 name="discount_amount{{$count}}"
-                                                                value="{{$discount_amount}}"></td>
+                                                                value="<?php echo number_format($discount_amount, 2); ?>"></td>
 
                                                         <td><input readonly class="form-control"
                                                                 id="net_amoun{{ $count }}" text"

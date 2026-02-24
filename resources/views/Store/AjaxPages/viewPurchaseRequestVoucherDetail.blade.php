@@ -246,7 +246,27 @@ if($_GET['pageType']=='viewlist'){
                                 </td>
                                 @php
                                     $approved_qty_sum += (int)$row1->purchase_approve_qty;
+
+                                    
                                 @endphp
+
+                             <?php 
+// 1. Gross Amount
+$gross_amount = $row1->rate * $row1->purchase_approve_qty;
+
+// 2. Amount after discount
+$amount_after_discount = $gross_amount - $row1->discount_amount;
+
+// 3. Tax amount on discounted amount
+$item_tax_amount = ($amount_after_discount / 100) * $row1->tax_rate;
+
+// 4. NET AMOUNT = Amount after discount + Tax
+$net_amount = $amount_after_discount + $item_tax_amount;
+
+// 5. Apply currency rate (if needed)
+$net_amount_with_currency = $net_amount * $row->currency_rate;
+?>
+
                                 <td class="text-center"><?php echo (int)$row1->purchase_approve_qty;?></td>
                                 <!-- <td class="text-center"><?php echo $row1->no_of_carton;?></td> -->
                                 <td class="text-center"><?php echo number_format($row1->rate,2);?></td>
