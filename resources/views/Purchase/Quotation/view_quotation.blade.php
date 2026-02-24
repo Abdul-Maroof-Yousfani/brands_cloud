@@ -113,7 +113,7 @@ use App\Helpers\SalesHelper;?>
                             <th class="text-center">Rate</th>
                             <th class="text-center">Tax %</th>
                             <th class="text-center">Tax Amount</th>
-                            <th class="text-center">Amount</th>
+                            <th class="text-center">Net Amount</th>
                         </tr>
                         </thead>
 
