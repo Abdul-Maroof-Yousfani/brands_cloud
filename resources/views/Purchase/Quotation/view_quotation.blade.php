@@ -134,7 +134,13 @@ use App\Helpers\SalesHelper;?>
                             <td class="text-center "><?php echo number_format($row->qty,2)?></td>
                             <td class="text-center"><?php echo number_format($row->rate,2)?></td>
                             <td class="text-center"><?php echo number_format($row->tax_percent,2)?></td>
-                            <td class="text-center"><?php echo number_format($row->tax_per_item_amount,2)?></td>
+                            <td class="text-center">
+    <?php 
+        $amount = $row->qty * $row->rate;
+        $taxAmount = ($amount * $row->tax_percent) / 100;
+        echo number_format($taxAmount, 2);
+    ?>
+</td>
                             <td class="text-center"><?php echo number_format($row->amount,2)?></td>
 
                         </tr>
