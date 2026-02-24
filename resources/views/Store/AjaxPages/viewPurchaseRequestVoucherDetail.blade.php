@@ -193,6 +193,7 @@ if($_GET['pageType']=='viewlist'){
                                 <!-- <th class="text-center" >No Of Carton </th> -->
                                 <th class="text-center" >Rate </th>
                                 <th class="text-center">Amount(PKR)</th>
+                                <th class="text-center">Tax</th>
                                 <!-- <th class="text-center">Tax</th> -->
                                 <th class="text-center">Discount</th>
 
@@ -251,7 +252,7 @@ if($_GET['pageType']=='viewlist'){
                                 <td class="text-center"><?php echo number_format($row1->rate,2);?></td>
                                 <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty * $row->currency_rate,2);?></td>
                                 <!-- <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty,2);?></td> -->
-
+                                <td class="text-right"><?php echo number_format($row1->tax_rate,2);?></td>
                              
                                 <td class="text-right"><?php echo number_format($row1->discount_amount,2);?></td>
                                    <td class="text-right"><?php echo number_format($row1->net_amount,2);?></td>
@@ -273,7 +274,10 @@ if($_GET['pageType']=='viewlist'){
                                 <td style="background-color: darkgray" class="text-center">{{ $approved_qty_sum }}</td>
                                 <td style="background-color: darkgray" class="text-center"></td>
                                 <td style="background-color: darkgray" class="text-right"  >{{number_format($actual_amount,2)}} ({{$currency}})</td>
-                                  <td style="background-color: darkgray" class="text-right"  ></td>
+                                 
+                                
+                                <td style="background-color: darkgray" class="text-center"></td>
+                                <td style="background-color: darkgray" class="text-right"  ></td>
                                 <td  style="background-color: darkgray" class="text-right"  colspan="4">{{number_format($total,2)}}</td>
                                 <td  style="background-color: darkgray;display: none" class="text-right showw"  colspan="1">{{number_format($total_exchange,2)}}</td>
                             </tr>
@@ -281,13 +285,13 @@ if($_GET['pageType']=='viewlist'){
 
 
                             <tr>
-                                <td class="text-center" colspan="9">{{ 'Sales Tax :'. $row->sales_tax.' %' }}</td>
+                                <td class="text-center" colspan="10">{{ 'Sales Tax :'. $row->sales_tax.' %' }}</td>
                                 <td class="text-right" colspan="9">{{   number_format($row->sales_tax_amount,2)}}</td>
                             </tr>
 
                             <tr>
 
-                                <td style="background-color: darkgray" class="text-center" colspan="9">Grand Total</td>
+                                <td style="background-color: darkgray" class="text-center" colspan="10">Grand Total</td>
                                 <td style="background-color: darkgray"  class="text-right" colspan="5">{{number_format($total+$row->sales_tax_amount,2)}}
                                     @php if ($currency==''):echo 'PKR';else:echo $currency;endif; @endphp</td>
                                 <td style="background-color: darkgray;display: none"  class="text-right showw" colspan="6">{{number_format($total_exchange+$row->sales_tax_amount,2)}}

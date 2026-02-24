@@ -484,11 +484,13 @@ A WITHOLDING AGENT SHALL DEDUCT AN AMOUNT AS PER SRB WITHHOLDING RULES-2014</tex
                                                 <td class="text-center">
                                                     <label for="">Tax.</label>
                                                     <input readonly onkeyup="claculation('<?php echo $counter1 ?>')" type="text"
-                                                        name="rate_<?php echo $counter1?>"
-                                                        id="rate_<?php echo $counter1?>"
+                                                        name="tax_rate_<?php echo $counter1?>"
+                                                        id="tax_rate_<?php echo $counter1?>"
                                                         class="form-control requiredField ApproveRate" step="0.001"
                                                         value="{{($row->tax_percent)}}" />
                                                 </td>
+
+                                                
                                                 <td class="text-center">
                                                     <label for="">Rate After Tax.</label>
                                                     <input readonly type="text"

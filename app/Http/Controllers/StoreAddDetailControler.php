@@ -125,6 +125,8 @@ class StoreAddDetailControler extends Controller
     }
 
     public function addPurchaseRequestDetail(){
+
+      
         DB::Connection('mysql2')->beginTransaction();
         try {
         $m = $_GET['m'];
@@ -223,6 +225,7 @@ class StoreAddDetailControler extends Controller
             $purchase_request_rate = Input::get('rate_' . $row . '');
             $purchase_request_rate=str_replace(",","",$purchase_request_rate);
             $description = Input::get('description_' . $row . '');
+            $purchase_request_tax = Input::get('tax_rate_' . $row . '');
 
             $discount_percent = Input::get('discount_percent_' . $row . '');
             $discount_percent=str_replace(",","",$discount_percent);
@@ -246,6 +249,7 @@ class StoreAddDetailControler extends Controller
             $data2['description'] = $description;
             $data2['purchase_approve_qty'] = $purchase_approve_qty;
             $data2['rate'] = $purchase_request_rate;
+            $data2['tax_rate'] = $purchase_request_tax;
             $data2['description'] = $description;
             $data2['sub_total'] = $purchase_request_sub_total;
             $data2['demand_data_id'] = $demand_data_id;
