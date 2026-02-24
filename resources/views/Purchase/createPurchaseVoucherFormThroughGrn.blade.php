@@ -44,6 +44,8 @@ use App\Helpers\ReuseableCode;
         $rate = 0;
         $amt = 0;
         $TotAmt = 0;
+        $TotalTaxAmount = 0;
+        $TotalNetWithTax = 0;
         $total_amount=0;
         $sales_tax_amount=0;
         $id=$row;
@@ -254,6 +256,8 @@ use App\Helpers\ReuseableCode;
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th style="width: 200px;" class="text-center">Amount. <span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Tax. <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th style="width: 200px;" class="text-center">Discount Amount
                                                             <span class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th style="width: 200px;" class="text-center">Net Amount <span
@@ -268,11 +272,19 @@ use App\Helpers\ReuseableCode;
 
 
                                                     <?php
+                                                                $tax_rate= CommonHelper::get_tax_rate($row1->po_data_id);
+
+                                                                
+                                                               $tax_rate = number_format($tax_rate->tax_rate, 2);
+                                                               
+                                                   
+                                                              
                                                            $return_qty= ReuseableCode::purchase_return_qty($row1->id);
                                                            $qty=$row1->purchase_recived_qty-$row1->qc_qty;
                                                            $actual_qty=$qty-$return_qty;
 
                                                            $rate=$row1->rate;
+                                                          
 
                                                           $amount=$actual_qty*$rate *$currency ;
                                                           $discount_percent= $row1->discount_percent;
@@ -286,8 +298,21 @@ use App\Helpers\ReuseableCode;
 
 
 
-                                                          $net_amount=$amount-$discount_amount;
-                                                          $TotAmt+=$net_amount;
+                                                        //   $net_amount=$amount-$discount_amount;
+                                                        //   $TotAmt+=$net_amount;
+
+                                                         $amount_after_discount = $amount - $discount_amount;
+    
+    // TAX CALCULATION - IMPORTANT
+    $item_tax_amount = ($amount_after_discount / 100) * $tax_rate;
+    
+    // Net amount after tax
+    $net_amount = $amount_after_discount + $item_tax_amount;
+    
+    $TotAmt += $amount_after_discount;  // Total without tax for items
+     $TotalTaxAmount += $item_tax_amount;  // Total tax
+    $TotalNetWithTax += $net_amount;  // Total with tax
+
 
 
                                                             ?>
@@ -367,6 +392,12 @@ use App\Helpers\ReuseableCode;
                                                                 class="form-control requiredField amount<?php echo $row1->grn_no?>"
                                                                 value="<?php echo $amount;?>" readonly />
                                                         </td>
+                                                        <td>
+                                                            <input type="text" name="tax_rate<?php echo $count ?>"
+                                                                id="tax_rate<?php echo $count ?>"
+                                                                class="form-control requiredField tax_rate<?php echo $row1->grn_no?>"
+                                                                value="<?php echo $tax_rate;?>" readonly />
+                                                        </td>
                                                         <td><input readonly class="form-control" type="text"
                                                                 id="discount_amount{{$count}}"
                                                                 name="discount_amount{{$count}}"
@@ -375,7 +406,7 @@ use App\Helpers\ReuseableCode;
                                                         <td><input readonly class="form-control"
                                                                 id="net_amoun{{ $count }}" text"
                                                                 name="net_amount{{$count}}"
-                                                                value="{{$amount-$discount_amount}}"></td>
+                                                                value="{{number_format($net_amount, 2)}}"></td>
                                                     </tr>
                                                     <?php  $count++; ?>
                                                     @endforeach
@@ -384,7 +415,7 @@ use App\Helpers\ReuseableCode;
                                                         <td class="text-center" colspan="2">TOTAL</td>
                                                         <td><input type="text" maxlength="15"
                                                                 class="form-control text-right" name="Totalamount"
-                                                                value="<?php echo $TotAmt?>"
+                                                                value="<?php echo number_format($TotalNetWithTax, 2); ?>"
                                                                 id="Totalamount<?php echo $row1->grn_no?>" readonly="">
                                                         </td>
                                                     </tr>
@@ -446,7 +477,7 @@ saleTaxAmount -->
                                                         <td colspan="2"><input type="text" name="NetTotal"
                                                                 id="NetTotal<?php echo $main_count?>"
                                                                 class="form-control number_form" readonly
-                                                                value="<?php echo $NetTot?>"></td>
+                                                                value="<?php echo number_format($TotalNetWithTax, 2); ?>"></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

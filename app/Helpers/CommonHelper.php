@@ -2632,6 +2632,14 @@ public static function get_all_subitems()
         $Rate = $PurchaseRequestData->where('id', $PoDataId)->select('rate')->first();
         return $Rate;
     }
+    public static function get_tax_rate($PoDataId)
+    {
+
+        $PurchaseRequestData = new PurchaseRequestData();
+        $PurchaseRequestData = $PurchaseRequestData->SetConnection('mysql2');
+        $Rate = $PurchaseRequestData->where('id', $PoDataId)->select('tax_rate')->first();
+        return $Rate;
+    }
 
     public static function get_Po_detail($id)
     {
