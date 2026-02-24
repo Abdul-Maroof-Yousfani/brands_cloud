@@ -120,10 +120,25 @@ use App\Helpers\SalesHelper;?>
                         <tbody>
                         <?php
 
-
+                        $total_qty = 0;
+                       $total_tax_amount = 0;
+                        $total_amount = 0;
                         $counter = 1;
                         $total_amount=0;
                         foreach ($quotation_data as $row):
+   $item_amount = $row->qty * $row->rate;
+    $item_tax_amount = ($item_amount * $row->tax_percent) / 100;
+    
+    // Tax rate wise accumulation
+    $tax_rate = $row->tax_percent;
+    if (!isset($tax_breakdown[$tax_rate])) {
+        $tax_breakdown[$tax_rate] = 0;
+    }
+    $tax_breakdown[$tax_rate] += $item_tax_amount;
+    
+    $total_qty += $row->qty;
+    $total_amount += $item_amount;
+    $total_tax_amount += $item_tax_amount;
                         ?>
                         <tr class="tex-center">
                             <td class="tex-center"><?php echo $counter++;?></td>
@@ -135,12 +150,12 @@ use App\Helpers\SalesHelper;?>
                             <td class="text-center"><?php echo number_format($row->rate,2)?></td>
                             <td class="text-center"><?php echo number_format($row->tax_percent,2)?></td>
                             <td class="text-center">
-    <?php 
-        $amount = $row->qty * $row->rate;
-        $taxAmount = ($amount * $row->tax_percent) / 100;
-        echo number_format($taxAmount, 2);
-    ?>
-</td>
+                                <?php 
+                                    $amount = $row->qty * $row->rate;
+                                    $taxAmount = ($amount * $row->tax_percent) / 100;
+                                    echo number_format($taxAmount, 2);
+                                ?>
+                            </td>
                             <td class="text-center"><?php echo number_format($row->amount,2)?></td>
 
                         </tr>
@@ -152,7 +167,11 @@ use App\Helpers\SalesHelper;?>
                         endforeach
                         ?>
                         <tr class="text-center">
-                            <td class="bold" colspan="9">Total</td>
+                            <td class="bold" colspan="5">Total</td>
+                            <td class="bold" colspan="1">{{ number_format($total_qty,2) }}</td>
+                            <td></td>
+                            <td></td>
+                            <td class="bold" colspan="1">{{ number_format($total_tax_amount,2) }}</td>
                             <td class="bold" colspan="1">{{ number_format($total_amount,2) }}</td>
                         </tr>
                        <!-- @if($quotation->gst_amount > 0)     
