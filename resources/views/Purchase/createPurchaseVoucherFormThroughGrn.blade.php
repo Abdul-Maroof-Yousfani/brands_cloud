@@ -443,7 +443,7 @@ use App\Helpers\ReuseableCode;
 
 
                                                             ?>
-                                                        <td colspan="1">Sales Taxes</td>
+                                                        <td colspan="1">Holding Taxes</td>
                                                         <td colspan="3">
 
                                                         <!-- sales_tax(this.id);open_sales_tax(this.id) -->
