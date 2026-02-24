@@ -291,6 +291,7 @@ $grn_status = $row->grn_status;
                         $counter = 1;
                         $totalqty = 0;
                         $totalReceivedQty = 0;
+                        $bal_qty_receivable = 0;
                         foreach ($grnDataDetail as $row1)
                         {
 
@@ -335,7 +336,10 @@ $grn_status = $row->grn_status;
                                 
 
                                 <?php $totalqty += $row1->purchase_approved_qty; ?>
-                                <?php $totalReceivedQty += $row1->purchase_recived_qty-$row1->qc_qty; ?>
+                                <?php $totalReceivedQty += $row1->purchase_recived_qty-$row1->qc_qty;
+                                
+                                $bal_qty_receivable += $row1->bal_reciable;
+                                ?>
                                 <!-- <td class="text-center"><?php echo $row1->batch_code?></td> -->
                                 <td class="text-center"><?php echo CommonHelper::changeDateFormat($row1->expiry_date)?></td>
                                 <td class="text-center"><?php echo number_format($row1->purchase_approved_qty,0);?></td>
@@ -371,8 +375,9 @@ $grn_status = $row->grn_status;
                                 <td></td>
                                 <td style="font-size: larger;font-weight:"><?php echo  number_format($totalqty,0) ?></td>
                                 <td style="font-size: larger;font-weight:"><?php echo  number_format($totalReceivedQty,0) ?></td>
+                                <td style="font-size: larger;font-weight:"><?php echo  number_format($bal_qty_receivable,0) ?></td>
                               
-                                <td></td>
+                                
                                 <td></td>
                         </table>
 
