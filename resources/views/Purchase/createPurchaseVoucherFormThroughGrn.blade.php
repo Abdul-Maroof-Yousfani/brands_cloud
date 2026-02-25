@@ -432,7 +432,7 @@ use App\Helpers\ReuseableCode;
                                                     <?php  $count++; ?>
                                                     @endforeach
                                                     <tr class="text-center">
-                                                        <td class="text-center" colspan="5"></td>
+                                                        <td class="text-center" colspan="7"></td>
                                                         <td class="text-center" colspan="2">TOTAL</td>
                                                         <td><input type="text" maxlength="15"
                                                                 class="form-control text-right" name="Totalamount"
@@ -441,7 +441,7 @@ use App\Helpers\ReuseableCode;
                                                         </td>
                                                     </tr>
                                                     <tr class="text-center" style="background: gainsboro">
-                                                        <td class="text-center" colspan="3"></td>
+                                                        <td class="text-center" colspan="5"></td>
                                                         <?php
                                                             $SalesTaxId = 0;
                                                             $SalesTaxAmount = 0;
@@ -492,7 +492,7 @@ saleTaxAmount -->
                                                                 readonly></td>
                                                     </tr>
                                                     <tr>
-                                                        <td id="rupees{{$main_count}}" class="text-center" colspan="6">
+                                                        <td id="rupees{{$main_count}}" class="text-center" colspan="7">
                                                         </td>
                                                         <td class="text-center" colspan="1">Net Total</td>
                                                         <td colspan="2"><input type="text" name="NetTotal"
