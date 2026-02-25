@@ -95,13 +95,21 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                         <td style="width:40%;">PI No.</td>
                                         <td style="width:60%;"><?php echo $row->pv_no;?></td>
                                     </tr>
-
-                                    @if ($row->grn_no!=0)
+                                        <tr>
+                                        <td style="width:40%;">Po No.</td>
+                                     <td style="width:60%;">
+                                        <?php 
+                                            $code = explode('--', $row->description);
+                                            echo $code[0];
+                                        ?>
+                                    </td>
+                                    </tr>
+                                  
                                     <tr>
                                         <td style="width:40%;">GRN No.</td>
                                         <td style="width:60%;"><?php echo $row->grn_no;?></td>
                                     </tr>
-                                    @endif
+                                  
                                     </tbody>
                                 </table>
                             </div>
@@ -125,10 +133,7 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                             <td style="width:40%;">Due Date</td>
                                             <td style="width:60%;"><?php  echo FinanceHelper::changeDateFormat($row->due_date);?></td>
                                         </tr>
-                                        <tr>
-                                            <td style="width:40%;">Description</td>
-                                            <td style="width:60%;"><?php  echo $row->description;?></td>
-                                        </tr>
+                                      
 
                                     </tbody>
                                 </table>
@@ -261,7 +266,7 @@ $totalTaxAmount = 0;
 
                                     <tr class="sf-table-total">
                                         <td colspan="18" class="text-center">
-                                            <label for="field-1" class="sf-label"><b>WithHolding Taxes</b></label>
+                                            <label for="field-1" class="sf-label"><b>WithHolding Tax %</b></label>
                                         </td>
                                         <td class="text-center"><b id=""></b>{{number_format($row->sales_tax_amount,2)}}</td>
                                     </tr>
@@ -282,7 +287,7 @@ $totalTaxAmount = 0;
                                     </tbody>
                                 </table>
 
-                                <!-- <p class="desc-box">{{ 'Description:'. $row->description }}</p> -->
+                                <p class="desc-box">{{ 'Description:'. $row->description }}</p>
                             </div>
                         </div>
 
