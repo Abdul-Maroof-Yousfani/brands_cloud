@@ -91,12 +91,14 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                         <td style="width:40%;">NTN</td>
                                         <td style="width:60%;"><?php echo $Supplier->ntn;?></td>
                                     </tr>
-                                    <tr>
-                                        <td style="width:40%;">PI No.</td>
-                                        <td style="width:60%;"><?php echo $row->pv_no;?></td>
-                                    </tr>
+                                   <tr>
+                                            <td style="width:40%;">PI No.</td>
+                                            <td style="width:60%;">
+                                                <?php echo strtoupper($row->pv_no); ?>
+                                            </td>
+                                        </tr>
                                         <tr>
-                                        <td style="width:40%;">Po No.</td>
+                                        <td style="width:40%;">PO No.</td>
                                      <td style="width:60%;">
                                         <?php 
                                             $code = explode('--', $row->description);
