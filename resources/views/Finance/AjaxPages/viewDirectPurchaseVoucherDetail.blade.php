@@ -105,7 +105,24 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                             echo $code[0];
                                         ?>
                                     </td>
-                                    </tr>
+                                    <tr>
+    <td>STRN</td>
+    <td>
+        <?php 
+        $codess = explode('--', $row->description);
+
+        $purchaseRequest = DB::connection('mysql2')
+            ->table('purchase_request')
+            ->where('purchase_request_no', $codess[0])
+            ->first();
+
+        echo $purchaseRequest->trn ?? '';
+        ?>
+    </td>
+</tr>
+                                  
+   
+</tr>
                                   
                                     <tr>
                                         <td style="width:40%;">GRN No.</td>
@@ -135,8 +152,21 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                             <td style="width:40%;">Due Date</td>
                                             <td style="width:60%;"><?php  echo FinanceHelper::changeDateFormat($row->due_date);?></td>
                                         </tr>
-                                      
+            
+            <tr>                            <td>Term of Payment</td>
+    <td>
+        <?php 
+        $codess = explode('--', $row->description);
 
+        $purchaseRequest = DB::connection('mysql2')
+            ->table('purchase_request')
+            ->where('purchase_request_no', $codess[0])
+            ->first();
+
+        echo $purchaseRequest->terms_of_paym ?? '';
+        ?>
+    </td>
+   </tr>
                                     </tbody>
                                 </table>
                             </div>
