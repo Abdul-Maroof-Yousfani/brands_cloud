@@ -170,6 +170,13 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                     $counter = 1;
                                     $TotalAmount=0;
                                             $TotalAddional = 0;
+
+$totalQty = 0;
+$totalGrossAmount = 0;
+$totalDiscountAmount = 0;
+$totalTaxAmount = 0;
+
+
                                             $count= count($PurchaseVoucherData);
                                         //    $exp_amount= $exp_amount / $count;;
                                     foreach ($PurchaseVoucherData as $row2) {
@@ -186,7 +193,10 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                             $pi_amount=$row2->net_amount;
                                       $item_amount_percent = $item_amount != 0 ? ($pi_amount / $item_amount) * 100 : 0;
                                         $exp_amount_apply = ($exp_amount / 100) * $item_amount_percent;
-
+  $totalQty += $row2->qty;
+    $totalGrossAmount += $row2->amount;
+    $totalDiscountAmount += $row2->discount_amount;
+    $totalTaxAmount += $row2->tax_amount;
 
                                     ?>
                                     <tr class="text-center">
@@ -217,6 +227,20 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                     <?php
                                     }
                                     ?>
+
+                                    <tr class="sf-table-total" style="background-color: #e6e6e6; font-weight: bold;">
+    <td colspan="5" class="text-right"><b>Totals:</b></td>
+    <td class="text-center"><b><?php echo number_format($totalQty, 2); ?></b></td>
+    <td class="text-center"></td>
+    <td colspan="8" class="text-center"><b><?php echo number_format($totalGrossAmount, 2); ?></b></td>
+    <td class="text-center"></td>
+    <td class="text-center"><b><?php echo number_format($totalTaxAmount, 2); ?></b></td>
+    <td class="text-center"><b><?php echo number_format($totalDiscountAmount, 2); ?></b></td>
+    <td class="hide"></td>
+    <td class="hide"></td>
+    <td class="hide"></td>
+    <td class="text-center"><b><?php echo number_format($TotalAmount, 2); ?></b></td>
+</tr>
                                     <!-- <tr class="sf-table-total">
                                         <td colspan="9" class="text-center">
                                             <label for="field-1" class="sf-label"><b>Total</b></label>
@@ -225,14 +249,14 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                         <td class="text-center"><b><?php echo number_format($TotalAmount,2)?></b></td>
                                         <input type="hidden" id="Total" value="<?php echo $TotalAmount?>">
                                     </tr> -->
-                                        <tr class="sf-table-total">
+                                        <!-- <tr class="sf-table-total">
                                         <td colspan="18" class="text-center">
                                             <label for="field-1" class="sf-label"><b>Total</b></label>
                                         </td>
                                         
                                         <td class="text-center"><b><?php echo number_format($TotalAmount,2)?></b></td>
                                         <input type="hidden" id="Total" value="<?php echo $TotalAmount?>">
-                                    </tr>
+                                    </tr> -->
 
 
                                     <tr class="sf-table-total">
