@@ -184,7 +184,7 @@ use App\Helpers\ReuseableCode;
                                                 id="model_terms_of_payment<?php echo $sales_tax_count?>"
                                                 value="<?php echo $no_days?>" />
                                         </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 hide">
                                             <label class="sf-label">Vendor Current Amount <span
                                                     class="rflabelsteric"><strong>*</strong></span></label>
                                             <input readonly type="number" class="form-control" placeholder=""
