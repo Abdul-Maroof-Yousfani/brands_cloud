@@ -119,12 +119,12 @@ $edit = false;
                                         <table class="table table-bordered sf-table-list view_purchase_tab" id="EmpExitInterviewList">
                                             <thead>
                                             <th class="text-center col-sm-1">S.No</th>
-                                            <th class="text-center col-sm-1">PV No</th>
-                                            <th class="text-center col-sm-1">PV Date</th>
+                                            <th class="text-center col-sm-1">PI No</th>
+                                            <th class="text-center col-sm-1">PI Date</th>
                                             <th class="text-center col-sm-1" style="text-align:center;">GRN No</th>
                                             <th class="text-center col-sm-2">Ref  No</th>
                                             <th class="text-center col-sm-1">Bill Date</th>
-                                            <th class="text-center col-sm-1">Pv Status</th>
+                                            <th class="text-center col-sm-1">PI Status</th>
                                             <th class="text-center">Supplier</th>
 
 
