@@ -179,13 +179,13 @@ $edit = false;
 
                                                         <?php if($row->pv_status == 1):?>
 
-                                                            @if($edit==true )
+                                                           
                                                                 @if($row->grn_no == '0')
                                                                     <a href="{{ URL::asset('finance/editDirectPurchaseVoucherForm/'.$row->id.'?m='.$m) }}" class="btn btn-success btn-xs">Edit </a>
                                                                 @else
                                                                     <a href="{{ URL::asset('finance/editPurchaseVoucherFormNew/'.$row->id.'?m='.$m) }}" class="btn btn-success btn-xs">Edit </a>
                                                                 @endif
-                                                            @endif
+                                                           
 
                                                         <?php else:?>
 
