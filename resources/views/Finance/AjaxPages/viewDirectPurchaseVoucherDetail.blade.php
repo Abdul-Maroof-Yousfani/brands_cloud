@@ -69,7 +69,7 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                     </div>
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <h3 style="text-align: center;">Purchase Voucher</h3>
+                            <h3 style="text-align: center;">Purchase Invoice</h3>
                         </div>
                     </div>
                     <div style="line-height:5px;">&nbsp;</div>
@@ -92,7 +92,7 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                         <td style="width:60%;"><?php echo $Supplier->ntn;?></td>
                                     </tr>
                                     <tr>
-                                        <td style="width:40%;">PV No.</td>
+                                        <td style="width:40%;">PI No.</td>
                                         <td style="width:60%;"><?php echo $row->pv_no;?></td>
                                     </tr>
 
@@ -110,7 +110,7 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                 <table  class="table table-bordered table-striped table-condensed tableMargin">
                                     <tbody>
                                         <tr>
-                                            <td>PV Date</td>
+                                            <td>PI Date</td>
                                             <td><?php echo FinanceHelper::changeDateFormat($row->pv_date);?></td>
                                         </tr>
                                         <tr>
@@ -125,6 +125,10 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                             <td style="width:40%;">Due Date</td>
                                             <td style="width:60%;"><?php  echo FinanceHelper::changeDateFormat($row->due_date);?></td>
                                         </tr>
+                                        <tr>
+                                            <td style="width:40%;">Description</td>
+                                            <td style="width:60%;"><?php  echo $row->description;?></td>
+                                        </tr>
 
                                     </tbody>
                                 </table>
@@ -138,11 +142,16 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                             <th class="text-center" style="width:50px;">S.No</th>
 
                                             <th class="text-center hide">Account</th>
+                                            <th class="text-center">SKU</th>
                                             <th class="text-center">Product name</th>
+                                            <th class="text-center">Barcode</th>
                                             <th class="text-center">Uom</th>
                                             <th class="text-center ">Qty</th>
                                             <th class="text-center ">Rate</th>
-                                            <th class="text-center" colspan="8">Amount</th>
+                                            <th class="text-center" colspan="8">Gross Amount</th>
+                                            <th class="text-center">Tax%</th>
+                                            <th class="text-center">Tax Amount</th>
+                                            <th class="text-center">Discount Amount</th>
                                             <th class="text-center hide">EXP%</th>
                                             <th class="text-center hide">Additional Expenses</th>
                                             <th class="text-center hide">Discount Amount</th>
@@ -184,13 +193,18 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                         <td class="text-center"><?php echo $counter++;?></td>
 
                                         <td title="{{$row2->sub_item}}" class="hide">{{ CommonHelper::get_name_of_account_operat_by_id($row2->sub_item) }} </td>
+                                        <td title="{{$row2->sub_item}}" class="">{{ CommonHelper::get_product_sku($row2->sub_item) }} </td>
                                         <td title="{{$row2->sub_item}}" class="">{{ CommonHelper::get_product_name($row2->sub_item) }} </td>
+                                        <td title="{{$row2->sub_item}}" class="">{{ CommonHelper::product_barcode($row2->sub_item) }} </td>
                                         <td class="">
                                             <?php echo CommonHelper::get_uom($row2->sub_item);?>
                                         </td>
                                         <td class=""><?php  echo $row2->qty?></td>
                                         <td class=""><?php  echo $row2->rate?></td>
                                         <td colspan="8"><?php  echo $row2->amount; ?></td>
+                                        <td class=""><?php  echo $row2->tax_rate; ?></td>
+                                        <td class=""><?php  echo $row2->tax_amount; ?></td>
+                                        <td class=""><?php  echo $row2->discount_amount; ?></td>
                                         <td class="hide"><?php  echo number_format($item_amount_percent,3); ?></td>
                                         <td class="hide">{{  number_format($exp_amount_apply,2) }}</td>
                                         <td class="hide"><?php  echo $row2->discount_amount; ?></td>
@@ -203,18 +217,29 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                     <?php
                                     }
                                     ?>
-                                    <tr class="sf-table-total">
-                                        <td colspan="7" class="text-center">
+                                    <!-- <tr class="sf-table-total">
+                                        <td colspan="9" class="text-center">
                                             <label for="field-1" class="sf-label"><b>Total</b></label>
                                         </td>
+                                        
+                                        <td class="text-center"><b><?php echo number_format($TotalAmount,2)?></b></td>
+                                        <input type="hidden" id="Total" value="<?php echo $TotalAmount?>">
+                                    </tr> -->
+                                        <tr class="sf-table-total">
+                                        <td colspan="18" class="text-center">
+                                            <label for="field-1" class="sf-label"><b>Total</b></label>
+                                        </td>
+                                        
                                         <td class="text-center"><b><?php echo number_format($TotalAmount,2)?></b></td>
                                         <input type="hidden" id="Total" value="<?php echo $TotalAmount?>">
                                     </tr>
+
+
                                     <tr class="sf-table-total">
-                                        <td colspan="7" class="text-center">
-                                            <label for="field-1" class="sf-label"><b>Total Payable</b></label>
+                                        <td colspan="18" class="text-center">
+                                            <label for="field-1" class="sf-label"><b>WithHolding Taxes</b></label>
                                         </td>
-                                        <td class="text-center"><b id=""></b></td>
+                                        <td class="text-center"><b id=""></b>{{number_format($row->sales_tax_amount,2)}}</td>
                                     </tr>
                                     <?php if($row->sales_tax_amount > 0):
                                     $Accounts = CommonHelper::get_single_row('accounts','id',$row->sales_tax_acc_id);
@@ -233,7 +258,7 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                     </tbody>
                                 </table>
 
-                                <p class="desc-box">{{ 'Description:'. $row->description }}</p>
+                                <!-- <p class="desc-box">{{ 'Description:'. $row->description }}</p> -->
                             </div>
                         </div>
 

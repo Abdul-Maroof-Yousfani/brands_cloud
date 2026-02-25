@@ -165,7 +165,7 @@ $edit = false;
                                                             @if($row->grn_no == 0)
                                                             
                                                                     <button
-                                                                        onclick="showDetailModelOneParamerter('fdc/viewDirectPurchaseVoucherDetail','<?php echo $row->id ?>','View Purchase Voucher','<?php echo $m?>')"
+                                                                        onclick="showDetailModelOneParamerter('fdc/viewDirectPurchaseVoucherDetail','<?php echo $row->id ?>','View Purchase Invoice','<?php echo $m?>')"
                                                                         type="button" class="btn btn-success btn-xs">View
                                                                     </button>
                                                             @else
