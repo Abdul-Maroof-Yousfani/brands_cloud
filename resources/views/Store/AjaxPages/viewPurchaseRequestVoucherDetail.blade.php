@@ -193,7 +193,8 @@ if($_GET['pageType']=='viewlist'){
                                 <!-- <th class="text-center" >No Of Carton </th> -->
                                 <th class="text-center" >Rate </th>
                                 <th class="text-center">Amount(PKR)</th>
-                                <th class="text-center">Tax</th>
+                                <th class="text-center">Tax%</th>
+                                <th class="text-center">Tax Amount</th>
                                 <!-- <th class="text-center">Tax</th> -->
                                 <th class="text-center">Discount</th>
 
@@ -215,7 +216,21 @@ if($_GET['pageType']=='viewlist'){
                             $total_exchange=0;
                             $actual_amount =0;
                             $approved_qty_sum = 0;
+                            $total_tax_amount = 0;
                             foreach ($purchaseRequestDataDetail as $row1){
+
+
+
+  // Calculate tax amount
+    $gross_amount = $row1->rate * $row1->purchase_approve_qty;
+    $amount_after_discount = $gross_amount - $row1->discount_amount;
+    $item_tax_amount = ($amount_after_discount / 100) * $row1->tax_rate;
+    $net_amount = $amount_after_discount + $item_tax_amount;
+    $net_amount_with_currency = $net_amount * $row->currency_rate;
+    
+    // Add to total tax amount
+    $total_tax_amount += $item_tax_amount;
+
                             ?>
                             <tr>
                                 <td class="text-center"><?php echo $counter++;?></td>
@@ -273,6 +288,7 @@ $net_amount_with_currency = $net_amount * $row->currency_rate;
                                 <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty * $row->currency_rate,2);?></td>
                                 <!-- <td class="text-right"><?php echo number_format($row1->rate * $row1->purchase_approve_qty,2);?></td> -->
                                 <td class="text-right"><?php echo number_format($row1->tax_rate,2);?></td>
+                                <td class="text-right"><?php echo number_format($item_tax_amount,2);?></td> 
                              
                                 <td class="text-right"><?php echo number_format($row1->discount_amount,2);?></td>
                                    <td class="text-right"><?php echo number_format($row1->net_amount,2);?></td>
