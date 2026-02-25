@@ -2635,102 +2635,84 @@ class FinanceAddDetailControler extends Controller
 
 	public function updatePurchaseVoucher(Request $request)
 	{
-//		echo "<pre>";
-//		print_r($_POST); die;
-		//dd($request);
 		DB::Connection('mysql2')->beginTransaction();
 
 		try {
-		$purchase_voucher_dataa = $request->demandDataSection_1;
-		//print_r($purchase_voucher_dataa); die();
-		$SalesTaxAccId = 0;
-		$SalesTaxAmount = 0;
+			$demandsSection = $request->input('demandsSection');
+			
+			foreach($demandsSection as $i):
+				$NewPurchaseVoucher = new NewPurchaseVoucher();
+				$NewPurchaseVoucher = $NewPurchaseVoucher->SetConnection('mysql2');
+				$NewPurchaseVoucher = $NewPurchaseVoucher->find($request->EditId);
+				
+				$NewPurchaseVoucher->pv_date = $request->input('purchase_date'.$i);
+				$NewPurchaseVoucher->slip_no = $request->input('slip_no'.$i);
+				$NewPurchaseVoucher->bill_date = $request->input('bill_date'.$i);
+				$NewPurchaseVoucher->purchase_date = $request->input('purchase_date'.$i);
+				$NewPurchaseVoucher->purchase_type = $request->input('p_type'.$i);
+				$NewPurchaseVoucher->due_date = $request->input('due_date'.$i);
+				$NewPurchaseVoucher->supplier = $request->input('supplier_id'.$i);
+				$NewPurchaseVoucher->description = $request->input('description'.$i);
 
-		$NewPurchaseVoucher = new NewPurchaseVoucher();
-		$NewPurchaseVoucher = $NewPurchaseVoucher->SetConnection('mysql2');
-		$NewPurchaseVoucher=$NewPurchaseVoucher->find($request->EditId);
-		$NewPurchaseVoucher->pv_date = $request->purchase_date;
-		$NewPurchaseVoucher->slip_no = $request->slip_no;
-		$NewPurchaseVoucher->bill_date = $request->bill_date;
-		$NewPurchaseVoucher->purchase_date = $request->purchase_date;
-		$NewPurchaseVoucher->purchase_type = $request->p_type;
-		//$NewPurchaseVoucher->current_amount = $request->current_amount;
-		$NewPurchaseVoucher->due_date = $request->due_date;
-		$NewPurchaseVoucher->supplier = $request->supplier;
-		$NewPurchaseVoucher->description = $request->description;
+				if($request->input('SalesTaxesAccId'.$i) != "") {
+					$NewPurchaseVoucher->sales_tax_acc_id = $request->input('SalesTaxesAccId'.$i);
+					$NewPurchaseVoucher->sales_tax_amount = $request->input('SalesTaxAmount'.$i);
+				} else {
+					$NewPurchaseVoucher->sales_tax_acc_id = 0;
+					$NewPurchaseVoucher->sales_tax_amount = 0;
+				}
 
-		if($request->input('SalesTaxesAccId') !="")
-		{
-			$SalesTaxAccId = $request->input('SalesTaxesAccId');
-			$SalesTaxAmount = $request->input('SalesTaxAmount');
-		}else
-		{
-			$SalesTaxAccId = 0;
-			$SalesTaxAmount = 0;
-		}
+				$NewPurchaseVoucher->username = Auth::user()->name;
+				$NewPurchaseVoucher->date = date('Y-m-d');
+				$NewPurchaseVoucher->save();
 
-		//$currency = $request->curren;
-		//$currency = explode(',', $currency);
-		//$NewPurchaseVoucher->currency = $currency[0];
-			$NewPurchaseVoucher->sales_tax_acc_id =$SalesTaxAccId;
-			$NewPurchaseVoucher->sales_tax_amount = $SalesTaxAmount;
-		$NewPurchaseVoucher->username = Auth::user()->name;
-		$NewPurchaseVoucher->date = date('Y-m-d');
-		$NewPurchaseVoucher->save();
-		$NewPurchaseVoucherData = new NewPurchaseVoucherData();
-		$NewPurchaseVoucherData = $NewPurchaseVoucherData->SetConnection('mysql2');
+				$NewPurchaseVoucherData = new NewPurchaseVoucherData();
+				$NewPurchaseVoucherData = $NewPurchaseVoucherData->SetConnection('mysql2');
+				$NewPurchaseVoucherData->where('master_id', $request->EditId)->delete();
 
-		$NewPurchaseVoucherData->where('master_id', $request->EditId)->delete();
+				$purchase_voucher_dataa = $request->input('demandDataSection_'.$i);
+				$total_amount = 0;
 
+				foreach ($purchase_voucher_dataa as $row):
+					$NewPurchaseVoucherData = new NewPurchaseVoucherData();
+					$NewPurchaseVoucherData = $NewPurchaseVoucherData->SetConnection('mysql2');
 
-		$total_amount=0;
-		$Counter=1;
+					$NewPurchaseVoucherData->master_id = $request->EditId;
+					$NewPurchaseVoucherData->pv_no = $request->input('pv_no'.$i);
+					if($request->input('grn_data_id_' . $i . '_' . $row) != ''):
+						$NewPurchaseVoucherData->grn_data_id = $request->input('grn_data_id_' . $i . '_' . $row);
+					endif;
+					$NewPurchaseVoucherData->category_id = $request->input('category_id_' . $i . '_' . $row);
+					$NewPurchaseVoucherData->sub_item = $request->input('sub_item_id_' . $i . '_' . $row);
 
-		foreach ($purchase_voucher_dataa as $row):
+					$NewPurchaseVoucherData->uom = $request->input('uom_id_' . $i . '_' . $row);
+					$NewPurchaseVoucherData->qty = $request->input('qty_' . $i . '_' . $row);
+					$NewPurchaseVoucherData->rate = $request->input('rate_' . $i . '_' . $row);
+					
+					$NewPurchaseVoucherData->tax_rate = $request->input('tax_rate_' . $i . '_' . $row);
+					$NewPurchaseVoucherData->tax_amount = str_replace(',', '', $request->input('tax_amount_' . $i . '_' . $row));
 
-			$NewPurchaseVoucherData = new NewPurchaseVoucherData();
-			$NewPurchaseVoucherData = $NewPurchaseVoucherData->SetConnection('mysql2');
+					$NewPurchaseVoucherData->amount = str_replace(',', '', $request->input('amount_' . $i . '_' . $row));
+					$NewPurchaseVoucherData->discount_amount = str_replace(',', '', $request->input('discount_amount_' . $i . '_' . $row));
+					$NewPurchaseVoucherData->net_amount = str_replace(',', '', $request->input('net_amount_' . $i . '_' . $row));
+					
+					$total_amount += str_replace(',', '', $request->input('net_amount_' . $i . '_' . $row));
 
-			$NewPurchaseVoucherData->master_id = $request->EditId;
-			$NewPurchaseVoucherData->pv_no = $request->pv_no;
-			if($request->input('grn_data_id_' . $Counter) != ''):
-				$NewPurchaseVoucherData->grn_data_id = $request->input('grn_data_id_' . $Counter);
-			endif;
-			$NewPurchaseVoucherData->category_id = $request->input('category_id_1_' . $Counter);
-			$NewPurchaseVoucherData->sub_item = $request->input('sub_item_id_1_' . $Counter);
+					$NewPurchaseVoucherData->username = Auth::user()->name;
+					$NewPurchaseVoucherData->date = date('Y-m-d');
+					$NewPurchaseVoucherData->save();
+				endforeach;
 
-			$NewPurchaseVoucherData->uom = $request->input('uom_id_1_' . $Counter);
-			$NewPurchaseVoucherData->qty = $request->input('qty_1_' . $Counter);
-			$NewPurchaseVoucherData->rate = $request->input('rate_1_' . $Counter);
-			$NewPurchaseVoucherData->amount = str_replace(',', '', $request->input('amounttd_1_' . $Counter));
-			$total_amount+=str_replace(',', '', $request->input('amounttd_1_' . $Counter));
+				FinanceHelper::audit_trail($request->input('pv_no'.$i), $request->input('purchase_date'.$i), $total_amount, 4, 'Update');
+			endforeach;
 
-			//$NewPurchaseVoucherData->sales_tax_per = $request->input('accounts_1_' . $Counter);
-			//$NewPurchaseVoucherData->sales_tax_amount = $request->input('sales_tax_amount_1_' . $Counter);
-			//$NewPurchaseVoucherData->net_amount = $request->input('net_amount_1_' . $Counter);
-			//$NewPurchaseVoucherData->txt_nature = $request->input('txt_nature_1_' . $Counter);
-			//$NewPurchaseVoucherData->income_txt_nature = $request->input('income_txt_nature_1_' . $Counter);
-
-			$NewPurchaseVoucherData->username = Auth::user()->name;
-			$NewPurchaseVoucherData->date = date('Y-m-d');
-//			$purchase_voucher->pv_no = $pv_no;
-			$NewPurchaseVoucherData->save();
-//			$other_id = $purchase_voucher_data->id;
-			$Counter++;
-		endforeach;
-		FinanceHelper::audit_trail($request->pv_no,$request->purchase_date,$total_amount,4,'Update');
 			DB::Connection('mysql2')->commit();
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			DB::Connection('mysql2')->rollback();
-			echo "EROOR"; //die();
 			dd($e->getMessage());
-
 		}
 
-		return Redirect::to('finance/purchaseVoucherListt?pageType=add&&parentCode=117&&m=1#SFR');
-
+		return Redirect::to('purchase/viewPurchaseVoucherListThroughGrn?pageType=viewlist&&parentCode=82&&m=1#SFR');
 	}
 
 	public function addExpenseVoucherDetail(Request $request)

@@ -1,0 +1,867 @@
+<?php
+$accType = Auth::user()->acc_type;
+$currentDate = date('Y-m-d');
+if($accType == 'client'){
+    $m = $_GET['m'];
+}else{
+    $m = Auth::user()->company_id;
+}
+use App\Helpers\PurchaseHelper;
+
+use App\Helpers\FinanceHelper;
+use App\Helpers\CommonHelper;
+use App\Helpers\ReuseableCode;
+?>
+
+
+@extends('layouts.default')
+
+@section('content')
+@include('number_formate')
+@include('select2')
+
+<style>
+.select2-container {
+    font-size: 11px;
+}
+</style>
+
+
+
+<?php
+     $main_count=1;
+    $count=1;
+    $sales_tax_count=1;
+    ?>
+<?php echo Form::open(array('url' => 'pad/addPurchaseVoucherThorughGrn','id'=>'cashPaymentVoucherForm'));
+    $val= count($ids);
+    ?>
+<input type="hidden" name="_token" value="{{ csrf_token() }}">
+
+@foreach($ids as $row)
+
+<?php
+        $rate = 0;
+        $amt = 0;
+        $TotAmt = 0;
+        $TotalTaxAmount = 0;
+        $TotalNetWithTax = 0;
+        $total_amount=0;
+        $sales_tax_amount=0;
+        $id=$row;
+        $good_recipt_note=CommonHelper::get_goodreciptnotedata($row,0);
+        $purchase_reqiest=CommonHelper::get_goodreciptnotedata($row,1);
+        $currency = $purchase_reqiest->currency_rate;
+        // $saleTaxPer = $purchase_reqiest->sales_tax;
+        // $saleTaxAmount = $purchase_reqiest->sales_tax_amount;
+        echo $po_no=$good_recipt_note->po_no;
+        if($good_recipt_note->type==0):
+            $po_date=CommonHelper::changeDateFormat($purchase_reqiest->purchase_request_date);
+
+        else:
+            $po_date='';
+
+        endif;
+        $bill_date=$good_recipt_note->bill_date;
+        $no_days=$purchase_reqiest->terms_of_paym;//ReuseableCode::get_vendor_info($good_recipt_note->supplier_id)->terms_of_payment;
+        $Date = $good_recipt_note->grn_date;
+         $due_date =date('Y-m-d', strtotime($Date. ' + '.$no_days.' days'));
+        ?>
+<input type="hidden" name="grn_no{{$sales_tax_count}}" value="{{$good_recipt_note->grn_no}}">
+<input type="hidden" name="grn_id{{$sales_tax_count}}" value="{{$good_recipt_note->id}}">
+<div class="row well_N">
+    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" style="display: none;"> </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="well">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <span class="subHeadingLabelClass">Create Purchase Voucher Forms</span>
+                </div>
+            </div>
+
+            <h3 style="text-align: center">{{strtoupper($good_recipt_note->grn_no)}}</h3>
+            <div class="lineHeight">&nbsp;</div>
+            <div class="row">
+
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="panel">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <input type="hidden" name="demandsSection[]" class="form-control requiredField"
+                                        id="demandsSection" value="{{$sales_tax_count}}" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="row">
+                                        <?php $pv_no=CommonHelper::uniqe_no_for_purcahseVoucher(date('y'),date('m')); ?>
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">PV No. <span
+                                                    class="rflabelsteric"><strong>*</strong></span></label>
+                                            <input readonly type="text" class="form-control requiredField"
+                                                placeholder="" name="pv_no<?php echo $sales_tax_count ?>"
+                                                id="pv_no<?php echo $sales_tax_count ?>" value="{{$pv_no}}" />
+                                        </div>
+
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">PV Date.</label>
+                                            <span class="rflabelsteric"><strong>*</strong></span>
+                                            <input onblur=""
+                                                onchange="calculate_due_date('<?php echo $sales_tax_count?>')"
+                                                type="date" class="form-control requiredField"
+                                                max="<?php echo date('Y-m-d') ?>"
+                                                name="purchase_date<?php echo $sales_tax_count ?>"
+                                                id="purchase_date<?php echo $sales_tax_count ?>"
+                                                value="<?php echo date('Y-m-d') ?>" />
+                                        </div>
+                                        <input type="hidden" name="dept_id{{ $sales_tax_count }}"
+                                            value="{{ $good_recipt_note->sub_department_id }}" />
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">PV Day.</label>
+
+                                            <input readonly type="text" class="form-control"
+                                                name="pv_day<?php echo $sales_tax_count ?>"
+                                                id="pv_day<?php echo $sales_tax_count ?>" />
+                                        </div>
+
+                                        <input type="hidden" name="p_type_id{{ $sales_tax_count }}"
+                                            value="{{ $good_recipt_note->p_type }}" />
+
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">Ref / Bill No. <span
+                                                    class="rflabelsteric"><strong>*</strong></span></label>
+                                            <input readonly type="text" class="form-control" placeholder="Ref / Bill No"
+                                                name="slip_no<?php echo $sales_tax_count ?>"
+                                                id="slip_no<?php echo $sales_tax_count ?>"
+                                                value="{{$good_recipt_note->supplier_invoice_no}}" />
+                                        </div>
+
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">Bill Date.</label>
+                                            <span class="rflabelsteric"><strong>*</strong></span>
+                                            <input readonly type="date" class="form-control"
+                                                name="bill_date<?php echo $sales_tax_count ?>"
+                                                id="bill_date<?php echo $sales_tax_count ?>" value="{{$bill_date}}" />
+                                        </div>
+
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">Due Date</label>
+                                            <span class="rflabelsteric"><strong>*</strong></span>
+                                            <input readonly autofocus value="{{$due_date}}" type="date"
+                                                name="due_date<?php echo $sales_tax_count ?>"
+                                                id="due_date<?php echo $sales_tax_count ?>"
+                                                class="form-control requiredField" />
+                                        </div>
+
+
+
+
+
+                                    </div>
+                                </div>
+
+                                <div class="lineHeight">&nbsp;</div>
+                                <div class="lineHeight">&nbsp;</div>
+                                <div class="lineHeight">&nbsp;</div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="row">
+
+
+
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label"> <a href="#"
+                                                    onclick="showDetailModelOneParamerter('pdc/createSupplierFormAjax');"
+                                                    class="">Vendor</a></label>
+                                            <span class="rflabelsteric"><strong>*</strong></span>
+                                            <input readonly class="form-control"
+                                                name="supp_id<?php echo $sales_tax_count ?>"
+                                                id="supp_id<?php echo $sales_tax_count ?>"
+                                                value="{{ucwords(CommonHelper::get_supplier_name($good_recipt_note->supplier_id))}}">
+                                            <input type="hidden" id="supplier_id<?php echo $sales_tax_count ?>"
+                                                name="supplier_id<?php echo $sales_tax_count ?>"
+                                                value="{{$good_recipt_note->supplier_id}}" />
+
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">Mode/ Terms Of Payment<span
+                                                    class="rflabelsteric"><strong>*</strong></span></label>
+                                            <input readonly
+                                                onkeyup="calculate_due_date('<?php echo $sales_tax_count?>')"
+                                                type="number" class="form-control" placeholder=""
+                                                name="model_terms_of_payment<?php echo $sales_tax_count?>"
+                                                id="model_terms_of_payment<?php echo $sales_tax_count?>"
+                                                value="<?php echo $no_days?>" />
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">Vendor Current Amount <span
+                                                    class="rflabelsteric"><strong>*</strong></span></label>
+                                            <input readonly type="number" class="form-control" placeholder=""
+                                                name="current_amount<?php echo $sales_tax_count ?>"
+                                                id="current_amount<?php echo $count ?>" value="" />
+                                        </div>
+
+
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                            <label class="sf-label">PO No & PO Date <span
+                                                    class="rflabelsteric"><strong>*</strong></span></label>
+                                            <input readonly type="text" class="form-control" placeholder=""
+                                                name="po_no_date<?php echo $sales_tax_count ?>"
+                                                id="po_no_date<?php echo $count ?>"
+                                                value="{{strtoupper($po_no.'--'.$po_date)}}" />
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <label class="sf-label">Description</label>
+                                            <span class="rflabelsteric"><strong>*</strong></span>
+                                            <textarea name="description<?php echo $sales_tax_count ?>"
+                                                id="description<?php echo $sales_tax_count ?>" rows="4" cols="50"
+                                                style="resize:none;"
+                                                class="form-control requiredField">{{$po_no.'--'.$po_date}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lineHeight">&nbsp;</div>
+
+
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="table-responsive">
+                                        <div class="addMoreDemandsDetailRows_1" id="addMoreDemandsDetailRows_1">
+
+
+
+                                            <table id="" class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+
+                                                        <th style="width: 150px;" class="text-center hidden-print"><a
+                                                                tabindex="-1" href="#"
+                                                                onclick="showDetailModelOneParamerter('pdc/createSubItemFormAjax')"
+                                                                class="">Product</a>
+                                                        <th style="width: 100px" class="text-center">UOM <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Qty. <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Return Qty. <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Rate. <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Gross Amount. <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Tax% <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Tax Amount <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Discount Amount
+                                                            <span class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th style="width: 200px;" class="text-center">Net Amount <span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php $counter=1; ?>
+                                                    @foreach(CommonHelper::get_grndata($id,$good_recipt_note->type) as
+                                                    $row1)
+
+
+
+                                                    <?php
+                                                                $tax_rate= CommonHelper::get_tax_rate($row1->po_data_id);
+
+                                                                
+                                                               $tax_rate = number_format($tax_rate->tax_rate, 2);
+                                                               
+                                                   
+                                                              
+                                                           $return_qty= ReuseableCode::purchase_return_qty($row1->id);
+                                                           $qty=$row1->purchase_recived_qty-$row1->qc_qty;
+                                                           $actual_qty=$qty-$return_qty;
+
+                                                           $rate=$row1->rate;
+                                                          
+
+                                                          $amount=$actual_qty*$rate *$currency ;
+                                                          $discount_percent= $row1->discount_percent;
+
+                                                            if ($discount_percent>0):
+
+                                                                 $discount_amount=($amount / 100)*$discount_percent;
+                                                            else:
+                                                                $discount_amount=0;
+                                                               endif;
+
+
+
+                                                        //   $net_amount=$amount-$discount_amount;
+                                                        //   $TotAmt+=$net_amount;
+
+                             $amount_after_discount = $amount - $discount_amount;
+                            
+                            // TAX CALCULATION - IMPORTANT
+                            $item_tax_amount = ($amount_after_discount / 100) * $tax_rate;
+                            
+                            // Net amount after tax
+                            $net_amount = $amount_after_discount + $item_tax_amount;
+    
+                            $TotAmt += $amount_after_discount;  // Total without tax for items
+                            $TotalTaxAmount += $item_tax_amount;  // Total tax
+                            $TotalNetWithTax += $net_amount;  // Total with tax
+
+
+
+                                                            ?>
+
+
+
+
+
+                                                    <input type="hidden" name="demandDataSection_{{$sales_tax_count}}[]"
+                                                        class="form-control requiredField" id="demandDataSection_1"
+                                                        value="{{$count}}" />
+                                                    <input type="hidden" name="grn_data_id_1_<?php echo $count ?>"
+                                                        id="grn_data_id_1_<?php echo $count ?>" value="{{$row1->id}}" />
+                                                    <tr>
+
+                                                        <td title="{{CommonHelper::get_product_name($row1->sub_item_id)}}"
+                                                            class="text-center" style="width: 30%;">
+                                                            <input type="hidden"
+                                                                name="sub_item_id_1_<?php echo $count; ?>"
+                                                                value="{{$row1->sub_item_id}}" />
+
+
+                                                            <?php
+                                                                    $sub_ic_detail=CommonHelper::get_subitem_detail($row1->sub_item_id);
+                                                                    $sub_ic_detail= explode(',',$sub_ic_detail);
+                                                                    
+                                                                    echo CommonHelper::get_product_name($row1->sub_item_id);
+                                                                    
+                                                                    ?>
+                                                        </td>
+                                                        <td>
+                                                            <input readonly type="text"
+                                                                value="<?php echo CommonHelper::get_uom_name($sub_ic_detail[0]);?>"
+                                                                name="uom_1_1" id="uom_1_1" class="form-control" />
+                                                            <input type="hidden" name="uom_id_1_<?php echo $count ?>"
+                                                                id="uom_id_1_<?php echo $count ?>"
+                                                                value="{{$sub_ic_detail[0]}}" />
+                                                        </td>
+
+                                                        <td>
+                                                            <input readonly value="{{$qty}}" type="number" step="0.01"
+                                                                name="qty_1_<?php echo $count ?>"
+                                                                id="qty_1_<?php echo $count ?>"
+                                                                class="form-control qty" />
+                                                        </td>
+
+                                                        <td>
+                                                            <input readonly value="{{$return_qty}}" type="number"
+                                                                step="0.01" name="return_qty_1_<?php echo $count ?>"
+                                                                id="qty_1_<?php echo $count ?>"
+                                                                class="form-control qty" />
+                                                        </td>
+
+                                                        <td>
+                                                            <?php
+
+                                                         
+
+                                                                    if($row1->po_data_id !="")
+                                                                    {
+                                                                        $Rate = CommonHelper::get_rate($row1->po_data_id);
+                                                                        $rate = explode('.',$Rate->rate);
+                                                                        $amt = $rate[0]*$row1->purchase_recived_qty;
+                                                                     //   $TotAmt += $amt;
+                                                                    }
+                                                                    else{$rate = 0; $amt=0; $TotAmt = 0;}
+                                                                    ?>
+                                                            <input readonly
+                                                                onkeyup="calculation_amount(this.id,'<?php echo $count ?>','<?php echo $row1->grn_no?>')"
+                                                                value="<?php echo $row1->rate?>" type="text" step="0.01"
+                                                                name="rate_1_<?php echo $count ?>"
+                                                                id="rate_1_<?php echo $count ?>"
+                                                                class="form-control requiredField rate" />
+                                                        </td>
+                                                        <script !src=""></script>
+                                                        <td>
+                                                            <input type="text" name="amount<?php echo $count ?>"
+                                                                id="amount<?php echo $count ?>"
+                                                                class="form-control requiredField amount<?php echo $row1->grn_no?>"
+                                                                value="<?php echo $amount;?>" readonly />
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="tax_rate_1_<?php echo $count ?>"
+                                                                id="tax_rate_1_<?php echo $count ?>"
+                                                                class="form-control requiredField tax_rate<?php echo $row1->grn_no?>"
+                                                                value="<?php echo $tax_rate;?>" readonly />
+                                                        </td>
+                                                       <td>
+                                                    <?php
+                                                    // Tax Amount Calculation
+                                                    $tax_amount = ($amount * $tax_rate) / 100;
+                                                    ?>
+                                                    <input type="text" name="tax_amount_1_<?php echo $count ?>"
+                                                        id="tax_amount_1_<?php echo $count ?>"
+                                                        class="form-control requiredField tax_amount<?php echo $row1->grn_no?>"
+                                                        value="<?php echo number_format($tax_amount, 2); ?>" readonly />
+                                                </td>
+
+                                                <?php 
+
+   $total_with_tax = $amount + $tax_amount;
+  
+                                                        $discount_amount = ($total_with_tax * $discount_percent) / 100;
+                                                    ?>
+                                                        <td><input readonly class="form-control" type="text"
+                                                                id="discount_amount{{$count}}"
+                                                                name="discount_amount{{$count}}"
+                                                                value="<?php echo number_format($discount_amount, 2); ?>"></td>
+
+                                                        <td><input readonly class="form-control"
+                                                                id="net_amoun{{ $count }}" text"
+                                                                name="net_amount{{$count}}"
+                                                                value="{{number_format($net_amount, 2)}}"></td>
+                                                    </tr>
+                                                    <?php  $count++; ?>
+                                                    @endforeach
+                                                    <tr class="text-center">
+                                                        <td class="text-center" colspan="7"></td>
+                                                        <td class="text-center" colspan="2">TOTAL</td>
+                                                        <td><input type="text" maxlength="15"
+                                                                class="form-control text-right" name="Totalamount"
+                                                                value="<?php echo number_format($TotalNetWithTax, 2); ?>"
+                                                                id="Totalamount<?php echo $row1->grn_no?>" readonly="">
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="text-center" style="background: gainsboro">
+                                                        <td class="text-center" colspan="5"></td>
+                                                        <?php
+                                                            $SalesTaxId = 0;
+                                                            $SalesTaxAmount = 0;
+                                                            $NetTot = 0;
+                                                            $SalesTaxAccId = 0;
+                                                            if($purchase_reqiest->sales_tax_amount != 0)
+                                                            {
+
+                                                                $SalesTaxId = $purchase_reqiest->sales_tax;
+                                                                $SalesTaxAccId = $purchase_reqiest->sales_tax_acc_id;
+                                                                $SalesTaxAmount = $purchase_reqiest->sales_tax_amount;
+                                                                $sales_tax_amount=($TotAmt/100)*$purchase_reqiest->sales_tax;
+                                                                $NetTot = $TotAmt+$sales_tax_amount;
+                                                            }else{
+                                                                $SalesTaxId = 0;
+                                                                $NetTot = $TotAmt+$sales_tax_amount;
+                                                                $SalesTaxAmount = 0;
+                                                                $SalesTaxAccId = 0;
+                                                            }
+
+
+                                                            ?>
+                                                        <td colspan="1">WithHolding Taxes</td>
+                                                        <td colspan="3">
+
+                                                        <!-- sales_tax(this.id);open_sales_tax(this.id) -->
+                                                        <!-- saleTaxPer
+saleTaxAmount -->
+                                                            <select readonly name="SalesTaxesAccId<?php echo $sales_tax_count?>"
+                                                                class="form-control <?php echo $SalesTaxAccId;?>"
+                                                                id="SalesTaxesAccId<?php echo $good_recipt_note->grn_no?>"
+                                                                onchange="sales_tax_calc('<?php echo $good_recipt_note->grn_no?>')">
+                                                                <option value="">Select Head</option>
+                                                                @foreach(ReuseableCode::get_all_sales_tax() as $row)
+                                                            
+                                                                <option value="{{ $row->id}}" {{ $purchase_reqiest->sales_tax == $row->rate ? 'selected' : '' }}>{{$row->rate}} %
+                                                                </option>
+                                                             
+                                                                @endforeach
+                                                            </select>
+                                                        </td>
+                                                        <td><input type="text"
+                                                                name="SalesTaxAmount<?php echo $sales_tax_count?>"
+                                                                id="SalesTaxAmount<?php echo $good_recipt_note->grn_no?>"
+                                                                class="form-control text-right"
+                                                                value="<?php echo $sales_tax_amount?>"
+                                                                onkeyup="sales_tax_calc('<?php echo $good_recipt_note->grn_no?>')"
+                                                                readonly></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="rupees{{$main_count}}" class="text-center" colspan="7">
+                                                        </td>
+                                                        <td class="text-center" colspan="1">Net Total</td>
+                                                        <td colspan="2"><input type="text" name="NetTotal"
+                                                                id="NetTotal<?php echo $main_count?>"
+                                                                class="form-control number_form" readonly
+                                                                value="<?php echo number_format($TotalNetWithTax, 2); ?>"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <?php $data=ReuseableCode::get_grn_additional_exp($id); ?>
+
+                                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered sf-table-list">
+                                                        <thead>
+                                                            <th class="text-center">Account Head</th>
+                                                            <th class="text-center">Expense Amount</th>
+                                                            <th class="text-center">
+
+                                                            </th>
+                                                        </thead>
+                                                        <tbody id="AppendExpense">
+                                                            <?php
+                                                                $exp_count = 0;
+                                                                foreach($data as $row):
+
+                                                                ?>
+                                                            <tr id='RemoveExpenseRow<?php echo $exp_count++?>'>
+                                                                <td class="text-center">
+                                                                    <input class="form-control" type="text"
+                                                                        name="account_{{$sales_tax_count}}[]"
+                                                                        value="{{CommonHelper::get_account_name($row->acc_id)}}">
+                                                                    <input type="hidden"
+                                                                        name="acc_id_{{$sales_tax_count}}[]"
+                                                                        value="{{$row->acc_id}}" />
+                                                                </td>
+                                                                <td>
+                                                                    <input readonly type='number'
+                                                                        name='expense_amount_{{$sales_tax_count}}[]'
+                                                                        id='' class='form-control requiredField'
+                                                                        value="<?php echo $row->amount?>">
+                                                                </td>
+
+                                                            </tr>
+                                                            <?php endforeach;?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <table class="table table-bordered" style="width: 40%">
+
+                            </table>
+
+                            <table>
+                                <tr>
+
+                                    <td id="rupees<?php echo $sales_tax_count ?>"></td>
+                                    <input type="hidden" name="rupeess<?php echo $sales_tax_count ?>"
+                                        id="rupeess<?php echo $sales_tax_count ?>" />
+
+                                    <script>
+
+                                    </script>
+                                </tr>
+                            </table>
+
+
+
+                            <!--department-->
+
+
+                        </div>
+
+
+                    </div>
+                    <div class="demandsSection"></div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php echo $sales_tax_count++;  $main_count++;?> @endforeach
+<input type="hidden" id="main_count" value="{{$main_count}}" />
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+        {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
+        <!--
+                                <button type="reset" id="reset" class="btn btn-primary">Clear Form</button>
+                                <input type="button" class="btn btn-sm btn-primary addMoreDemands" value="Add More Demand's Section" />
+                                <!-->
+    </div>
+</div>
+<?php echo Form::close();?>
+
+<script>
+function calculate_due_date(Row) {
+
+    var date = new Date($("#purchase_date" + Row).val());
+    var days = parseFloat($('#model_terms_of_payment' + Row).val());
+    days = days;
+
+    if (!isNaN(date.getTime())) {
+        date.setDate(date.getDate() + days);
+
+
+        var yyyy = date.getFullYear().toString();
+        var mm = (date.getMonth() + 1).toString(); // getMonth() is zero-based
+        var dd = date.getDate().toString();
+        var new_d = yyyy + "-" + (mm[1] ? mm : "0" + mm[0]) + "-" + (dd[1] ? dd : "0" + dd[0]);
+
+
+        $("#due_date" + Row).val(new_d);
+    } else {
+        alert("Invalid Date");
+    }
+
+
+}
+
+$(document).ready(function() {
+
+    $('.number_form').number(true, 2);
+    var main_count = $('#main_count').val();
+    for (i = 1; i < main_count; i++) {
+        toWordss(i);
+    }
+})
+
+
+
+$(".btn-success").click(function(e) {
+    var rvs = new Array();
+    var val;
+    $("input[name='demandsSection[]']").each(function() {
+        rvs.push($(this).val());
+    });
+    var _token = $("input[name='_token']").val();
+    for (val of rvs) {
+        jqueryValidationCustom();
+        if (validate == 0) {
+            //alert(response);
+        } else {
+            return false;
+        }
+    }
+
+});
+
+
+var x = 1;
+
+function addMoreDemandsDetailRows(id) {
+
+    var auth = dept_amount_validation();
+    var auth1 = sales_tax_amount_validation();
+    var auth2 = cost_center_amount_validation();
+
+    if (auth == 1 && auth1 == 1 && auth2 == 1) {
+
+        x++;
+        //alert(id+' ---- '+x);
+        var m = '<?php echo $_GET['m'];?>';
+        $.ajax({
+            url: '<?php echo url('/')?>/pmfal/addMorPurchaseVoucherRow',
+            type: "GET",
+            data: {
+                counter: x,
+                id: id,
+                m: m
+            },
+            success: function(data) {
+
+                data = data.split('+');
+
+
+                $('.addMoreDemandsDetailRows_' + id + '').append(data[0]);
+                //    $('.dept_part').append(data[1]);
+                //   $('.sales_tax_dept_part').append(data[2]);
+                //   $('.cost_center').append(data[3]);
+                $('#category_id_1_' + x + '').select2();
+                $('#sub_item_id_1_' + x + '').select2();
+
+                $('#department_1_' + x + '').select2();
+                $('#accounts_1_' + x + '').select2();
+                $('#category_id_1_' + x + '').focus();
+                $('#department_' + x + '_' + 1).select2();
+                $('#cost_center_department_' + x + '_' + 1).select2();
+                $('#sales_tax_department_' + x + '_' + 1).select2();
+
+                $('#amounttd_' + id + '_' + x + '').number(true, 2);
+                $('#sales_tax_amounttd_' + id + '_' + x + '').number(true, 2);
+                $('#net_amounttd_' + id + '_' + x + '').number(true, 2);
+
+                $('#department_amount_' + x + '_1').number(true, 2);
+                $('#total_dept' + x + '').number(true, 2);
+
+
+                $('#cost_center_department_amount_' + x + '_1').number(true, 2);
+                $('#cost_center_total_dept' + x + '').number(true, 2);
+
+                $('#sales_tax_department_amount_' + x + '_1').number(true, 2);
+                $('#sales_tax_total_dept' + x + '').number(true, 2);
+
+                var idd = 1;
+                //   window.scrollBy(0,180);
+            }
+        });
+    }
+}
+
+function removeDemandsRows() {
+
+    var id = 1;
+
+    if (x > 1) {
+        //  var elem = document.getElementById('removeDemandsRows_'+id+'_'+x+'');
+        //   elem.parentNode.removeChild(elem);
+
+        $('#removeDemandsRows_' + id + '_' + x + '').remove();
+
+        $('.removeDemandsRows_dept_' + id + '_' + x + '').remove();
+
+        x--;
+        net_amount_func();
+
+    }
+
+
+}
+
+function removeDemandsSection(id) {
+    var elem = document.getElementById('Demands_' + id + '');
+    elem.parentNode.removeChild(elem);
+}
+
+function subItemListLoadDepandentCategoryId(id, value) {
+
+    //alert(id+' --- '+value);
+    var arr = id.split('_');
+    var m = '<?php echo $_GET['m'];?>';
+    $.ajax({
+        url: '<?php echo url('/')?>/pmfal/subItemListLoadDepandentCategoryId',
+        type: "GET",
+        data: {
+            id: id,
+            m: m,
+            value: value
+        },
+        success: function(data) {
+
+            $('#sub_item_id_' + arr[2] + '_' + arr[3] + '').html(data);
+        }
+    });
+}
+
+function calculation_amount(id, count, GrnNo) {
+    var quantity = $("#qty_1_" + count).val();
+    var rate = $("#" + id).val();
+    var amount = quantity * rate;
+    $("#amount" + count).val(amount);
+    var discount_amount = $('#discount_amount' + count).val();
+
+    var net_amount = amount - discount_amount;
+
+    $('#net_amoun' + count).val(net_amount);
+    alert(net_amount);
+    var net_amount = 0;
+    $('.amount' + GrnNo).each(function(i, obj) {
+        var id = (obj.id);
+        net_amount += +$('#' + id).val();
+    });
+    $('#Totalamount' + GrnNo).val(net_amount);
+    var net_amount = parseFloat(net_amount);
+    sales_tax_calc(GrnNo)
+
+}
+
+function sales_tax_calc(GrnNo) {
+    var SalesTaxAmount = parseFloat($('#SalesTaxAmount' + GrnNo).val());
+    var NetAmount = parseFloat($('#Totalamount' + GrnNo).val());
+    var AccId = $('#SalesTaxesAccId' + GrnNo).val();
+    if (AccId != '') {
+        $('#SalesTaxAmount' + GrnNo).prop('disabled', false);
+    } else {
+        $('#SalesTaxAmount' + GrnNo).prop('disabled', true);
+        SalesTaxAmount = 0;
+        $('#SalesTaxAmount' + GrnNo).val(0)
+    }
+
+
+    $('#NetTotal' + GrnNo).val(parseFloat(NetAmount + SalesTaxAmount).toFixed(2));
+}
+
+
+var th = ['', 'Thousand', 'Million', 'Billion', 'Trillion'];
+var dg = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+var tn = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+var tw = ['Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+function toWordss(id) {
+
+    s = $('#NetTotal' + id + '').val();
+
+
+    s = s.toString();
+    s = s.replace(/[\, ]/g, '');
+    if (s != parseFloat(s)) return 'not a number';
+    var x = s.indexOf('.');
+    if (x == -1)
+        x = s.length;
+    if (x > 15)
+        return 'too big';
+    var n = s.split('');
+    var str = '';
+    var sk = 0;
+    for (var i = 0; i < x; i++) {
+        if ((x - i) % 3 == 2) {
+            if (n[i] == '1') {
+                str += tn[Number(n[i + 1])] + ' ';
+                i++;
+                sk = 1;
+            } else if (n[i] != 0) {
+                str += tw[n[i] - 2] + ' ';
+                sk = 1;
+            }
+        } else if (n[i] != 0) { // 0235
+            str += dg[n[i]] + ' ';
+            if ((x - i) % 3 == 0) str += 'hundred ';
+            sk = 1;
+        }
+        if ((x - i) % 3 == 1) {
+            if (sk)
+                str += th[(x - i - 1) / 3] + ' ';
+            sk = 0;
+        }
+    }
+
+    if (x != s.length) {
+        var y = s.length;
+        str += 'point ';
+        for (var i = x + 1; i < y; i++)
+            str += dg[n[i]] + ' ';
+    }
+    result = str.replace(/\s+/g, ' ') + 'Only';
+
+    $('#rupees' + id).text('Amount In Words:' + ' ' + result);
+
+
+
+};
+</script>
+
+
+<script type="text/javascript">
+$('.select2').select2();
+</script>
+
+<script src="{{ URL::asset('assets/js/select2/js_tabindex.js') }}"></script>
+
+
+
+@endsection

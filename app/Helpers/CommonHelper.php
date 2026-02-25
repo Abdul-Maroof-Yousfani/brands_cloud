@@ -2614,6 +2614,13 @@ public static function get_all_subitems()
         return $data[$index];
     }
 
+    public static function get_goodreciptnotedata_child($id)
+    {
+        $grn_data = new \App\Models\GRNData();
+        $grn_data = $grn_data->SetConnection('mysql2');
+        return $grn_data->where('id', $id)->first();
+    }
+
 
     public static function get_grndata($master_id)
     {
