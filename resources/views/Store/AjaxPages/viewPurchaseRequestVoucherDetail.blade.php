@@ -313,6 +313,7 @@ $net_amount_with_currency = $net_amount * $row->currency_rate;
                                  
                                 
                                 <td style="background-color: darkgray" class="text-center"></td>
+                                <td style="background-color: darkgray" class="text-center"></td>
                                 <td style="background-color: darkgray" class="text-right"  ></td>
                                 <td  style="background-color: darkgray" class="text-right"  colspan="4">{{number_format($total,2)}}</td>
                                 <td  style="background-color: darkgray;display: none" class="text-right showw"  colspan="1">{{number_format($total_exchange,2)}}</td>
@@ -321,13 +322,13 @@ $net_amount_with_currency = $net_amount * $row->currency_rate;
 
 
                             <tr>
-                                <td class="text-center" colspan="10">{{ 'Sales Tax :'. $row->sales_tax.' %' }}</td>
+                                <td class="text-center" colspan="11">{{ 'Sales Tax :'. $row->sales_tax.' %' }}</td>
                                 <td class="text-right" colspan="9">{{   number_format($row->sales_tax_amount,2)}}</td>
                             </tr>
 
                             <tr>
 
-                                <td style="background-color: darkgray" class="text-center" colspan="10">Grand Total</td>
+                                <td style="background-color: darkgray" class="text-center" colspan="11">Grand Total</td>
                                 <td style="background-color: darkgray"  class="text-right" colspan="5">{{number_format($total+$row->sales_tax_amount,2)}}
                                     @php if ($currency==''):echo 'PKR';else:echo $currency;endif; @endphp</td>
                                 <td style="background-color: darkgray;display: none"  class="text-right showw" colspan="6">{{number_format($total_exchange+$row->sales_tax_amount,2)}}
