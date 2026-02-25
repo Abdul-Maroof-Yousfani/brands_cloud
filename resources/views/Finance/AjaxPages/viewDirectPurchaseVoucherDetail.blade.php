@@ -176,10 +176,10 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                     $TotalAmount=0;
                                             $TotalAddional = 0;
 
-$totalQty = 0;
-$totalGrossAmount = 0;
-$totalDiscountAmount = 0;
-$totalTaxAmount = 0;
+                                    $totalQty = 0;
+                                    $totalGrossAmount = 0;
+                                    $totalDiscountAmount = 0;
+                                    $totalTaxAmount = 0;
 
 
                                             $count= count($PurchaseVoucherData);
@@ -198,10 +198,10 @@ $totalTaxAmount = 0;
                                             $pi_amount=$row2->net_amount;
                                       $item_amount_percent = $item_amount != 0 ? ($pi_amount / $item_amount) * 100 : 0;
                                         $exp_amount_apply = ($exp_amount / 100) * $item_amount_percent;
-  $totalQty += $row2->qty;
-    $totalGrossAmount += $row2->amount;
-    $totalDiscountAmount += $row2->discount_amount;
-    $totalTaxAmount += $row2->tax_amount;
+                                            $totalQty += $row2->qty;
+                                                $totalGrossAmount += $row2->amount;
+                                                $totalDiscountAmount += $row2->discount_amount;
+                                                $totalTaxAmount += $row2->tax_amount;
 
                                     ?>
                                     <tr class="text-center">
@@ -233,19 +233,19 @@ $totalTaxAmount = 0;
                                     }
                                     ?>
 
-                                    <tr class="sf-table-total" style="background-color: #e6e6e6; font-weight: bold;">
-    <td colspan="5" class="text-right"><b>Totals:</b></td>
-    <td class="text-center"><b><?php echo number_format($totalQty, 2); ?></b></td>
-    <td class="text-center"></td>
-    <td colspan="8" class="text-center"><b><?php echo number_format($totalGrossAmount, 2); ?></b></td>
-    <td class="text-center"></td>
-    <td class="text-center"><b><?php echo number_format($totalTaxAmount, 2); ?></b></td>
-    <td class="text-center"><b><?php echo number_format($totalDiscountAmount, 2); ?></b></td>
-    <td class="hide"></td>
-    <td class="hide"></td>
-    <td class="hide"></td>
-    <td class="text-center"><b><?php echo number_format($TotalAmount, 2); ?></b></td>
-</tr>
+                                            <tr class="sf-table-total" style="background-color: #e6e6e6; font-weight: bold;">
+                                            <td colspan="5" class="text-right"><b>Totals:</b></td>
+                                            <td class="text-center"><b><?php echo number_format($totalQty, 2); ?></b></td>
+                                            <td class="text-center"></td>
+                                            <td colspan="8" class="text-center"><b><?php echo number_format($totalGrossAmount, 2); ?></b></td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center"><b><?php echo number_format($totalTaxAmount, 2); ?></b></td>
+                                            <td class="text-center"><b><?php echo number_format($totalDiscountAmount, 2); ?></b></td>
+                                            <td class="hide"></td>
+                                            <td class="hide"></td>
+                                            <td class="hide"></td>
+                                            <td class="text-center"><b><?php echo number_format($TotalAmount, 2); ?></b></td>
+                                    </tr>
                                     <!-- <tr class="sf-table-total">
                                         <td colspan="9" class="text-center">
                                             <label for="field-1" class="sf-label"><b>Total</b></label>
@@ -269,6 +269,12 @@ $totalTaxAmount = 0;
                                             <label for="field-1" class="sf-label"><b>WithHolding Tax %</b></label>
                                         </td>
                                         <td class="text-center"><b id=""></b>{{number_format($row->sales_tax_amount,2)}}</td>
+                                    </tr>
+
+                                      <tr class="sf-table-total" style="background-color: #e6e6e6; font-weight: bold;">
+                                            <td colspan="18" class="text-right"><b>Grand Total:</b></td>
+                                          
+                                            <td class="text-center"><b><?php echo number_format($TotalAmount - $row->sales_tax_amount, 2); ?></b></td>
                                     </tr>
                                     <?php if($row->sales_tax_amount > 0):
                                     $Accounts = CommonHelper::get_single_row('accounts','id',$row->sales_tax_acc_id);
