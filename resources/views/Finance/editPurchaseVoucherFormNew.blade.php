@@ -202,16 +202,7 @@ use App\Helpers\ReuseableCode;
                                                 value="{{strtoupper($po_no.'--'.$po_date)}}" />
                                         </div>
 
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                             <label class="sf-label"><a tabindex="-1" href="#" onclick="showDetailModelOneParamerter('pdc/createPurchaseTypeForm')" class="">Purchase Type</a></label>
-                                             <span class="rflabelsteric"><strong>*</strong></span>
-                                             <select  class="form-control select2" name="p_type<?php echo $sales_tax_count ?>" id="p_type<?php echo $sales_tax_count ?>">
-                                                 <option value="">Select Demand Type</option>
-                                                 @foreach(CommonHelper::get_all_purchase_type() as $row_pt)
-                                                     <option value="{{$row_pt->id}}" <?php if($NewPurchaseVoucher->purchase_type == $row_pt->id):echo"selected";endif;?>>{{ucwords($row_pt->name)}}</option>
-                                                 @endforeach
-                                             </select>
-                                         </div>
+                                         <input type="hidden" name="p_type<?php echo $sales_tax_count ?>" value="{{$NewPurchaseVoucher->purchase_type}}">
 
                                     </div>
                                 </div>
@@ -369,15 +360,9 @@ use App\Helpers\ReuseableCode;
                                                     </tr>
                                                     <?php  $count++; ?>
                                                     @endforeach
-                                                    <tr class="text-center">
-                                                        <td class="text-center" colspan="7"></td>
-                                                        <td class="text-center" colspan="2">TOTAL</td>
-                                                        <td><input type="text" maxlength="15"
-                                                                class="form-control text-right" name="Totalamount"
+                                                     <input type="hidden" name="Totalamount"
                                                                 value="<?php echo number_format($TotalNetWithTax, 2); ?>"
-                                                                id="Totalamount<?php echo $sales_tax_count?>" readonly="">
-                                                        </td>
-                                                    </tr>
+                                                                id="Totalamount<?php echo $sales_tax_count?>">
                                                     <tr class="text-center" style="background: gainsboro">
                                                         <td class="text-center" colspan="5"></td>
                                                         <?php
@@ -404,6 +389,7 @@ use App\Helpers\ReuseableCode;
                                                                 class="form-control text-right"
                                                                 value="<?php echo $SalesTaxAmount?>"
                                                                 onkeyup="sales_tax_calc('<?php echo $sales_tax_count?>')"
+                                                                readonly
                                                                 ></td>
                                                     </tr>
                                                     <tr>
