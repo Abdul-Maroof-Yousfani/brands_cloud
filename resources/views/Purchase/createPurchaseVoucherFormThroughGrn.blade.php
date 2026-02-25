@@ -397,8 +397,8 @@ use App\Helpers\ReuseableCode;
                                                                 value="<?php echo $amount;?>" readonly />
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="tax_rate<?php echo $count ?>"
-                                                                id="tax_rate<?php echo $count ?>"
+                                                            <input type="text" name="tax_rate_1_<?php echo $count ?>"
+                                                                id="tax_rate_1_<?php echo $count ?>"
                                                                 class="form-control requiredField tax_rate<?php echo $row1->grn_no?>"
                                                                 value="<?php echo $tax_rate;?>" readonly />
                                                         </td>
@@ -407,8 +407,8 @@ use App\Helpers\ReuseableCode;
                                                     // Tax Amount Calculation
                                                     $tax_amount = ($amount * $tax_rate) / 100;
                                                     ?>
-                                                    <input type="text" name="tax_amount<?php echo $count ?>"
-                                                        id="tax_amount<?php echo $count ?>"
+                                                    <input type="text" name="tax_amount_1_<?php echo $count ?>"
+                                                        id="tax_amount_1_<?php echo $count ?>"
                                                         class="form-control requiredField tax_amount<?php echo $row1->grn_no?>"
                                                         value="<?php echo number_format($tax_amount, 2); ?>" readonly />
                                                 </td>

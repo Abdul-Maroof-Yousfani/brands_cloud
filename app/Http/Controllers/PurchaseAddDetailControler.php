@@ -2690,6 +2690,8 @@ class PurchaseAddDetailControler extends Controller
 //        echo "<pre>";
 //        print_r($_POST); die;
 
+// dd($request->all());
+
         DB::Connection('mysql2')->beginTransaction();
         try {
         $demandsSection = $request->demandsSection;
@@ -2760,6 +2762,9 @@ class PurchaseAddDetailControler extends Controller
                 $NewPurchaseVoucherData->uom            = $request->input('uom_id_1_'.$row);
                 $NewPurchaseVoucherData->qty            = $request->input('qty_1_'.$row);
                 $NewPurchaseVoucherData->rate           = $request->input('rate_1_'.$row);
+              
+                $NewPurchaseVoucherData->tax_rate       = $request->input('tax_rate_1_'.$row);  
+                $NewPurchaseVoucherData->tax_amount     = $request->input('tax_amount_1_'.$row);
                 $NewPurchaseVoucherData->amount         = $request->input('amount'.$row);
                 $NewPurchaseVoucherData->discount_amount         = $request->input('discount_amount'.$row);
                 $NewPurchaseVoucherData->net_amount         = $request->input('net_amount'.$row);
