@@ -254,7 +254,7 @@ use App\Helpers\ReuseableCode;
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th style="width: 200px;" class="text-center">Rate. <span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
-                                                        <th style="width: 200px;" class="text-center">Amount. <span
+                                                        <th style="width: 200px;" class="text-center">Gross Amount. <span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th style="width: 200px;" class="text-center">Tax% <span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
