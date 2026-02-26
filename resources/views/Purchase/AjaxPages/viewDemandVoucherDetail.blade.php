@@ -100,7 +100,7 @@ foreach ($demandDetail as $row) {
                                 
                                 <th class="text-center">UOM</th>
                                 <th class="text-center" style="width:100px;">Qty.</th>
-                                <th class="text-center" style="width:100px;">Remaining Qty</th>
+                                <!-- <th class="text-center" style="width:100px;">Remaining Qty</th> -->
 
                                 <!--
                                 <?php if($row->demand_status == 1 && $row->status == 1){?>
@@ -145,7 +145,7 @@ foreach ($demandDetail as $row) {
                                     <?php echo CommonHelper::get_product_classification_name($sub_ic_detail[8])?>
                                 </td>
                                 <td title="{{$sub_ic_detail[9]}}">
-                                    <?php echo CommonHelper::get_product_trend_name($sub_ic_detail[9])?>
+                                    <?php echo CommonHelper::get_product_trend_name_new($sub_ic_detail[9])?>
                                 </td>
                                 
 
@@ -154,7 +154,7 @@ foreach ($demandDetail as $row) {
 
                                 <td class="text-center"><?php echo number_format($row1->qty,2);?></td>
 
-                                <td class="text-center"><?php echo CommonHelper::get_remaining_qty($row1->sub_item_id)?></td>
+                                <!-- <td class="text-center"><?php echo CommonHelper::get_remaining_qty($row1->sub_item_id)?></td> -->
 
 
                             </tr>

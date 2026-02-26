@@ -479,6 +479,21 @@ public function getlistSaleOrder(Request $request)
         $productTrend=$productTrend->where('id',$id)->select('name')->first();
         return $productTrend->name ?? "NULL";
     }
+
+     public static function get_product_trend_name_new($id)
+    {
+        $productTrend= new ProductTrend();
+        $productTrend=$productTrend->SetConnection('mysql2');
+        $productTrend=$productTrend->where('id',$id)->select('name')->first();
+        return $productTrend->name ?? "NULL";
+    }
+    // public static function get_product_trend_name($id)
+    // {
+    //     $productTrend= new ProductClassification();
+    //     $productTrend=$productTrend->SetConnection('mysql2');
+    //     $productTrend=$productTrend->where('id',$id)->select('name')->first();
+    //     return $productTrend->name ?? "NULL";
+    // }
     public static function get_branch_list($AccountId)
     {
         $Client=new Client();
