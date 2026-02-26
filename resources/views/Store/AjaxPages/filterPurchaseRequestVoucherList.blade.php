@@ -58,7 +58,8 @@ foreach ($purchaseRequestDetail as $row){
     $edit_url= url('/store/editPurchaseRequestVoucherForm/'.$row->id.'?m='.$m);
     $edit_url_direct= url('/purchase/editDirectPurchaseOrder/'.$row->id.'?m='.$m);
     $net_amount= ReuseableCode::get_po_total_amount($row->id);
-    $total+=$net_amount;
+    $sale_tax_amount= ReuseableCode::get_po_sales_tax_amount($row->id);
+    $total+=$net_amount - $sale_tax_amount;
     $paramOne = "stdc/viewPurchaseRequestVoucherDetail";
     $paramTwo = $row->purchase_request_no;
     $paramThree = "View Purchase Order Detail";
@@ -79,7 +80,7 @@ foreach ($purchaseRequestDetail as $row){
             $Tstatus = $row->purchase_request_status;
         }
 
-    $data.='<tr id="tr'.$row->id.'" class="'.$row->id.'"><td class="text-center">'.$counter++.'</td><td class="text-center">'.strtoupper($row->purchase_request_no).'</td><td class="text-center">'.CommonHelper::changeDateFormat($row->purchase_request_date).'</td><td class="text-center">'.$row->trn.'</td><td class="text-center">'.$row->remarks.'</td><td>'.CommonHelper::getCompanyDatabaseTableValueById($m,'supplier','name',$row->supplier_id).'</td><td class="text-center">'.StoreHelper::checkVoucherStatus($Tstatus,$row->status).'</td><td class="text-center">'.strtoupper($row->grn_data_status).'</td><td class="text-center">'.strtoupper($row->username).'</td>'.'</td><td class="text-center">'.number_format($net_amount,2).'</td><td class="text-center hidden-print">
+    $data.='<tr id="tr'.$row->id.'" class="'.$row->id.'"><td class="text-center">'.$counter++.'</td><td class="text-center">'.strtoupper($row->purchase_request_no).'</td><td class="text-center">'.CommonHelper::changeDateFormat($row->purchase_request_date).'</td><td class="text-center">'.$row->trn.'</td><td class="text-center">'.$row->remarks.'</td><td>'.CommonHelper::getCompanyDatabaseTableValueById($m,'supplier','name',$row->supplier_id).'</td><td class="text-center">'.StoreHelper::checkVoucherStatus($Tstatus,$row->status).'</td><td class="text-center">'.strtoupper($row->grn_data_status).'</td><td class="text-center">'.strtoupper($row->username).'</td>'.'</td><td class="text-center">'.number_format($net_amount - $sale_tax_amount,2).'</td><td class="text-center hidden-print">
             ';
 
     if ($view==true):

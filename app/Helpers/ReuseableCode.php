@@ -819,6 +819,10 @@ $data = [
     {
       return  DB::Connection('mysql2')->table('purchase_request_data')->where('master_id',$id)->sum('net_amount');
     }
+    public static function get_po_sales_tax_amount($id)
+    {
+      return  DB::Connection('mysql2')->table('purchase_request')->where('id',$id)->sum('sales_tax_amount');
+    }
 
     public static function get_account_year_from_to($company_id)
     {
