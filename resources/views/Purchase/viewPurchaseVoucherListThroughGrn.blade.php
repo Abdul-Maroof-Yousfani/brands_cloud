@@ -143,7 +143,7 @@ $edit = false;
                                                 $grn_date= DB::Connection('mysql2')->table('goods_receipt_note')->where('id',$row->grn_id)->value('grn_date');
                                                 $t_amount= DB::Connection('mysql2')->table('transactions')->where('voucher_no',$row->pv_no)
                                                 ->where('debit_credit',1)->sum('amount');
-                                                $total+=$net_amount?>
+                                                $total+=$net_amount - $row->sales_tax_amount;?>
                                                 <tr @if($t_amount!=$net_amount) @elseif($net_amount!=$net_amount_grn) style="background-color: cornflowerblue" @endif id="{{$row->id}}">
                                                     <td class="text-center">{{$counter++}}</td>
                                                     <td title="{{$row->id}}" class="text-center">{{strtoupper($row->pv_no)}}</td>
