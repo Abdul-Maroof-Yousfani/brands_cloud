@@ -369,7 +369,7 @@ use App\Helpers\ReuseableCode;
                                                             $SalesTaxAccId = $NewPurchaseVoucher->sales_tax_acc_id;
                                                             $SalesTaxAmount = $NewPurchaseVoucher->sales_tax_amount;
                                                             ?>
-                                                        <td colspan="1">WithHolding Taxes</td>
+                                                        <td colspan="1">WithHolding Tax %</td>
                                                         <td colspan="3">
 
                                                             <select name="SalesTaxesAccId<?php echo $sales_tax_count?>"
