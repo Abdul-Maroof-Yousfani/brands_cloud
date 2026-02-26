@@ -245,8 +245,8 @@ endif;
                                                             class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center">Net Amount<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
-                                                    <th class="text-center">Delete<span
-                                                            class="rflabelsteric"><strong>*</strong></span></th>
+                                                    <!-- <th class="text-center">Delete<span
+                                                            class="rflabelsteric"><strong>*</strong></span></th> -->
                                                     <th class="text-center">Add Row<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
                                                 </tr>
@@ -327,10 +327,10 @@ endif;
                                                             name="after_dis_amount[]" id="after_dis_amount1"
                                                             placeholder="NET AMOUNT" min="1" value="0.00" readonly>
                                                     </td>
-                                                    <td style="background-color: #ccc">
+                                                    <!-- <td style="background-color: #ccc">
                                                         <input onclick="view_history(1)" type="checkbox"
                                                             id="view_history1">
-                                                    </td>
+                                                    </td> -->
                                                     <td  class="text-center" >
                                                         <input style="width: inherit !important;" type="button" class="btn btn-sm btn-primary" onclick="AddMoreDetails()" value="+" />
                                                     </td>
@@ -559,7 +559,7 @@ function AddMoreDetails() {
             <td class="hide"><input type="text" onkeyup="discount_percent(this.id)" class="form-control" value="0" name="discount_percent[]" id="discount_percent${Counter}" placeholder="DISCOUNT"></td>
             <td class="hide"><input type="text" onkeyup="discount_amount(this.id)" class="form-control" value="0" name="discount_amount[]" id="discount_amount${Counter}" placeholder="DISCOUNT"></td>
             <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" placeholder="NET AMOUNT"></td>
-            <td><input onclick="view_history(${Counter})" type="checkbox" id="view_history${Counter}"></td>
+            
             <td class="text-center">
                 <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection(${Counter})"> - </button>
             </td>
