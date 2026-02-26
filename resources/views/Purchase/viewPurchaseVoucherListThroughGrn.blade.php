@@ -157,7 +157,7 @@ $edit = false;
                                                     <td id="app{{ $row->id }}" class="text-center text-danger">@if($row->pv_status==1) Pending @elseif($row->pv_status==3) 1st Approve  @else Approved @endif </td>
                                                     <td class="text-center">{{CommonHelper::get_supplier_name($row->supplier)}}</td>
 
-                                                    <td class="text-right">{{number_format($net_amount,2)}}</td>
+                                                    <td class="text-right">{{number_format($net_amount - $row->sales_tax_amount,2)}}</td>
                                                     <td class="text-right hide">{{number_format($net_amount_grn,2)}}</td>
                                                     <?php $total+=$row['total_net_amount']; ?>
                                                     <td class="text-center">
