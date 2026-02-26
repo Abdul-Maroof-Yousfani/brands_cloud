@@ -73,8 +73,28 @@ class PurchaseEditDetailControler extends Controller
         $regd_in_pra=Input::get('regd_in_pra');
         $pra=Input::get('pra');
 
-        $company_status = (Input::get('company_status'))? Input::get('company_status') : [];  
-        $company_status = (count($company_status) > 0 ) ? implode(', ', $company_status) : '';
+        // $company_status = (Input::get('company_status'))? Input::get('company_status') : [];  
+        // $company_status = (count($company_status) > 0 ) ? implode(', ', $company_status) : '';
+
+$company_status = Input::get("company_status");
+
+
+
+    if(Input::get('regd_in_income_tax') != 1){
+
+           
+             $company_status = '';
+            $cnic = '';
+
+        }
+        else{
+             $company_status = Input::get('company_status');
+              $cnic=Input::get('cnic');
+        }
+      
+
+        // $company_status = (Input::get('company_status'))? Input::get('company_status') : [];  
+        // $company_status = (count($company_status) > 0 ) ? implode(', ', $company_status) : '';
 
         $print_check_as=Input::get('print_check_as');
         $vendor_type=Input::get('vendor_type');

@@ -371,10 +371,10 @@ if($accType == 'client'){
                                                         </div>
                                                         <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 hide">
                                                             <label for="o_blnc" >TaxPayer Status </label> <br>
-                                                            <span>COMPANY</span> <input type="checkbox" name="company_status[]" id="COMPANY" value="COMPANY"><br>
-                                                            <span>INDIVIDUAL</span> <input type="checkbox" name="company_status[]" id="INDIVIDUAL" value="INDIVIDUAL"><br>
-                                                            <span>AOP</span> <input type="checkbox" name="company_status[]" id="AOP" value="AOP"><br>
-                                                            <span>BUSINESS INDIVIDUAL</span> <input type="checkbox" name="company_status[]" id="BUSINESS_INDIVIDUAL" value="BUSINESS_INDIVIDUAL">
+                                                            <span>COMPANY</span> <input type="checkbox" name="acompany_status[]" id="COMPANY" value="COMPANY"><br>
+                                                            <span>INDIVIDUAL</span> <input type="checkbox" name="acompany_status[]" id="INDIVIDUAL" value="INDIVIDUAL"><br>
+                                                            <span>AOP</span> <input type="checkbox" name="acompany_status[]" id="AOP" value="AOP"><br>
+                                                            <span>BUSINESS INDIVIDUAL</span> <input type="checkbox" name="acompany_status[]" id="BUSINESS_INDIVIDUAL" value="BUSINESS_INDIVIDUAL">
                                                         </div>
 
 
@@ -464,24 +464,23 @@ if($accType == 'client'){
                                                                         id="regd_in_income_tax"
                                                                         name="regd_in_income_tax"
                                                                         value="1"
-
+                                                                        {{ $supplier->resgister_income_tax == 1 ? 'checked' : '' }}
                                                                         />
                                                                 <input type="hidden" value="set" name="hidden" />
                                                                 <b class="smr-text-cgreen"> Registered In Income Tax?</b>
                                                             </label>
                                                         </div>
 
-
-                                                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" id="income_tax_div" style="display:none">
+                                                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" id="income_tax_div">
                                                             <div class="panel panel-primary panel-body well" data-collapsed="0" >
                                                                 <label class="radio-inline">
-                                                                    <input class=""  onclick="ntn_cnic('1')" type="radio" name="optradio" class="income" id="business" value="1">Business Individual
+                                                                    <input class=""  onclick="ntn_cnic('1')" type="radio" name="company_status" class="income" id="business" value="1"  {{ $supplier->company_status == 1 ? 'checked' : '' }}>Business Individual
                                                                 </label>
                                                                 <label class="radio-inline">
-                                                                    <input onclick="ntn_cnic('2')" type="radio" name="optradio" class="income" id="company" value="2">Company
+                                                                    <input onclick="ntn_cnic('2')" type="radio" name="company_status" class="income" id="company" value="2" {{ $supplier->company_status == 2 ? 'checked' : '' }}>Company
                                                                 </label>
                                                                 <label class="radio-inline">
-                                                                    <input onclick="ntn_cnic('3')" type="radio" name="optradio" class="income" id="aop" value="3">Aop
+                                                                    <input onclick="ntn_cnic('3')" type="radio" name="company_status" class="income" id="aop" value="3" {{ $supplier->company_status == 3 ? 'checked' : '' }}>Aop
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -503,8 +502,7 @@ if($accType == 'client'){
 
                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 checkbox">
 
-
-                                                            <input style="display: none;margin-top: 15px" placeholder="CNIC" type="text" name="cnic" class="form-control" id="cnic"/>
+                                                            <input style="display: none;margin-top: 15px" placeholder="CNIC" type="text" name="cnic" value="{{ $supplier->cnic }}" class="form-control" id="cnic"/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -818,6 +816,17 @@ if($accType == 'client'){
                 }
             });
 
+            // Initial state for Income Tax
+            if ($('#regd_in_income_tax').is(':checked')) {
+                $('#income_tax_div').show();
+                var selectedStatus = $('input[name="company_status"]:checked').val();
+                if (selectedStatus) {
+                    ntn_cnic(selectedStatus);
+                }
+            } else {
+                $('#income_tax_div').hide();
+                $("#cnic").hide();
+            }
 
         });
 
@@ -880,7 +889,7 @@ if($accType == 'client'){
         // Hide and remove required from CNIC
         $("#cnic").css("display", "none");
         $("#cnic").removeClass("requiredField");
-        $('#cnic').val(""); // Clear CNIC value
+        // $('#cnic').val(""); // Clear CNIC value (REMOVED to prevent loss of data)
         
         // Adjust column layout
         $("#amir").removeClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
@@ -904,12 +913,13 @@ if($accType == 'client'){
         $('#regd_in_income_tax').change(function(){
     if ($(this).is(':checked'))
     {
-        $('.income').prop('checked', false);
+        // $('.income').prop('checked', false); // REMOVED: Preserve selection
         document.getElementById("income_tax_div").style.display = "block";
         
-        // Radio button selection ke hisab se required class add karo
-        // Initially jab check karo to koi radio selected nahi hai, isliye required class nahi add karo
-        // Required class tab add hogi jab radio select karega user
+        var selectedStatus = $('input[name="company_status"]:checked').val();
+        if (selectedStatus) {
+            ntn_cnic(selectedStatus);
+        }
     } else {
         document.getElementById("income_tax_div").style.display = "none";
         
