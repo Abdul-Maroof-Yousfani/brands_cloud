@@ -97,7 +97,7 @@ use App\Helpers\SalesHelper;?>
                             <td class="text-center"><?php echo $row1->product_name != "" ? $row1->product_name :$row1->sub_ic;?></td>
                             <td class="text-center"><?php echo $row1->product_barcode;?></td>
                             <!-- <td class="text-center">{{ $row1->description }}</td> -->
-                            <td class="text-center">{{ $row1->demand_no }}</td>
+                            <td class="text-center text-uppercase">{{ $row1->demand_no }}</td>
                             <td class="text-center">{{ $row1->qty }}</td>
                             @foreach ($vendor as $row)
                             <?php $amount=ReuseableCode::get_quotation_amount_supp_wise($row1->id,$row->vendor_id); ?>
@@ -136,7 +136,7 @@ use App\Helpers\SalesHelper;?>
 
                             </div>
 
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" style="margin-left: 69px;">
                              
                                 
                                 
