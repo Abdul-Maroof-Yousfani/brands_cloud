@@ -406,6 +406,7 @@ class PurchaseAddDetailControler extends Controller
             $vendor_code =   PurchaseHelper::generateVendorCode();
             $name =   Input::get('name');
             $company_name = Input::get('company_name');
+            $with_holding_tax = Input::get('with_holding_tax');
             $country = Input::get('country');
             $state = Input::get('state');
             $city = Input::get('city');
@@ -511,6 +512,7 @@ class PurchaseAddDetailControler extends Controller
             $data2['vendor_code'] = strip_tags($vendor_code);
             $data2['name'] = strip_tags($name);
             $data2['company_name'] = strip_tags($company_name);
+            $data2['with_holding_tax'] = strip_tags($with_holding_tax);
             $data2['country'] = strip_tags($country);
             $data2['province'] = strip_tags($state);
             $data2['city'] = strip_tags($city);

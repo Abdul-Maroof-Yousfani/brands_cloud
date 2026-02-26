@@ -3,6 +3,7 @@ use App\Helpers\PurchaseHelper;
 
 use App\Helpers\SalesHelper;
 use App\Helpers\CommonHelper;
+use App\Helpers\ReuseableCode;
 $accType = Auth::user()->acc_type;
 if($accType == 'client'){
     $m = $_GET['m'];
@@ -353,8 +354,22 @@ if($accType == 'client'){
                                                                 </select>
                                                             @endif
                                                         </div>
-                                                        ->debit_credit==1
-                                                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12">
+                                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                            <label for="o_blnc">WithHolding Tax :</label>
+                                                           <select name="with_holding_tax" id="with_holding_tax"
+                                                                class="form-control select2"
+                                                               
+                                                               >
+                                                                <option value="">Select WithHolding</option>
+                                                                @foreach(ReuseableCode::get_all_sales_tax() as $row_tax)
+                                                                <option @if($supplier->with_holding_tax == $row_tax->id) selected @endif value="{{ $row_tax->id}}" data-rate="{{$row_tax->rate}}" >{{$row_tax->rate}} %
+                                                                </option>
+
+                                                             
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 hide">
                                                             <label for="o_blnc" >TaxPayer Status </label> <br>
                                                             <span>COMPANY</span> <input type="checkbox" name="company_status[]" id="COMPANY" value="COMPANY"><br>
                                                             <span>INDIVIDUAL</span> <input type="checkbox" name="company_status[]" id="INDIVIDUAL" value="INDIVIDUAL"><br>

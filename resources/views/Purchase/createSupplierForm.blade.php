@@ -1,6 +1,7 @@
 <?php
 use App\Helpers\PurchaseHelper;
 use App\Helpers\CommonHelper;
+use App\Helpers\ReuseableCode;
 
 $accType = Auth::user()->acc_type;
 if($accType == 'client'){
@@ -347,9 +348,27 @@ if($accType == 'client'){
                                                                 <option value="1">Debit</option>
                                                             </select>
                                                         </div>
+                                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                            <label for="o_blnc">WithHolding Tax :</label>
+                                                           <select name="with_holding_tax" id="with_holding_tax"
+                                                                class="form-control select2"
+                                                               
+                                                               >
+                                                                <option value="">Select WithHolding</option>
+                                                                @foreach(ReuseableCode::get_all_sales_tax() as $row_tax)
+                                                                <option value="{{ $row_tax->id}}" data-rate="{{$row_tax->rate}}" >{{$row_tax->rate}} %
+                                                                </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+   
+
+
+
                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                                         </div>
-                                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 hide">
                                                             <label for="o_blnc">TaxPayer Status </label> <br>
                                                             <span>COMPANY</span> <input type="checkbox"
                                                                 name="company_status[]" id="COMPANY"
@@ -456,7 +475,7 @@ if($accType == 'client'){
                                                 <?php   //register income criteria ?>
                                                 <div class="lineHeight">&nbsp;</div>
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                                                    <div class="row">
+                                                    <div class="row ">
                                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 checkbox">
                                                             <label>
                                                                 <input tabindex="15" type="checkbox"
