@@ -378,7 +378,7 @@ use App\Helpers\ReuseableCode;
                                                                 onchange="sales_tax_calc('<?php echo $sales_tax_count?>')">
                                                                 <option value="">Select Head</option>
                                                                 @foreach(ReuseableCode::get_all_sales_tax() as $row_tax)
-                                                                <option value="{{ $row_tax->id}}" {{ $SalesTaxAccId == $row_tax->id ? 'selected' : '' }}>{{$row_tax->rate}} %
+                                                                <option value="{{ $row_tax->id}}" data-rate="{{$row_tax->rate}}" {{ $SalesTaxAccId == $row_tax->id ? 'selected' : '' }}>{{$row_tax->rate}} %
                                                                 </option>
                                                                 @endforeach
                                                             </select>
@@ -399,7 +399,7 @@ use App\Helpers\ReuseableCode;
                                                         <td colspan="2"><input type="text" name="NetTotal"
                                                                 id="NetTotal<?php echo $sales_tax_count?>"
                                                                 class="form-control number_form" readonly
-                                                                value="<?php echo number_format($TotalNetWithTax + $SalesTaxAmount, 2); ?>"></td>
+                                                                value="<?php echo number_format($TotalNetWithTax - $SalesTaxAmount, 2); ?>"></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -578,19 +578,24 @@ function calculation_amount(id, count, SectionIndex) {
 }
 
 function sales_tax_calc(SectionIndex) {
-    var SalesTaxAmount = parseFloat($('#SalesTaxAmount' + SectionIndex).val()) || 0;
     var NetAmount = parseFloat($('#Totalamount' + SectionIndex).val()) || 0;
     var AccId = $('#SalesTaxesAccId' + SectionIndex).val();
+    var rate = $('#SalesTaxesAccId' + SectionIndex).find(':selected').data('rate') || 0;
+    
+    var SalesTaxAmount = 0;
     
     if (AccId != '') {
         $('#SalesTaxAmount' + SectionIndex).prop('disabled', false);
+        SalesTaxAmount = (NetAmount * rate) / 100;
+        $('#SalesTaxAmount' + SectionIndex).val(SalesTaxAmount.toFixed(2));
     } else {
         $('#SalesTaxAmount' + SectionIndex).prop('disabled', true);
         SalesTaxAmount = 0;
         $('#SalesTaxAmount' + SectionIndex).val(0);
     }
 
-    $('#NetTotal' + SectionIndex).val(parseFloat(NetAmount + SalesTaxAmount).toFixed(2));
+    $('#NetTotal' + SectionIndex).val(parseFloat(NetAmount - SalesTaxAmount).toFixed(2));
+    toWordss(SectionIndex);
 }
 
 </script>

@@ -313,13 +313,13 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                     <?php if($row->sales_tax_amount > 0):
                                     $Accounts = CommonHelper::get_single_row('accounts','id',$row->sales_tax_acc_id);
                                     ?>
-                                    <tr class="sf-table-total">
+                                    <tr class="sf-table-total hide">
                                         <td colspan="6" class="text-right">Sales Tax :</td>
                                         <td  class="text-right"></td>
                                         <!-- <td  class="text-right"><b><?php echo optional($Accounts)->name?></b></td> -->
                                         <td class="text-center"><b><?php echo number_format($row->sales_tax_amount,2)?></b></td>
                                     </tr>
-                                    <tr>
+                                    <tr  class="hide">
                                         <td colspan="7" class="text-center"><b>Total After Sales Tax<b></td>
                                         <td class="text-center"><b><?php echo number_format($row->sales_tax_amount+$TotalAmount,2)?></b></td>
                                     </tr>
