@@ -1097,76 +1097,132 @@ $(document).ready(function(){
         //            toWords(1);
     });
 
+    // function claculation(number) {
+    //     var qty = $('#actual_qty' + number).val();
+    //     var rate = $('#rate' + number).val();
+    //     var currency = $('#currency_rate').val();
+    //     var actual = parseFloat(qty * rate).toFixed(2);
+
+    //     if (currency == '') {
+    //         currency = 1;
+    //     }
+
+    //     var total = parseFloat(qty * rate * currency).toFixed(2);
+
+    //     $('#amount' + number).val(total);
+    //     $('#actual_amount' + number).val(actual);
+
+
+    //     var amount = 0;
+    //     count = 1;
+    //     $('.net_amount_dis').each(function(i, obj) {
+
+    //         amount += +$('#' + obj.id).val();
+
+    //         count++;
+    //     });
+    //     amount = parseFloat(amount);
+
+
+
+    //     discount_percent('discount_percent' + number);
+    //     net_amount();
+    //     sales_tax('sales_taxx');
+    //     //  toWords(1);
+    // }
+
     function claculation(number) {
-        var qty = $('#actual_qty' + number).val();
-        var rate = $('#rate' + number).val();
-        var currency = $('#currency_rate').val();
-        var actual = parseFloat(qty * rate).toFixed(2);
+    var qty = $('#actual_qty' + number).val() || 0;
+    var rate = $('#rate' + number).val() || 0;
+    var currency = $('#currency_rate').val() || 1;
+    
+    var actual = parseFloat(qty * rate).toFixed(2);
+    var total = parseFloat(qty * rate * currency).toFixed(2);
+    
+    $('#amount' + number).val(total);
+    $('#actual_amount' + number).val(actual);
+    
+    // Calculate discount if applicable
+    discount_percent('discount_percent' + number);
+    
+    // Update all totals
+    net_amount();
+    sales_tax('sales_taxx');
+}
 
-        if (currency == '') {
-            currency = 1;
-        }
+    // function sales_tax(id) {
+    //     var sales_tax = 0;
+    //     var sales_tax_per_value = $('#sales_taxx').val();
+    //     sales_tax_per_value = sales_tax_per_value.split("@")[0];
 
-        var total = parseFloat(qty * rate * currency).toFixed(2);
+    //     if (sales_tax_per_value != '0') {
+    //         var net = $('#net').val();
 
-        $('#amount' + number).val(total);
-        $('#actual_amount' + number).val(actual);
+    //         var sales_tax = (net / 100) * sales_tax_per_value;
 
+    //     }
+    //     console.log(sales_tax)
+    //     $('#sales_amount_td').val(sales_tax);
 
-        var amount = 0;
-        count = 1;
-        $('.net_amount_dis').each(function(i, obj) {
+    //     total_amount();
 
-            amount += +$('#' + obj.id).val();
-
-            count++;
-        });
-        amount = parseFloat(amount);
-
-
-
-        discount_percent('discount_percent' + number);
-        net_amount();
-        sales_tax('sales_taxx');
-        //  toWords(1);
-    }
+    // }
 
     function sales_tax(id) {
-        var sales_tax = 0;
-        var sales_tax_per_value = $('#sales_taxx').val();
+    var sales_tax = 0;
+    var sales_tax_per_value = $('#sales_taxx').val();
+    
+    if (sales_tax_per_value && sales_tax_per_value != '0') {
         sales_tax_per_value = sales_tax_per_value.split("@")[0];
-
-        if (sales_tax_per_value != '0') {
-            var net = $('#net').val();
-
-            var sales_tax = (net / 100) * sales_tax_per_value;
-
-        }
-        console.log(sales_tax)
-        $('#sales_amount_td').val(sales_tax);
-
-        total_amount();
-
+        var net = parseFloat($('#net').val()) || 0;
+        sales_tax = (net / 100) * parseFloat(sales_tax_per_value);
     }
+    
+    $('#sales_amount_td').val(sales_tax.toFixed(2));
+    
+    // Call total_amount to update after tax
+    total_amount();
+}
+
+
+    // function total_amount() {
+    //     var amount = 0;
+
+    //     $('.net_amount_dis').each(function() {
+
+    //         amount += +$(this).val();
+
+    //     });
+    //     $('#net').val(amount);
+
+    //     var sales_tax = parseFloat($('#sales_amount_td').val());
+    //     var net = (amount + sales_tax).toFixed(2);
+
+    //     $('#net_after_tax').val(net);
+    //     console.log(net);
+
+
+    // }
+
 
     function total_amount() {
-        var amount = 0;
+    var amount = 0;
+    $('.net_amount_dis').each(function() {
+        amount += +$(this).val();
+    });
+    
+    $('#net').val(amount.toFixed(2));
+    
+    var sales_tax = parseFloat($('#sales_amount_td').val()) || 0;
+    var net_after_tax = (amount + sales_tax).toFixed(2);
+    
+    $('#net_after_tax').val(net_after_tax);
+    $('#d_t_amount_1').val(net_after_tax);
+    
+    // Also update words if needed
+    toWords(1);
+}
 
-        $('.net_amount_dis').each(function() {
-
-            amount += +$(this).val();
-
-        });
-        $('#net').val(amount);
-
-        var sales_tax = parseFloat($('#sales_amount_td').val());
-        var net = (amount + sales_tax).toFixed(2);
-
-        $('#net_after_tax').val(net);
-        console.log(net);
-
-
-    }
 
 
     function get_address() {
