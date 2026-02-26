@@ -382,24 +382,27 @@ use App\Helpers\ReuseableCode;
                                                                     }
                                                                     else{$rate = 0; $amt=0; $TotAmt = 0;}
                                                                     ?>
-                                                            <input readonly
-                                                                onkeyup="calculation_amount(this.id,'<?php echo $count ?>','<?php echo $row1->grn_no?>')"
+                                                            <input
+                                                                onkeyup="calculation_amount(this.id,'<?php echo $count ?>','<?php echo $sales_tax_count?>')"
                                                                 value="<?php echo $row1->rate?>" type="text" step="0.01"
                                                                 name="rate_1_<?php echo $count ?>"
                                                                 id="rate_1_<?php echo $count ?>"
+                                                                data-tax-rate="{{$tax_rate}}"
+                                                                data-currency="{{$currency}}"
+                                                                data-discount-percent="{{$discount_percent}}"
                                                                 class="form-control requiredField rate" />
                                                         </td>
                                                         <script !src=""></script>
                                                         <td>
                                                             <input type="text" name="amount<?php echo $count ?>"
                                                                 id="amount<?php echo $count ?>"
-                                                                class="form-control requiredField amount<?php echo $row1->grn_no?>"
+                                                                class="form-control requiredField amount<?php echo $sales_tax_count?>"
                                                                 value="<?php echo $amount;?>" readonly />
                                                         </td>
                                                         <td>
                                                             <input type="text" name="tax_rate_1_<?php echo $count ?>"
                                                                 id="tax_rate_1_<?php echo $count ?>"
-                                                                class="form-control requiredField tax_rate<?php echo $row1->grn_no?>"
+                                                                class="form-control requiredField tax_rate<?php echo $sales_tax_count?>"
                                                                 value="<?php echo $tax_rate;?>" readonly />
                                                         </td>
                                                        <td>
@@ -409,7 +412,7 @@ use App\Helpers\ReuseableCode;
                                                     ?>
                                                     <input type="text" name="tax_amount_1_<?php echo $count ?>"
                                                         id="tax_amount_1_<?php echo $count ?>"
-                                                        class="form-control requiredField tax_amount<?php echo $row1->grn_no?>"
+                                                        class="form-control requiredField tax_amount<?php echo $sales_tax_count?>"
                                                         value="<?php echo number_format($tax_amount, 2); ?>" readonly />
                                                 </td>
 
@@ -424,9 +427,9 @@ use App\Helpers\ReuseableCode;
                                                                 name="discount_amount{{$count}}"
                                                                 value="<?php echo number_format($discount_amount, 2); ?>"></td>
 
-                                                        <td><input readonly class="form-control"
-                                                                id="net_amoun{{ $count }}" text"
-                                                                name="net_amount{{$count}}"
+                                                        <td><input readonly class="form-control item_net_amount_<?php echo $sales_tax_count ?>"
+                                                                id="net_amount<?php echo $count ?>"
+                                                                name="net_amount<?php echo $count ?>"
                                                                 value="{{number_format($net_amount, 2)}}"></td>
                                                     </tr>
                                                     <?php  $count++; ?>
@@ -437,7 +440,7 @@ use App\Helpers\ReuseableCode;
                                                         <td><input type="text" maxlength="15"
                                                                 class="form-control text-right" name="Totalamount"
                                                                 value="<?php echo number_format($TotalNetWithTax, 2); ?>"
-                                                                id="Totalamount<?php echo $row1->grn_no?>" readonly="">
+                                                                id="Totalamount<?php echo $sales_tax_count?>" readonly="">
                                                         </td>
                                                     </tr>
                                                     <tr class="text-center" style="background: gainsboro">
@@ -472,12 +475,12 @@ use App\Helpers\ReuseableCode;
 saleTaxAmount -->
                                                             <select readonly name="SalesTaxesAccId<?php echo $sales_tax_count?>"
                                                                 class="form-control <?php echo $SalesTaxAccId;?>"
-                                                                id="SalesTaxesAccId<?php echo $good_recipt_note->grn_no?>"
-                                                                onchange="sales_tax_calc('<?php echo $good_recipt_note->grn_no?>')">
+                                                                id="SalesTaxesAccId<?php echo $sales_tax_count?>"
+                                                                onchange="sales_tax_calc('<?php echo $sales_tax_count?>')">
                                                                 <option value="">Select Head</option>
                                                                 @foreach(ReuseableCode::get_all_sales_tax() as $row)
                                                             
-                                                                <option value="{{ $row->id}}" {{ $purchase_reqiest->sales_tax == $row->rate ? 'selected' : '' }}>{{$row->rate}} %
+                                                                <option value="{{ $row->id}}" data-rate="{{$row->rate}}" {{ $purchase_reqiest->sales_tax == $row->rate ? 'selected' : '' }}>{{$row->rate}} %
                                                                 </option>
                                                              
                                                                 @endforeach
@@ -485,20 +488,20 @@ saleTaxAmount -->
                                                         </td>
                                                         <td><input type="text"
                                                                 name="SalesTaxAmount<?php echo $sales_tax_count?>"
-                                                                id="SalesTaxAmount<?php echo $good_recipt_note->grn_no?>"
+                                                                id="SalesTaxAmount<?php echo $sales_tax_count?>"
                                                                 class="form-control text-right"
                                                                 value="<?php echo $sales_tax_amount?>"
-                                                                onkeyup="sales_tax_calc('<?php echo $good_recipt_note->grn_no?>')"
+                                                                onkeyup="sales_tax_calc('<?php echo $sales_tax_count?>')"
                                                                 readonly></td>
                                                     </tr>
                                                     <tr>
-                                                        <td id="rupees{{$main_count}}" class="text-center" colspan="7">
+                                                        <td id="rupees<?php echo $sales_tax_count ?>" class="text-center" colspan="7">
                                                         </td>
                                                         <td class="text-center" colspan="1">Net Total</td>
                                                         <td colspan="2"><input type="text" name="NetTotal"
-                                                                id="NetTotal<?php echo $main_count?>"
+                                                                id="NetTotal<?php echo $sales_tax_count?>"
                                                                 class="form-control number_form" readonly
-                                                                value="<?php echo number_format($TotalNetWithTax, 2); ?>"></td>
+                                                                value="<?php echo number_format($TotalNetWithTax - $sales_tax_amount, 2); ?>"></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -758,42 +761,54 @@ function subItemListLoadDepandentCategoryId(id, value) {
     });
 }
 
-function calculation_amount(id, count, GrnNo) {
-    var quantity = $("#qty_1_" + count).val();
-    var rate = $("#" + id).val();
-    var amount = quantity * rate;
-    $("#amount" + count).val(amount);
-    var discount_amount = $('#discount_amount' + count).val();
+function calculation_amount(id, count, index) {
+    var quantity = parseFloat($("#qty_1_" + count).val()) || 0;
+    var rate = parseFloat($("#" + id).val()) || 0;
+    var tax_rate = parseFloat($("#" + id).data('tax-rate')) || 0;
+    var currency = parseFloat($("#" + id).data('currency')) || 1;
+    var discount_percent = parseFloat($("#" + id).data('discount-percent')) || 0;
 
-    var net_amount = amount - discount_amount;
+    var amount = quantity * rate * currency;
+    $("#amount" + count).val(amount.toFixed(2));
 
-    $('#net_amoun' + count).val(net_amount);
-    alert(net_amount);
-    var net_amount = 0;
-    $('.amount' + GrnNo).each(function(i, obj) {
-        var id = (obj.id);
-        net_amount += +$('#' + id).val();
+    var tax_amount = (amount * tax_rate) / 100;
+    $("#tax_amount_1_" + count).val(tax_amount.toFixed(2));
+
+    var total_with_tax = amount + tax_amount;
+    var discount_amount = (total_with_tax * discount_percent) / 100;
+    $("#discount_amount" + count).val(discount_amount.toFixed(2));
+
+    var net_amount = total_with_tax - discount_amount;
+    $('#net_amount' + count).val(net_amount.toFixed(2));
+
+    var total_net = 0;
+    $('.item_net_amount_' + index).each(function() {
+        total_net += parseFloat($(this).val()) || 0;
     });
-    $('#Totalamount' + GrnNo).val(net_amount);
-    var net_amount = parseFloat(net_amount);
-    sales_tax_calc(GrnNo)
-
+    
+    $('#Totalamount' + index).val(total_net.toFixed(2));
+    sales_tax_calc(index);
 }
 
-function sales_tax_calc(GrnNo) {
-    var SalesTaxAmount = parseFloat($('#SalesTaxAmount' + GrnNo).val());
-    var NetAmount = parseFloat($('#Totalamount' + GrnNo).val());
-    var AccId = $('#SalesTaxesAccId' + GrnNo).val();
+function sales_tax_calc(index) {
+    var NetAmount = parseFloat($('#Totalamount' + index).val()) || 0;
+    var AccId = $('#SalesTaxesAccId' + index).val();
+    var rate = $('#SalesTaxesAccId' + index).find(':selected').data('rate') || 0;
+    
+    var SalesTaxAmount = 0;
+    
     if (AccId != '') {
-        $('#SalesTaxAmount' + GrnNo).prop('disabled', false);
+        $('#SalesTaxAmount' + index).prop('disabled', false);
+        SalesTaxAmount = (NetAmount * rate) / 100;
+        $('#SalesTaxAmount' + index).val(SalesTaxAmount.toFixed(2));
     } else {
-        $('#SalesTaxAmount' + GrnNo).prop('disabled', true);
+        $('#SalesTaxAmount' + index).prop('disabled', true);
         SalesTaxAmount = 0;
-        $('#SalesTaxAmount' + GrnNo).val(0)
+        $('#SalesTaxAmount' + index).val(0);
     }
 
-
-    $('#NetTotal' + GrnNo).val(parseFloat(NetAmount + SalesTaxAmount).toFixed(2));
+    $('#NetTotal' + index).val(parseFloat(NetAmount - SalesTaxAmount).toFixed(2));
+    toWordss(index);
 }
 
 
