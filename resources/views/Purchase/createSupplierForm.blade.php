@@ -52,7 +52,7 @@ if($accType == 'client'){
 
                                                     <input type="hidden" name="account_head" value="2-281" />
                                                     <select onchange="get_nature_type()" 
-                                                        id="account_id" class="form-control requiredField select2" disabled>
+                                                        id="account_id" class="form-control requiredField select2" >
 
 
                                                         <option value="">Select Account</option>
@@ -951,18 +951,51 @@ function ntn_cnic(id) {
     }
 }
 
-$('#regd_in_income_tax').change(function() {
-    if ($(this).is(':checked')) {
+// $('#regd_in_income_tax').change(function() {
+//     if ($(this).is(':checked')) {
+//         $('.income').prop('checked', false);
+//         document.getElementById("income_tax_div").style.display = "block";
+//     } else {
+//         document.getElementById("income_tax_div").style.display = "none";
+//         $("#cnic").css("display", "none");
+//         // $("#ntn").css("display", "none");
+//         $('#ntn').val("");
+//     }
+// });
+$('#regd_in_income_tax').change(function(){
+    if ($(this).is(':checked'))
+    {
         $('.income').prop('checked', false);
         document.getElementById("income_tax_div").style.display = "block";
+        
+        // Radio button selection ke hisab se required class add karo
+        // Initially jab check karo to koi radio selected nahi hai, isliye required class nahi add karo
+        // Required class tab add hogi jab radio select karega user
     } else {
         document.getElementById("income_tax_div").style.display = "none";
+        
+        // Sirf required class hatao, input field ko hide mat karo
+        $("#ntn").removeClass("requiredField");
+        $("#cnic").removeClass("requiredField");
+        
+        // Required class ka red border bhi hatao
+        $("#ntn").css('border-color', '#ccc');
+        $("#cnic").css('border-color', '#ccc');
+        
+        // Radio buttons ko unchecked karo
+        $('.income').prop('checked', false);
+        
+        // CNIC ko hide karo (kionke business individual select nahi hai)
         $("#cnic").css("display", "none");
-        // $("#ntn").css("display", "none");
-        $('#ntn').val("");
+        
+        // NTN ko visible rakho lekin required na ho
+        $("#ntn").css("display", "block");
+        
+        // Column layout reset karo
+        $("#amir").removeClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
+        $("#amir").addClass("col-lg-12 col-md-12 col-sm-12 col-xs-12");
     }
 });
-
 
 $('#regd_in_sales_tax').change(function() {
     if ($(this).is(':checked')) {

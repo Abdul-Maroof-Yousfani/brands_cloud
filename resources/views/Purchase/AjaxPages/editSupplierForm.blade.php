@@ -81,7 +81,7 @@ if($accType == 'client'){
                                                                     <select   name="country" id="country" class="form-control">
                                                                         <option value="">Select Country :</option>
                                                                         @foreach($countries as $key => $y)
-                                                                            <option value="{{ $y->id}}">{{ $y->name}}</option>
+                                                                            <option @if($supplier->country == $y->id) selected @endif value="{{ $y->id}}">{{ $y->name}}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -677,6 +677,79 @@ if($accType == 'client'){
     </div>
     <script type="text/javascript">
         $(document).ready(function() {
+  var selectedCountry = $('#country').val();
+    var selectedState = "{{ $supplier->province }}";
+    var selectedCity = "{{ $supplier->city }}";
+    
+    if (selectedCountry) {
+        // First load states based on country
+        $.ajax({
+            url: '<?php echo url('/')?>/slal/stateLoadDependentCountryId',
+            type: "GET",
+            data: { id: selectedCountry },
+            success: function(data) {
+                $('select[name="state"]').html(data);
+                
+                // After states are loaded, select the saved state
+                if (selectedState) {
+                    $('select[name="state"]').val(selectedState).trigger('change');
+                    
+                    // Then load cities based on selected state
+                    $.ajax({
+                        url: '<?php echo url('/')?>/slal/cityLoadDependentStateId',
+                        type: "GET",
+                        data: { id: selectedState },
+                        success: function(cityData) {
+                            $('select[name="city"]').html(cityData);
+                            
+                            // Finally, select the saved city
+                            if (selectedCity) {
+                                $('select[name="city"]').val(selectedCity);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+    
+    // Your existing code for country change event
+    $('select[name="country"]').on('change', function() {
+        var countryID = $(this).val();
+        if(countryID) {
+            $.ajax({
+                url: '<?php echo url('/')?>/slal/stateLoadDependentCountryId',
+                type: "GET",
+                data: { id: countryID},
+                success:function(data) {
+                    $('select[name="city"]').empty();
+                    $('select[name="state"]').empty();
+                    $('select[name="state"]').html(data);
+                }
+            });
+        }else{
+            $('select[name="state"]').empty();
+            $('select[name="city"]').empty();
+        }
+    });
+
+    // Your existing code for state change event
+    $('select[name="state"]').on('change', function() {
+        var stateID = $(this).val();
+        if(stateID) {
+            $.ajax({
+                url: '<?php echo url('/')?>/slal/cityLoadDependentStateId',
+                type: "GET",
+                data: { id: stateID},
+                success:function(data) {
+                    $('select[name="city"]').empty();
+                    $('select[name="city"]').html(data);
+                }
+            });
+        }else{
+            $('select[name="city"]').empty();
+        }
+    });
 
             var con={{$con}};
             if(con<1){
@@ -753,45 +826,115 @@ if($accType == 'client'){
             $('#cat'+con).remove(); 
         }
 
+        // function ntn_cnic(id)
+        // {
+        //     if(id==1)
+        //     {
+
+        //         $(this).prop('checked', false);
+        //         $("#ntn").fadeIn(500);
+        //         $("#cnic").fadeIn(500);
+        //         $("#amir").removeClass("col-lg-12 col-md-12 col-sm-12 col-xs-12");
+        //         $("#amir").addClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
+        //         $("#ntn").addClass("requiredField");
+        //         $("#cnic").addClass("requiredField");
+        //     }
+
+        //     else
+        //     {
+
+        //         $("#ntn").fadeIn(500);
+        //         $("#ntn").addClass("requiredField");
+        //         $("#cnic").css("display", "none");
+        //         $("#cnic").removeClass("requiredField");
+        //         $("#amir").removeClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
+        //         $("#amir").addClass("col-lg-12 col-md-12 col-sm-12 col-xs-12");
+
+        //     }
+        // }
+
         function ntn_cnic(id)
-        {
-            if(id==1)
-            {
+{
+    if(id==1) // Business Individual
+    {
+        // Show both NTN and CNIC
+        $("#ntn").fadeIn(500);
+        $("#cnic").fadeIn(500);
+        
+        // Add required class to both
+        $("#ntn").addClass("requiredField");
+        $("#cnic").addClass("requiredField");
+        
+        // Adjust column layout
+        $("#amir").removeClass("col-lg-12 col-md-12 col-sm-12 col-xs-12");
+        $("#amir").addClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
+    }
+    else if(id==2 || id==3) // Company or AOP
+    {
+        // Show only NTN
+        $("#ntn").fadeIn(500);
+        
+        // Add required class to NTN only
+        $("#ntn").addClass("requiredField");
+        
+        // Hide and remove required from CNIC
+        $("#cnic").css("display", "none");
+        $("#cnic").removeClass("requiredField");
+        $('#cnic').val(""); // Clear CNIC value
+        
+        // Adjust column layout
+        $("#amir").removeClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
+        $("#amir").addClass("col-lg-12 col-md-12 col-sm-12 col-xs-12");
+    }
+}
 
-                $(this).prop('checked', false);
-                $("#ntn").fadeIn(500);
-                $("#cnic").fadeIn(500);
-                $("#amir").removeClass("col-lg-12 col-md-12 col-sm-12 col-xs-12");
-                $("#amir").addClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
-                $("#ntn").addClass("requiredField");
-                $("#cnic").addClass("requiredField");
-            }
-
-            else
-            {
-
-                $("#ntn").fadeIn(500);
-                $("#ntn").addClass("requiredField");
-                $("#cnic").css("display", "none");
-                $("#cnic").removeClass("requiredField");
-                $("#amir").removeClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
-                $("#amir").addClass("col-lg-12 col-md-12 col-sm-12 col-xs-12");
-
-            }
-        }
+        // $('#regd_in_income_tax').change(function(){
+        //     if ($(this).is(':checked'))
+        //     {
+        //         $('.income').prop('checked', false);
+        //         document.getElementById("income_tax_div").style.display = "block";
+        //     } else {
+        //         document.getElementById("income_tax_div").style.display = "none";
+        //         $("#cnic").css("display", "none");
+        //         // $("#ntn").css("display", "none");
+        //         // $('#ntn').val("");
+        //     }
+        // });
 
         $('#regd_in_income_tax').change(function(){
-            if ($(this).is(':checked'))
-            {
-                $('.income').prop('checked', false);
-                document.getElementById("income_tax_div").style.display = "block";
-            } else {
-                document.getElementById("income_tax_div").style.display = "none";
-                $("#cnic").css("display", "none");
-                // $("#ntn").css("display", "none");
-                // $('#ntn').val("");
-            }
-        });
+    if ($(this).is(':checked'))
+    {
+        $('.income').prop('checked', false);
+        document.getElementById("income_tax_div").style.display = "block";
+        
+        // Radio button selection ke hisab se required class add karo
+        // Initially jab check karo to koi radio selected nahi hai, isliye required class nahi add karo
+        // Required class tab add hogi jab radio select karega user
+    } else {
+        document.getElementById("income_tax_div").style.display = "none";
+        
+        // Sirf required class hatao, input field ko hide mat karo
+        $("#ntn").removeClass("requiredField");
+        $("#cnic").removeClass("requiredField");
+        
+        // Required class ka red border bhi hatao
+        $("#ntn").css('border-color', '#ccc');
+        $("#cnic").css('border-color', '#ccc');
+        
+        // Radio buttons ko unchecked karo
+        $('.income').prop('checked', false);
+        
+        // CNIC ko hide karo (kionke business individual select nahi hai)
+        $("#cnic").css("display", "none");
+        
+        // NTN ko visible rakho lekin required na ho
+        $("#ntn").css("display", "block");
+        
+        // Column layout reset karo
+        $("#amir").removeClass("col-lg-6 col-md-6 col-sm-6 col-xs-12");
+        $("#amir").addClass("col-lg-12 col-md-12 col-sm-12 col-xs-12");
+    }
+});
 
 
         $('#regd_in_sales_tax').change(function(){
