@@ -408,7 +408,7 @@ use App\Helpers\ReuseableCode;
                                                                 class="form-control select2"
                                                                 id="SalesTaxesAccId<?php echo $sales_tax_count?>"
                                                                 onchange="sales_tax_calc('<?php echo $sales_tax_count?>')">
-                                                                <option value="">Select Head</option>
+                                                                <option value="">Select</option>
                                                                 @foreach(ReuseableCode::get_all_sales_tax() as $row_tax)
                                                                 <option value="{{ $row_tax->id}}" data-rate="{{$row_tax->rate}}" {{ $SalesTaxAccId == $row_tax->id ? 'selected' : '' }}>{{$row_tax->rate}} %
                                                                 </option>
