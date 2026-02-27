@@ -96,8 +96,7 @@ foreach ($purchaseRequestDetail as $row){
         if($row->type == 2):
             $data.='.<a href='.$edit_url_direct.' type="button" class="btn btn-primary btn-xs">Edit</a>';
         else:
-            // $data.='.<a href='.$edit_url.' type="button" class="btn btn-primary btn-xs">Editss</a>';
-            $data.='.<a href='.$edit_url_direct.' type="button" class="btn btn-primary btn-xs">Edit</a>';
+            $data.='.<a href='.$edit_url.' type="button" class="btn btn-primary btn-xs">Editss</a>';
         endif;
         if ($delete)
     $data.= '.<button id="'.$row->id.'" type="button" onclick="delete_records('.$row->id.','.'2)" class="btn btn-danger btn-xs">Delete</button>';
