@@ -94,8 +94,9 @@ foreach ($purchaseRequestDetail as $row){
     if ($edit==true)
     if ($row->purchase_request_status==1 || CommonHelper::CheckGrnCount($row->purchase_request_no) == 0):
         if($row->type == 2):
-            $data.='.<a href='.$edit_url_direct.' type="button" class="btn btn-primary btn-xs">Edit</a>';
-            else:
+            // $data.='.<a href='.$edit_url_direct.' type="button" class="btn btn-primary btn-xs">Edit</a>';
+            $data.='.<a href='.$edit_url.' type="button" class="btn btn-primary btn-xs">Edit</a>';
+        else:
             $data.='.<a href='.$edit_url.' type="button" class="btn btn-primary btn-xs">Edit</a>';
         endif;
         if ($delete)
