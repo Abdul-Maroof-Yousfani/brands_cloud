@@ -676,7 +676,7 @@ $company_status = Input::get("company_status");
             $purchase_orde->supplier_id=$supplier[0];
             $purchase_orde->term_of_del=$request->term_of_del;
             $purchase_orde->terms_of_paym=$request->model_terms_of_payment;
-            $purchase_orde->destination=$request->destination;
+
             $purchase_orde->currency_id=$currency[0];
             $purchase_orde->currency_rate=$currency[1];
             $purchase_orde->sales_tax=$request->sales_taxx;

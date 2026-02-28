@@ -144,13 +144,13 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="row">
 
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">PO NO.</label>
                                         <input readonly type="text" class="form-control requiredField" placeholder=""
                                             name="po_no" id="po_no" value="{{strtoupper($purchaseRequestNo)}}" />
                                     </div>
 
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">PO DATE.</label>
                                         <span class="rflabelsteric"><strong>*</strong></span>
                                         <input type="date" class="form-control requiredField"
@@ -161,26 +161,14 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                                     <input type="hidden" name="dept_id" value="{{ $dept_id }}" />
                                     <input type="hidden" name="vendor_id" class="vendor_id" value="{{ $data[0]->vendor_id}}" />
 
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 hide">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Department</label>
-                                        <span class="rflabelsteric"><strong>*</strong></span>
-                                        <input type="text" name="sub_department_name" id="sub_department_name"
-                                            class="form-control" readonly
+                                        <input type="text" name="department" id="department"
+                                            class="form-control"
                                             value="{{ CommonHelper::get_sub_dept_name($dept_id) }}">
                                     </div>
 
 
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" style="display: none">
-                                        <label class="sf-label">Supplier Reference No.</label>
-                                        <input autofocus type="text" class="form-control" placeholder="Ref No"
-                                            name="slip_no" id="slip_no" value="-" />
-                                    </div>
-                                    <!--
-                                                                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                                                                                        <label class="sf-label">Supplier Order No</label>
-                                                                                        <input type="text" class="form-control" placeholder="Supplier Order No" name="s_order_no" id="s_order_no" value="" />
-                                                                                    </div>
-                                    <!-->
 
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Terms Of Delivery</label>
@@ -188,6 +176,15 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                                             name="term_of_del" id="term_of_del" value="" />
                                     </div>
 
+
+                                </div>
+
+
+                                @php
+                                    $pr_nos = $data->pluck("demand_no")->toArray();
+
+                                @endphp
+                                <div class="row">
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">PO Type</label>
                                         <select onchange="get_po(this.id); po_type_change(this);" name="po_type"
@@ -198,11 +195,6 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                                             @endforeach
                                         </select>
                                     </div>
-
-                                </div>
-
-
-                                <div class="row">
 
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Destination</label>
@@ -218,7 +210,7 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Comparative number</label>
                                         <input readonly style="text-transform: capitalize;" type="text" class="form-control"
-                                             value="{{$implodedComparatives}}" />
+                                             value="{{ implode(', ', \App\Helpers\CommonHelper::get_comparative_number($pr_nos)) }}" />
                                     </div>
 
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
@@ -232,6 +224,8 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                                              
                                         </select>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label"> <a href="#"
                                                 onclick="showDetailModelOneParamerter('pdc/createCurrencyTypeForm')"
@@ -239,12 +233,7 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                                         <span class="rflabelsteric"><strong>*</strong></span>
                                         <select onkeypress="claculation(1);get_rate()" name="curren" id="curren"
                                             class="form-control select2 requiredField">
-                                            <!-- <option value="0,1"> PKR</option> -->
-
                                             <option value="">Select Currency</option>
-                                            <!-- @foreach(CommonHelper::get_all_currency() as $row)
-                                            <option value="{{$row->id.','.$row->rate}}">{{$row->name}}</option>
-                                            @endforeach; -->
 
                                         </select>
 
@@ -255,37 +244,32 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                                         <span class="rflabelsteric"><strong>*</strong></span>
                                         <input class="form-control requiredField" value="1" type="text"
                                             name="currency_rate" id="currency_rate" />
-
+                                        <input type="hidden" name="curren_rate" id="curren_rate" value="1" />
                                     </div>
 
-                                    <input type="hidden" name="curren_rate" id="curren_rate" value="1" />
-
-                                </div>
-                                <div class="lineHeight">&nbsp;</div>
-                                <div class="row">
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Mode/ Terms Of Payment <span
                                                 class="rflabelsteric"><strong>*</strong></span></label>
                                         <input onkeyup="calculate_due_date()" type="number"
                                             class="form-control requiredField" placeholder=""
                                             name="model_terms_of_payment" id="model_terms_of_payment" value="" />
                                     </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Due Date <span
                                                 class="rflabelsteric"><strong>*</strong></span></label>
                                         <input type="date" class="form-control requiredField" placeholder=""
                                             name="due_date" id="due_date" value="" readonly />
                                     </div>
-
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                        <label class="sf-label">Purchase Type <span
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                        <label class="sf-label">Supplier Type <span
                                                 class="rflabelsteric"><strong>*</strong></span></label>
                                         <input readonly type="text" class="form-control requiredField" placeholder=""
-                                            value="{{ NotificationHelper::get_type_name( $p_type) }}" name="p_type"
+                                            value="{{ \App\Helpers\CommonHelper::get_type($p_type)->name }}" name="p_type"
                                             id="p_type" readonly />
+                                        <input type="hidden" value="{{ $p_type }}" name="p_type_id" />
                                     </div>
-
-                                    <input type="hidden" value="{{ $p_type }}" name="p_type_id" />
                                 </div>
                                 <div class="lineHeight">&nbsp;</div>
 

@@ -1533,12 +1533,32 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         endif;
     }
 
+    public static function comparative_count() {
+        $count = DB::connection("mysql2")->table("purchase_request")->count();
+        return $count;
+     
+    }
+
+    public static function get_types() {
+        $types = DB::connection("mysql2")->table("voucher_type")->where("status",1)->get();
+        return $types;
+    }
+
+    public static function get_type($id) {
+        $type = DB::connection("mysql2")->table("voucher_type")->where("status",1)->where("id",$id)->first();
+        return $type;
+    }
+
     public static function get_uom_name($id)
     {
         if ($id != 0):
             $uom = new UOM();
             $uom = $uom->where('status', 1)->where('id', $id)->select('uom_name')->first();
-            return strtoupper($uom->uom_name);
+            if($uom){
+                return strtoupper($uom->uom_name);
+            }else{
+                return '';
+            }
         else:
             return '';
         endif;
@@ -1996,6 +2016,21 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         return $c_allocation;
     }
 
+    public static function get_comparative_number(array $pr_no) {
+        $purchase_request = DB::connection("mysql2")->table('demand')->select("comparative_number_new")->whereIn("demand_no", $pr_no)->get();
+        return $purchase_request->pluck('comparative_number_new')->toArray();
+    }
+
+    public static function get_single_comparative_number($pr_no) {
+        $purchase_request = DB::connection("mysql2")
+                                ->table('demand')
+                                ->select("comparative_number_new")
+                                ->where("demand_no", $pr_no)
+                                ->first();
+        return $purchase_request->comparative_number_new;
+    }
+
+    
 
     public static function get_item_name_from_cost_center($id)
     {
@@ -2595,7 +2630,7 @@ public static function get_all_subitems()
     {
         $supplier = new Supplier();
         $supplier = $supplier->SetConnection('mysql2');
-        $supplier = $supplier->where('status', 1)->select('id', 'name')->get();
+        $supplier = $supplier->where('status', 1)->select('id', 'name', 'ntn', 'terms_of_payment', 'strn')->get();
         return $supplier;
     }
 

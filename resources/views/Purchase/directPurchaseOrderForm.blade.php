@@ -104,19 +104,27 @@ endif;
                                                 @endforeach
                                             </select>
                                         </div>
-
                                     </div>
-
-
                                     <div class="row">
-
-
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Destination</label>
                                             <input style="text-transform: capitalize;" type="text" class="form-control"
                                                 placeholder="" name="destination" id="destination" value="" />
                                         </div>
-
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label">Department</label>
+                                            <input type="text" class="form-control" name="department" id="department" value="" />
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label">Supplier Type <span class="rflabelsteric"><strong>*</strong></span></label>
+                                            <select class="form-control requiredField" name="p_type" id="p_type">
+                                                @foreach(\App\Helpers\CommonHelper::get_types() as $item)
+                                                    <option value="{{ $item->id }}">
+                                                        {{ $item->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label"> <a href="#"
                                                     onclick="showDetailModelOneParamerter('pdc/createSupplierFormAjax');"
@@ -125,10 +133,10 @@ endif;
                                             <select onchange="get_address(); get_discount();" name="supplier_id"
                                                 id="supplier_id" class="form-control requiredField select2">
                                                 <option value="">Select Vendor</option>
-
                                             </select>
                                         </div>
-
+                                    </div>
+                                    <div class="row">
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label"> <a href="#"
                                                     onclick="showDetailModelOneParamerter('pdc/createCurrencyTypeForm')"
@@ -138,23 +146,13 @@ endif;
                                                 class="form-control select2 requiredField">
                                                 <option value="0,1"> PKR</option>
                                             </select>
-
                                         </div>
-
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label"> Currency Rate</label>
                                             <span class="rflabelsteric"></span>
                                             <input class="form-control" type="text" name="currency_rate"
                                                 id="currency_rate" />
-
                                         </div>
-
-                                        <input type="hidden" name="curren_rate" id="curren_rate" value="1" />
-
-                                    </div>
-
-                                    <div class="lineHeight">&nbsp;</div>
-                                    <div class="row">
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Mode/ Terms Of Payment <span
                                                     class="rflabelsteric"></span></label>
@@ -168,23 +166,22 @@ endif;
                                             <input type="date" class="form-control" placeholder="" name="due_date"
                                                 id="due_date" value="" readonly />
                                         </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label">Supplier's NTN</label>
+                                            <input readonly type="text" class="form-control" placeholder="Ntn"
+                                                name="ntn" id="ntn_id" value="" />
+                                        </div>
+                                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                                             <label class="sf-label">Supplier's Address</label>
                                             <input style="text-transform: capitalize;" readonly type="text"
                                                 class="form-control" placeholder="" name="address" id="addresss"
                                                 value="" />
                                         </div>
                                     </div>
-                                    <div class="lineHeight">&nbsp;</div>
-
                                     <div class="row">
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                            <label class="sf-label">Supplier's NTN</label>
-                                            <input readonly type="text" class="form-control" placeholder="Ntn"
-                                                name="ntn" id="ntn_id" value="" />
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <label class="sf-label">Remarks</label>
                                             <textarea name="Remarks" id="terms_and_condition" class="form-control"
                                                 placeholder="Remarks"></textarea>

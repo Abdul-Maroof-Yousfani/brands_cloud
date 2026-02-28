@@ -37,7 +37,7 @@ var counter = 1;
             <div class="dp_sdw">
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <span class="subHeadingLabelClass">Create Purchase Order Form</span>
+                        <span class="subHeadingLabelClass">Edit Purchase Order Form</span>
                     </div>
                 </div>
                 <div class="lineHeight">&nbsp;</div>
@@ -52,37 +52,18 @@ var counter = 1;
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="row">
                                     <input type="hidden" name="id" value="{{$id}}">
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">PO NO.</label>
                                         <input readonly type="text" class="form-control requiredField" placeholder=""
                                             name="po_no" id="po_no" value="{{$purchase_order->purchase_request_no}}" />
                                     </div>
 
-                                    <input type="hidden" name="dept_id"
-                                        value="{{ $purchase_order->sub_department_id }}" />
-
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">PO DATE.</label>
                                         <span class="rflabelsteric"><strong>*</strong></span>
                                         <input type="date" class="form-control requiredField"
                                             max="<?php echo date('Y-m-d') ?>" name="po_date" id="po_date"
                                             value="{{$purchase_order->purchase_request_date}}" />
-                                    </div>
-
-
-
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                        <label class="sf-label">Department</label>
-                                        <span class="rflabelsteric"><strong>*</strong></span>
-                                        <input type="text" name="sub_department_name" id="sub_department_name"
-                                            class="form-control" readonly
-                                            value="<?php echo CommonHelper::getMasterTableValueById($m,'department','department_name',$purchase_order->sub_department_id);?>" />
-                                    </div>
-
-                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" style="display: none">
-                                        <label class="sf-label">Supplier Reference No.</label>
-                                        <input autofocus type="text" class="form-control" placeholder="Ref No"
-                                            name="slip_no" id="slip_no" value="-" />
                                     </div>
 
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
@@ -103,52 +84,52 @@ var counter = 1;
                                                 {{$item->name}}</option>
                                             @endforeach
                                         </select>
-
                                     </div>
-
                                 </div>
 
+                                @php
+                                    $pr_nos = $purchase_order_data->pluck("demand_no")->toArray();
+
+                                @endphp
 
                                 <div class="row">
-
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Destination</label>
-                                        <input style="text-transform: capitalize;" type="text"
-                                            class="form-control requiredField" placeholder="" name="destination"
-                                            id="destination" value="<?php echo $purchase_order->destination?>" />
+                                        <input style="text-transform: capitalize;" type="text" class="form-control"
+                                            placeholder="" name="destination" id="destination" value="{{$purchase_order->destination}}" />
                                     </div>
-
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                                        <label class="sf-label"> <a href="#"
-                                                onclick="showDetailModelOneParamerter('pdc/createSupplierFormAjax');"
-                                                class="">Vendor</a></label>
+                                        <label class="sf-label">Department</label>
+                                        <input type="text" class="form-control" name="department" id="department"
+                                            value="{{ $purchase_order->department ?? '' }}" />
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                        <label class="sf-label">Comparative number(s)</label>
+                                        <input readonly style="text-transform: capitalize;" type="text" class="form-control"
+                                             value="{{ implode(', ', \App\Helpers\CommonHelper::get_comparative_number($pr_nos)) }}" />
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                        <label class="sf-label"> Vendor </label>
                                         <span class="rflabelsteric"><strong>*</strong></span>
                                         <select onchange="get_address(); get_discount();" name="supplier_id"
                                             id="supplier_id" class="form-control requiredField select2">
                                             <option value="">Select Vendor</option>
                                             <?php
                                             foreach (CommonHelper::get_all_supplier() as $row1){
-
                                             $address= CommonHelper::get_supplier_address($row1->id);
                                             ?>
                                             <option
-                                                value="<?php echo $row1->id.'@#'.$address.'@#'.$row1->ntn.'@#'.$row1->terms_of_payment?>"
+                                                value="<?php echo $row1->id.'@#'.$address.'@#'.$row1->ntn.'@#'.$row1->terms_of_payment.'@#'.$row1->strn?>"
                                                 <?php if($purchase_order->supplier_id == $row1->id): echo "selected"; endif;?>>
                                                 <?php echo ucwords($row1->name)?>
                                             </option>
-                                            <?php
-                                            }
-                                            ?>
+                                            <?php } ?>
                                         </select>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                                        <label class="sf-label">
-                                            <!-- <a href="#"
-                                                onclick="showDetailModelOneParamerter('pdc/createCurrencyTypeForm')"
-                                                class=""> -->
-                                            Currency
-                                            <!-- </a> -->
-                                        </label>
+                                        <label class="sf-label"> Currency </label>
                                         <span class="rflabelsteric"><strong>*</strong></span>
                                         <select onchange="claculation(1);get_rate()" name="curren" id="curren"
                                             class="form-control select2 requiredField">
@@ -156,31 +137,18 @@ var counter = 1;
                                             <option value="0,1"
                                                 <?php if($purchase_order->currency_id == 0): echo "selected"; endif;?>>
                                                 PKR</option>
-
                                             @foreach(CommonHelper::get_all_currency() as $row)
                                             <option value="{{$row->id.','.$row->rate}}" {{$row->id == $purchase_order->currency_id ? 'selected' : ''}}>{{$row->name}}</option>
                                             @endforeach;
-
                                         </select>
-
                                     </div>
-
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label"> Currency Rate</label>
                                         <span class="rflabelsteric"><strong>*</strong></span>
                                         <input class="form-control requiredField" type="text" name="currency_rate"
                                             id="currency_rate" value="<?php echo $purchase_order->currency_rate;?>" />
-
                                     </div>
-                                    <input type="hidden" value="{{ $purchase_order->p_type }}" name="p_type_id" />
-
-                                    <input type="hidden" name="curren_rate" id="curren_rate" value="1" />
-
-                                </div>
-
-                                <div class="lineHeight">&nbsp;</div>
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Mode/ Terms Of Payment <span
                                                 class="rflabelsteric"><strong>*</strong></span></label>
                                         <input onkeyup="calculate_due_date()" type="number"
@@ -188,7 +156,7 @@ var counter = 1;
                                             name="model_terms_of_payment" id="model_terms_of_payment"
                                             value="<?php echo $purchase_order->terms_of_paym?>" />
                                     </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                         <label class="sf-label">Due Date <span
                                                 class="rflabelsteric"><strong>*</strong></span></label>
                                         <input type="date" class="form-control requiredField" placeholder=""
@@ -196,39 +164,48 @@ var counter = 1;
                                             readonly />
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                        <label class="sf-label">Supplier Type <span
+                                                class="rflabelsteric"><strong>*</strong></span></label>
+                                        @if(\App\Helpers\CommonHelper::get_type($purchase_order->p_type))
+                                        <input readonly type="text" class="form-control requiredField" placeholder=""
+                                            value="{{ \App\Helpers\CommonHelper::get_type($purchase_order->p_type)->name }}"
+                                            id="p_type" disabled />
+                                        
+                                        @else
+
+                                            <input type="text" class="form-control requiredField" placeholder=""
+                                            value="{{ $purchase_order->p_type }}" 
+                                            id="p_type" />
+
+                                        @endif
+                                    </div>
+                                </div>
+
+
+
+
+
 
                                 <div class="lineHeight">&nbsp;</div>
                                 <div class="row">
-
-
-
-
-
-
-
                                     <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
                                         <label class="sf-label">Supplier's Address</label>
                                         <input style="text-transform: capitalize;" readonly type="text"
                                             class="form-control" placeholder="" name="address" id="addresss" value="" />
                                     </div>
-
                                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
                                         <label class="sf-label">Supplier's NTN</label>
                                         <input readonly type="text" class="form-control" placeholder="Ntn" name="ntn"
                                             id="ntn_id" value="" />
                                     </div>
-
-
-
-
                                 </div>
-                                <div class="lineHeight">&nbsp;</div>
                                 <div class="row">
-
                                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                         <label class="sf-label">STRN <span
                                                 class="rflabelsteric"><strong>*</strong></span></label>
-                                        <input type="text" name="trn" id="strn" class="form-control requiredField"
+                                        <input type="text" name="trn" id="trn" class="form-control requiredField"
                                             placeholder="TRN" value="<?php echo $purchase_order->trn?>">
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
@@ -248,7 +225,7 @@ var counter = 1;
                             <div class="col-lg-12  col-md-12 col-sm-12 col-xs-12">
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                        <label class="sf-label">Description</label>
+                                        <label class="sf-label">Terms & Condition</label>
                                         <span class="rflabelsteric"><strong>*</strong></span>
                                         <textarea name="main_description" id="main_description" rows="4" cols="50"
                                             style="resize:none;font-size: 11px;"
@@ -590,7 +567,7 @@ function removeSeletedPurchaseRequestRows(id, counter) {
 }
 
 $(document).ready(function() {
-    get_address();
+    // get_address();
     net_amount();
     // toWords(1);
 

@@ -96,6 +96,21 @@ endif;
                                                 value="{{ $purchaseRequest->destination }}" />
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label">Department</label>
+                                            <input type="text" class="form-control" name="department" id="department"
+                                                value="{{ $purchaseRequest->department ?? '' }}" />
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label">Supplier Type <span class="rflabelsteric"><strong>*</strong></span></label>
+                                            <select class="form-control requiredField" name="p_type" id="p_type">
+                                                @foreach(\App\Helpers\CommonHelper::get_types() as $item)
+                                                    <option value="{{ $item->id }}" {{$purchaseRequest->p_type == $item->id ? 'selected' : ''}}>
+                                                        {{ $item->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Vendor<strong>*</strong></label>
                                             <select onchange="get_address(); get_discount();" name="supplier_id"
                                                 id="supplier_id" class="form-control requiredField select2">
@@ -103,6 +118,8 @@ endif;
                                                 <!-- Will be populated via AJAX on po_type_change -->
                                             </select>
                                         </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Currency</label>
                                             <select onchange="claculation(1);get_rate($purhaseRequest->rate)" name="curren" id="curren"
@@ -115,12 +132,6 @@ endif;
                                             <input class="form-control" type="text" name="currency_rate"
                                                 id="currency_rate" value="{{ $purchaseRequest->currency_rate }}" />
                                         </div>
-                                        <input type="hidden" name="curren_rate" id="curren_rate"
-                                            value="{{ $purchaseRequest->currency_rate }}" />
-                                    </div>
-
-                                    <div class="lineHeight">&nbsp;</div>
-                                    <div class="row">
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Mode/ Terms Of Payment</label>
                                             <input onkeyup="calculate_due_date()" type="text" class="form-control"
@@ -132,22 +143,21 @@ endif;
                                             <input type="date" class="form-control" name="due_date" id="due_date"
                                                 value="{{ $purchaseRequest->due_date }}" readonly />
                                         </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                            <label class="sf-label">Supplier's Address</label>
-                                            <input readonly type="text" class="form-control" name="address"
-                                                id="addresss" value="123" />
-                                        </div>
                                     </div>
-
-                                    <div class="lineHeight">&nbsp;</div>
-
                                     <div class="row">
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Supplier's NTN</label>
                                             <input readonly type="text" class="form-control" name="ntn"
                                                 id="ntn_id" value="" />
                                         </div>
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+                                            <label class="sf-label">Supplier's Address</label>
+                                            <input readonly type="text" class="form-control" name="address"
+                                                id="addresss" value="" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <label class="sf-label">Remarks</label>
                                             <textarea name="Remarks" class="form-control">{{ $purchaseRequest->remarks }}</textarea>
                                         </div>

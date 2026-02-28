@@ -334,12 +334,23 @@ class QuotationController extends Controller
 DB::connection('mysql2')->table('quotation')
     ->whereIn('id', $master_ids) // status update
     ->update(['quotation_status' => 2]);
-
 DB::connection('mysql2')->table('quotation')
     ->whereIn('pr_id', (array)$pr_id) // array bana kar pass karo
     ->update([
         'comparative_number' => DB::raw("CONCAT('COMP-', id)")
     ]);
+
+$exists = DB::connection('mysql2')->table('demand')
+    ->whereIn('id', (array)$pr_id)
+    ->exists();
+
+if ($exists) {
+    DB::connection('mysql2')->table('demand')
+        ->whereIn('id', (array)$pr_id)
+        ->update([
+            'comparative_number_new' => DB::raw("CONCAT('COMP-', id)")
+        ]);
+}
 
         $voucher_no = 'Quotation Against '.$pr_no;
         $subject = 'Purchase Quotation Approved For '.$pr_no;            

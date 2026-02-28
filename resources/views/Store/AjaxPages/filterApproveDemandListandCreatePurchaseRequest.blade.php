@@ -82,8 +82,7 @@ if(empty($paramOne)){
                                             </td>
                                             <td>{{ $counter++ }}</td>
                                             <td>{{ strtoupper($row->quotation_no) }}</td>
-                                            <td>{{ strtoupper($row->comparative_number) }}</td>
-                                            <td>{{ strtoupper($row->demand_no) }}</td>
+                                            <td>{{ \App\Helpers\CommonHelper::get_single_comparative_number($row->demand_no) }}</td>
                                             <td>{{ CommonHelper::changeDateFormat($row->demand_date) }}</td>
                                             <td>{{ CommonHelper::get_product_name($row->sub_item_id) }}</td>
                                             <td>{{ number_format($row->qty, 2) }}</td>

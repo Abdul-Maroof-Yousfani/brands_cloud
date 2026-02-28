@@ -66,8 +66,12 @@ class NotificationHelper
 
     public static function get_type_name($id)
     {
+        return $id;
        $type = DB::Connection('mysql2')->table('voucher_type')->where('status',1)->where('id',$id)->select('name')->first();
-       return $type->name;
+       if($type) {
+        return $type->name;
+       }
+       return '';
     }
     public static function send_email($step_name , $behvaior_name ,$dept_id,$voucher_no,$subject,$v_type = 3)
     {

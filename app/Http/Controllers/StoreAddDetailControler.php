@@ -189,6 +189,7 @@ class StoreAddDetailControler extends Controller
         $data1['po_type'] =  Input::get('po_type');
         $data1['terms_of_paym'] = $terms_of_paym;
         $data1['destination'] = $destination;
+        $data1['department'] = Input::get('department');
         $data1['supplier_id'] = $supplier_id[0];
         $data1['due_date'] = $due_date;
 
@@ -654,6 +655,7 @@ class StoreAddDetailControler extends Controller
         $purchase_request->terms_of_paym = $request->model_terms_of_payment;
         $purchase_request->due_date = $request->due_date;
         $purchase_request->destination = $request->destination;
+        $purchase_request->department = $request->department;
         $purchase_request->currency_id = $currency_id;
         $purchase_request->currency_rate = $request->currency_rate ?? $currency_rate;
         $purchase_request->sales_tax = $SalesTaxPer;
@@ -667,6 +669,7 @@ class StoreAddDetailControler extends Controller
         $purchase_request->purchase_request_status = 1;
         $purchase_request->status = 1;
         $purchase_request->date = date('Y-m-d');
+        $purchase_request->p_type = $request->p_type;
         $purchase_request->username = Auth::user()->name;
         $purchase_request->type = 2;
         $purchase_request->save();
@@ -793,6 +796,7 @@ public function updateDirectPurchaseOrder(Request $request)
         $purchase_request->terms_of_paym = $request->model_terms_of_payment;
         $purchase_request->due_date = $request->due_date;
         $purchase_request->destination = $request->destination;
+        $purchase_request->department = $request->department;
         $purchase_request->currency_id = $currency_id;
         $purchase_request->currency_rate = $request->currency_rate ?? $currency_rate;
         $purchase_request->sales_tax = $SalesTaxPer;
@@ -808,6 +812,7 @@ public function updateDirectPurchaseOrder(Request $request)
         $purchase_request->date = date('Y-m-d'); // or keep old date if preferred
         $purchase_request->username = Auth::user()->name;
         $purchase_request->type = 2;
+        $purchase_request->p_type = $request->p_type;
         $purchase_request->save();
 
         $master_id = $purchase_request->id;

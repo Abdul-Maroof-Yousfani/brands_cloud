@@ -107,7 +107,7 @@ $currentMonthEndDate   = date('Y-m-t');
                                 <div class="row">
 
 
-                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hide">
                                         <label class="sf-label">Destination</label>
                                         <input style="text-transform: capitalize;"  type="text" class="form-control" placeholder="" name="destination" id="destination" value="<?php echo $purchase_order->destination?>" />
                                     </div>

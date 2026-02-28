@@ -162,12 +162,12 @@ class StoreEditDetailControler extends Controller
         $month= substr($po_date,5,2);
 
         $purchase_request_date = Input::get('po_date');
-        $departmentId = Input::get('dept_id');
+
         $slip_no = Input::get('slip_no');
         $term_of_del = Input::get('term_of_del');
 
         $terms_of_paym = Input::get('model_terms_of_payment');
-        $destination = Input::get('destination');
+
         $supplier_id = Input::get('supplier_id');
         $due_date = Input::get('due_date');
         $supplier_id = explode('@#',$supplier_id);
@@ -182,6 +182,8 @@ class StoreEditDetailControler extends Controller
         $builty_no = Input::get('builty_no');
         $remarks = Input::get('remarks');
         $main_description = Input::get('main_description');
+        $destination = Input::get('destination');
+        $department = Input::get('department');
 
 
         $sales_tax = Input::get('sales_taxx');
@@ -199,12 +201,14 @@ class StoreEditDetailControler extends Controller
 
         $data1['purchase_request_no'] = $purchaseRequestNo;
         $data1['purchase_request_date'] = $purchase_request_date;
-        $data1['sub_department_id'] = $departmentId;
+
         $data1['slip_no'] = $slip_no;
         $data1['term_of_del'] = $term_of_del;
         $data1['po_type'] =  Input::get('po_type');
         $data1['terms_of_paym'] = $terms_of_paym;
         $data1['destination'] = $destination;
+        $data1['department'] = $department;
+
         $data1['supplier_id'] = $supplier_id[0];
         $data1['due_date'] = $due_date;
 
@@ -223,7 +227,7 @@ class StoreEditDetailControler extends Controller
         $data1['time'] = date("H:i:s");
         $data1['purchase_request_status'] = 1;
         $data1['s_order_no'] = $s_order_no;
-        $data1['p_type'] = Input::get('p_type_id');
+        // $data1['p_type'] = Input::get('p_type_id');
 
         DB::table('purchase_request')->where('purchase_request_no','=',$purchaseRequestNo)->update($data1);
 
