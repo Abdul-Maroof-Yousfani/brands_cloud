@@ -2333,22 +2333,22 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
             $query->where('supplier', $SupplierId);
         }
 
-        if ($RadioVal == 2) {
-            $query->where('work_order_id', '!=', '0');
-        }
+        // if ($RadioVal == 2) {
+        //     $query->where('work_order_id', '!=', '0');
+        // }
 
-        if ($pi_no) {
-            $query->where('new_purchase_voucher.pv_no', 'Like', "%" . strtolower($pi_no) . "%");
-        }
+        // if ($pi_no) {
+        //     $query->where('new_purchase_voucher.pv_no', 'Like', "%" . strtolower($pi_no) . "%");
+        // }
 
-        if ($grn_no) {
-            $query->where('new_purchase_voucher.grn_no', 'Like', "%" . strtolower($grn_no) . "%");
-        }
+        // if ($grn_no) {
+        //     $query->where('new_purchase_voucher.grn_no', 'Like', "%" . strtolower($grn_no) . "%");
+        // }
 
-        if ($po_no) {
-            $query->leftJoin('goods_receipt_note', 'goods_receipt_note.id', '=', 'new_purchase_voucher.grn_id')
-                ->where('goods_receipt_note.po_no', 'Like', "%" . strtolower($po_no) . "%");
-        }
+        // if ($po_no) {
+        //     $query->leftJoin('goods_receipt_note', 'goods_receipt_note.id', '=', 'new_purchase_voucher.grn_id')
+        //         ->where('goods_receipt_note.po_no', 'Like', "%" . strtolower($po_no) . "%");
+        // }
 
         if (($username && $username != 'All User' && $username != 'all') || $search) {
             $query->join('new_purchase_voucher_data', 'new_purchase_voucher_data.master_id', '=', 'new_purchase_voucher.id')
