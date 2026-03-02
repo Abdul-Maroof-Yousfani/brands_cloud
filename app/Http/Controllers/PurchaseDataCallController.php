@@ -2312,77 +2312,69 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
     {
         $search = $request->search;
         $username = $request->username;
-        $fromDate = $_GET['from'];
-        $to = $_GET['to'];
-        $SupplierId = $_GET['SupplierId'];
-        $ref_no = isset($_GET['ref_no']) ?? null; 
-        // $pi_no = isset($_GET['pi_no']) ?? null;
+        $fromDate = $request->from;
+        $to = $request->to;
+        $SupplierId = $request->SupplierId;
         $pi_no = $request->pi_no;
         $po_no = $request->po_no;
         $grn_no = $request->grn_no;
-        $RadioVal = $_GET['RadioVal'] ?? 9;
+        $RadioVal = $request->RadioVal ?? 1;
+        $m = $request->m;
 
-        $m = $_GET['m'];
-        $purchase_voucher=new NewPurchaseVoucher();
-        $purchase_voucher=$purchase_voucher->SetConnection('mysql2');
-        if($SupplierId == 'all'):
-            if($RadioVal == 1):
-            $purchase_voucher=$purchase_voucher->where('status',1)
-                ->whereBetween('pv_date', [$fromDate, $to])
-                ->orderBy('pv_date','ASC')->orderBy('id', 'desc')->get();
-            else:
-                $purchase_voucher=$purchase_voucher->where('status',1)->where('work_order_id','!=','0')
-                    ->whereBetween('pv_date', [$fromDate, $to])
-                    ->orderBy('pv_date','ASC')->orderBy('id', 'desc')->get();
-            endif;
+        CommonHelper::companyDatabaseConnection($m);
 
-        else:
-            if($RadioVal == 1):
-            $purchase_voucher=$purchase_voucher->where('status',1)
-                ->whereBetween('pv_date', [$fromDate, $to])->where('supplier',$SupplierId)->where('grn_id','!=','0')
-                ->orderBy('pv_date','ASC')->orderBy('id', 'desc')->get();
-            else:
-                $purchase_voucher=$purchase_voucher->where('status',1)
-                    ->whereBetween('pv_date', [$fromDate, $to])->where('supplier',$SupplierId)->where('work_order_id','!=','0')
-                    ->orderBy('pv_date','ASC')->orderBy('id', 'desc')->get();
-            endif;
-        endif;
+        $query = NewPurchaseVoucher::where('new_purchase_voucher.status', 1);
 
-        $purchase_voucher=new NewPurchaseVoucher();
-        $purchase_voucher=$purchase_voucher->SetConnection('mysql2');
-        $purchase_voucher=$purchase_voucher
-        ->join('new_purchase_voucher_data', 'new_purchase_voucher_data.master_id', '=', 'new_purchase_voucher.id')
-        ->join('subitem', 'subitem.id', '=', 'new_purchase_voucher_data.sub_item')
-        ->join('goods_receipt_note', 'goods_receipt_note.id', '=',  'new_purchase_voucher.grn_id')
-        ->where('new_purchase_voucher.status',1)
-        ->whereBetween('pv_date', [$fromDate, $to])
-        ->when($SupplierId!='all',function ($query) use ($SupplierId){
-            $query->where('supplier',$SupplierId);
-        })
-        ->when($ref_no!='',function ($query) use ($ref_no){
-            $query->where('slip_no','Like',"%".$ref_no."%");
-        })
-        ->when($pi_no!='',function ($query) use ($pi_no){
-            $query->where('new_purchase_voucher.pv_no','Like',"%".strtolower($pi_no)."%");
-        })
-        ->when($grn_no!='',function ($query) use ($grn_no){
-            $query->where('grn_no','Like',"%".strtolower($grn_no)."%");
-        })
-        ->when($po_no!='',function ($query) use ($po_no){
-            $query->where('goods_receipt_note.po_no','Like',"%".strtolower($po_no)."%");
-        })
-        ->when($username!='',function ($query) use ($username){
-            $query->where('subitem.username','Like',"%".$username."%");
-        })
-        ->when($search, function($query, $search){
-            $query->whereRaw('LOWER(subitem.product_name) LIKE ?', ['%'. strtolower($search) .'%'])
-                  ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%'. strtolower($search) .'%'])
-                  ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%'. strtolower($search) .'%'])
-                  ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%'. strtolower($search) .'%']);
-        })
-        ->orderBy('pv_date','ASC')->orderBy('new_purchase_voucher.id', 'desc')->get();
-        return view('Purchase.AjaxPages.purchase_voucher_list_ajax', compact('purchase_voucher','m'));
+        if ($fromDate && $to) {
+            $query->whereBetween('pv_date', [$fromDate, $to]);
+        }
 
+        if ($SupplierId && $SupplierId != 'all') {
+            $query->where('supplier', $SupplierId);
+        }
+
+        if ($RadioVal == 2) {
+            $query->where('work_order_id', '!=', '0');
+        }
+
+        if ($pi_no) {
+            $query->where('new_purchase_voucher.pv_no', 'Like', "%" . strtolower($pi_no) . "%");
+        }
+
+        if ($grn_no) {
+            $query->where('new_purchase_voucher.grn_no', 'Like', "%" . strtolower($grn_no) . "%");
+        }
+
+        if ($po_no) {
+            $query->leftJoin('goods_receipt_note', 'goods_receipt_note.id', '=', 'new_purchase_voucher.grn_id')
+                ->where('goods_receipt_note.po_no', 'Like', "%" . strtolower($po_no) . "%");
+        }
+
+        if (($username && $username != 'All User' && $username != 'all') || $search) {
+            $query->join('new_purchase_voucher_data', 'new_purchase_voucher_data.master_id', '=', 'new_purchase_voucher.id')
+                ->join('subitem', 'subitem.id', '=', 'new_purchase_voucher_data.sub_item');
+
+            if ($username && $username != 'All User' && $username != 'all') {
+                $query->where('subitem.username', 'Like', "%" . $username . "%");
+            }
+
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->whereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . strtolower($search) . '%'])
+                        ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%' . strtolower($search) . '%'])
+                        ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%' . strtolower($search) . '%'])
+                        ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%' . strtolower($search) . '%']);
+                });
+            }
+        }
+
+        $purchase_voucher = $query->select('new_purchase_voucher.*')
+            ->distinct()
+            ->orderBy('pv_date', 'ASC')
+            ->orderBy('new_purchase_voucher.id', 'desc')
+            ->get();
+
+        return view('Purchase.AjaxPages.purchase_voucher_list_ajax', compact('purchase_voucher', 'm'));
     }
 
 
