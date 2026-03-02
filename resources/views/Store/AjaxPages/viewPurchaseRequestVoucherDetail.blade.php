@@ -273,7 +273,7 @@ $gross_amount = $row1->rate * $row1->purchase_approve_qty;
 $amount_after_discount = $gross_amount - $row1->discount_amount;
 
 // 3. Tax amount on discounted amount
-$item_tax_amount = ($amount_after_discount / 100) * $row1->tax_rate;
+$item_tax_amount = ($gross_amount / 100) * $row1->tax_rate;
 
 // 4. NET AMOUNT = Amount after discount + Tax
 $net_amount = $amount_after_discount + $item_tax_amount;
