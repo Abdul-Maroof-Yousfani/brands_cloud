@@ -31,6 +31,7 @@ if(empty($paramOne)){
              ->where('b.status',1)
              ->where('a.quotation_status', '!=',2)
              ->where('c.quotation_status',2)
+             ->where('a.vendor', '!=',0)
              ->select('b.id','b.sub_item_id','c.comparative_number','c.voucher_no as quotation_no','d.demand_no','d.demand_date','a.vendor','b.qty','c.dept_id')
              ->orderBy('vendor')
             ->get()->toArray();
