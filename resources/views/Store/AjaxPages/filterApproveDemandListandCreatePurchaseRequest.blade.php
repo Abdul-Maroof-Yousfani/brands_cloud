@@ -104,6 +104,8 @@ if(empty($paramOne)){
                 <?php echo Form::close();?>
                 <?php ?>
                 <div class="lineHeight">&nbsp;</div>
+
+                 @if (!empty($data))
                 <script type="text/javascript">
                     $(document).ready(function() {
                         $(".checkedAll_<?php echo $row->id?>").change(function(){
@@ -132,6 +134,7 @@ if(empty($paramOne)){
                         });
                     });
                 </script>
+                @endif
 
                 <?php ?>
             </div>
