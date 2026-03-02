@@ -247,7 +247,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                                 class="form-control ">
                                                                                 <option value="">Select Option</option>
                                                                                 <option value="yes"
-                                                                                    {{$Cusomter->regd_in_income_tax == "Yes" ? 'selected' : ''}}>
+                                                                                    {{$Cusomter->regd_in_income_tax == "yes" ? 'selected' : ''}}>
                                                                                     Yes</option>
                                                                                 <option value="no"
                                                                                     {{$Cusomter->regd_in_income_tax == "no" ? 'selected' : ''}}>
