@@ -376,8 +376,8 @@ var counter = 1;
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="float: right;">
                                 <table class="table table-bordered sf-table-list">
                                     <thead>
-                                        <th class="text-center" colspan="3">Sales Tax Account Head</th>
-                                        <th class="text-center" colspan="3">Sales Tax Amount</th>
+                                        <th class="text-center" colspan="3">Withholding Tax</th>
+                                        <th class="text-center" colspan="3">Tax Amount</th>
                                     </thead>
                                     <tbody>
                                         <tr>
@@ -620,7 +620,7 @@ function sales_tax(id) {
 
     $('#sales_amount_td').val(sales_tax);
 
-    $('#d_t_amount_1').val(net + sales_tax);
+    $('#d_t_amount_1').val(net - sales_tax);
 
 
 }

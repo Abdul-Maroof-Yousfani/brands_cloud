@@ -26,7 +26,8 @@ $pr_no = [];
     <td  colspan="10" style="font-weight: bold"> 
         <?php   echo 'PR No : '. strtoupper($row->pr_no);
         echo '<br>'.'PR Date : '.CommonHelper::changeDateFormat($row->demand_date);
-         echo '<br>'.'Comparative no : '.$row->comparative_number ?? 'N/A' ;
+         echo '<br>'.'Comparative no : '.CommonHelper::get_single_comparative_number($row->pr_no) ?? 'N/A' ;
+        //  echo '<br>'.'Comparative no : '.$row->comparative_number ?? 'N/A' ;
         echo '<br><p style="color: #c59f9f">'.'Status : '.QuotationHelper::check_quotation_status($row->quotation_approve).'</p>';
         ?></td> 
    <?php $status =  1 ?>
