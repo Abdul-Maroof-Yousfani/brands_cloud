@@ -215,7 +215,7 @@ input.form-control.form-control2{margin:0!important;}
                         <div class="contr2">
                             <h2 class="subHeadingLabelClass">Sale Invoice</h2>
                                 <br>
-                            <p>Document # {{ $sales_tax_invoice->gi_no }}</p>
+                            <p>Document # {{ strtoupper($sales_tax_invoice->gi_no) }}</p>
                             <!-- <p>Doc #: 27903</p> -->
                             <p style="margin-bottom: -23px !important;">Date: {{ \Carbon\Carbon::parse($sales_tax_invoice->gi_date )->format('d-M-Y') }}</p>
                             <br>
@@ -279,7 +279,7 @@ input.form-control.form-control2{margin:0!important;}
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                     <div class="term">
                                         <p>SO #: {{ $sales_order->so_no }}</p>
-                                        <p>GDN #: {{ $dn_detail->gd_no }}</p>
+                                       <p>GDN #: {{ strtoupper($dn_detail->gd_no) }}</p>
                                         <p>Branch: {{ $sales_order->branch }}</p>
                                         <p>Sales Rep: {{ $customer_data->SaleRep }} </p>
                                         @if (strtoupper($customer_data->display_note_invoice) == 'YES')
