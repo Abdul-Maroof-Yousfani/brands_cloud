@@ -4,6 +4,7 @@
 	use Config;
 	use App\Models\FinanceDepartment;
 	use App\Models\Account;
+	use App\Models\Supplier;
 	use App\Models\Transactions;
 	use App\Models\Rvs;
 	use Auth;
@@ -280,6 +281,24 @@
 				if($account)
 				{
 					return $account->code;
+				}
+				else
+				{
+					return '' ;
+				}
+			else:
+				return '';
+			endif;
+		}
+		public static  function getSupplier($id)
+		{
+			if ($id!=0):	
+				$account=new Supplier();
+				$account=$account->SetConnection('mysql2');
+				$account=$account->where('status',1)->where('id',$id)->select('acc_id')->first();
+				if($account)
+				{
+					return $account->acc_id;
 				}
 				else
 				{
