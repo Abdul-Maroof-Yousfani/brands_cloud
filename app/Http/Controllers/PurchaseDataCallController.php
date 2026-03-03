@@ -3877,10 +3877,12 @@ public function get_stock_location_wise(Request $request)
                 ->join('goods_receipt_note', 'goods_receipt_note.id', '=', 'grn_data.master_id')
                 ->join('subitem as c','c.id','grn_data.sub_item_id')
                 ->where('grn_data.master_id',$id)
-                ->select('grn_data.*', 'goods_receipt_note.supplier_id','goods_receipt_note.grn_date','goods_receipt_note.bill_date'
+                ->select('grn_data.*','grn_data.net_amount', 'goods_receipt_note.supplier_id','goods_receipt_note.grn_date','goods_receipt_note.bill_date'
                 ,'goods_receipt_note.po_no','goods_receipt_note.supplier_invoice_no',
                 'goods_receipt_note.sub_department_id','grn_data.po_data_id','goods_receipt_note.p_type','c.type')
                 ->get();
+
+                // dd($grn);
 
             // $po_detail=   CommonHelper::get_po($grn->first()->po_no);
 
@@ -3891,10 +3893,14 @@ public function get_stock_location_wise(Request $request)
 
                 foreach($barcodes as $value):
 
+                  
+
                     $status=1;
                 if ($row->type==2):
                  $status = 1;
                 endif;
+
+                 
                 $stock['voucher_no']=$row->grn_no;
                 $stock['main_id']=$id;
                 $stock['master_id']=$row->id;
@@ -3909,13 +3915,14 @@ public function get_stock_location_wise(Request $request)
                  else:
                   $qty = $row->purchase_recived_qty;
                  endif;
-                $amount =$row->rate * $qty;
+                $amount =$row->rate * $qty ;
                 if ($row->discount_percent>0):
                     $discount_amount= ($amount / 100) * $row->discount_percent;
                 else:
                     $discount_amount=0;
                 endif;
-                $net_amount = $amount -$discount_amount;
+                $net_amount = $row->net_amount;
+                // $net_amount = $amount -$discount_amount;
 
                 $stock['qty']=$qty;
                 $stock['rate']=$row->rate;
@@ -3946,67 +3953,93 @@ public function get_stock_location_wise(Request $request)
                     $type = "Goods Receipt Note";
             \App\Helpers\CommonHelper::createNotification($type . " with " . $grn_no . " is approved by " . auth()->user()->name, $type . "");
      
-            DB::Connection('mysql2')->table('grn_data')->where('master_id', $id)->update($data);
+            // DB::Connection('mysql2')->table('grn_data')->where('master_id', $id)->update($data);
+
+         $t_data=   DB::Connection('mysql2')->table('stock as a')
+                   ->join('subitem as b','a.sub_item_id','=','b.id')
+                   ->join('category as c','c.id','=','b.main_ic_id')
+                  ->select('amount','sub_item_id','a.voucher_date','c.acc_id','a.supplier_id','a.amount as net_amount')
+                  ->where('voucher_no',$row->grn_no)
+                  ->whereIn('a.status',array(1,3))
+                  ->get();
+
+             
+
+            $total_amount=0;
+            foreach($t_data as $row1):
+
+                $data4=array
+                (
+                    'master_id'=>$id,
+                    'acc_id'=>1101,
+                    'acc_code'=>'1-2-1',
+                    // 'acc_id'=>$row1->acc_id,
+                    // 'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
+                    'cost_center'=>$row1->sub_item_id,
+                    'particulars'=>$goods_rece->value('po_no'),
+                    'opening_bal'=>0,
+                    'debit_credit'=>1,
+                    'amount'=>$row1->net_amount,
+                    'voucher_no'=>$row->grn_no,
+                    'voucher_type'=>5,
+                    'v_date'=>$row1->voucher_date,
+                    'date'=>date('Y-m-d'),
+                    'action'=>'insert',
+                    'username'=>Auth::user()->name,
+                    'status'=>1
+                );
+                DB::Connection('mysql2')->table('transactions')->insertGetId($data4);
 
 
-        //  $t_data=   DB::Connection('mysql2')->table('stock as a')
-        //            ->join('subitem as b','a.sub_item_id','=','b.id')
-        //            ->join('category as c','c.id','=','b.main_ic_id')
-        //           ->select('amount','sub_item_id','a.voucher_date','c.acc_id','a.supplier_id')
-        //           ->where('voucher_no',$row->grn_no)
-        //           ->whereIn('a.status',array(1,3))
-        //           ->get();
+                 $data5=array
+                (
+                    'master_id'=>$id,
+                    'acc_id'=>1708,
+                    'acc_code'=>'2-36-1',
+                    // 'acc_id'=>$row1->acc_id,
+                    // 'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
+                    'cost_center'=>$row1->sub_item_id,
+                    'particulars'=>$goods_rece->value('po_no'),
+                    'opening_bal'=>0,
+                    'debit_credit'=>0,
+                    'amount'=>$row1->net_amount,
+                    'voucher_no'=>$row->grn_no,
+                    'voucher_type'=>5,
+                    'v_date'=>$row1->voucher_date,
+                    'date'=>date('Y-m-d'),
+                    'action'=>'insert',
+                    'username'=>Auth::user()->name,
+                    'status'=>1
+                );
+                DB::Connection('mysql2')->table('transactions')->insertGetId($data5);
+                $total_amount+=$row1->amount;
+            endforeach;
 
-        //     $total_amount=0;
-        //     foreach($t_data as $row1):
+            // $control_account = ReuseableCode::get_control_account(1);
+            // $data5=array
+            // (
+            //     'master_id'=>$id,
+            //     'acc_id'=>$control_account,
+            //     'acc_code'=>FinanceHelper::getAccountCodeByAccId($control_account),
+            //     'cost_center'=>$row1->supplier_id,
+            //     'particulars'=>$goods_rece->value('po_no'),
+            //     'opening_bal'=>0,
+            //     'debit_credit'=>0,
+            //     'amount'=>$total_amount,
+            //     'voucher_no'=>$row->grn_no,
+            //     'voucher_type'=>5,
+            //     'v_date'=>$row1->voucher_date,
+            //     'date'=>date('Y-m-d'),
+            //     'action'=>'insert',
+            //     'username'=>Auth::user()->name,
+            //     'status'=>1
+            // );
+            // DB::Connection('mysql2')->table('transactions')->insertGetId($data5);
 
-        //         $data4=array
-        //         (
-        //             'master_id'=>$id,
-        //             'acc_id'=>$row1->acc_id,
-        //             'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
-        //             'cost_center'=>$row1->sub_item_id,
-        //             'particulars'=>$goods_rece->value('po_no'),
-        //             'opening_bal'=>0,
-        //             'debit_credit'=>1,
-        //             'amount'=>$row1->amount,
-        //             'voucher_no'=>$row->grn_no,
-        //             'voucher_type'=>5,
-        //             'v_date'=>$row1->voucher_date,
-        //             'date'=>date('Y-m-d'),
-        //             'action'=>'insert',
-        //             'username'=>Auth::user()->name,
-        //             'status'=>1
-        //         );
-        //         DB::Connection('mysql2')->table('transactions')->insertGetId($data4);
-        //         $total_amount+=$row1->amount;
-        //     endforeach;
-
-        //     $control_account = ReuseableCode::get_control_account(1);
-        //     $data5=array
-        //     (
-        //         'master_id'=>$id,
-        //         'acc_id'=>$control_account,
-        //         'acc_code'=>FinanceHelper::getAccountCodeByAccId($control_account),
-        //         'cost_center'=>$row1->supplier_id,
-        //         'particulars'=>$goods_rece->value('po_no'),
-        //         'opening_bal'=>0,
-        //         'debit_credit'=>0,
-        //         'amount'=>$total_amount,
-        //         'voucher_no'=>$row->grn_no,
-        //         'voucher_type'=>5,
-        //         'v_date'=>$row1->voucher_date,
-        //         'date'=>date('Y-m-d'),
-        //         'action'=>'insert',
-        //         'username'=>Auth::user()->name,
-        //         'status'=>1
-        //     );
-        //     DB::Connection('mysql2')->table('transactions')->insertGetId($data5);
-
-        //     $pr_no = DB::Connection('mysql2')->table('purchase_request_data')->where('status',1)->where('id',$po_data_id)->value('demand_no');
-        //     $voucher_no = $grn_no;
-        //     $subject = 'Inspection Crated For '.$pr_no;
-        //     NotificationHelper::send_email('Creation inspection QC','Create',$subDepartmentId,$voucher_no,$subject,$p_type);
+            $pr_no = DB::Connection('mysql2')->table('purchase_request_data')->where('status',1)->where('id',$po_data_id)->value('demand_no');
+            $voucher_no = $grn_no;
+            $subject = 'Inspection Crated For '.$pr_no;
+            // NotificationHelper::send_email('Creation inspection QC','Create',$subDepartmentId,$voucher_no,$subject,$p_type);
             DB::Connection('mysql2')->commit();
 
 
