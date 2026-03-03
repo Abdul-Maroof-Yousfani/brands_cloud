@@ -3921,8 +3921,8 @@ public function get_stock_location_wise(Request $request)
                 else:
                     $discount_amount=0;
                 endif;
-                $net_amount = $row->net_amount;
-                // $net_amount = $amount -$discount_amount;
+                //$net_amount = $row->net_amount;
+                 $net_amount = $amount -$discount_amount;
 
                 $stock['qty']=$qty;
                 $stock['rate']=$row->rate;
@@ -3966,6 +3966,8 @@ public function get_stock_location_wise(Request $request)
              
 
             $total_amount=0;
+
+    
             foreach($t_data as $row1):
 
                 $data4=array
@@ -3979,7 +3981,7 @@ public function get_stock_location_wise(Request $request)
                     'particulars'=>$goods_rece->value('po_no'),
                     'opening_bal'=>0,
                     'debit_credit'=>1,
-                    'amount'=>$row1->net_amount,
+                    'amount'=>$row1->amount,
                     'voucher_no'=>$row->grn_no,
                     'voucher_type'=>5,
                     'v_date'=>$row1->voucher_date,
@@ -4002,7 +4004,7 @@ public function get_stock_location_wise(Request $request)
                     'particulars'=>$goods_rece->value('po_no'),
                     'opening_bal'=>0,
                     'debit_credit'=>0,
-                    'amount'=>$row1->net_amount,
+                    'amount'=>$row1->amount,
                     'voucher_no'=>$row->grn_no,
                     'voucher_type'=>5,
                     'v_date'=>$row1->voucher_date,

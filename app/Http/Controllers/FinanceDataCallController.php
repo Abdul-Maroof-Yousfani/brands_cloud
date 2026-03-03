@@ -1082,6 +1082,7 @@ class FinanceDataCallController extends Controller
                 // $data = DB::Connection('mysql2')->selectRaw('select net_amount,category_id ,sub_item from new_purchase_voucher_data
                 // where master_id="'.$master_id.'" and additional_exp=0 ');
                 $data = DB::connection('mysql2')->table('new_purchase_voucher_data')->where([['master_id',$master_id],['additional_exp', 0 ]])->get();
+                $new_purchase_voucher_sup = DB::connection('mysql2')->table('new_purchase_voucher')->where('id',$master_id)->first();
 
 
                 foreach ($data as $key => $value) {
@@ -1096,12 +1097,57 @@ class FinanceDataCallController extends Controller
                     $transaction->master_id=$master_id;
                     $transaction->voucher_no=$value->pv_no;
                     $transaction->v_date=$purchase_date;
-                    $transaction->acc_id=$value->sub_item;
-                    $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($value->sub_item);
+                    // $transaction->acc_id=$value->sub_item;
+                    // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($value->sub_item);
+                     $transaction->acc_id=1708;
+                     $transaction->acc_code='2-36-1';
+                
                     $transaction->particulars= $desc;
                     $transaction->opening_bal=0;
                     $transaction->debit_credit=1;
-                    $transaction->amount=$value->net_amount;
+                    $transaction->amount=$value->amount;
+                    $transaction->username=Auth::user()->name;;
+                    $transaction->status=1;
+                    $transaction->voucher_type=4;
+                    $transaction->save();
+
+                    $credit_amount+=$value->net_amount;
+
+                    $transaction=new Transactions();
+                    $transaction=$transaction->SetConnection('mysql2');
+                    $transaction->master_id=$master_id;
+                    $transaction->voucher_no=$value->pv_no;
+                    $transaction->v_date=$purchase_date;
+                    // $transaction->acc_id=$value->sub_item;
+                    // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($value->sub_item);
+                     $transaction->acc_id=1709;
+                     $transaction->acc_code='1-5';
+                
+                    $transaction->particulars= $desc;
+                    $transaction->opening_bal=0;
+                    $transaction->debit_credit=1;
+                    $transaction->amount=$value->tax_amount;
+                    $transaction->username=Auth::user()->name;;
+                    $transaction->status=1;
+                    $transaction->voucher_type=4;
+                    $transaction->save();
+
+                    $credit_amount+=$value->net_amount;
+
+
+                    $transaction=new Transactions();
+                    $transaction=$transaction->SetConnection('mysql2');
+                    $transaction->master_id=$master_id;
+                    $transaction->voucher_no=$value->pv_no;
+                    $transaction->v_date=$purchase_date;
+                    $transaction->acc_id=$new_purchase_voucher_sup->supplier;
+                    $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($new_purchase_voucher_sup->supplier);
+                    
+                
+                    $transaction->particulars= $desc;
+                    $transaction->opening_bal=0;
+                    $transaction->debit_credit=0;
+                    $transaction->amount=$value->net_amount - $sales_tax_amount ;
                     $transaction->username=Auth::user()->name;;
                     $transaction->status=1;
                     $transaction->voucher_type=4;
@@ -1116,8 +1162,12 @@ class FinanceDataCallController extends Controller
                     $transaction=$transaction->SetConnection('mysql2');
                     $transaction->voucher_no=$pv_no;
                     $transaction->v_date=$purchase_date;
-                    $transaction->acc_id=$sales_tax_acc_id;
-                    $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($sales_tax_acc_id);
+                    // $transaction->acc_id=$sales_tax_acc_id;
+                    // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($sales_tax_acc_id);
+
+                     $transaction->acc_id=1710;
+                     $transaction->acc_code='2-36-2';
+                
                     $transaction->particulars= $desc;
                     $transaction->opening_bal=0;
                     $transaction->debit_credit=1;
