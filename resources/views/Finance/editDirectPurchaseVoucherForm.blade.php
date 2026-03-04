@@ -298,8 +298,8 @@ endif;
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="float: right;">
                                         <table class="table table-bordered sf-table-list">
                                             <thead>
-                                                <th class="text-center" colspan="3">Sales Tax Account Head</th>
-                                                <th class="text-center" colspan="3">Sales Tax Amount</th>
+                                                <th class="text-center" colspan="3">WithHolding Tax</th>
+                                                <th class="text-center" colspan="3">WithHolding Tax Amount</th>
                                             </thead>
                                             <tbody>
                                                 <tr>
@@ -626,7 +626,7 @@ endif;
             });
 
             var sales_tax = parseFloat($('#sales_amount_td').val()) || 0;
-            var net = (amount + sales_tax + expense_amount).toFixed(2);
+            var net = (amount - sales_tax + expense_amount).toFixed(2);
             $('#net_after_tax').val(net);
             $('#d_t_amount_1').val(net);
             // toWords(1);
@@ -751,25 +751,18 @@ endif;
             var qty = $('#actual_qty' + number).val();
             var rate = $('#rate' + number).val();
 
-            var total = parseFloat(qty * rate).toFixed(2);
+            var amount = parseFloat(qty * rate).toFixed(2);
 
-            $('#amount' + number).val(total);
+            $('#amount' + number).val(amount);
+            $('#actual_amount' + number).val(amount);
 
-            var amount = 0;
-            count = 1;
-            $('.net_amount_dis').each(function(i, obj) {
+            var tax_per = $('#tax_per' + number).val() || 0;
+            var tax_amount = (amount * tax_per / 100).toFixed(2);
+            $('#tax_amount' + number).val(tax_amount);
 
-                amount += +$('#' + obj.id).val();
-
-                count++;
-            });
-            amount = parseFloat(amount);
-
-
-            sales_tax('sales_taxx');
             discount_percent('discount_percent' + number);
             net_amount();
-            //  toWords(1);
+            sales_tax('sales_taxx');
         }
         function sales_tax(id) {
             var sales_tax = 0;
@@ -778,9 +771,7 @@ endif;
              
             if (sales_tax_per_value != '0') {
                 var net = $('#net').val();
-               
-                var sales_tax = (net / 100) * sales_tax_per_value;
-            
+                sales_tax = (net / 100) * sales_tax_per_value;
             }
             console.log(sales_tax)
             $('#sales_amount_td').val(sales_tax);
@@ -799,7 +790,7 @@ endif;
             $('#net').val(amount);
         
             var sales_tax = parseFloat($('#sales_amount_td').val());
-            var net = (amount + sales_tax).toFixed(2);
+            var net = (amount - sales_tax).toFixed(2);
           
             $('#net_after_tax').val(net);
             console.log(net);
@@ -963,29 +954,16 @@ endif;
             }, 500);
         });
         function amount_calculation(number) {
-            var amount = $('#amount' + number).val();
-               // var rate = $('#rate' + number).val();
+            var amount = $('#amount' + number).val() || 0;
+            $('#actual_amount' + number).val(amount);
 
-               
-            // $('#amount' + number).val(total);
-            var total = parseFloat(amount).toFixed(2);
-
-            var amount = 0;
-            count = 1;
-            $('.net_amount_dis').each(function(i, obj) {
-
-                amount += +$('#' + obj.id).val();
-
-                count++;
-            });
-            amount = parseFloat(amount);
-
-
+            var tax_per = $('#tax_per' + number).val() || 0;
+            var tax_amount = (amount * tax_per / 100).toFixed(2);
+            $('#tax_amount' + number).val(tax_amount);
 
             discount_percent('discount_percent' + number);
             net_amount();
             sales_tax('sales_taxx');
-            //  toWords(1);
         }
     </script>
     <script src="{{ URL::asset('assets/js/select2/js_tabindex.js') }}"></script>
