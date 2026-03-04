@@ -567,7 +567,9 @@ function AddMoreDetails() {
             <td><input type="text" onkeyup="net_amount()" class="form-control" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
             <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" placeholder="NET AMOUNT"></td>
             
-            <td class="text-center">
+            <td class="text-center" style="display: flex; gap: 10px;">
+                      <input style="width: inherit !important;" type="button" class="btn btn-sm btn-primary" onclick="AddMoreDetails()" value="+" />
+                                              
                 <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection(${Counter})"> - </button>
             </td>
         </tr>

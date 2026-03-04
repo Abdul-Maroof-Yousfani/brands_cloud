@@ -309,15 +309,13 @@ endif;
                                                         <!-- <td><input type="checkbox"
                                                                 onclick="view_history({{ $index + 1 }})"
                                                                 id="view_history{{ $index + 1 }}"></td> -->
-                                                        <td class="text-center">
-                                                            @if ($index == 0)
+                                                        <td class="text-center" style="display: flex; gap: 10px;">
                                                                 <input type="button" class="btn btn-sm btn-primary"
+                                                                    style="width: 50px;"
                                                                     onclick="AddMoreDetails()" value="+" />
-                                                            @else
                                                                 <button type="button" class="btn btn-sm btn-danger"
                                                                     onclick="RemoveSection({{ $index + 1 }})"> -
                                                                 </button>
-                                                            @endif
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -464,7 +462,11 @@ endif;
                 <td><input type="text" onkeyup="net_amount()" class="form-control" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
                 <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" value="0.00"></td>
               
-                <td class="text-center">
+                <td class="text-center" style="display: flex; gap: 10px;">
+                         <input type="button" class="btn btn-sm btn-primary"
+                         style="width: 50px;"
+                                                                    onclick="AddMoreDetails()" value="+" />
+                                                       
                     <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection(${Counter})"> - </button>
                 </td>
             </tr>
