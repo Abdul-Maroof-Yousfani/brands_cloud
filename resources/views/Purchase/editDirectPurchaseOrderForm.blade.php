@@ -284,7 +284,7 @@ endif;
                                                                 id="discount_amount{{ $index + 1 }}"
                                                                 value="{{ $detail->discount_amount }}"></td>
                                                         <td>
-                                                            <input type="text" onkeyup="claculation({{ $index + 1 }})" class="form-control" name="tax_per[]" id="tax_per{{ $index + 1 }}" placeholder="Tax %" value="{{ $detail->tax_percent ?? 0 }}">
+                                                            <input type="text" onkeyup="claculation({{ $index + 1 }})" class="form-control" name="tax_per[]" id="tax_per{{ $index + 1 }}" placeholder="Tax %" value="{{ $detail->tax_rate ?? 0 }}">
                                                         </td>
                                                         <td>
                                                             <input type="text" onkeyup="net_amount()" class="form-control" name="tax_amount[]" id="tax_amount{{ $index + 1 }}" placeholder="Tax Amount" value="{{ $detail->tax_amount ?? 0 }}">
@@ -541,7 +541,7 @@ endif;
 
             if (productName > 0) {
                 $.ajax({
-                    url: '/pdc/get_type_barcode_by_product',
+                    url: '{{ url("/pdc/get_type_barcode_by_product") }}',
                     type: 'GET',
                     data: {
                         productName: productName
@@ -564,8 +564,8 @@ endif;
             var rate = parseFloat($('#rate' + number).val()) || 0;
             var currency = parseFloat($('#currency_rate').val()) || 1;
 
-            var actual = (qty * rate).toFixed(2);
-            var amount = (qty * rate * currency).toFixed(2);
+            var actual = parseFloat(qty * rate).toFixed(2);
+            var amount = parseFloat(qty * rate).toFixed(2); // Same as actual as per user request
 
             $('#amount' + number).val(amount);
             $('#actual_amount' + number).val(actual);

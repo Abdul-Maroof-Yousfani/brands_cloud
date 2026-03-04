@@ -276,7 +276,7 @@ endif;
                                                     </td>
                                                     <td>
                                                         <input readonly type="text" class="form-control"
-                                                            name="classification_name[]" id="product_classification">
+                                                            name="classification_name[]" id="product_classification1">
                                                     </td>
                                                     <td>
                                                         <input readonly type="text" class="form-control"
@@ -1111,7 +1111,7 @@ $(document).ready(function(){
     var currency = $('#currency_rate').val() || 1;
     
     var actual = parseFloat(qty * rate).toFixed(2);
-    var amount = parseFloat(qty * rate * currency).toFixed(2);
+    var amount = parseFloat(qty * rate).toFixed(2); // Same as actual as per user request
     
     $('#amount' + number).val(amount);
     $('#actual_amount' + number).val(actual);
@@ -1416,11 +1416,11 @@ $(document).ready(function(){
 
         var productName = $('#' + id).val();
         var index_val = id.replace("productName", "");
-        $('#product_type' + index_val).html('');
-        $('#product_barcode' + index_val).html('');
-        $('#product_classification' + index_val).html('');
-        $('#product_trend' + index_val).html('');
-        $('#uom_id' + index_val).html('');
+        $('#product_type' + index_val).val('');
+        $('#product_barcode' + index_val).val('');
+        $('#product_classification' + index_val).val('');
+        $('#product_trend' + index_val).val('');
+        $('#uom_id' + index_val).val('');
 
         //  $('#productName').empty();
         var category = $('#CategoryId').val();
@@ -1428,7 +1428,7 @@ $(document).ready(function(){
         //  var item_master_id = $('#item_master').val();
         if (productName > 0) {
             $.ajax({
-                url: '/pdc/get_type_barcode_by_product',
+                url: '{{ url("/pdc/get_type_barcode_by_product") }}',
                 type: 'Get',
                 data: {
                     // category: category,
@@ -1460,6 +1460,7 @@ $(document).ready(function(){
             },
             success: function(data) {
                 $(element).closest('.main').find('.itemsclass').append(data);
+                $(element).closest('.main').find('.itemsclass').select2();
             }
         });
     }
