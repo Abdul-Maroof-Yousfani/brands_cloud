@@ -240,6 +240,8 @@ endif;
                                                             class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center hide">Discount Amount<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
+                                                    <th class="text-center">Tax %</th>
+                                                    <th class="text-center">Tax Amount</th>
                                                     <th class="text-center">Net Amount<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
                                                     <!-- <th class="text-center">Delete<span
@@ -320,6 +322,12 @@ endif;
                                                             value="0">
                                                     </td>
                                                     <td>
+                                                        <input type="text" onkeyup="claculation(1)" class="form-control" name="tax_per[]" id="tax_per1" placeholder="Tax %" value="0">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" onkeyup="net_amount()" class="form-control" name="tax_amount[]" id="tax_amount1" placeholder="Tax Amount" value="0">
+                                                    </td>
+                                                    <td>
                                                         <input type="text" class="form-control net_amount_dis"
                                                             name="after_dis_amount[]" id="after_dis_amount1"
                                                             placeholder="NET AMOUNT" min="1" value="0.00" readonly>
@@ -351,8 +359,8 @@ endif;
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="float: right;">
                                     <table class="table table-bordered sf-table-list">
                                         <thead>
-                                            <th class="text-center" colspan="3">Sales Tax Account Head</th>
-                                            <th class="text-center" colspan="3">Sales Tax Amount</th>
+                                            <th class="text-center" colspan="3">WithHolding Tax</th>
+                                            <th class="text-center" colspan="3">WithHolding Tax Amount</th>
                                         </thead>
                                         <tbody>
                                             <tr>
@@ -555,6 +563,8 @@ function AddMoreDetails() {
             <td><input readonly type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount${Counter}" placeholder="AMOUNT"></td>
             <td class="hide"><input type="text" onkeyup="discount_percent(this.id)" class="form-control" value="0" name="discount_percent[]" id="discount_percent${Counter}" placeholder="DISCOUNT"></td>
             <td class="hide"><input type="text" onkeyup="discount_amount(this.id)" class="form-control" value="0" name="discount_amount[]" id="discount_amount${Counter}" placeholder="DISCOUNT"></td>
+            <td><input type="text" onkeyup="claculation(${Counter})" class="form-control" value="0" name="tax_per[]" id="tax_per${Counter}" placeholder="Tax %"></td>
+            <td><input type="text" onkeyup="net_amount()" class="form-control" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
             <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" placeholder="NET AMOUNT"></td>
             
             <td class="text-center">
@@ -933,40 +943,7 @@ $(document).ready(function(){
 <script>
     var x = 0;
     function tax_by_amount(id) {
-
-
-        var tax_percentage = $('#sales_taxx').val();
-
-
-
-        if (tax_percentage == 0) {
-
-            $('#' + id).val(0);
-        } else {
-            var tax_amount = parseFloat($('#' + id).val());
-
-            // highlight end
-
-            if (isNaN(tax_amount) == true) {
-                tax_amount = 0;
-            }
-            var count = 1;
-            var amount = 0;
-            $('.net_amount_dis').each(function() {
-
-
-                amount += +$('#after_dis_amountt_' + count).val();
-                count++;
-            });
-            var total = parseFloat(tax_amount + amount).toFixed(2);
-            $('#d_t_amount_1').val(total);
-
-
-        }
-        //            toWords(1);
-
-
-
+        total_amount();
     }
     function net_amount() {
         var amount = 0;
@@ -985,8 +962,8 @@ $(document).ready(function(){
         $('#actual_net').val(actual_amount);
         var sales_tax = parseFloat($('#sales_amount_td').val());
 
-        $('#net_after_tax').val(amount + sales_tax);
-        $('#d_t_amount_1').val(amount + sales_tax);
+        $('#net_after_tax').val((amount - sales_tax).toFixed(2));
+        $('#d_t_amount_1').val((amount - sales_tax).toFixed(2));
         toWords(1);
 
     }
@@ -1134,13 +1111,23 @@ $(document).ready(function(){
     var currency = $('#currency_rate').val() || 1;
     
     var actual = parseFloat(qty * rate).toFixed(2);
-    var total = parseFloat(qty * rate * currency).toFixed(2);
+    var amount = parseFloat(qty * rate * currency).toFixed(2);
     
-    $('#amount' + number).val(total);
+    $('#amount' + number).val(amount);
     $('#actual_amount' + number).val(actual);
     
-    // Calculate discount if applicable
-    discount_percent('discount_percent' + number);
+    var tax_per = $('#tax_per' + number).val() || 0;
+    var tax_amount = (amount * tax_per / 100).toFixed(2);
+    $('#tax_amount' + number).val(tax_amount);
+    
+    var total_with_tax = parseFloat(amount) + parseFloat(tax_amount);
+    
+    var discount_percent_val = $('#discount_percent' + number).val() || 0;
+    var discount_amount = (total_with_tax * discount_percent_val / 100).toFixed(2);
+    $('#discount_amount' + number).val(discount_amount);
+    
+    var net_amount_val = (total_with_tax - discount_amount).toFixed(2);
+    $('#after_dis_amount' + number).val(net_amount_val);
     
     // Update all totals
     net_amount();
@@ -1211,7 +1198,7 @@ $(document).ready(function(){
     $('#net').val(amount.toFixed(2));
     
     var sales_tax = parseFloat($('#sales_amount_td').val()) || 0;
-    var net_after_tax = (amount + sales_tax).toFixed(2);
+    var net_after_tax = (amount - sales_tax).toFixed(2);
     
     $('#net_after_tax').val(net_after_tax);
     $('#d_t_amount_1').val(net_after_tax);
@@ -1254,9 +1241,11 @@ $(document).ready(function(){
 
     function discount_percent(id) {
         var number = id.replace("discount_percent", "");
-        var amount = $('#amount' + number).val();
+        var amount = parseFloat($('#amount' + number).val()) || 0;
+        var tax_amount = parseFloat($('#tax_amount' + number).val()) || 0;
+        var total_with_tax = amount + tax_amount;
 
-        var x = parseFloat($('#' + id).val());
+        var x = parseFloat($('#' + id).val()) || 0;
 
         if (x > 100) {
             alert('Percentage Cannot Exceed by 100');
@@ -1264,76 +1253,38 @@ $(document).ready(function(){
             x = 0;
         }
 
-        x = x * amount;
-        var discount_amount = parseFloat(x / 100).toFixed(2);
+        var discount_amount = parseFloat(total_with_tax * x / 100).toFixed(2);
         $('#discount_amount' + number).val(discount_amount);
-        var discount_amount = $('#discount_amount' + number).val();
 
-        if (isNaN(discount_amount)) {
+        var amount_after_discount = total_with_tax - discount_amount;
 
-            $('#discount_amount' + number).val(0);
-            discount_amount = 0;
-        }
-
-
-
-        var amount_after_discount = amount - discount_amount;
-
-        $('#after_dis_amount' + number).val(amount_after_discount);
-        var amount_after_discount = $('#after_dis_amount' + number).val();
-
-        if (amount_after_discount == 0) {
-            $('#after_dis_amount' + number).val(amount);
-            $('#net_amounttd_' + number).val(amount);
-            $('#net_amount' + number).val(amount_after_discount);
-        } else {
-
-            $('#net_amounttd_' + number).val(amount_after_discount);
-            $('#after_dis_amount' + number).val(amount_after_discount);
-        }
-
-        $('#cost_center_dept_amount' + number).text(amount_after_discount);
-        $('#cost_center_dept_hidden_amount' + number).val(amount_after_discount);
-
+        $('#after_dis_amount' + number).val(amount_after_discount.toFixed(2));
 
         sales_tax('sales_taxx');
         net_amount();
-        //  toWords(1);
-
-
     }
 
     function discount_amount(id) {
         var number = id.replace("discount_amount", "");
-        var amount = parseFloat($('#amount' + number).val());
+        var amount = parseFloat($('#amount' + number).val()) || 0;
+        var tax_amount = parseFloat($('#tax_amount' + number).val()) || 0;
+        var total_with_tax = amount + tax_amount;
 
-        var discount_amount = parseFloat($('#' + id).val());
+        var discount_amount = parseFloat($('#' + id).val()) || 0;
 
-        if (discount_amount > amount) {
-            alert('Amount Cannot Exceed by ' + amount);
+        if (discount_amount > total_with_tax) {
+            alert('Amount Cannot Exceed by ' + total_with_tax.toFixed(2));
             $('#discount_amount' + number).val(0);
             discount_amount = 0;
         }
 
-        if (isNaN(discount_amount)) {
-
-            $('#discount_amount' + number).val(0);
-            discount_amount = 0;
-        }
-
-        var percent = (discount_amount / amount * 100).toFixed(2);
+        var percent = (discount_amount / total_with_tax * 100).toFixed(2);
         $('#discount_percent' + number).val(percent);
-        var amount_after_discount = amount - discount_amount;
-        $('#after_dis_amount' + number).val(amount_after_discount);
+        var amount_after_discount = total_with_tax - discount_amount;
+        $('#after_dis_amount' + number).val(amount_after_discount.toFixed(2));
 
-
-        $('#net_amounttd_' + number).val(amount_after_discount);
-        $('#net_amount_' + number).val(amount_after_discount);
         sales_tax('sales_taxx');
-        //   toWords(1);
         net_amount();
-
-
     }
 
     function get_detail(id, number) {

@@ -705,6 +705,8 @@ class StoreAddDetailControler extends Controller
                 $purch_request_data->sub_total = CommonHelper::check_str_replace($request->amount[$key] ?? 0);
                 $purch_request_data->discount_percent = CommonHelper::check_str_replace($request->discount_percent[$key] ?? 0);
                 $purch_request_data->discount_amount = CommonHelper::check_str_replace($request->discount_amount[$key] ?? 0);
+                $purch_request_data->tax_rate = CommonHelper::check_str_replace($request->tax_per[$key] ?? 0);
+                $purch_request_data->tax_amount = CommonHelper::check_str_replace($request->tax_amount[$key] ?? 0);
                 $purch_request_data->net_amount = CommonHelper::check_str_replace($request->after_dis_amount[$key] ?? 0);
                 
                 $net_amount = CommonHelper::check_str_replace($request->after_dis_amount[$key] ?? 0);
@@ -843,6 +845,8 @@ public function updateDirectPurchaseOrder(Request $request)
                 $purch_request_data->sub_total = CommonHelper::check_str_replace($request->amount[$key] ?? 0);
                 $purch_request_data->discount_percent = CommonHelper::check_str_replace($request->discount_percent[$key] ?? 0);
                 $purch_request_data->discount_amount = CommonHelper::check_str_replace($request->discount_amount[$key] ?? 0);
+                $purch_request_data->tax_rate = CommonHelper::check_str_replace($request->tax_per[$key] ?? 0);
+                $purch_request_data->tax_amount = CommonHelper::check_str_replace($request->tax_amount[$key] ?? 0);
                 $purch_request_data->net_amount = CommonHelper::check_str_replace($request->after_dis_amount[$key] ?? 0);
 
                 $net_amount = CommonHelper::check_str_replace($request->after_dis_amount[$key] ?? 0);
