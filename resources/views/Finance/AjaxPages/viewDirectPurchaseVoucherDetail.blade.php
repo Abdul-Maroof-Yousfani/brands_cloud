@@ -303,7 +303,8 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$row->supplier);
                                             <?php 
  $Accounts = CommonHelper::get_single_row('gst','id',$row->sales_tax_acc_id);
                                             ?>
-                                            <label for="field-1" class="sf-label"><b>WithHolding Tax % <?php echo number_format(($Accounts)->percent,0)?></b></label>
+                                            <label for="field-1" class="sf-label"><b>WithHolding Tax %</b></label>
+                                            <!-- <label for="field-1" class="sf-label"><b>WithHolding Tax % <?php echo number_format(($Accounts)->percent ?? 0,2)?></b></label> -->
                                         </td>
                                         <td class="text-center"><b id=""></b>{{number_format($row->sales_tax_amount,2)}}</td>
                                     </tr>
