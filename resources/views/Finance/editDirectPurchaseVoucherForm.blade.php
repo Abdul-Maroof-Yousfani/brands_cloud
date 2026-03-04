@@ -429,19 +429,19 @@ endif;
         }
 
         function get_type_barcode_by_product(id) {
-            var product_id = $('#' + id).val();
+            var productName = $('#' + id).val();
             var number = id.replace("productName", "");
-            if (product_id) {
+            if (productName) {
                 $.ajax({
                     url: "{{ url('pdc/get_type_barcode_by_product') }}",
                     type: "GET",
-                    data: { product_id: product_id },
+                    data: { productName: productName },
                     success: function(data) {
-                        $('#product_type' + number).val(data.type_name);
-                        $('#product_barcode' + number).val(data.barcode);
-                        $('#product_classification' + number).val(data.classification_name);
-                        $('#product_trend' + number).val(data.trend_name);
-                        $('#uom_id' + number).val(data.uom_name);
+                        $('#product_type' + number).val(data.product_type_id);
+                        $('#product_barcode' + number).val(data.product_barcode);
+                        $('#product_classification' + number).val(data.product_classification_id);
+                        $('#product_trend' + number).val(data.product_trend_id);
+                        $('#uom_id' + number).val(data.uom);
                     }
                 });
             }
@@ -660,7 +660,7 @@ endif;
         $(document).ready(function() {
             net_amount();
             amount_calculation(1);
-            for (i = 1; i <= counter; i++) {
+            for (i = 1; i <= Counter; i++) {
                 $('#amount_' + i).number(true, 2);
                 //   $('#rate_'+i).number(true,2);
                 $('#purchase_approve_qty_' + i).number(true, 2);
