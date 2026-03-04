@@ -514,6 +514,7 @@ endif;
                 </tr>
             `);
             $('.select2').select2();
+            $('#productName' + Counter).trigger('click');
             var AutoNo = $(".AutoNo").length;
             $('#span').text(AutoNo);
         }
@@ -661,6 +662,7 @@ endif;
             net_amount();
             amount_calculation(1);
             for (i = 1; i <= Counter; i++) {
+                $('#productName' + i).trigger('click');
                 $('#amount_' + i).number(true, 2);
                 //   $('#rate_'+i).number(true,2);
                 $('#purchase_approve_qty_' + i).number(true, 2);
