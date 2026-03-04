@@ -225,9 +225,9 @@ endif;
                                                         <td>
                                                             <select onChange="get_type_barcode_by_product('productName{{ $key+1 }}')" name="item_id[]" id="productName{{ $key+1 }}" class="form-control requiredField select2 itemsclass" style="width:25rem !important;">
                                                                 <option value="">Select Products</option>
-                                                                @foreach(CommonHelper::get_all_subitem_by_brand($DFil->brand_id) as $item)
-                                                                <option @if($DFil->sub_item == $item->id) selected @endif value="{{$item->id}}">{{ $item->product_name != '' ? $item->product_name : $item->sub_ic }}</option>
-                                                                @endforeach
+                                                                 @foreach(CommonHelper::get_all_subitem_by_brand($DFil->brand_id) as $item)
+                                                                 <option @if($DFil->sub_item == $item->id) selected @endif value="{{$item->id}}">({{ $item->sku_code }}) {{ $item->product_name != '' ? $item->product_name : $item->sub_ic }}</option>
+                                                                 @endforeach
                                                             </select>
                                                         </td>
                                                         <td>
@@ -410,21 +410,18 @@ endif;
             $('#uom_id' + id).val($('#sub_' + id).find(':selected').data("uom"))
         }
 
-        function get_product_by_brand(element, number, selected_brand_id = null) {
+        function get_product_by_brand(element, number, selected_product_id = null) {
             var brand_id = $(element).val();
             if (brand_id) {
                 $.ajax({
-                    url: "{{ url('pdc/get_product_by_brand') }}",
+                    url: "{{ url('/getSubItemByBrand') }}",
                     type: "GET",
-                    data: { brand_id: brand_id },
+                    data: { id: brand_id },
                     success: function(data) {
                         $('#productName' + number).empty();
-                        $('#productName' + number).append('<option value="">Select Products</option>');
-                        $.each(data, function(key, value) {
-                            $('#productName' + number).append('<option value="' + value.id + '">' + (value.product_name ? value.product_name : value.sub_ic) + '</option>');
-                        });
-                        if (selected_brand_id) {
-                            $('#productName' + number).val(selected_brand_id).trigger('change');
+                        $('#productName' + number).append(data);
+                        if (selected_product_id) {
+                            $('#productName' + number).val(selected_product_id).trigger('change');
                         }
                     }
                 });
