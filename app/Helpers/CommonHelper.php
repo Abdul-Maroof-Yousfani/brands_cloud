@@ -2386,6 +2386,11 @@ public static function get_all_subitems()
         return $subitems;
     }
 
+    public static function get_all_subitem_by_brand($brand_id) {
+        $subitems = Subitem::where("brand_id", $brand_id)->get();
+        return $subitems;
+    }
+
     public static function get_item_with_special_price(){
 
     }
