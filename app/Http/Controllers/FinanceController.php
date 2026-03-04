@@ -2504,7 +2504,7 @@ public function importData(Request $request)
 
 		$NewPurchaseVoucherData = DB::connection('mysql2')->table('new_purchase_voucher_data as npvd')
 			->leftJoin('subitem as si', 'npvd.sub_item', '=', 'si.id')
-			->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.id')
+			->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
 			->leftJoin('product_classifications as pc', 'si.product_classification_id', '=', 'pc.id')
 			->leftJoin('product_trends as ptr', 'si.product_trend_id', '=', 'ptr.id')
 			->leftJoin('uom as u', 'si.uom', '=', 'u.id')
