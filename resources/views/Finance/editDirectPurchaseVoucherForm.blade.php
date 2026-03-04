@@ -514,7 +514,7 @@ endif;
                 </tr>
             `);
             $('.select2').select2();
-            $('#productName' + Counter).trigger('click');
+            $('#productName' + Counter).trigger('change');
             var AutoNo = $(".AutoNo").length;
             $('#span').text(AutoNo);
         }
@@ -662,7 +662,6 @@ endif;
             net_amount();
             amount_calculation(1);
             for (i = 1; i <= Counter; i++) {
-                $('#productName' + i).trigger('click');
                 $('#amount_' + i).number(true, 2);
                 //   $('#rate_'+i).number(true,2);
                 $('#purchase_approve_qty_' + i).number(true, 2);
@@ -958,7 +957,11 @@ endif;
     </script>
     <script type="text/javascript">
         $('.select2').select2();
-
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.itemsclass').trigger('change');
+            }, 500);
+        });
         function amount_calculation(number) {
             var amount = $('#amount' + number).val();
                // var rate = $('#rate' + number).val();
