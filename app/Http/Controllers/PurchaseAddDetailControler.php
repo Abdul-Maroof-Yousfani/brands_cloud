@@ -3992,6 +3992,8 @@ class PurchaseAddDetailControler extends Controller
                 $NewPurchaseVoucherData->qty            = $request->input('actual_qty')[$key];
                 $NewPurchaseVoucherData->rate           = $request->input('rate')[$key];
                 $NewPurchaseVoucherData->amount         = $request->input('amount')[$key];
+                $NewPurchaseVoucherData->tax_rate       = $request->input('tax_per')[$key] ?? 0;
+                $NewPurchaseVoucherData->tax_amount     = $request->input('tax_amount')[$key] ?? 0;
                 $NewPurchaseVoucherData->discount_amount         = $request->input('discount_amount')[$key];
                 $NewPurchaseVoucherData->net_amount         = $request->input('after_dis_amount')[$key];
                 $TotAmount += $request->input('after_dis_amount')[$key];
@@ -4100,6 +4102,8 @@ class PurchaseAddDetailControler extends Controller
                 $NewPurchaseVoucherData->qty            = $request->input('actual_qty')[$key];
                 $NewPurchaseVoucherData->rate           = $request->input('rate')[$key];
                 $NewPurchaseVoucherData->amount         = $request->input('amount')[$key];
+                $NewPurchaseVoucherData->tax_rate       = $request->input('tax_per')[$key] ?? 0;
+                $NewPurchaseVoucherData->tax_amount     = $request->input('tax_amount')[$key] ?? 0;
                 $NewPurchaseVoucherData->discount_amount         = $request->input('discount_amount')[$key];
                 $NewPurchaseVoucherData->net_amount         = $request->input('after_dis_amount')[$key];
                 $NewPurchaseVoucherData->sub_department_id         = $sub_department_id;
@@ -4110,6 +4114,25 @@ class PurchaseAddDetailControler extends Controller
                 $NewPurchaseVoucherData->date           = date('Y-m-d');
                 $NewPurchaseVoucherData->save();
             endforeach;
+
+            $Loop = $request->input('account_id');
+            if($Loop !="")
+            {
+                $Counta = 0;
+                foreach($Loop as $LoopFil)
+                {
+                    $ExpData['pv_no'] = $pv_no;
+                    $ExpData['master_id'] = $master_id;
+                    $ExpData['category_id'] = $request->input('account_id')[$Counta];
+                    $ExpData['net_amount'] = $request->input('expense_amount')[$Counta];
+                    $ExpData['additional_exp'] = 1;
+                    $TotAmount += $request->input('expense_amount')[$Counta];
+                    $ExpData['username'] = Auth::user()->name;
+                    $ExpData['date'] = date('Y-m-d');
+                    $Counta++;
+                    DB::Connection('mysql2')->table('new_purchase_voucher_data')->insert($ExpData);
+                }
+            }
             // NotificationHelper::send_email('Purchase Invoice', 'Create', $dept_id, $voucher_no, $subject, $p_type);
             // ReuseableCode::approvedPVDetail($master_id);
             // CommonHelper::inventory_activity($pv_no, $purchase_date, $TotAmount, 5, 'Insert');

@@ -258,7 +258,7 @@ endif;
                                                             <input type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount{{ $key+1 }}" placeholder="AMOUNT" min="1" value="{{ $DFil->actual_amount ?? $DFil->amount }}" readonly>
                                                         </td>
                                                         <td>
-                                                            <input type="text" onkeyup="claculation('{{ $key+1 }}')" class="form-control" name="tax_per[]" id="tax_per{{ $key+1 }}" placeholder="TAX %" value="{{ $DFil->tax_per ?? 0 }}">
+                                                            <input type="text" onkeyup="claculation('{{ $key+1 }}')" class="form-control" name="tax_per[]" id="tax_per{{ $key+1 }}" placeholder="TAX %" value="{{ $DFil->tax_rate ?? 0 }}">
                                                         </td>
                                                         <td>
                                                             <input type="text" onkeyup="claculation('{{ $key+1 }}')" class="form-control" name="tax_amount[]" id="tax_amount{{ $key+1 }}" placeholder="TAX AMOUNT" value="{{ $DFil->tax_amount ?? 0 }}" readonly>
@@ -307,9 +307,9 @@ endif;
                                                         <select onchange="sales_tax(this.id)"
                                                             class="form-control select2" id="sales_taxx"
                                                             name="sales_taxx">
-                                                            <option value="0">Select</option>
+                                                            <option value="0">Select</option> SF
                                                             @foreach (ReuseableCode::get_all_sales_tax() as $row)
-                                                                <option  value="{{ $row->percent.'@'.$row->acc_id }}" {{($row->percent == "17.000")? 'selected' : ''}}>
+                                                                <option  value="{{ $row->percent.'@'.$row->acc_id }}" {{($row->acc_id == $NewPurchaseVoucher->sales_tax_acc_id)? 'selected' : ''}}>
                                                                     {{ $row->percent }}</option>
                                                             @endforeach
                                                         </select>
@@ -355,7 +355,25 @@ endif;
                                                     </th>
                                                 </thead>
                                                 <tbody id="AppendExpense">
-
+                                                    @foreach($ExpensesData as $keyE => $expense)
+                                                    <script>var CounterExpense = {{ $keyE + 1 }};</script>
+                                                    <tr id="RemoveExpenseRow{{ $keyE + 1 }}">
+                                                        <td>
+                                                            <select class="form-control requiredField select2" name="account_id[]" id="account_id{{ $keyE + 1 }}">
+                                                                <option value="">Select Account</option>
+                                                                @foreach(CommonHelper::get_accounts_by_parent_code('1-6') as $Fil)
+                                                                <option @if($expense->category_id == $Fil->id) selected @endif value="{{$Fil->id}}">{{$Fil->code.'--'.$Fil->name}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="expense_amount[]" id="expense_amount{{ $keyE + 1 }}" class="form-control requiredField" value="{{ $expense->net_amount }}">
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button type="button" id="BtnRemoveExpense{{ $keyE + 1 }}" class="btn btn-sm btn-danger" onclick="RemoveExpense({{ $keyE + 1 }})"> - </button>
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
                                         </div>
@@ -433,6 +451,34 @@ endif;
         }
 
         var Counter = {{ count($NewPurchaseVoucherData) }};
+        var CounterExpense = {{ count($ExpensesData) }};
+
+        function AddMoreExpense() {
+            CounterExpense++;
+            $('#AppendExpense').append(`
+                <tr id="RemoveExpenseRow${CounterExpense}">
+                    <td>
+                        <select class="form-control requiredField select2" name="account_id[]" id="account_id${CounterExpense}">
+                            <option value="">Select Account</option>
+                            @foreach(CommonHelper::get_accounts_by_parent_code('1-6') as $Fil)
+                            <option value="{{$Fil->id}}">{{$Fil->code.'--'.$Fil->name}}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="expense_amount[]" id="expense_amount${CounterExpense}" class="form-control requiredField">
+                    </td>
+                    <td class="text-center">
+                        <button type="button" id="BtnRemoveExpense${CounterExpense}" class="btn btn-sm btn-danger" onclick="RemoveExpense(${CounterExpense})"> - </button>
+                    </td>
+                </tr>
+            `);
+            $('.select2').select2();
+        }
+
+        function RemoveExpense(Row) {
+            $('#RemoveExpenseRow' + Row).remove();
+        }
 
         function AddMoreDetails() {
             Counter++;
@@ -571,21 +617,21 @@ endif;
         function net_amount() {
             var amount = 0;
             $('.net_amount_dis').each(function(i, obj) {
-
                 amount += +$('#' + obj.id).val();
-
-
             });
             amount = parseFloat(amount);
-            $('#net').val(amount);
-            var sales_tax = parseFloat($('#sales_amount_td').val());
+            $('#net').val(amount.toFixed(2));
 
+            var expense_amount = 0;
+            $('input[name="expense_amount[]"]').each(function() {
+                expense_amount += +$(this).val();
+            });
 
-            var net = (amount + sales_tax).toFixed(2);
+            var sales_tax = parseFloat($('#sales_amount_td').val()) || 0;
+            var net = (amount + sales_tax + expense_amount).toFixed(2);
             $('#net_after_tax').val(net);
             $('#d_t_amount_1').val(net);
-            toWords(1);
-
+            // toWords(1);
         }
 
 
@@ -615,6 +661,7 @@ endif;
 
 
         $(document).ready(function() {
+            net_amount();
             amount_calculation(1);
             for (i = 1; i <= counter; i++) {
                 $('#amount_' + i).number(true, 2);

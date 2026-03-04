@@ -2502,12 +2502,27 @@ public function importData(Request $request)
 		$NewPurchaseVoucher = $NewPurchaseVoucher->SetConnection('mysql2');
 		$NewPurchaseVoucher = $NewPurchaseVoucher->where('id',$id)->first();
 
-		$NewPurchaseVoucherData = new NewPurchaseVoucherData();
-		$NewPurchaseVoucherData = $NewPurchaseVoucherData->SetConnection('mysql2');
-		$NewPurchaseVoucherData = $NewPurchaseVoucherData->where('master_id',$id)->Orderby('id','ASC')->get();
-		$CountId = $NewPurchaseVoucherData->where('master_id',$id)->where('sub_item','!=','')->count();
+		$NewPurchaseVoucherData = DB::connection('mysql2')->table('new_purchase_voucher_data as npvd')
+			->leftJoin('subitem as si', 'npvd.sub_item', '=', 'si.id')
+			->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.id')
+			->leftJoin('product_classification as pc', 'si.product_classification_id', '=', 'pc.id')
+			->leftJoin('product_trend as ptr', 'si.product_trend_id', '=', 'ptr.id')
+			->leftJoin('uom as u', 'si.uom', '=', 'u.id')
+			->select('npvd.*', 'si.brand_id', 'pt.type_name as product_type', 'si.product_barcode', 'pc.classification_name', 'ptr.trend_name as product_trend', 'u.name as uom_name')
+			->where('npvd.master_id', $id)
+			->where('npvd.additional_exp', '!=', 1)
+			->orderBy('npvd.id', 'ASC')
+			->get();
 
-		return view('Finance.editDirectPurchaseVoucherForm',compact('supplierList','departments','departmentsTwo','id','NewPurchaseVoucher','NewPurchaseVoucherData','CountId'));
+		$ExpensesData = DB::connection('mysql2')->table('new_purchase_voucher_data')
+			->where('master_id', $id)
+			->where('additional_exp', 1)
+			->orderBy('id', 'ASC')
+			->get();
+
+		$CountId = count($NewPurchaseVoucherData);
+
+		return view('Finance.editDirectPurchaseVoucherForm',compact('supplierList','departments','departmentsTwo','id','NewPurchaseVoucher','NewPurchaseVoucherData','CountId', 'ExpensesData'));
 	}
 
 
