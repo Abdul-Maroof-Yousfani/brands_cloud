@@ -956,10 +956,23 @@ class PurchaseController extends Controller
         ->where('master_id', $id)
         ->get();
 
-    // You may want to eager load related data like product names, uom, etc.
-    // Or enhance in query if needed
+    $currencies = DB::connection('mysql2')
+        ->table('currency')
+        ->where('to_type_id', $purchaseRequest->po_type)
+        ->get();
+        
+    $suppliers = DB::connection('mysql2')
+        ->table('supplier')
+        ->where('status', 1)
+        ->get();
+        
+    $supplierAddresses = [];
+    foreach($suppliers as $s) {
+        $addr = \App\Helpers\CommonHelper::get_supplier_address($s->id);
+        $supplierAddresses[$s->id] = '@#' . $addr . '@#' . $s->ntn . '@#' . $s->terms_of_payment . '@#' . $s->strn;
+    }
 
-    return view('Purchase.editDirectPurchaseOrderForm', compact('purchaseRequest', 'purchaseDetails'));
+    return view('Purchase.editDirectPurchaseOrderForm', compact('purchaseRequest', 'purchaseDetails', 'currencies', 'suppliers', 'supplierAddresses'));
     }
 
     public function purchase_order_status()

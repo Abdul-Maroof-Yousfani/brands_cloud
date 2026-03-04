@@ -115,16 +115,28 @@ endif;
                                             <select onchange="get_address(); get_discount();" name="supplier_id"
                                                 id="supplier_id" class="form-control requiredField select2">
                                                 <option value="">Select Vendor</option>
-                                                <!-- Will be populated via AJAX on po_type_change -->
+                                                @foreach($suppliers as $supplier)
+                                                    <option value="{{ $supplier->id }}" data-items="{{ $supplierAddresses[$supplier->id] }}" {{ $purchaseRequest->supplier_id == $supplier->id ? 'selected' : '' }}>
+                                                        {{ ucwords($supplier->name) }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Currency</label>
-                                            <select onchange="claculation(1);get_rate($purhaseRequest->rate)" name="curren" id="curren"
+                                            <select onchange="claculation(1);get_rate('{{ $purchaseRequest->currency_rate }}')" name="curren" id="curren"
                                                 class="form-control select2 requiredField">
-                                                <!-- Will be populated via AJAX -->
+                                               
+                                                @if($purchaseRequest->po_type == '1')
+                                                    <option value="0,1" {{ $purchaseRequest->currency_id == 0 ? 'selected' : '' }}>PKR</option>
+                                                @endif
+                                                @foreach($currencies as $currency)
+                                                    <option value="{{ $currency->id }}" {{ $purchaseRequest->currency_id == $currency->id ? 'selected' : '' }}>
+                                                        {{ $currency->name }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
@@ -493,18 +505,14 @@ endif;
                         id: selectedValue
                     },
                     success: function(response) {
-                        console.log(response.vendorOptions);
                         $('#curren').empty().append(response.currencyOptions);
                         $('#supplier_id').empty().append(response.vendorOptions);
-                        console.log(response.vendorOptions);
 
-                        $("#supplier_id").val("{{ $purchaseRequest->supplier_id }}").trigger("change");
-                        $("#curren").val("{{ $purchaseRequest->currency_id }}").trigger("change");
-
-                        // Re-select saved values after reload
-                        // $('#curren').val("{{ $purchaseRequest->currency_id }},{{ $purchaseRequest->currency_rate }}").trigger('change');
-                        // $('#supplier_id').val("{{ $purchaseRequest->supplier_id }}@#{{ $purchaseRequest->supplier_address ?? '' }}@#{{ $purchaseRequest->supplier_ntn ?? '' }}@#{{ $purchaseRequest->terms_of_paym }}").trigger('change');
-                        get_address("{{ $purchaseRequest->terms_of_paym }}");
+                        // If not initialization, clear other fields
+                        if(!window.isInitializing) {
+                            $("#supplier_id").val("").trigger("change");
+                            $("#curren").val("").trigger("change");
+                        }
                     }
                 });
             }
@@ -730,6 +738,7 @@ endif;
         }
 
         $(document).ready(function() {
+            window.isInitializing = true;
             $('.select2').select2();
 
             // Load products for existing rows
@@ -740,8 +749,12 @@ endif;
                 }
             });
 
-            // Load supplier and currency based on PO type
-            po_type_change($('#po_type')[0]);
+            // Initial population of address and NTN
+            get_address("{{ $purchaseRequest->terms_of_paym }}");
+
+            // We don't call po_type_change here because we pre-populated dropdowns server-side.
+            // But if we do, we use the initialization flag.
+            // po_type_change($('#po_type')[0]);
 
             // Trigger calculations
             $('#sales_taxx').on('change', function() {
@@ -750,7 +763,10 @@ endif;
             net_amount();
             sales_tax('sales_taxx');
             calculate_due_date();
-            get_address("{{ $purchaseRequest->terms_of_paym }}");
+            
+            setTimeout(function() {
+                window.isInitializing = false;
+            }, 2000);
         });
 
         function get_discount() {
