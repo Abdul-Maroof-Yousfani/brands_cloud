@@ -160,6 +160,13 @@ $m=Session::get('run_company');
             endif;
 
 
+             if ($trow->voucher_type==11):
+            $detail='pdc/viewGoodsReceiptNoteDetail';
+            $PageTitle = 'View Goods Receipt Note Detail';
+            $page_typ='GRN';
+            endif;
+
+
              if ($trow->voucher_type==8):
             $page_typ='Sales Tax Invoice';
              endif;

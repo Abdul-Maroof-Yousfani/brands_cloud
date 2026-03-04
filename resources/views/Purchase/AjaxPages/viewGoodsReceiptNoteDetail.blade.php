@@ -8,6 +8,11 @@ use App\Helpers\FinanceHelper;
 
 $approve=ReuseableCode::check_rights(23);
 $id = $_GET['id'];
+$Checking = explode(',',$id);
+if($Checking[0] == 'other')
+{
+    $id = $Checking[1];
+}
 $m = $_GET['m'];
 $currentDate = date('Y-m-d');
 CommonHelper::companyDatabaseConnection($m);
