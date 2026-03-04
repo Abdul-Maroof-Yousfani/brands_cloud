@@ -200,7 +200,7 @@ endif;
                                                     <th class="text-center">Tax %</th>
                                                     <th class="text-center">Tax Amount</th>
                                                     <th>Net Amount<strong>*</strong></th>
-                                                    <th>History</th>
+                                                    <!-- <th>History</th> -->
                                                     <th>Add / Delete</th>
                                                 </tr>
                                             </thead>
@@ -267,7 +267,7 @@ endif;
                                                                 value="{{ $detail->rate }}"></td>
                                                         <td><input readonly type="text" class="form-control"
                                                                 name="amount[]" id="amount{{ $index + 1 }}"
-                                                                value="{{ $detail->amount }}"></td>
+                                                                value="{{ $detail->rate }}"></td>
                                                         <td><input readonly type="text"
                                                                 class="form-control actual_amount" name="actual_amount[]"
                                                                 id="actual_amount{{ $index + 1 }}"
@@ -294,9 +294,9 @@ endif;
                                                                 name="after_dis_amount[]"
                                                                 id="after_dis_amount{{ $index + 1 }}"
                                                                 value="{{ $detail->net_amount }}"></td>
-                                                        <td><input type="checkbox"
+                                                        <!-- <td><input type="checkbox"
                                                                 onclick="view_history({{ $index + 1 }})"
-                                                                id="view_history{{ $index + 1 }}"></td>
+                                                                id="view_history{{ $index + 1 }}"></td> -->
                                                         <td class="text-center">
                                                             @if ($index == 0)
                                                                 <input type="button" class="btn btn-sm btn-primary"
@@ -451,7 +451,7 @@ endif;
                 <td><input type="text" onkeyup="claculation(${Counter})" class="form-control" value="0" name="tax_per[]" id="tax_per${Counter}" placeholder="Tax %"></td>
                 <td><input type="text" onkeyup="net_amount()" class="form-control" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
                 <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" value="0.00"></td>
-                <td><input onclick="view_history(${Counter})" type="checkbox" id="view_history${Counter}"></td>
+              
                 <td class="text-center">
                     <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection(${Counter})"> - </button>
                 </td>
@@ -552,7 +552,7 @@ endif;
                         $('#product_classification' + index_val).val(response.product_classification_id);
                         $('#product_trend' + index_val).val(response.product_trend_id);
                         $('#uom_id' + index_val).val(response.uom);
-                        $("#rate" + index_val).val(response.purchase_price);
+                        //$("#rate" + index_val).val(response.purchase_price);
                         claculation(index_val);
                     }
                 });
