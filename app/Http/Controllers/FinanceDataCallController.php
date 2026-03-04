@@ -893,6 +893,8 @@ class FinanceDataCallController extends Controller
             foreach($grn as $row):
 
 
+                $data_get = DB::connection('mysql2')->table('new_purchase_voucher_data')->where('id','=',$row->id)->first();
+
                 $item_amount_percent = ($row->net_amount / $item_amount) * 100;
                 $exp_amount_apply = ($exp_amount /100) * $item_amount_percent;
                 $status=1;
@@ -911,14 +913,14 @@ class FinanceDataCallController extends Controller
                 $stock['amount_before_discount']=$row->amount;
                 $stock['discount_percent']=0;
                 $stock['discount_amount']=$row->discount_amount ;
-                $stock['amount']=$row->net_amount + $exp_amount_apply;
+                $stock['amount']=$row->amount ;
                 $stock['warehouse_id']=$row->warehouse;
                 $stock['description']=$row->description;
                 $stock['batch_code']=0;
                 $stock['status']=$status;
                 $stock['created_date']=date('Y-m-d');
                 $stock['username']=Auth::user()->name;
-                DB::Connection('mysql2')->table('stock')->insert($stock);
+                 DB::Connection('mysql2')->table('stock')->insert($stock);
                 $total_amount+=$row->net_amount;
             endforeach;
 
@@ -930,14 +932,22 @@ class FinanceDataCallController extends Controller
                   ->whereIn('a.status',array(1,3))
                   ->get();
 
+                  
+
 
             foreach($t_data as $row1):
+
+
+               
+
 
                 $data4=array
                 (
                     'master_id'=>$id,
-                    'acc_id'=>$row1->acc_id,
-                    'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
+                    // 'acc_id'=>$row1->acc_id,
+                    // 'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
+                        'acc_id'=>1101,
+                    'acc_code'=>'1-2-1',
                     'cost_center'=>$row1->sub_item_id,
                     'particulars'=>$desc,
                     'opening_bal'=>0,
@@ -952,6 +962,48 @@ class FinanceDataCallController extends Controller
                     'status'=>1
                 );
                 DB::Connection('mysql2')->table('transactions')->insertGetId($data4);
+
+                  $data5=array
+                (
+                    'master_id'=>$id,
+                    // 'acc_id'=>$row1->acc_id,
+                    // 'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
+                        'acc_id'=>1709,
+                    'acc_code'=>'1-5',
+                    'cost_center'=>$row1->sub_item_id,
+                    'particulars'=>$desc,
+                    'opening_bal'=>0,
+                    'debit_credit'=>1,
+                    'amount'=>$data_get->tax_amount,
+                    'voucher_no'=>$row1->voucher_no,
+                    'voucher_type'=>4,
+                    'v_date'=>$row1->voucher_date,
+                    'date'=>date('Y-m-d'),
+                    'action'=>'insert',
+                    'username'=>Auth::user()->name,
+                    'status'=>1
+                );
+                DB::Connection('mysql2')->table('transactions')->insertGetId($data5);
+
+                  $data6=array
+                (
+                    'master_id'=>$id,
+                    'acc_id'=>$supplier_acc_id,
+                    'acc_code'=>FinanceHelper::getAccountCodeByAccId($supplier_acc_id),                   
+                    'cost_center'=>$row1->sub_item_id,
+                    'particulars'=>$desc,
+                    'opening_bal'=>0,
+                    'debit_credit'=>0,
+                    'amount'=>$data_get->net_amount - $sales_tax_amount,
+                    'voucher_no'=>$row1->voucher_no,
+                    'voucher_type'=>4,
+                    'v_date'=>$row1->voucher_date,
+                    'date'=>date('Y-m-d'),
+                    'action'=>'insert',
+                    'username'=>Auth::user()->name,
+                    'status'=>1
+                );
+                DB::Connection('mysql2')->table('transactions')->insertGetId($data6);
                // $total_amount+=$row1->amount;
             endforeach;
             $exp= DB::Connection('mysql2')->table('new_purchase_voucher_data as a')
@@ -991,11 +1043,13 @@ class FinanceDataCallController extends Controller
                 $transaction=$transaction->SetConnection('mysql2');
                 $transaction->voucher_no=$pv_no;
                 $transaction->v_date=$pv_date;
-                $transaction->acc_id=$sales_tax_acc_id;
-                $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($sales_tax_acc_id);
+                // $transaction->acc_id=$sales_tax_acc_id;
+                // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($sales_tax_acc_id);
+                 $transaction->acc_id=1710;
+                     $transaction->acc_code='2-36-2';
                 $transaction->particulars= $desc;
                 $transaction->opening_bal=0;
-                $transaction->debit_credit=1;
+                $transaction->debit_credit=0;
                 $transaction->amount=$sales_tax_amount;
                 $transaction->username=Auth::user()->name;;
                 $transaction->status=1;
@@ -1005,20 +1059,20 @@ class FinanceDataCallController extends Controller
                 endif;
 
 
-                $transaction=new Transactions();
-                $transaction=$transaction->SetConnection('mysql2');
-                $transaction->voucher_no=$pv_no;
-                $transaction->v_date=$pv_date;
-                $transaction->acc_id=$supplier_acc_id ;
-                $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($supplier_acc_id);
-                $transaction->particulars= $desc;
-                $transaction->opening_bal=0;
-                $transaction->debit_credit=0;
-                $transaction->amount=$total_amount;
-                $transaction->username=Auth::user()->name;;
-                $transaction->voucher_type=4;
-                $transaction->status=1;
-                $transaction->save();
+                // $transaction=new Transactions();
+                // $transaction=$transaction->SetConnection('mysql2');
+                // $transaction->voucher_no=$pv_no;
+                // $transaction->v_date=$pv_date;
+                // $transaction->acc_id=$supplier_acc_id ;
+                // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($supplier_acc_id);
+                // $transaction->particulars= $desc;
+                // $transaction->opening_bal=0;
+                // $transaction->debit_credit=0;
+                // $transaction->amount=$total_amount;
+                // $transaction->username=Auth::user()->name;;
+                // $transaction->voucher_type=4;
+                // $transaction->status=1;
+                // $transaction->save();
 
 
                 // update pv
@@ -1048,12 +1102,20 @@ class FinanceDataCallController extends Controller
 
     public function approvePurchaseVoucherDetail(Request $request)
     {
+
+
         $master_id = $request->PvId;
         $grn_no = NewPurchaseVoucher::where('id',$master_id)->value('grn_no');
-        if ($grn_no!=0):
+
+        
+        if ($grn_no=='0'):
+
+            
             $this->direct_invoice_approve($master_id);
         return;
         endif;
+
+       
         DB::Connection('mysql2')->beginTransaction();
 
         try {

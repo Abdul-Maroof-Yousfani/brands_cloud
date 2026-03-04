@@ -132,8 +132,8 @@ endif;
                                                     value="{{ $model_terms_of_payment }}" />
                                             </div>
 
-                                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hide">
-                                                <label class="sf-label">Warehouse / Region <span
+                                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                <label class="sf-label">Warehouse <span
                                                         class="rflabelsteric"><strong>*</strong></span></label>
                                                         <select onchange="get_address()" name="warehouse_id" id="warehouse_id"
                                                         class="form-control select2">

@@ -150,8 +150,8 @@ var counter = 1;
                                                 name="model_terms_of_payment" id="model_terms_of_payment" value="" />
                                         </div>
 
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hide">
-                                            <label class="sf-label">Warehouse / Region <span
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label">Warehouse <span
                                                     class="rflabelsteric"><strong>*</strong></span></label>
                                             <select onchange="get_address()" name="warehouse_id" id="warehouse_id"
                                                 class="form-control  select2">
@@ -751,21 +751,16 @@ function tax_by_amount(id) {
 function net_amount() {
     var amount = 0;
     $('.net_amount_dis').each(function(i, obj) {
-
         amount += +$('#' + obj.id).val();
-
-
     });
     amount = parseFloat(amount);
     $('#net').val(amount);
-    var sales_tax = parseFloat($('#sales_amount_td').val());
+    var sales_tax = parseFloat($('#sales_amount_td').val()) || 0;
 
-
-    var net = (amount + sales_tax).toFixed(2);
+    var net = (amount - sales_tax).toFixed(2);
     $('#net_after_tax').val(net);
     $('#d_t_amount_1').val(net);
     toWords(1);
-
 }
 
 
