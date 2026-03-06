@@ -278,7 +278,7 @@ var counter = 1;
                                                             id="rate1" placeholder="RATE" min="1" value="">
                                                     </td>
                                                     <td>
-                                                        <input type="text" class="form-control" name="amount[]"
+                                                        <input type="text" class="form-control row_amount_pkr" name="amount[]"
                                                             id="amount1" placeholder="AMOUNT" min="1" value="" readonly>
                                                     </td>
                                                     <td>
@@ -292,7 +292,7 @@ var counter = 1;
                                                     </td>
                                                     <td>
                                                         <input type="text" onkeyup="claculation('1')"
-                                                            class="form-control" name="tax_amount[]"
+                                                            class="form-control row_tax_amount" name="tax_amount[]"
                                                             id="tax_amount1" placeholder="TAX AMOUNT" value="0" readonly>
                                                     </td>
                                                     <td>
@@ -303,7 +303,7 @@ var counter = 1;
                                                     </td>
                                                     <td>
                                                         <input type="text" onkeyup="discount_amount(this.id)"
-                                                            class="form-control requiredField" name="discount_amount[]"
+                                                            class="form-control requiredField row_discount_amount" name="discount_amount[]"
                                                             id="discount_amount1" placeholder="DISCOUNT" min="1"
                                                             value="0">
                                                     </td>
@@ -324,6 +324,14 @@ var counter = 1;
                                                 <tr
                                                     style="background-color: darkgrey;font-size:large;font-weight: bold">
                                                     <td class="text-center" colspan="7">Total</td>
+                                                    <td><input readonly class="form-control" type="text" id="total_qty" /></td>
+                                                    <td></td>
+                                                    <td><input readonly class="form-control" type="text" id="total_amount_pkr" /></td>
+                                                    <td><input readonly class="form-control" type="text" id="total_amount" /></td>
+                                                    <td></td>
+                                                    <td><input readonly class="form-control" type="text" id="total_tax_amount" /></td>
+                                                    <td></td>
+                                                    <td><input readonly class="form-control" type="text" id="total_discount_amount" /></td>
                                                     <td id="" class="text-right" colspan="1"><input readonly
                                                             class="form-control" type="text" id="net" /> </td>
                                                     <td></td>
@@ -472,12 +480,12 @@ function AddMoreDetails() {
             </td>
             <td><input type="text" onkeyup="claculation(${Counter})" class="form-control requiredField ActualQty" name="actual_qty[]" id="actual_qty${Counter}" placeholder="QTY"></td>
             <td><input type="text" onkeyup="claculation(${Counter})" class="form-control requiredField ActualRate" name="rate[]" id="rate${Counter}" placeholder="RATE"></td>
-            <td><input readonly type="text" class="form-control" name="amount[]" id="amount${Counter}" placeholder="AMOUNT"></td>
+            <td><input readonly type="text" class="form-control row_amount_pkr" name="amount[]" id="amount${Counter}" placeholder="AMOUNT"></td>
             <td><input readonly type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount${Counter}" placeholder="AMOUNT"></td>
             <td><input type="text" onkeyup="claculation(${Counter})" class="form-control" value="0" name="tax_per[]" id="tax_per${Counter}" placeholder="Tax %"></td>
-            <td><input  readonly type="text" class="form-control" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
+            <td><input  readonly type="text" class="form-control row_tax_amount" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
             <td><input type="text" onkeyup="discount_percent(this.id)" class="form-control requiredField" value="0" name="discount_percent[]" id="discount_percent${Counter}"></td>
-            <td><input type="text" onkeyup="discount_amount(this.id)" class="form-control requiredField" value="0" name="discount_amount[]" id="discount_amount${Counter}"></td>
+            <td><input type="text" onkeyup="discount_amount(this.id)" class="form-control requiredField row_discount_amount" value="0" name="discount_amount[]" id="discount_amount${Counter}"></td>
             <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" value="0.00"></td>
             
             <td class="text-center" style="display: flex; gap: 10px;">
@@ -501,7 +509,8 @@ function AddMoreDetails() {
 
 function RemoveSection(Row) {
     //            alert(Row);
-    $('.RemoveRows' + Row).remove();
+    $('#RemoveRows1').find('#RemoveRows' + Row).remove();
+    $('#RemoveRows' + Row).remove();
     $(".AutoCounter").html('');
     var AutoCount = 1;
     $(".AutoCounter").each(function() {
@@ -510,6 +519,7 @@ function RemoveSection(Row) {
     });
     var AutoNo = $(".AutoNo").length;
     $('#span').text(AutoNo);
+    net_amount();
 }
 
 function get_sub_category_by_id(id) {
@@ -749,15 +759,30 @@ function tax_by_amount(id) {
 }
 
 function net_amount() {
-    var amount = 0;
-    $('.net_amount_dis').each(function(i, obj) {
-        amount += +$('#' + obj.id).val();
-    });
-    amount = parseFloat(amount);
-    $('#net').val(amount);
+    var total_qty = 0;
+    var total_amount_pkr = 0;
+    var total_amount = 0;
+    var total_tax_amount = 0;
+    var total_discount_amount = 0;
+    var total_net_amount = 0;
+
+    $('.ActualQty').each(function() { total_qty += +$(this).val() || 0; });
+    $('.row_amount_pkr').each(function() { total_amount_pkr += +$(this).val() || 0; });
+    $('.actual_amount').each(function() { total_amount += +$(this).val() || 0; });
+    $('.row_tax_amount').each(function() { total_tax_amount += +$(this).val() || 0; });
+    $('.row_discount_amount').each(function() { total_discount_amount += +$(this).val() || 0; });
+    $('.net_amount_dis').each(function() { total_net_amount += +$(this).val() || 0; });
+
+    $('#total_qty').val(total_qty);
+    $('#total_amount_pkr').val(total_amount_pkr.toFixed(2));
+    $('#total_amount').val(total_amount.toFixed(2));
+    $('#total_tax_amount').val(total_tax_amount.toFixed(2));
+    $('#total_discount_amount').val(total_discount_amount.toFixed(2));
+    $('#net').val(total_net_amount.toFixed(2));
+
     var sales_tax = parseFloat($('#sales_amount_td').val()) || 0;
 
-    var net = (amount - sales_tax).toFixed(2);
+    var net = (total_net_amount - sales_tax).toFixed(2);
     $('#net_after_tax').val(net);
     $('#d_t_amount_1').val(net);
     toWords(1);
@@ -909,22 +934,7 @@ function sales_tax(id) {
 }
 
 function total_amount() {
-    var amount = 0;
-
-    $('.net_amount_dis').each(function() {
-
-        amount += +$(this).val();
-
-    });
-    $('#net').val(amount);
-
-    var sales_tax = parseFloat($('#sales_amount_td').val());
-    var net = (amount - sales_tax).toFixed(2);
-
-    $('#net_after_tax').val(net);
-    console.log(net);
-
-
+    net_amount();
 }
 // function sales_tax(id) {
 
