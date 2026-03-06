@@ -253,7 +253,7 @@ if($accType == 'client'){
                                                     $con=0;
                                                 @endphp
                                                 @if(!empty($category_id))        
-                                                <div class="container">
+                                                <div class="container hide">
                                                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                                     <div class="row">
                                                     <div class="col-sm-6">
