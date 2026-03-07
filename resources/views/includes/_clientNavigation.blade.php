@@ -332,6 +332,8 @@ CommonHelper::reconnectMasterDatabase();
                                 </div>
                             </a>
                         @endif
+
+                        <input type="date" name="date" value="{{ request()->date }}">
                         @if($pending_purchase_requests > 0)
                             <a class="d-flex" href="/purchase/viewDemandList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
@@ -352,7 +354,7 @@ CommonHelper::reconnectMasterDatabase();
                                         <p class="media-heading">
                                             <span class="fw-bolder">Quotations Creation Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_quotations_creation }}Quotations are Creation pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_quotations_creation }} Quotations are Creation pending</small>
                                         <br>
                                     </div>
                                 </div>
