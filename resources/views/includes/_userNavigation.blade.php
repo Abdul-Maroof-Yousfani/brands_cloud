@@ -198,14 +198,44 @@ endif;
              
            </ul>
              @php
-                        $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
+                                $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
                         $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1, true);
                         $pending_sale_returns = \App\Helpers\CommonHelper::pendingDocuments("credit_note", "status", 0);
                         $pending_purchase_requests = \App\Helpers\CommonHelper::pendingDocuments("demand", "demand_status", 1, "status", 1);
                         $pending_purchase_quotations = \App\Helpers\CommonHelper::pendingDocuments("quotation", "quotation_status", 1, "status", 1);
-                        $pending_purchase_orders = \App\Helpers\CommonHelper::pendingDocuments("purchase_request", "purchase_request_status", 1, "status", 1);
-                        $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
+                       $pending_purchase_quotations_creation = \App\Helpers\CommonHelper::pendingDocuments("demand","demand_status",2,"quotation_skip",0,false,
+                            [
+                                                "quotation_approve" => 0,
+                                                "status" => 1
+                                            ]
+                                        );
+                            $pending_purchase_orders = \App\Helpers\CommonHelper::pendingDocuments("purchase_request", "purchase_request_status", 1, "status", 1);
+                          $pending_purchase_orders_creation = \App\Helpers\CommonHelper::pendingDocuments(
+                                    'quotation_data',
+                                    'status',           // column_name
+                                    1,                  // pending_status
+                                    null,               // conditional_column (set to null since not needed)
+                                    null,               // conditional_status (set to null since not needed)
+                                    false,              // is_st_invoice
+                                    [                   // extra_conditions - use associative array
+                                        'vendor' => ['!=', 0],
+                                        'quotation_status' => ['!=', 2]
+                                    ]
+                                );
+                            $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
+                        $pending_grns_creation = \App\Helpers\CommonHelper::pendingDocuments(
+    "purchase_request",
+    "status",     // column_name
+    1,                // pending_status -> grn_status = 1
+    "status",         // conditional_column -> status column
+    1,                // conditional_status -> status = 1
+    false,           
+    [                 // extra conditions
+        'purchase_request_status' =>  ['!=', 2]  // purchase_request_status = 2
+    ]
+);
                         $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
+                        $pending_purchase_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 2, "status", 1, false, ['type' => ['!=', 3]]);
                         $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
                         $delivery_note_creatable = \App\Helpers\CommonHelper::deliveryNoteCreatable();
                         $total_pending = 
@@ -214,9 +244,13 @@ endif;
                             $pending_sale_returns +
                             $pending_purchase_requests +
                             $pending_purchase_quotations +
+                            $pending_purchase_quotations_creation +
                             $pending_purchase_orders +
+                            $pending_purchase_orders_creation  +
                             $pending_grns +
+                            $pending_grns_creation +
                             $pending_purchase_invoices +
+                            $pending_purchase_invoices_creation +
                             $pending_stock_transfers +
                             $delivery_note_creatable;
                     @endphp
@@ -295,14 +329,27 @@ endif;
                                 </div>
                             </a>
                         @endif
-                        @if($pending_purchase_requests > 0)
+                      @if($pending_purchase_requests > 0)
                             <a class="d-flex" href="/purchase/viewDemandList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Purchase Requests</span>
+                                            <span class="fw-bolder">Purchase Requests Approval pending</span>
                                         </p>
                                         <small class="notification-text">{{ $pending_purchase_requests }} Purchase Requests are pending</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
+                        @if($pending_purchase_quotations_creation > 0)
+                            <a class="d-flex" href="/quotation/create_quotation?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Quotations Creation Pending</span>
+                                        </p>
+                                        <small class="notification-text">{{ $pending_purchase_quotations_creation }}Quotations are Creation pending</small>
                                         <br>
                                     </div>
                                 </div>
@@ -313,9 +360,22 @@ endif;
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Purchase Quotations</span>
+                                            <span class="fw-bolder">Quotations Approval pending</span>
                                         </p>
                                         <small class="notification-text">{{ $pending_purchase_quotations }} Purchase Quotations are pending</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
+                        @if($pending_purchase_orders_creation > 0)
+                            <a class="d-flex" href="/store/createPurchaseRequestForm?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Purchase Orders Creation pending</span>
+                                        </p>
+                                        <small class="notification-text">{{ $pending_purchase_orders_creation }} Purchase Orders are Creation pending</small>
                                         <br>
                                     </div>
                                 </div>
@@ -326,9 +386,22 @@ endif;
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Purchase Orders</span>
+                                            <span class="fw-bolder">Purchase Orders Approval pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_orders }} Purchase Orders are pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_orders }} Purchase Orders are Approval pending</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
+                        @if($pending_grns_creation > 0)
+                            <a class="d-flex" href="/purchase/createGoodsReceiptNoteForm?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Goods Receipt Note Creation Pending</span>
+                                        </p>
+                                        <small class="notification-text">{{ $pending_grns_creation }} Goods Receipt Note are pending</small>
                                         <br>
                                     </div>
                                 </div>
@@ -339,21 +412,34 @@ endif;
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Goods Receipt Note</span>
+                                            <span class="fw-bolder">Goods Receipt Note Approval Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_grns }} Goods Receipt Note are pending</small>
+                                        <small class="notification-text">{{ $pending_grns }} Goods Receipt Note Approval Pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
 
+                        @if($pending_purchase_invoices_creation > 0)
+                            <a class="d-flex" href="/purchase/viewGrnListForPurchaseVoucher?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Purchase Invoice Creation Pending</span>
+                                        </p>
+                                        <small class="notification-text">{{ $pending_purchase_invoices_creation }} Purchase Invoices Creation Pending</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
                         @if($pending_purchase_invoices > 0)
                             <a class="d-flex" href="/purchase/viewPurchaseVoucherListThroughGrn?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Purchase Invoice</span>
+                                            <span class="fw-bolder">Purchase Invoice are pending</span>
                                         </p>
                                         <small class="notification-text">{{ $pending_purchase_invoices }} Purchase Invoices are pending</small>
                                         <br>

@@ -2303,33 +2303,106 @@ public static function get_all_subitems()
             ]);
     }
     
-    public static function pendingDocuments(
-        $table_name, 
-        $column_name, 
-        $pending_status, 
-        $conditional_column = null, 
-        $conditional_status = null,
-        $is_st_invoice = false
-    ) {
-        $query = DB::connection("mysql2")
-            ->table($table_name)
-            ->where($column_name, $pending_status);
+    // public static function pendingDocuments(
+    //     $table_name, 
+    //     $column_name, 
+    //     $pending_status, 
+    //     $conditional_column = null, 
+    //     $conditional_status = null,
+    //     $is_st_invoice = false
+    // ) {
+    //     $query = DB::connection("mysql2")
+    //         ->table($table_name)
+    //         ->where($column_name, $pending_status);
 
-        // Only apply the second condition if both values are provided
-        if ($conditional_column !== null && $conditional_status !== null) {
-            $query->where($conditional_column, $conditional_status);
+    //     // Only apply the second condition if both values are provided
+    //     if ($conditional_column !== null && $conditional_status !== null) {
+    //         $query->where($conditional_column, $conditional_status);
+    //     }
+
+    //     if($is_st_invoice) {
+    //         $query->where(function($query) {
+    //             $query->where('sales_tax_invoice.pre_status', '!=', 1)
+    //             ->orWhereNull('sales_tax_invoice.pre_status');
+    //         });
+    //     }
+
+    //     // Return the actual count (integer), not the query builder
+    //     return $query->count();
+    // }
+
+public static function pendingDocuments(
+    $table_name,
+    $column_name,
+    $pending_status,
+    $conditional_column = null,
+    $conditional_status = null,
+    $is_st_invoice = false,
+    $extra_conditions = []
+) {
+    // Agar extra_conditions array mein nested arrays hain to unhe handle karein
+    if (!empty($extra_conditions) && is_array($extra_conditions)) {
+        // Check karein ke array associative hai ya sequential
+        $is_associative = array_keys($extra_conditions) !== range(0, count($extra_conditions) - 1);
+        
+        if (!$is_associative) {
+            // Ye wo case hai jab aap [[ 'vendor', '!=', 0 ]] type array de rahe hain
+            $new_conditions = [];
+            foreach ($extra_conditions as $condition) {
+                if (is_array($condition) && count($condition) >= 2) {
+                    if (count($condition) == 3) {
+                        // ['column', 'operator', 'value']
+                        $new_conditions[$condition[0]] = [$condition[1], $condition[2]];
+                    } else {
+                        // ['column', 'value'] ya ['column', '=', 'value'] format
+                        $new_conditions[$condition[0]] = $condition[1];
+                    }
+                }
+            }
+            $extra_conditions = $new_conditions;
         }
-
-        if($is_st_invoice) {
-            $query->where(function($query) {
-                $query->where('sales_tax_invoice.pre_status', '!=', 1)
-                ->orWhereNull('sales_tax_invoice.pre_status');
-            });
-        }
-
-        // Return the actual count (integer), not the query builder
-        return $query->count();
     }
+
+    $query = DB::connection("mysql2")
+        ->table($table_name)
+        ->where($column_name, $pending_status);
+
+    // old single condition
+    if ($conditional_column !== null && $conditional_status !== null) {
+        $query->where($conditional_column, $conditional_status);
+    }
+
+    // multiple extra conditions
+    if (!empty($extra_conditions)) {
+        foreach ($extra_conditions as $column => $value) {
+            if (is_array($value) && count($value) == 2) {
+                // Handle ['operator', 'value'] format
+                $query->where($column, $value[0], $value[1]);
+            } else {
+                // Simple equality condition
+                $query->where($column, $value);
+            }
+        }
+    }
+
+    if ($is_st_invoice) {
+        $query->where(function ($query) {
+            $query->where('sales_tax_invoice.pre_status', '!=', 1)
+                ->orWhereNull('sales_tax_invoice.pre_status');
+        });
+    }
+
+    return $query->count();
+}
+// In CommonHelper.php
+public static function pendingPurchaseOrdersCreation() {
+    return DB::connection("mysql2")
+        ->table('quotation_data')
+        ->where('vendor', '!=', 0)
+        ->where('status', 1)
+        ->where('quotation_status', '!=', 2)
+        ->count();
+}
     public static function getUnreadNotifications() {
         $acc_type = auth()->user()->acc_type;
 
