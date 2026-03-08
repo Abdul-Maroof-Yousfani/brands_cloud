@@ -8,8 +8,10 @@ if($accType == 'client'){
 }else{
     $m = Auth::user()->company_id;
 }
-$current_date = date('Y-m-d');
-$currentMonthStartDate = date('Y-m-01');
+// $current_date = date('Y-m-d');
+// $currentMonthStartDate = date('Y-m-01');
+ $current_date = date('Y-m-01', strtotime('-2 months'));
+ $currentMonthStartDate = date('Y-m-01', strtotime('-2 months'));
 $currentMonthEndDate   = date('Y-m-t');
 ?>
 

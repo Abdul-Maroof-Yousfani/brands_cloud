@@ -333,7 +333,7 @@ CommonHelper::reconnectMasterDatabase();
                             </a>
                         @endif
 
-                        <input type="date" name="date" value="{{ request()->date }}">
+                        
                         @if($pending_purchase_requests > 0)
                             <a class="d-flex" href="/purchase/viewDemandList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">

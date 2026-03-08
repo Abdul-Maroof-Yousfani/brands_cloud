@@ -4,8 +4,10 @@ use App\Helpers\ReuseableCode;
 $export=ReuseableCode::check_rights(234);
 
 
-$current_date = date('Y-m-d');
-$currentMonthStartDate = date('Y-m-01');
+// $current_date = date('Y-m-d');
+// $currentMonthStartDate = date('Y-m-01');
+ $current_date = date('Y-m-01', strtotime('-2 months'));
+ $currentMonthStartDate = date('Y-m-01', strtotime('-2 months'));
 $currentMonthEndDate   = date('Y-m-t');
         $m=Session::get('run_company');
         $data=ReuseableCode::get_account_year_from_to($m);
