@@ -178,7 +178,7 @@ $m=Session::get('run_company');
             endif;
         $category='';
             if ($trow->voucher_type==4):
-            $detail='fdc/viewPurchaseVoucherDetail';
+            $detail='fdc/viewDirectPurchaseVoucherDetail';
             $PageTitle = 'View Purchase Voucher Detail';
             $page_typ='Purchase Invoice';
             $type='Purchase Invoice';
