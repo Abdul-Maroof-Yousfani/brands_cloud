@@ -3283,9 +3283,9 @@ class PurchaseAddDetailControler extends Controller
 
             $count_invoice=   DB::Connection('mysql2')->table('new_purchase_voucher')->where('grn_id',$GrnId)->count();
             if ($count_invoice>0):
-                $dataa= DB::Connection('mysql2')->select('select sum(a.net_amount)net_amount,b.tax_amount,b.category_id ,d.acc_id
+                $dataa= DB::Connection('mysql2')->select('select sum(a.net_amount)net_amount,a.amount,b.tax_amount,b.category_id ,d.acc_id
 
-           
+                
                 from  purchase_return_data a
                 inner join
                 new_purchase_voucher_data b

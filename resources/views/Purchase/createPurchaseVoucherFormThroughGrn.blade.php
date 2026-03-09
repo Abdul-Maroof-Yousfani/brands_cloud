@@ -356,11 +356,17 @@ use App\Helpers\ReuseableCode;
 
                                                         <td>
                                                             <input readonly value="{{$qty}}" type="number" step="0.01"
-                                                                name="qty_1_<?php echo $count ?>"
+                                                                
                                                                 id="qty_1_<?php echo $count ?>"
                                                                 class="form-control qty" />
                                                         </td>
 
+                                                        <td class="hide">
+                                                            <input readonly value="{{$return_qty}}" type="number"
+                                                                step="0.01" name="qty_1_<?php echo $count ?>"
+                                                                id="qty_1_<?php echo $count ?>"
+                                                                class="form-control qty" />
+                                                        </td>
                                                         <td>
                                                             <input readonly value="{{$return_qty}}" type="number"
                                                                 step="0.01" name="return_qty_1_<?php echo $count ?>"
