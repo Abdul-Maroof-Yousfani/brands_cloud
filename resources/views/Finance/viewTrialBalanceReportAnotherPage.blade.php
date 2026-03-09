@@ -233,11 +233,21 @@ $m=Session::get('run_company');
             endif;
             if ($trow->voucher_type==5):
             $detail='pdc/viewPurchaseReturnDetail';
-            $page_typ='Debit Not';
+            $page_typ='Grn Return';
             $total_debit_note+=$trow->amount;
 
-            $PageTitle = 'Purchase Return';
-            $type='Purchase Return';
+            $PageTitle = 'Grn Return';
+            $type='Grn Return';
+
+            endif;
+
+            if ($trow->voucher_type==12):
+            $detail='pdc/viewPurchaseReturnDetail';
+            $page_typ='Purchase Return / Debit Note';
+            $total_debit_note+=$trow->amount;
+
+            $PageTitle = 'Purchase Return / Debit Note';
+            $type='Purchase Return / Debit Note';
 
             endif;
 

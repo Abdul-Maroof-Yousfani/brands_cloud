@@ -3373,7 +3373,7 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction->amount=$cr_note->net_amount;
                 $transaction->username=Auth::user()->name;
                 $transaction->status=1;
-                $transaction->voucher_type=5;
+                $transaction->voucher_type=12;
                 $transaction->save();
 
                 $debit_amount+=$cr_note->net_amount;
@@ -3390,7 +3390,7 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction->amount=$cr_note->net_amount;
                 $transaction->username=Auth::user()->name;
                 $transaction->status=1;
-                $transaction->voucher_type=5;
+                $transaction->voucher_type=12;
                 $transaction->save();
 
                 $debit_amount+=$cr_note->net_amount;
@@ -3409,7 +3409,7 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction->amount=$cr_note->net_amount;
                 $transaction->username=Auth::user()->name;
                 $transaction->status=1;
-                $transaction->voucher_type=5;
+                $transaction->voucher_type=12;
                 $transaction->save();
 
                 $debit_amount+=$cr_note->net_amount;
@@ -3428,7 +3428,7 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction->amount=$cr_note->tax_amount;
                 $transaction->username=Auth::user()->name;
                 $transaction->status=1;
-                $transaction->voucher_type=5;
+                $transaction->voucher_type=12;
                 $transaction->save();
 
                 $debit_amount+=$cr_note->net_amount;
@@ -3448,7 +3448,7 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction->amount=$cr_note->net_amount - $sales_tax_amount ;
                 $transaction->username=Auth::user()->name;
                 $transaction->status=1;
-                $transaction->voucher_type=5;
+                $transaction->voucher_type=12;
                 $transaction->save();
 
                 $debit_amount+=$cr_note->net_amount;
@@ -3493,7 +3493,7 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction->amount=$sales_tax_amount;
                 $transaction->username=Auth::user()->name;;
                 $transaction->status=1;
-                $transaction->voucher_type=5;
+                $transaction->voucher_type=12;
                 $transaction->save();
                 $debit_amount+=$sales_tax_amount;
                 endif;
