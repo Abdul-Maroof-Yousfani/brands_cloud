@@ -236,8 +236,8 @@ $m=Session::get('run_company');
             $page_typ='Grn Return';
             $total_debit_note+=$trow->amount;
 
-            $PageTitle = 'Grn Return';
-            $type='Grn Return';
+            $PageTitle = 'Purchase Return';
+            $type='Purchase Return';
 
             endif;
 
@@ -246,8 +246,8 @@ $m=Session::get('run_company');
             $page_typ='Purchase Return / Debit Note';
             $total_debit_note+=$trow->amount;
 
-            $PageTitle = 'Purchase Return / Debit Note';
-            $type='Purchase Return / Debit Note';
+            $PageTitle = 'Purchase Return';
+            $type='Purchase Return';
 
             endif;
 
