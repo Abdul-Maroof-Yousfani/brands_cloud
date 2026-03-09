@@ -298,9 +298,9 @@ CommonHelper::reconnectMasterDatabase();
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Delivery Note</span>
+                                            <span class="fw-bolder">Delivery Note are Approval Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_delivery_notes }} Delivery Notes are pending</small>
+                                        <small class="notification-text">{{ $pending_delivery_notes }} Delivery Notes are Approval pending</small>
                                         <br>
                                     </div>
                                 </div>
@@ -311,9 +311,9 @@ CommonHelper::reconnectMasterDatabase();
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Sales Tax Invoice</span>
+                                            <span class="fw-bolder">Sales Tax Invoice Are Approval Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_sale_tax_invoices }} Sales Tax Invoice are pending</small>
+                                        <small class="notification-text">{{ $pending_sale_tax_invoices }} Sales Tax Invoice are Approval pending</small>
                                         <br>
                                     </div>
                                 </div>
@@ -324,9 +324,9 @@ CommonHelper::reconnectMasterDatabase();
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Sales Return</span>
+                                            <span class="fw-bolder">Sales Return Are Approval Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_sale_returns }} Sale Returns are pending</small>
+                                        <small class="notification-text">{{ $pending_sale_returns }} Sale Returns are Approval pending</small>
                                         <br>
                                     </div>
                                 </div>
