@@ -1262,7 +1262,7 @@ class PurchaseAddDetailControler extends Controller
 
     public function addGoodsReceiptNoteDetail(Request $request)
     {
-        
+ 
         DB::Connection('mysql2')->beginTransaction();
         try {
             $m = $_GET['m'];
@@ -1521,12 +1521,14 @@ class PurchaseAddDetailControler extends Controller
          //   endforeach;
 
         }
-        catch(\Exception $e)
-        {
-            DB::Connection('mysql2')->rollback();
-            echo "EROOR"; //die();
-            dd($e->getMessage());
-        }
+      catch(\Exception $e)
+{
+    DB::Connection('mysql2')->rollback();
+    echo "ERROR: " . $e->getMessage();
+    echo "<br>Line: " . $e->getLine();
+    echo "<br>File: " . $e->getFile();
+    die();
+}
 
 
        Session::flash('dataInsert', 'Goods Receipt Note Successfully Saved.');
@@ -3123,6 +3125,10 @@ class PurchaseAddDetailControler extends Controller
         $PurchaseReturnInsert['status'] = 1;
         $PurchaseReturnInsert['username'] = Auth::user()->name;
 
+
+         
+
+
             $count_invoice=   DB::Connection('mysql2')->table('new_purchase_voucher')->where('grn_id',$GrnId)->count();
             if ($count_invoice>0):
                 $PurchaseReturnInsert['type']=2;
@@ -3136,7 +3142,7 @@ class PurchaseAddDetailControler extends Controller
             foreach($data as $key=>$row):
 
 
-                $amount=$request->input('Rate')[$row] *$request->input('ReturnQty')[$row];
+                $amount=$request->input('Rate')[$row] * $request->input('ReturnQty')[$row];
                 $dicount_percent=$request->input('discount_percent')[$row];
                 $dicount_amount=($amount/100)*$dicount_percent;
             $total=0;
@@ -3148,7 +3154,7 @@ class PurchaseAddDetailControler extends Controller
                     'sub_item_id'=>$request->input('SubItemId')[$row],
                     'description'=>$request->input('item_desc')[$row],
                     'warehouse_id'=>$request->input('WarehouseId')[$row],
-                    'batch_code'=>$request->input('BatchCode')[$row],
+                    // 'batch_code'=>$request->input('BatchCode')[$row],
                     'recived_qty'=>$request->input('PurchaseRecQty')[$row],
                     'rate'=>$request->input('Rate')[$row],
                     'amount'=>$amount,
@@ -3198,6 +3204,55 @@ class PurchaseAddDetailControler extends Controller
 
 
                 DB::Connection('mysql2')->table('stock')->insert($stock);
+
+
+                $data4=array
+                (
+                    'master_id'=>$master_data_id,
+                    'acc_id'=>1101,
+                    'acc_code'=>'1-2-1',
+                    // 'acc_id'=>$row1->acc_id,
+                    // 'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
+                    'cost_center'=>$request->input('SubItemId')[$row],
+                    'particulars'=>$PurchaseReturnNo,
+                    'opening_bal'=>0,
+                    'debit_credit'=>0,
+                    'amount'=>$amount,
+                    'voucher_no'=>$PurchaseReturnNo,
+                    'voucher_type'=>5,
+                    'v_date'=>$request->PurchaseReturnDate,
+                    'date'=>date('Y-m-d'),
+                    'action'=>'insert',
+                    'username'=>Auth::user()->name,
+                    'status'=>1
+                );
+                DB::Connection('mysql2')->table('transactions')->insertGetId($data4);
+
+
+                 $data5=array
+                (
+                    'master_id'=>$master_data_id,
+                    'acc_id'=>1708,
+                    'acc_code'=>'2-36-1',
+                    // 'acc_id'=>$row1->acc_id,
+                    // 'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
+                    'cost_center'=>$request->input('SubItemId')[$row],
+                    'particulars'=>$PurchaseReturnNo,
+                    'opening_bal'=>0,
+                    'debit_credit'=>1,
+                    'amount'=>$amount,
+                    'voucher_no'=>$PurchaseReturnNo,
+                    'voucher_type'=>5,
+                    'v_date'=>$request->PurchaseReturnDate,
+                    'date'=>date('Y-m-d'),
+                    'action'=>'insert',
+                    'username'=>Auth::user()->name,
+                    'status'=>1
+                );
+                DB::Connection('mysql2')->table('transactions')->insertGetId($data5);
+
+
+
                 //endif;
 
             endforeach;
@@ -3228,8 +3283,9 @@ class PurchaseAddDetailControler extends Controller
 
             $count_invoice=   DB::Connection('mysql2')->table('new_purchase_voucher')->where('grn_id',$GrnId)->count();
             if ($count_invoice>0):
+                $dataa= DB::Connection('mysql2')->select('select sum(a.net_amount)net_amount,b.tax_amount,b.category_id ,d.acc_id
 
-                $dataa= DB::Connection('mysql2')->select('select sum(a.net_amount)net_amount,b.category_id ,d.acc_id
+           
                 from  purchase_return_data a
                 inner join
                 new_purchase_voucher_data b
@@ -3246,14 +3302,71 @@ class PurchaseAddDetailControler extends Controller
                 where a.master_id="'.$master_id.'"
                 group by d.acc_id');
                 $debit_amount=0;
+
+               
+
+
+$total_amount = 0;
+foreach($dataa as $cr_note) {
+    $total_amount += $cr_note->amount + $cr_note->tax_amount;
+   
+}
+
+
+
+
+                
+              $dataa1 = DB::connection('mysql2')->selectOne('
+    select gst.percent
+    from purchase_return_data a
+    inner join new_purchase_voucher_data b
+        on a.grn_data_id = b.grn_data_id
+    inner join new_purchase_voucher npv
+        on npv.id = b.master_id
+    inner join gst
+        on gst.id = npv.sales_tax_acc_id
+    where a.master_id = ?
+    limit 1
+', [$master_id]);
+
+
+$gst_percent = $dataa1->percent ?? 0;
+               
+$sales_tax_amount = ($total_amount/100)*$gst_percent;
+
+
+
+        //          $po_data= CommonHelper::get_goodreciptnotedata($GrnId,1);
+
+        //    $sales_tax_amount=$po_data->sales_tax_amount;
+
+
+
                 foreach($dataa as $cr_note):
 
+               
+                //     $transaction=new Transactions();
+                // $transaction=$transaction->SetConnection('mysql2');
+                // $transaction->voucher_no=$PurchaseReturnNo;
+                // $transaction->v_date=$PurchaseReturnDate;
+                // $transaction->acc_id=$cr_note->acc_id;
+                // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($cr_note->acc_id);
+                // $transaction->particulars=$Remarks;
+                // $transaction->opening_bal=0;
+                // $transaction->debit_credit=0;
+                // $transaction->amount=$cr_note->net_amount;
+                // $transaction->username=Auth::user()->name;
+                // $transaction->status=1;
+                // $transaction->voucher_type=5;
+                // $transaction->save();
+
+                //inventroy
                 $transaction=new Transactions();
                 $transaction=$transaction->SetConnection('mysql2');
                 $transaction->voucher_no=$PurchaseReturnNo;
                 $transaction->v_date=$PurchaseReturnDate;
-                $transaction->acc_id=$cr_note->acc_id;
-                $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($cr_note->acc_id);
+                $transaction->acc_id=1101;
+                $transaction->acc_code='1-2-1';
                 $transaction->particulars=$Remarks;
                 $transaction->opening_bal=0;
                 $transaction->debit_credit=0;
@@ -3262,22 +3375,118 @@ class PurchaseAddDetailControler extends Controller
                 $transaction->status=1;
                 $transaction->voucher_type=5;
                 $transaction->save();
+
                 $debit_amount+=$cr_note->net_amount;
-            endforeach;
-
-           $po_data= CommonHelper::get_goodreciptnotedata($GrnId,1);
-
-           $sales_tax_amount=$po_data->sales_tax_amount;
-
-
-            if ($sales_tax_amount>0):
-                $sales_tax_amount=($total/100)*17;
+                //grn clearing db
                 $transaction=new Transactions();
                 $transaction=$transaction->SetConnection('mysql2');
                 $transaction->voucher_no=$PurchaseReturnNo;
                 $transaction->v_date=$PurchaseReturnDate;
-                $transaction->acc_id=ReuseableCode::invoice_tax_acc_id($po_data->sales_tax);
-                $transaction->acc_code=ReuseableCode::invoice_tax_acc_id($po_data->sales_tax);
+                $transaction->acc_id=1708;
+                $transaction->acc_code='2-36-1';
+                $transaction->particulars=$Remarks;
+                $transaction->opening_bal=0;
+                $transaction->debit_credit=1;
+                $transaction->amount=$cr_note->net_amount;
+                $transaction->username=Auth::user()->name;
+                $transaction->status=1;
+                $transaction->voucher_type=5;
+                $transaction->save();
+
+                $debit_amount+=$cr_note->net_amount;
+
+                //grn clearing cr
+
+                 $transaction=new Transactions();
+                $transaction=$transaction->SetConnection('mysql2');
+                $transaction->voucher_no=$PurchaseReturnNo;
+                $transaction->v_date=$PurchaseReturnDate;
+                $transaction->acc_id=1708;
+                $transaction->acc_code='2-36-1';
+                $transaction->particulars=$Remarks;
+                $transaction->opening_bal=0;
+                $transaction->debit_credit=0;
+                $transaction->amount=$cr_note->net_amount;
+                $transaction->username=Auth::user()->name;
+                $transaction->status=1;
+                $transaction->voucher_type=5;
+                $transaction->save();
+
+                $debit_amount+=$cr_note->net_amount;
+
+                //input gst
+
+                 $transaction=new Transactions();
+                $transaction=$transaction->SetConnection('mysql2');
+                $transaction->voucher_no=$PurchaseReturnNo;
+                $transaction->v_date=$PurchaseReturnDate;
+                $transaction->acc_id=1709;
+                $transaction->acc_code='1-5';
+                $transaction->particulars=$Remarks;
+                $transaction->opening_bal=0;
+                $transaction->debit_credit=0;
+                $transaction->amount=$cr_note->tax_amount;
+                $transaction->username=Auth::user()->name;
+                $transaction->status=1;
+                $transaction->voucher_type=5;
+                $transaction->save();
+
+                $debit_amount+=$cr_note->net_amount;
+
+
+                //supllier acc
+
+                 $transaction=new Transactions();
+                $transaction=$transaction->SetConnection('mysql2');
+                $transaction->voucher_no=$PurchaseReturnNo;
+                $transaction->v_date=$PurchaseReturnDate;
+                 $transaction->acc_id=$supp_id;
+                 $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($supp_id);
+                $transaction->particulars=$Remarks;
+                $transaction->opening_bal=0;
+                $transaction->debit_credit=0;
+                $transaction->amount=$cr_note->net_amount - $sales_tax_amount ;
+                $transaction->username=Auth::user()->name;
+                $transaction->status=1;
+                $transaction->voucher_type=5;
+                $transaction->save();
+
+                $debit_amount+=$cr_note->net_amount;
+
+                //wht 
+                //  $transaction=new Transactions();
+                // $transaction=$transaction->SetConnection('mysql2');
+                // $transaction->voucher_no=$PurchaseReturnNo;
+                // $transaction->v_date=$PurchaseReturnDate;
+                // $transaction->acc_id=1710;
+                // $transaction->acc_code='2-36-2';
+                // $transaction->particulars=$Remarks;
+                // $transaction->opening_bal=0;
+                // $transaction->debit_credit=0;
+                // $transaction->amount=$cr_note->net_amount;
+                // $transaction->username=Auth::user()->name;
+                // $transaction->status=1;
+                // $transaction->voucher_type=5;
+                // $transaction->save();
+
+                // $debit_amount+=$cr_note->net_amount;
+
+
+            endforeach;
+
+         
+
+
+            if ($sales_tax_amount>0):
+                
+                $transaction=new Transactions();
+                $transaction=$transaction->SetConnection('mysql2');
+                $transaction->voucher_no=$PurchaseReturnNo;
+                $transaction->v_date=$PurchaseReturnDate;
+                // $transaction->acc_id=ReuseableCode::invoice_tax_acc_id($po_data->sales_tax);
+                // $transaction->acc_code=ReuseableCode::invoice_tax_acc_id($po_data->sales_tax);
+                 $transaction->acc_id=1710;
+                 $transaction->acc_code='2-36-2';
                 $transaction->particulars=$Remarks;
                 $transaction->opening_bal=0;
                 $transaction->debit_credit=0;
@@ -3289,20 +3498,20 @@ class PurchaseAddDetailControler extends Controller
                 $debit_amount+=$sales_tax_amount;
                 endif;
 
-                $transaction=new Transactions();
-                $transaction=$transaction->SetConnection('mysql2');
-                $transaction->voucher_no=$PurchaseReturnNo;
-                $transaction->v_date=$PurchaseReturnDate;
-                $transaction->acc_id=$supp_id;
-                $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($supp_id);
-                $transaction->particulars=$Remarks;
-                $transaction->opening_bal=0;
-                $transaction->debit_credit=1;
-                $transaction->amount=$debit_amount;
-                $transaction->username=Auth::user()->name;;
-                $transaction->status=1;
-                $transaction->voucher_type=5;
-                $transaction->save();
+                // $transaction=new Transactions();
+                // $transaction=$transaction->SetConnection('mysql2');
+                // $transaction->voucher_no=$PurchaseReturnNo;
+                // $transaction->v_date=$PurchaseReturnDate;
+                // $transaction->acc_id=$supp_id;
+                // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($supp_id);
+                // $transaction->particulars=$Remarks;
+                // $transaction->opening_bal=0;
+                // $transaction->debit_credit=1;
+                // $transaction->amount=$debit_amount;
+                // $transaction->username=Auth::user()->name;;
+                // $transaction->status=1;
+                // $transaction->voucher_type=5;
+                // $transaction->save();
 
                 endif;
 
@@ -3369,7 +3578,7 @@ class PurchaseAddDetailControler extends Controller
             foreach($data as $key=>$row):
 
 
-                $amount=$request->input('Rate')[$row] *$request->input('ReturnQty')[$row];
+                $amount=$request->input('Rate')[$row]*$request->input('ReturnQty')[$row];
                 $dicount_percent=$request->input('discount_percent')[$row];
                 $dicount_amount=($amount/100)*$dicount_percent;
 

@@ -801,7 +801,10 @@ function addDirectgrn()
         CommonHelper::companyDatabaseConnection($m);
 
         $DataMaster = GoodsReceiptNote::where('status','=','1')->whereIn('grn_status',[2,3])->where('grn_no','=',$GrnNo)->first();
-        $DataDetail = GRNData::where('status','=','1')->whereIn('grn_status',[2,3])->where('grn_no','=',$GrnNo)->get();
+        $DataDetail = GRNData::where('status','=','1')->where('grn_no','=',$GrnNo)->get();
+        // $DataDetail = GRNData::where('status','=','1')->whereIn('grn_status',[2,3])->where('grn_no','=',$GrnNo)->get();
+
+        // dd($DataMaster,$DataDetail);
         CommonHelper::reconnectMasterDatabase();
 
         return view('Purchase.AjaxPages.makeFormGoodsReceiptNoteDetailByGrnNo',compact('DataMaster','DataDetail'));

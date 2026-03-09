@@ -19,12 +19,12 @@ $GrnDate = $makeGetValue[2];
                     <th class="text-center">Sr.No</th>
                     <th class="text-center">Item Name</th>
                     <th class="text-center">Location</th>
-                    <th class="text-center">Batch Code</th>
+                    <th class="text-center hide">Batch Code</th>
                     <th class="text-center">Received Qty</th>
                     <th class="text-center"> Return QTY</th>
                     <th  style="display: none" class="text-center">Rate</th>
                     <th style="display: none" class="text-center">Amount</th>
-                    <th class="text-center">Stock Qty</th>
+                    <th class="text-center hide">Stock Qty</th>
                     <th class="text-center">Return Qty</th>
                     <th class="text-center">Enable/Disable</th>
                 </thead>
@@ -47,7 +47,7 @@ $GrnDate = $makeGetValue[2];
                         <td><?php echo CommonHelper::getCompanyDatabaseTableValueById($m,'warehouse','name',$Fil->warehouse_id);?>
                             <input value="<?php echo $Fil->warehouse_id?>" type="hidden" name="WarehouseId[]" id="warehouse_id_<?php echo $Fil->id; ?>"/>
                         </td>
-                        <td><?php echo $Fil->batch_code?>
+                        <td class="hide"><?php echo $Fil->batch_code?>
                             <input type="hidden" name="BatchCode[]" id="BatchCode<?php echo $Fil->id?>" value="<?php echo $Fil->batch_code;?>">
                         </td>
                         <td class="text-center"><?php echo number_format($Fil->purchase_recived_qty,2);?>
@@ -68,7 +68,7 @@ $GrnDate = $makeGetValue[2];
                         <?php $type =  CommonHelper::get_item_type($Fil->sub_item_id); ?>
 
                       
-                        <td >
+                        <td class="hide">
                             <input type="number" class="form-control" id="stock_qty<?php echo $Fil->id?>" name="stock_qty[]" value="{{ReuseableCode::get_stock($Fil->sub_item_id,$Fil->warehouse_id,0,$Fil->batch_code)}}" readonly>
                         </td>
                         <td>

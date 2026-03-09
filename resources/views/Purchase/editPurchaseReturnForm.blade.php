@@ -34,12 +34,12 @@ $m = $_GET['m'];
                                                     <th class="text-center">Sr.No</th>
                                                     <th class="text-center">Item Name</th>
                                                     <th class="text-center">Location</th>
-                                                    <th class="text-center">Batch Code</th>
+                                                    <th class="text-center hide">Batch Code</th>
                                                     <th class="text-center"> Received Qty</th>
                                                     <th class="text-center"> Return QTY</th>
-                                                    <th class="text-center">Rate</th>
-                                                    <th class="text-center">Amount</th>
-                                                    <th class="text-center">Stock Qty</th>
+                                                    <th class="text-center hide">Rate</th>
+                                                    <th class="text-center hide">Amount</th>
+                                                    <th class="text-center hide">Stock Qty</th>
                                                     <th class="text-center">Return Qty</th>
                                                     </thead>
                                                     <tbody>
@@ -61,7 +61,7 @@ $m = $_GET['m'];
                                                         <td><?php echo CommonHelper::getCompanyDatabaseTableValueById($m,'warehouse','name',$Fil->warehouse_id);?>
                                                             <input value="<?php echo $Fil->warehouse_id?>" type="hidden" name="WarehouseId[]" id="warehouse_id_<?php echo $Fil->grn_data_id; ?>"/>
                                                         </td>
-                                                        <td><?php echo $Fil->batch_code;?>
+                                                        <td class="hide"><?php echo $Fil->batch_code;?>
                                                             <input type="hidden" name="BatchCode[]" id="BatchCode<?php echo $Fil->grn_data_id?>" value="<?php echo $Fil->batch_code?>">
                                                         </td>
                                                         <td class="text-center"><?php echo number_format($Fil->recived_qty,2);?>
@@ -73,13 +73,13 @@ $m = $_GET['m'];
                                                         <td class="text-center">@if(!empty($return_qty->qty)){{$reurn=$return_qty->qty}} @else <?php  ?> @endif</td>
                                                         <input type="hidden" id="return_<?php echo $Fil->id; ?>" value="{{$reurn}}"/>
 
-                                                        <td class="text-center"><?php echo number_format($Fil->rate,2);?>
+                                                        <td class="text-center hide"><?php echo number_format($Fil->rate,2);?>
                                                             <input value="<?php echo $Fil->rate?>" type="hidden" name="Rate[]" id="rate_<?php echo $Fil->grn_data_id; ?>"/>
                                                         </td>
-                                                        <td class="text-center"><?php echo number_format($Fil->amount,2);?>
+                                                        <td class="text-center hide"><?php echo number_format($Fil->amount,2);?>
                                                             <input value="<?php echo $Fil->amount?>" type="hidden" name="Amount[]" id="amount_<?php echo $Fil->grn_data_id; ?>"/>
                                                         </td>
-                                                        <td>
+                                                        <td class="text-center hide">
                                                             <input type="number" class="form-control" id="stock_qty<?php echo $Fil->grn_data_id?>" name="stock_qty[]" value="{{ReuseableCode::get_stock($Fil->sub_item_id,$Fil->warehouse_id,0,$Fil->batch_code)+$Fil->return_qty}}" readonly>
                                                         </td>
                                                         <td>
