@@ -243,7 +243,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                                 </tr>
                                             </thead>
                                             <tbody id="data">
-                                                @php $count=1; @endphp
+                                                @php $count=1; $total_gross = 0; $total_discount = 0; $total_tax = 0; $total_amount = 0; @endphp
                                                 @foreach($delivery_note_data as $sale_order_item)
                                                 @php
                                                     $saleOrderDetail = CommonHelper::get_item_detials($sale_order_item->so_data_id);
@@ -260,12 +260,30 @@ foreach ($delivery_note_data as $sale_order_item) {
                                                     <!-- <td style="text-align: center !important;">{{number_format($sale_order_item->foc)}}</td> -->
                                                     <td style="text-align: center !important;">{{number_format($sale_order_item->mrp_price)}}</td>
                                                     <td style="text-align: center !important;">{{number_format($sale_order_item->rate)}}</td>
-                                                    <td style="text-align: center !important;">{{number_format($saleOrderDetail->sub_total,0)}}</td>
+                                                    <!-- <td style="text-align: center !important;">{{number_format($saleOrderDetail->sub_total,0)}}</td> -->
+                                                     @php
+                                                        $gross_amount = $sale_order_item->rate * $sale_order_item->qty;
+                                                        $total_gross += $gross_amount; 
+                                                    @endphp
+                                                     <td style="text-align: center !important;">{{ number_format($gross_amount,0) }}</td>
                                                     <td style="text-align: center !important;">{{number_format($saleOrderDetail->discount_percent_1,0)}}%</td>
-                                                    <td style="text-align: center !important;">{{number_format($saleOrderDetail->discount_amount_1,0)}}</td>
+                                                    <!-- <td style="text-align: center !important;">{{number_format($saleOrderDetail->discount_amount_1,0)}}</td> -->
+                                                    <!-- I want to get specific percentage value from the $sale_order_item->rate * $sale_order_item->qty -->
+                                                    @php
+                                                        $percentage_amount = $saleOrderDetail->discount_percent_1;
+                                                        $discount_amount = $gross_amount * $percentage_amount / 100;
+                                                        $total_discount += $discount_amount;
+                                                    @endphp
+                                                    <td style="text-align: center !important;">{{ $discount_amount }}</td>
                                                     <td  style="text-align: center !important;">{{number_format($sale_order_item->tax)}}</td>
-                                                    <td  style="text-align: center !important;">{{number_format($sale_order_item->tax_amount,0)}}</td>
-                                                    <td style="text-align: center !important;">{{number_format($saleOrderDetail->amount,0)}}</td>
+                                                    @php 
+                                                        $tax_amount = $sale_order_item->tax;
+                                                        $tax_amount = $tax_amount * $gross_amount / 100;
+                                                        $total_tax += $tax_amount;
+                                                        $total_amount += $gross_amount - $discount_amount + $tax_amount;
+                                                    @endphp
+                                                    <td  style="text-align: center !important;">{{number_format($tax_amount,0)}}</td>
+                                                    <td style="text-align: center !important;">{{number_format($gross_amount - $discount_amount + $tax_amount,0)}}</td>
                                                 </tr>
                                                 @endforeach
                                                 <tr>
@@ -275,12 +293,12 @@ foreach ($delivery_note_data as $sale_order_item) {
                                                     <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
                                                     <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
 
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{number_format( round($total_gross_amount),0) }}</p></th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{number_format( round($total_gross),0) }}</p></th>
                                                 <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
-                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_discount_amount), 0) }}</p></th>
+                                                <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_discount), 0) }}</p></th>
                                                     <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;"></th>
                                                     <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_tax),0) }}</p></th>
-                                                    <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_amount_after_tax),0) }}</p></th>
+                                                    <th style="background: transparent; border-bottom: 1px solid #000 !important; padding:0px 5px !important; margin:0 !important;text-align: center !important;"><p style="text-align: center !important;" id="total-fac">{{ number_format(round($total_amount),0) }}</p></th>
                                                 </tr>
                                             </tbody>
                                         </table>
