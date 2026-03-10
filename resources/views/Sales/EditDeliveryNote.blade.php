@@ -107,7 +107,7 @@ label {
                                                                                     Payment <span
                                                                                         class="rflabelsteric"><strong>*</strong></span></label>
                                                                                 <input type="text"
-                                                                                    class="form-control requiredField"
+                                                                                    class="form-control"
                                                                                     placeholder=""
                                                                                     name="model_terms_of_payment"
                                                                                     id="model_terms_of_payment"
@@ -201,7 +201,7 @@ label {
                                                                                     through<span
                                                                                         class="rflabelsteric"><strong>*</strong></span></label>
                                                                                 <input readonly type="text"
-                                                                                    class="form-control requiredField"
+                                                                                    class="form-control"
                                                                                     placeholder=""
                                                                                     name="despacth_through"
                                                                                     id="despacth_through"
