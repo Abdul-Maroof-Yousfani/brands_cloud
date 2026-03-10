@@ -108,14 +108,21 @@ class SalesEditDetailController extends Controller
 
             $qty = CommonHelper::check_str_replace($request->input('qty' . $i));
             $actual_qty += DB::Connection('mysql2')->table('sales_order_data')->where('id',$request->input('data_id' . $i))->first()->qty;
+            
+            
             $send_qty = CommonHelper::check_str_replace($request->input('send_qty' . $i));
 
 
             $rate = CommonHelper::check_str_replace($request->input('send_rate' . $i));
             $amount = CommonHelper::check_str_replace($request->input('send_amount' . $i));
 
+            if($send_qty == 0){
+                 
+            }else{
 
-            $delivery_note_data->qty = $send_qty;
+                $delivery_note_data->qty = $send_qty;
+            }
+            
 
             $delivery_note_data->rate = $rate;
             $delivery_note_data->tax=$request->input('send_discount' . $i);
