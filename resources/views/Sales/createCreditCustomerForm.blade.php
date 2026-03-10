@@ -161,12 +161,12 @@ $m=Session::get('run_company');
                                                                         <label>Company Shipping Address:</label>
                                                                         <span class="rflabelsteric"></span>
                                                                         </br>
-                                                                        <input type="radio" id="same_as_company_address"
+                                                                        <input type="radio" checked id="same_as_company_address"
                                                                             name="company_shipping_type"
                                                                             value="same as company address" />
                                                                         <label for="contactChoice1">Same As Company Address</label>
                                                                         </br>
-                                                                        <input type="radio" checked id="others"
+                                                                        <input type="radio"  id="others"
                                                                             name="company_shipping_type" value="others" />
                                                                         <label for="contactChoice2">Other</label>
                                                                     </div>
@@ -1046,6 +1046,22 @@ $m=Session::get('run_company');
 
         });
     });
+
+    // Handle initial state on page load
+    const currentlyChecked = document.querySelector('input[name="company_shipping_type"]:checked');
+    if (currentlyChecked) {
+        if (currentlyChecked.value == "same as company address") {
+            $('.shippingfield').addClass('hide');
+        } else if (currentlyChecked.value == "others") {
+            $('.shippingfield').removeClass('hide');
+            $('#shipping_city').prop('required', true);
+            $('#shipping_state').prop('required', true);
+            $('#shipping_country').prop('required', true);
+            $('.shipping_city_asterisk').html('<strong>*</strong>');
+            $('.shipping_state_asterisk').html('<strong>*</strong>');
+            $('.shipping_country_asterisk').html('<strong>*</strong>');
+        }
+    }
 
 
     //create CSV file data in an array
