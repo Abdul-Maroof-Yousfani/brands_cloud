@@ -298,7 +298,7 @@ CommonHelper::reconnectMasterDatabase();
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Delivery Note are Approval Pending</span>
+                                            <span class="fw-bolder">Delivery Note Are Approval Pending</span>
                                         </p>
                                         <small class="notification-text">{{ $pending_delivery_notes }} Delivery Notes are Approval pending</small>
                                         <br>
