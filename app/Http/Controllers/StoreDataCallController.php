@@ -211,14 +211,61 @@ class StoreDataCallController extends Controller
        return $discount;
     }
 
+    // public function getCustomerById(Request $request){
+    //     $customer = DB::connection('mysql2')->table('customers')->where('id',$request->id)->where('status',1)->select('*')->first();
+    //     $debitSum = DB::connection('mysql2')->table('transactions')->where('acc_id',$customer->acc_id)->where('debit_credit',1)->sum('amount');
+    //     $creditSum = DB::connection('mysql2')->table('transactions')->where('acc_id',$customer->acc_id)->where('debit_credit',0)->sum('amount');
+    //     $balanceAmount = $debitSum - $creditSum;
+    //      $customer->balance_amount = $balanceAmount;
+    //     return response()->json($customer);
+    // }
+
+
+
     public function getCustomerById(Request $request){
-        $customer = DB::connection('mysql2')->table('customers')->where('id',$request->id)->where('status',1)->select('*')->first();
-        $debitSum = DB::connection('mysql2')->table('transactions')->where('acc_id',$customer->acc_id)->where('debit_credit',1)->sum('amount');
-        $creditSum = DB::connection('mysql2')->table('transactions')->where('acc_id',$customer->acc_id)->where('debit_credit',0)->sum('amount');
-        $balanceAmount = $debitSum - $creditSum;
-         $customer->balance_amount = $balanceAmount;
-        return response()->json($customer);
+    $customer = DB::connection('mysql2')
+        ->table('customers')
+        ->where('id', $request->id)
+        ->where('status', 1)
+        ->select('*')
+        ->first();
+    
+    // Balance calculation
+    $debitSum = DB::connection('mysql2')
+        ->table('transactions')
+        ->where('acc_id', $customer->acc_id)
+        ->where('debit_credit', 1)
+        ->sum('amount');
+    
+    $creditSum = DB::connection('mysql2')
+        ->table('transactions')
+        ->where('acc_id', $customer->acc_id)
+        ->where('debit_credit', 0)
+        ->sum('amount');
+    
+    $balanceAmount = $debitSum - $creditSum;
+    $customer->balance_amount = $balanceAmount;
+
+  
+    
+    // Branch name fetch karna
+    if ($customer->branch_id) {
+        $branch = DB::connection('mysql2')
+            ->table('branch')  // assume table name 'branches' hai
+            ->where('id', $customer->branch_id)
+            ->first();
+
+           
+        
+        $customer->branch_name = $branch ? $branch->branch_name : '-';
+        $customer->branch_code = $branch ? $branch->id : '-'; // agar code bhi chahiye to
+    } else {
+        $customer->branch_name = '-';
+        $customer->branch_code = '-';
     }
+    
+    return response()->json($customer);
+}
     public function createPurchaseRequestSaleDetailForm(Request $request){
         $m = $_GET['m'];
         CommonHelper::companyDatabaseConnection($m);
