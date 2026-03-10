@@ -455,6 +455,7 @@ class SalesAddDetailControler extends Controller
         $data2['special_price_mapped']     = Input::get('special_price_mapped') ?? "no";
         $data2['warehouse_from']     = implode(",", Input::get('warehouse_from') ?? 0);
         $data2['warehouse_to']     = Input::get('warehouse_to') ?? NULL;
+        $data2['branch_id']     = Input::get('branch_id') ?? NULL;
         // $data2['fax']   		    = $fax ?? '';
 
         $data2['username']            = Auth::user()->name;
@@ -494,7 +495,7 @@ class SalesAddDetailControler extends Controller
             $data4['acc_id'] =    $acc_id;
             $data4['account_title']     = Input::get('account_title') ?? '-';
             $data4['account_no']     = Input::get('account_no') ?? '-';
-            $data4['swift_code']     = Input::get('branch_code') ?? '-';
+            $data4['swift_code']     = Input::get('branch_id') ?? '-';
             $data4['bank_address']     = "Karachi Pakistan";
             DB::table('bank_detail')->insert($data4);
         }
@@ -719,6 +720,7 @@ class SalesAddDetailControler extends Controller
     : ($request->warehouse_from ?? $customer->warehouse_from),
 
                 
+                'branch_id' => $request->input('branch_id', $customer->branch_id),
                 'warehouse_to' => $request->input('warehouse_to', $customer->warehouse_to),
                 'username' => Auth::user()->name,
                 'date' => date("Y-m-d"),
@@ -754,7 +756,7 @@ class SalesAddDetailControler extends Controller
                     'bank_name' => $request->input('bank', optional($bankDetail)->bank_name) ?? "-",
                     'account_title' => $request->input('account_title', optional($bankDetail)->account_title) ?? "-",
                     'account_no' => $request->input('account_no', optional($bankDetail)->account_no) ?? "-",
-                    'swift_code' => $request->input('branch_code', optional($bankDetail)->swift_code) ?? "-",
+                    'swift_code' => $request->input('branch_id', optional($bankDetail)->swift_code) ?? "-",
                     'bank_address' => "Karachi Pakistan",
                     'username' => Auth::user()->name,
                     'status' => 1,

@@ -358,10 +358,10 @@ $accType = Auth::user()->acc_type;
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bankDetailField">
                                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                                                        <label>Branch Code :</label>
+                                                                        <label>Branch :</label>
                                                                         </div>
                                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                                                        <p id="Bank">{{  $bankDetail ? $bankDetail->swift_code : "-"  }}</p>
+                                                                        <p id="Bank">{{  $customer->branch_id ? CommonHelper::get_branch_name_by_id($customer->branch_id) : "-"  }}</p>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

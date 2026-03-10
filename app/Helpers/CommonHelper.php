@@ -6030,6 +6030,18 @@ public static function get_customer_acc_id($id)
 
 
 
+    public static function get_branch_name_by_id($id)
+    {
+        if ($id) {
+            $branch = DB::Connection('mysql2')->table('branch')
+                ->where('id', $id)
+                ->first();
+            return $branch ? $branch->branch_name : '-';
+        }
+
+        return '-';
+    }
+
 }
 
 
