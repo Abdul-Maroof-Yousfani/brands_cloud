@@ -543,6 +543,7 @@ class SalesOrderController extends Controller
             $sales_order->phone_no = $request->phone_no ?? null;
             $sales_order->address = $request->address ?? null;
             $sales_order->branch = $request->branch ?? null;
+            $sales_order->model_terms_of_payment = $request->model_terms_of_payment ?? null;
 
             $sales_person_id = $request->saleperson_id ?? null;
             $sales_order->sales_person_id = $sales_person_id;
@@ -1053,6 +1054,7 @@ class SalesOrderController extends Controller
             $sales_order->phone_no = $request->phone_no ?? null;
             $sales_order->address = $request->address ?? null;
             $sales_order->branch = $request->branch ?? null;
+            $sales_order->model_terms_of_payment = $request->model_terms_of_payment ?? null;
 
             $sales_person_id = $request->saleperson_id ?? null;
             $sales_order->sales_person_id = $sales_person_id;
