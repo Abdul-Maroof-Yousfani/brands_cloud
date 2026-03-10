@@ -107,7 +107,7 @@ label {
                                                                                     Payment <span
                                                                                         class="rflabelsteric"><strong>*</strong></span></label>
                                                                                 <input type="text"
-                                                                                    class="form-control requiredField"
+                                                                                    class="form-control"
                                                                                     placeholder=""
                                                                                     name="model_terms_of_payment"
                                                                                     id="model_terms_of_payment"
@@ -201,7 +201,7 @@ label {
                                                                                     through<span
                                                                                         class="rflabelsteric"><strong>*</strong></span></label>
                                                                                 <input readonly type="text"
-                                                                                    class="form-control requiredField"
+                                                                                    class="form-control"
                                                                                     placeholder=""
                                                                                     name="despacth_through"
                                                                                     id="despacth_through"
@@ -419,6 +419,7 @@ label {
                                                                                 <th class="text-center hide">Net Amount
                                                                                 </th>
                                                                                 <th class="text-center hide">0 Qty</th>
+                                                                                 <th class="text-center">Action</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -639,6 +640,8 @@ label {
                                                                                         class="" id="check{{$id_count}}"
                                                                                         onclick="required_none('{{$id_count}}','{{$row1->qty}}')">
                                                                                 </td>
+                                                                                <td><button type="button" class="btn btn-danger btn-xs" onclick="deleteRow(this)"><i class="fa fa-trash"></i></button>
+                                                                                </td>
                                                                                 <input type="hidden"
                                                                                     name="bundles_id{{$working_counter}}"
                                                                                     value="0" />
@@ -837,6 +840,8 @@ label {
                                                                                 <td><input type="checkbox" class=""
                                                                                         id="check{{$id_count}}"
                                                                                         onclick="required_none('{{$id_count}}','{{$bundle_data->qty}}')">
+                                                                                </td>
+                                                                                <td><button type="button" class="btn btn-danger btn-xs" onclick="deleteRow(this)"><i class="fa fa-trash"></i></button>
                                                                                 </td>
                                                                             </tr>
                                                                             <?php  $item_count+=0.1; endforeach ;$bundle_stop=1; ?>
@@ -1282,6 +1287,60 @@ function sales_tax() {
     $('#grand').val(sales_tax + amount);
     toWords(1);
 }
+
+function deleteRow(btn) {
+    if(confirm("Are you sure to delete this row?")) {
+        $(btn).closest('tr').remove();
+        reIndexTable();
+        net();
+        sales_tax();
+    }
+}
+
+function reIndexTable() {
+    var count = 0;
+    $('#addMoreDemandsDetailRows_1 tbody tr').each(function() {
+        var row = $(this);
+        // Checking if it is a data row (has send_qty in it)
+        if (row.find('input[name^="send_qty"]').length > 0) {
+            count++;
+            row.find('td:first').text(count); // Update S.NO
+            
+            // Update all inputs/selects with index-based names
+            row.find('input, select, textarea').each(function() {
+                var name = $(this).attr('name');
+                if (name) {
+                    // Replace trailing digits with new count
+                    $(this).attr('name', name.replace(/\d+$/, count));
+                }
+                var id = $(this).attr('id');
+                if (id) {
+                    $(this).attr('id', id.replace(/\d+$/, count));
+                }
+                
+                // Update event handlers
+                var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = row.find('input, select, textarea').attr(attrs[i]); // Wait, this only gets first. Fixed below.
+                }
+            });
+
+            // Fixed re-indexing of attributes
+            var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+            row.find('*').each(function() {
+                var element = $(this);
+                attrs.forEach(function(attr) {
+                    var val = element.attr(attr);
+                    if (val) {
+                        element.attr(attr, val.replace(/\d+/g, count));
+                    }
+                });
+            });
+        }
+    });
+    $('#count').val(count);
+}
+
 </script>
 
 
@@ -1316,6 +1375,60 @@ function get_batch_detail(id, number) {
         }
     });
 }
+
+function deleteRow(btn) {
+    if(confirm("Are you sure to delete this row?")) {
+        $(btn).closest('tr').remove();
+        reIndexTable();
+        net();
+        sales_tax();
+    }
+}
+
+function reIndexTable() {
+    var count = 0;
+    $('#addMoreDemandsDetailRows_1 tbody tr').each(function() {
+        var row = $(this);
+        // Checking if it is a data row (has send_qty in it)
+        if (row.find('input[name^="send_qty"]').length > 0) {
+            count++;
+            row.find('td:first').text(count); // Update S.NO
+            
+            // Update all inputs/selects with index-based names
+            row.find('input, select, textarea').each(function() {
+                var name = $(this).attr('name');
+                if (name) {
+                    // Replace trailing digits with new count
+                    $(this).attr('name', name.replace(/\d+$/, count));
+                }
+                var id = $(this).attr('id');
+                if (id) {
+                    $(this).attr('id', id.replace(/\d+$/, count));
+                }
+                
+                // Update event handlers
+                var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = row.find('input, select, textarea').attr(attrs[i]); // Wait, this only gets first. Fixed below.
+                }
+            });
+
+            // Fixed re-indexing of attributes
+            var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+            row.find('*').each(function() {
+                var element = $(this);
+                attrs.forEach(function(attr) {
+                    var val = element.attr(attr);
+                    if (val) {
+                        element.attr(attr, val.replace(/\d+/g, count));
+                    }
+                });
+            });
+        }
+    });
+    $('#count').val(count);
+}
+
 </script>
 
 <script>
@@ -1400,6 +1513,60 @@ function net() {
     qty = parseFloat(qty);
     $('#total_qty').val(qty);
 }
+
+function deleteRow(btn) {
+    if(confirm("Are you sure to delete this row?")) {
+        $(btn).closest('tr').remove();
+        reIndexTable();
+        net();
+        sales_tax();
+    }
+}
+
+function reIndexTable() {
+    var count = 0;
+    $('#addMoreDemandsDetailRows_1 tbody tr').each(function() {
+        var row = $(this);
+        // Checking if it is a data row (has send_qty in it)
+        if (row.find('input[name^="send_qty"]').length > 0) {
+            count++;
+            row.find('td:first').text(count); // Update S.NO
+            
+            // Update all inputs/selects with index-based names
+            row.find('input, select, textarea').each(function() {
+                var name = $(this).attr('name');
+                if (name) {
+                    // Replace trailing digits with new count
+                    $(this).attr('name', name.replace(/\d+$/, count));
+                }
+                var id = $(this).attr('id');
+                if (id) {
+                    $(this).attr('id', id.replace(/\d+$/, count));
+                }
+                
+                // Update event handlers
+                var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = row.find('input, select, textarea').attr(attrs[i]); // Wait, this only gets first. Fixed below.
+                }
+            });
+
+            // Fixed re-indexing of attributes
+            var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+            row.find('*').each(function() {
+                var element = $(this);
+                attrs.forEach(function(attr) {
+                    var val = element.attr(attr);
+                    if (val) {
+                        element.attr(attr, val.replace(/\d+/g, count));
+                    }
+                });
+            });
+        }
+    });
+    $('#count').val(count);
+}
+
 </script>
 
 <script>
@@ -1410,10 +1577,172 @@ function get_ntn() {
     $('#buyers_sales').val(ntn[2]);
     sales_tax();
 }
+
+function deleteRow(btn) {
+    if(confirm("Are you sure to delete this row?")) {
+        $(btn).closest('tr').remove();
+        reIndexTable();
+        net();
+        sales_tax();
+    }
+}
+
+function reIndexTable() {
+    var count = 0;
+    $('#addMoreDemandsDetailRows_1 tbody tr').each(function() {
+        var row = $(this);
+        // Checking if it is a data row (has send_qty in it)
+        if (row.find('input[name^="send_qty"]').length > 0) {
+            count++;
+            row.find('td:first').text(count); // Update S.NO
+            
+            // Update all inputs/selects with index-based names
+            row.find('input, select, textarea').each(function() {
+                var name = $(this).attr('name');
+                if (name) {
+                    // Replace trailing digits with new count
+                    $(this).attr('name', name.replace(/\d+$/, count));
+                }
+                var id = $(this).attr('id');
+                if (id) {
+                    $(this).attr('id', id.replace(/\d+$/, count));
+                }
+                
+                // Update event handlers
+                var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = row.find('input, select, textarea').attr(attrs[i]); // Wait, this only gets first. Fixed below.
+                }
+            });
+
+            // Fixed re-indexing of attributes
+            var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+            row.find('*').each(function() {
+                var element = $(this);
+                attrs.forEach(function(attr) {
+                    var val = element.attr(attr);
+                    if (val) {
+                        element.attr(attr, val.replace(/\d+/g, count));
+                    }
+                });
+            });
+        }
+    });
+    $('#count').val(count);
+}
+
 </script>
 <script type="text/javascript">
 $('.select2').select2();
+
+function deleteRow(btn) {
+    if(confirm("Are you sure to delete this row?")) {
+        $(btn).closest('tr').remove();
+        reIndexTable();
+        net();
+        sales_tax();
+    }
+}
+
+function reIndexTable() {
+    var count = 0;
+    $('#addMoreDemandsDetailRows_1 tbody tr').each(function() {
+        var row = $(this);
+        // Checking if it is a data row (has send_qty in it)
+        if (row.find('input[name^="send_qty"]').length > 0) {
+            count++;
+            row.find('td:first').text(count); // Update S.NO
+            
+            // Update all inputs/selects with index-based names
+            row.find('input, select, textarea').each(function() {
+                var name = $(this).attr('name');
+                if (name) {
+                    // Replace trailing digits with new count
+                    $(this).attr('name', name.replace(/\d+$/, count));
+                }
+                var id = $(this).attr('id');
+                if (id) {
+                    $(this).attr('id', id.replace(/\d+$/, count));
+                }
+                
+                // Update event handlers
+                var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = row.find('input, select, textarea').attr(attrs[i]); // Wait, this only gets first. Fixed below.
+                }
+            });
+
+            // Fixed re-indexing of attributes
+            var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+            row.find('*').each(function() {
+                var element = $(this);
+                attrs.forEach(function(attr) {
+                    var val = element.attr(attr);
+                    if (val) {
+                        element.attr(attr, val.replace(/\d+/g, count));
+                    }
+                });
+            });
+        }
+    });
+    $('#count').val(count);
+}
+
 </script>
 
-<script src="{{ URL::asset('assets/js/select2/js_tabindex.js') }}"></script>
+<script src="{{ URL::asset('assets/js/select2/js_tabindex.js') }}">
+function deleteRow(btn) {
+    if(confirm("Are you sure to delete this row?")) {
+        $(btn).closest('tr').remove();
+        reIndexTable();
+        net();
+        sales_tax();
+    }
+}
+
+function reIndexTable() {
+    var count = 0;
+    $('#addMoreDemandsDetailRows_1 tbody tr').each(function() {
+        var row = $(this);
+        // Checking if it is a data row (has send_qty in it)
+        if (row.find('input[name^="send_qty"]').length > 0) {
+            count++;
+            row.find('td:first').text(count); // Update S.NO
+            
+            // Update all inputs/selects with index-based names
+            row.find('input, select, textarea').each(function() {
+                var name = $(this).attr('name');
+                if (name) {
+                    // Replace trailing digits with new count
+                    $(this).attr('name', name.replace(/\d+$/, count));
+                }
+                var id = $(this).attr('id');
+                if (id) {
+                    $(this).attr('id', id.replace(/\d+$/, count));
+                }
+                
+                // Update event handlers
+                var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = row.find('input, select, textarea').attr(attrs[i]); // Wait, this only gets first. Fixed below.
+                }
+            });
+
+            // Fixed re-indexing of attributes
+            var attrs = ['onclick', 'onkeyup', 'onblur', 'onchange'];
+            row.find('*').each(function() {
+                var element = $(this);
+                attrs.forEach(function(attr) {
+                    var val = element.attr(attr);
+                    if (val) {
+                        element.attr(attr, val.replace(/\d+/g, count));
+                    }
+                });
+            });
+        }
+    });
+    $('#count').val(count);
+}
+
+</script>
 @endsection

@@ -424,9 +424,9 @@ class SalesAddDetailControler extends Controller
         $data2['contact_person']               = $contact_person ?? '';
         $data2['contact_person_email']               = $contact_person_email ?? '';
         $data2['company_shipping_type']               = $request->company_shipping_type ?? '';
-        $data2['shipping_city']               = $request->shipping_city ?? NULL;
-        $data2['shipping_state']               = $request->shipping_state ?? NULL;
-        $data2['shipping_country']               = $request->shipping_country ?? NULL;
+        $data2['shipping_city']               = $request->shipping_city;
+        $data2['shipping_state']               = $request->shipping_state;
+        $data2['shipping_country']               = $request->shipping_country;
         $data2['opening_balance']               = $request->opening_balance ?? '';
         $data2['opening_balance_date']               = $request->opening_balance_date ?? '';
         $data2['regd_in_income_tax']               = $request->tax_filer ?? '';
@@ -455,6 +455,7 @@ class SalesAddDetailControler extends Controller
         $data2['special_price_mapped']     = Input::get('special_price_mapped') ?? "no";
         $data2['warehouse_from']     = implode(",", Input::get('warehouse_from') ?? 0);
         $data2['warehouse_to']     = Input::get('warehouse_to') ?? NULL;
+        $data2['branch_id']     = Input::get('branch_id') ?? NULL;
         // $data2['fax']   		    = $fax ?? '';
 
         $data2['username']            = Auth::user()->name;
@@ -465,7 +466,7 @@ class SalesAddDetailControler extends Controller
         $data2["region_id"] = Input::get("region_id") ?? 0;
         // $data2['discount_percent']     = Input::get('discount_percent') ?? 0;
 
-        $CustId = DB::table('customers')->insertGetId($data2);
+        $CustId = DB::connection('mysql2')->table('customers')->insertGetId($data2);
 
         $data3['acc_id'] =    $acc_id;
         $data3['acc_code'] =    $code;
@@ -494,7 +495,7 @@ class SalesAddDetailControler extends Controller
             $data4['acc_id'] =    $acc_id;
             $data4['account_title']     = Input::get('account_title') ?? '-';
             $data4['account_no']     = Input::get('account_no') ?? '-';
-            $data4['swift_code']     = Input::get('branch_code') ?? '-';
+            $data4['swift_code']     = Input::get('branch_id') ?? '-';
             $data4['bank_address']     = "Karachi Pakistan";
             DB::table('bank_detail')->insert($data4);
         }
@@ -686,10 +687,10 @@ class SalesAddDetailControler extends Controller
                 'title' => $request->input('title', $customer->title),
                 'contact_person' => $request->input('contact_person', $customer->contact_person),
                 'contact_person_email' => $request->input('contact_person_email', $customer->contact_person_email),
-                'company_shipping_type' => $request->input('company_shipping_type', $customer->company_shipping_type),
-                'shipping_city' => $request->input('shipping_city', $customer->shipping_city),
-                'shipping_state' => $request->input('shipping_state', $customer->shipping_state),
-                'shipping_country' => $request->input('shipping_country', $customer->shipping_country),
+                'company_shipping_type' => $request->company_shipping_type ?? $customer->company_shipping_type,
+                'shipping_city' => $request->shipping_city,
+                'shipping_state' => $request->shipping_state,
+                'shipping_country' => $request->shipping_country,
                 'opening_balance' => $request->input('opening_balance', $customer->opening_balance),
                 'opening_balance_date' => $request->input('opening_balance_date', $customer->opening_balance_date),
                 'regd_in_income_tax' => $request->input('tax_filer', $customer->regd_in_income_tax),
@@ -719,6 +720,7 @@ class SalesAddDetailControler extends Controller
     : ($request->warehouse_from ?? $customer->warehouse_from),
 
                 
+                'branch_id' => $request->input('branch_id', $customer->branch_id),
                 'warehouse_to' => $request->input('warehouse_to', $customer->warehouse_to),
                 'username' => Auth::user()->name,
                 'date' => date("Y-m-d"),
@@ -728,7 +730,7 @@ class SalesAddDetailControler extends Controller
                 'status' => Input::get("status") ?? 1
             ];
 
-            DB::table('customers')->where('id', $customerId)->update($data2);
+            DB::connection('mysql2')->table('customers')->where('id', $customerId)->update($data2);
 
             // Update 'transactions' table
             $data3 = [
@@ -754,7 +756,7 @@ class SalesAddDetailControler extends Controller
                     'bank_name' => $request->input('bank', optional($bankDetail)->bank_name) ?? "-",
                     'account_title' => $request->input('account_title', optional($bankDetail)->account_title) ?? "-",
                     'account_no' => $request->input('account_no', optional($bankDetail)->account_no) ?? "-",
-                    'swift_code' => $request->input('branch_code', optional($bankDetail)->swift_code) ?? "-",
+                    'swift_code' => $request->input('branch_id', optional($bankDetail)->swift_code) ?? "-",
                     'bank_address' => "Karachi Pakistan",
                     'username' => Auth::user()->name,
                     'status' => 1,

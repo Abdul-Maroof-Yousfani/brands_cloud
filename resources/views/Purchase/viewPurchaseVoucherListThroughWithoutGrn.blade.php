@@ -104,7 +104,7 @@ $export=ReuseableCode::check_rights(236);
 
 
                                             <th class="text-center">Amount</th>
-                                            <th class="text-center">GRN Amount</th>
+                                            <th class="text-center hide">GRN Amount</th>
                                             <th class="text-center">Action</th>
 
                                             </thead>
@@ -114,11 +114,14 @@ $export=ReuseableCode::check_rights(236);
                                             @foreach($purchase_voucher as $row)
                                                 <?php
                                                $net_amount= DB::Connection('mysql2')->table('new_purchase_voucher_data')->where('master_id',$row->id)->sum('net_amount');
+                                               $sales_tax_amount= DB::Connection('mysql2')->table('new_purchase_voucher')->where('id',$row->id)->sum('sales_tax_amount');
+
+     
                                                 $net_amount_grn= DB::Connection('mysql2')->table('grn_data')->where('master_id',$row->grn_id)->sum('net_amount');
                                                 $grn_date= DB::Connection('mysql2')->table('goods_receipt_note')->where('id',$row->grn_id)->value('grn_date');
                                                 $t_amount= DB::Connection('mysql2')->table('transactions')->where('voucher_no',$row->pv_no)
                                                 ->where('debit_credit',1)->sum('amount');
-                                                $total+=$net_amount?>
+                                                $total+=$net_amount - $sales_tax_amount;?>
                                                 <tr @if($t_amount!=$net_amount) @elseif($net_amount!=$net_amount_grn) style="background-color: cornflowerblue" @endif id="{{$row->id}}">
                                                     <td class="text-center">{{$counter++}}</td>
                                                     <td title="{{$row->id}}" class="text-center">{{strtoupper($row->pv_no)}}</td>
@@ -132,7 +135,7 @@ $export=ReuseableCode::check_rights(236);
                                                     <td id="app{{ $row->id }}" class="text-center text-danger">@if($row->pv_status==1) Pending @elseif($row->pv_status==3) 1st Approve  @else Approved @endif </td>
                                                     <td class="text-center">{{CommonHelper::get_supplier_name($row->supplier)}}</td>
 
-                                                    <td class="text-right">{{number_format($net_amount,2)}}</td>
+                                                    <td class="text-right">{{number_format($net_amount - $sales_tax_amount,2)}}</td>
                                                     <td class="text-right hide">{{number_format($net_amount_grn,2)}}</td>
                                                     <?php $total+=$row['total_net_amount']; ?>
                                                     <td class="text-center">

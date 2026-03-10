@@ -1051,64 +1051,159 @@ $(document).on('keydown', '.next-total', function (event) {
         $('.hideon3').hide();
     });
 
-    function getCustomer(element) {
-        var id = element.value;
-        var selectedOption = $(element).find('option:selected');
-        var stockValue = selectedOption.data('type');
+    // function getCustomer(element) {
+    //     var id = element.value;
+    //     var selectedOption = $(element).find('option:selected');
+    //     var stockValue = selectedOption.data('type');
 
 
-        if(stockValue == 3){
-            $('.hideon3').show();
-        }else{
-            $('.hideon3').hide();
-        }
-        $.ajax({
-            url: '{{ url("stad/getCustomerById") }}',
-            type: 'GET',
-            data: {
-                id: id,
-            },
-            success: function(response) {
-                console.log(response);
-                warehouses = response.warehouse_from.split(",");
+    //     if(stockValue == 3){
+    //         $('.hideon3').show();
+    //     }else{
+    //         $('.hideon3').hide();
+    //     }
+    //     $.ajax({
+    //         url: '{{ url("stad/getCustomerById") }}',
+    //         type: 'GET',
+    //         data: {
+    //             id: id,
+    //         },
+    //         success: function(response) {
+    //             console.log(response);
+    //             warehouses = response.warehouse_from.split(",");
                 
-                $('#warehouse_from').select2({
-                matcher: function(params, data) {
-                    // Exclude 'all' option from dropdown
+    //             $('#warehouse_from').select2({
+    //             matcher: function(params, data) {
+    //                 // Exclude 'all' option from dropdown
 
+    //                 if(warehouses.includes("all")) return data;
+    //                 if (!warehouses.includes(data.id)) {
+    //                 return null;
+    //                 }
+    //                 return data;
+    //             }
+    //             });
+
+    //             $('#opening_balance').val(response.balance_amount);
+    //             $('#amount_limit').val(response.creditLimit);
+    //             $('#current_balance_due').val(response.balance_amount);
+    //             $('#address').val(response.address);
+    //             $('#saleperson').val(response.SaleRep);
+    //             $('#phone_no').val(response.phone_1);
+    //             // $('#salepersonmobile').val(response.salepersonmobile);
+    //             if(response.cnic_ntn != ""){
+    //                 $('#NTN_No').val(response.cnic_ntn);
+    //             }else{
+    //                 $('#NTN_No').val("-");
+    //             }
+    //             if(response.strn != ""){
+    //                 $('#ST_No').val(response.strn);
+    //             }else{
+    //                 $('#ST_No').val("-");
+    //             }
+    //             if (response.special_price_mapped == 1) {
+    //                 $('#special_price_mapped').val("yes");
+    //             } else {
+    //                 $('#special_price_mapped').val("no");
+    //             }
+    //         }
+    //     });
+    // }
+    function getCustomer(element) {
+    var id = element.value;
+    var selectedOption = $(element).find('option:selected');
+    var stockValue = selectedOption.data('type');
+
+    if(stockValue == 3){
+        $('.hideon3').show();
+    }else{
+        $('.hideon3').hide();
+    }
+    
+    if (!id) {
+        // Agar customer deselect kiya to fields clear karein
+        $('#opening_balance, #amount_limit, #current_balance_due, #address, #phone_no, #branch, #NTN_No, #ST_No, #special_price_mapped').val('');
+        return;
+    }
+    
+    $.ajax({
+        url: '{{ url("stad/getCustomerById") }}',
+        type: 'GET',
+        data: {
+            id: id,
+        },
+        success: function(response) {
+            console.log(response); // Debug ke liye
+            
+            // Warehouse handling
+            warehouses = response.warehouse_from ? response.warehouse_from.split(",") : [];
+            
+            $('#warehouse_from').select2({
+                matcher: function(params, data) {
                     if(warehouses.includes("all")) return data;
                     if (!warehouses.includes(data.id)) {
-                    return null;
+                        return null;
                     }
                     return data;
                 }
-                });
+            });
 
-                $('#opening_balance').val(response.balance_amount);
-                $('#amount_limit').val(response.creditLimit);
-                $('#current_balance_due').val(response.balance_amount);
-                $('#address').val(response.address);
-                $('#saleperson').val(response.SaleRep);
-                $('#phone_no').val(response.phone_1);
-                // $('#salepersonmobile').val(response.salepersonmobile);
-                if(response.cnic_ntn != ""){
-                    $('#NTN_No').val(response.cnic_ntn);
-                }else{
-                    $('#NTN_No').val("-");
-                }
-                if(response.strn != ""){
-                    $('#ST_No').val(response.strn);
-                }else{
-                    $('#ST_No').val("-");
-                }
-                if (response.special_price_mapped == 1) {
-                    $('#special_price_mapped').val("yes");
-                } else {
-                    $('#special_price_mapped').val("no");
-                }
+            // Basic fields
+            $('#opening_balance').val(response.balance_amount || '0.00');
+            $('#amount_limit').val(response.creditLimit || '0.00');
+            $('#current_balance_due').val(response.balance_amount || '0.00');
+            $('#address').val(response.address || '');
+            $('#phone_no').val(response.phone_1 || '');
+            
+            // YAHAN BRANCH NAME SET HO RAHA HAI
+            // Pehle check karein ke branch_name response mein hai ya nahi
+            if (response.branch_name) {
+                $('#branch').val(response.branch_name);
+                
+            } else if (response.branch_id) {
+                // Agar branch_name nahi hai to branch_id se fetch karna hoga
+                getBranchName(response.branch_id);
+            } else {
+                $('#branch').val('-');
             }
-        });
+            
+            // NTN/STRN fields
+            $('#NTN_No').val(response.cnic_ntn && response.cnic_ntn != "" ? response.cnic_ntn : "-");
+            $('#ST_No').val(response.strn && response.strn != "" ? response.strn : "-");
+            
+            // Special price mapped
+            $('#special_price_mapped').val(response.special_price_mapped == 1 ? "yes" : "no");
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching customer data:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load customer data. Please try again.'
+            });
+        }
+    });
+}
+
+// Agar branch_name response mein nahi aaya to alag se fetch karne ka function
+function getBranchName(branchId) {
+    if (!branchId) {
+        $('#branch').val('-');
+        return;
     }
+    
+    $.ajax({
+        url: '{{ url("getBranchName") }}', // Ye route banana hoga
+        type: 'GET',
+        data: { id: branchId },
+        success: function(response) {
+            $('#branch').val(response.name || '-');
+        },
+        error: function() {
+            $('#branch').val('-');
+        }
+    });
+}
     let isCheckingCustomer = false; // flag to prevent recursion
 
     $(document).on('select2:selecting', '.brands', function(e) {

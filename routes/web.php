@@ -1541,6 +1541,7 @@ Route::group(['prefix' => 'stad', 'middleware' => 'mysql2', 'before' => 'csrf'],
     Route::get('/getSupplierDiscounts', 'StoreDataCallController@getSupplierDiscounts');
     Route::get('/getCustomerDiscounts', 'StoreDataCallController@getCustomerDiscounts');
     Route::get('/getCustomerById', 'StoreDataCallController@getCustomerById');
+    Route::get('/getBranchName', 'MobileApplicationController@getBranchName');
 
 
     Route::post('/createPurchaseRequestDetailForm', 'StoreDataCallController@createPurchaseRequestDetailForm');

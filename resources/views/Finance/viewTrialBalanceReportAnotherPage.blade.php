@@ -178,7 +178,7 @@ $m=Session::get('run_company');
             endif;
         $category='';
             if ($trow->voucher_type==4):
-            $detail='fdc/viewPurchaseVoucherDetail';
+            $detail='fdc/viewDirectPurchaseVoucherDetail';
             $PageTitle = 'View Purchase Voucher Detail';
             $page_typ='Purchase Invoice';
             $type='Purchase Invoice';
@@ -233,7 +233,17 @@ $m=Session::get('run_company');
             endif;
             if ($trow->voucher_type==5):
             $detail='pdc/viewPurchaseReturnDetail';
-            $page_typ='Debit Not';
+            $page_typ='Grn Return';
+            $total_debit_note+=$trow->amount;
+
+            $PageTitle = 'Purchase Return';
+            $type='Purchase Return';
+
+            endif;
+
+            if ($trow->voucher_type==12):
+            $detail='pdc/viewPurchaseReturnDetail';
+            $page_typ='Purchase Return / Debit Note';
             $total_debit_note+=$trow->amount;
 
             $PageTitle = 'Purchase Return';

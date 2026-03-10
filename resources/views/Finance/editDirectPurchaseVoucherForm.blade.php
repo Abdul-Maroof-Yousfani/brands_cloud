@@ -132,8 +132,8 @@ endif;
                                                     value="{{ $model_terms_of_payment }}" />
                                             </div>
 
-                                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hide">
-                                                <label class="sf-label">Warehouse / Region <span
+                                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                <label class="sf-label">Warehouse <span
                                                         class="rflabelsteric"><strong>*</strong></span></label>
                                                         <select onchange="get_address()" name="warehouse_id" id="warehouse_id"
                                                         class="form-control select2">
@@ -170,16 +170,6 @@ endif;
                                         <div class="table-responsive">
                                             <table class="table table-bordered">
                                                 <thead>
-                                                    <tr class="text-center">
-                                                        <th colspan="12" class="text-center">Purchase Order Detail</th>
-                                                        <th colspan="3" class="text-center">
-                                                            <input type="button" class="btn btn-sm btn-primary"
-                                                                onclick="AddMoreDetails()" value="Add More Rows" />
-                                                        </th>
-                                                        <th class="text-center">
-                                                            <span class="badge badge-success" id="span">{{ count($NewPurchaseVoucherData) }}</span>
-                                                        </th>
-                                                    </tr>
                                                     <tr>
                                                         <th style="width: 15rem" class="text-center">Brand</th>
                                                         <th class="text-center" style="width: 25rem;">Product</th>
@@ -252,7 +242,7 @@ endif;
                                                             <input type="text" onkeyup="claculation('{{ $key+1 }}')" onblur="claculation('{{ $key+1 }}')" class="form-control requiredField ActualRate" name="rate[]" id="rate{{ $key+1 }}" placeholder="RATE" min="1" value="{{ $DFil->rate }}">
                                                         </td>
                                                         <td>
-                                                            <input type="text" class="form-control" name="amount[]" id="amount{{ $key+1 }}" placeholder="AMOUNT" min="1" value="{{ $DFil->amount }}" readonly>
+                                                            <input type="text" class="form-control row_amount_pkr" name="amount[]" id="amount{{ $key+1 }}" placeholder="AMOUNT" min="1" value="{{ $DFil->amount }}" readonly>
                                                         </td>
                                                         <td>
                                                             <input type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount{{ $key+1 }}" placeholder="AMOUNT" min="1" value="{{ $DFil->actual_amount ?? $DFil->amount }}" readonly>
@@ -261,18 +251,19 @@ endif;
                                                             <input type="text" onkeyup="claculation('{{ $key+1 }}')" class="form-control" name="tax_per[]" id="tax_per{{ $key+1 }}" placeholder="TAX %" value="{{ $DFil->tax_rate ?? 0 }}">
                                                         </td>
                                                         <td>
-                                                            <input type="text" onkeyup="claculation('{{ $key+1 }}')" class="form-control" name="tax_amount[]" id="tax_amount{{ $key+1 }}" placeholder="TAX AMOUNT" value="{{ $DFil->tax_amount ?? 0 }}" readonly>
+                                                            <input type="text" onkeyup="claculation('{{ $key+1 }}')" class="form-control row_tax_amount" name="tax_amount[]" id="tax_amount{{ $key+1 }}" placeholder="TAX AMOUNT" value="{{ $DFil->tax_amount ?? 0 }}" readonly>
                                                         </td>
                                                         <td>
                                                             <input type="text" onkeyup="discount_percent(this.id)" class="form-control requiredField" name="discount_percent[]" id="discount_percent{{ $key+1 }}" placeholder="DISCOUNT" min="1" value="{{ $DFil->discount_percent ?? (($DFil->amount > 0) ? ($DFil->discount_amount / $DFil->amount * 100) : 0) }}">
                                                         </td>
                                                         <td>
-                                                            <input type="text" onkeyup="discount_amount(this.id)" class="form-control requiredField" name="discount_amount[]" id="discount_amount{{ $key+1 }}" placeholder="DISCOUNT" min="1" value="{{ $DFil->discount_amount }}">
+                                                            <input type="text" onkeyup="discount_amount(this.id)" class="form-control requiredField row_discount_amount" name="discount_amount[]" id="discount_amount{{ $key+1 }}" placeholder="DISCOUNT" min="1" value="{{ $DFil->discount_amount }}">
                                                         </td>
                                                         <td>
                                                             <input type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount{{ $key+1 }}" placeholder="NET AMOUNT" min="1" value="{{ $DFil->net_amount }}" readonly>
                                                         </td>
                                                         <td class="text-center" style="display: flex; gap: 10px;">
+                                                            <button type="button" class="btn btn-sm btn-primary" onclick="AddMoreDetails()"> + </button>
                                                             <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection({{ $key+1 }})"> - </button>
                                                         </td>
                                                     </tr>
@@ -281,7 +272,15 @@ endif;
 
                                                 <tbody>
                                                     <tr style="background-color: darkgrey;font-size:large;font-weight: bold">
-                                                        <td class="text-center" colspan="15">Total</td>
+                                                        <td class="text-center" colspan="7">Total</td>
+                                                        <td><input readonly class="form-control" type="text" id="total_qty" /></td>
+                                                        <td></td>
+                                                        <td><input readonly class="form-control" type="text" id="total_amount_pkr" /></td>
+                                                        <td><input readonly class="form-control" type="text" id="total_amount" /></td>
+                                                        <td></td>
+                                                        <td><input readonly class="form-control" type="text" id="total_tax_amount" /></td>
+                                                        <td></td>
+                                                        <td><input readonly class="form-control" type="text" id="total_discount_amount" /></td>
                                                         <td id="" class="text-right" colspan="1"><input readonly class="form-control" type="text" id="net" /> </td>
                                                         <td></td>
                                                     </tr>
@@ -298,8 +297,8 @@ endif;
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="float: right;">
                                         <table class="table table-bordered sf-table-list">
                                             <thead>
-                                                <th class="text-center" colspan="3">Sales Tax Account Head</th>
-                                                <th class="text-center" colspan="3">Sales Tax Amount</th>
+                                                <th class="text-center" colspan="3">WithHolding Tax</th>
+                                                <th class="text-center" colspan="3">WithHolding Tax Amount</th>
                                             </thead>
                                             <tbody>
                                                 <tr>
@@ -501,14 +500,15 @@ endif;
                     <td><input readonly type="text" class="form-control" name="uom_id[]" id="uom_id${Counter}"></td>
                     <td><input type="text" onkeyup="claculation('${Counter}')" onblur="claculation('${Counter}')" class="form-control requiredField ActualQty" name="actual_qty[]" id="actual_qty${Counter}" placeholder="ACTUAL QTY"></td>
                     <td><input type="text" onkeyup="claculation('${Counter}')" onblur="claculation('${Counter}')" class="form-control requiredField ActualRate" name="rate[]" id="rate${Counter}" placeholder="RATE"></td>
-                    <td><input readonly type="text" class="form-control" name="amount[]" id="amount${Counter}" placeholder="AMOUNT"></td>
+                    <td><input readonly type="text" class="form-control row_amount_pkr" name="amount[]" id="amount${Counter}" placeholder="AMOUNT"></td>
                     <td><input readonly type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount${Counter}" placeholder="AMOUNT"></td>
                     <td><input type="text" onkeyup="claculation('${Counter}')" class="form-control" name="tax_per[]" id="tax_per${Counter}" value="0"></td>
-                    <td><input readonly type="text" class="form-control" name="tax_amount[]" id="tax_amount${Counter}" value="0"></td>
+                    <td><input readonly type="text" class="form-control row_tax_amount" name="tax_amount[]" id="tax_amount${Counter}" value="0"></td>
                     <td><input type="text" onkeyup="discount_percent(this.id)" class="form-control" name="discount_percent[]" id="discount_percent${Counter}" value="0"></td>
-                    <td><input type="text" onkeyup="discount_amount(this.id)" class="form-control" name="discount_amount[]" id="discount_amount${Counter}" value="0"></td>
+                    <td><input type="text" onkeyup="discount_amount(this.id)" class="form-control row_discount_amount" name="discount_amount[]" id="discount_amount${Counter}" value="0"></td>
                     <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" value="0.00"></td>
-                    <td class="text-center">
+                    <td class="text-center" style="display: flex; gap: 10px;">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="AddMoreDetails()"> + </button>
                         <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection(${Counter})"> - </button>
                     </td>
                 </tr>
@@ -613,12 +613,26 @@ endif;
         }
 
         function net_amount() {
-            var amount = 0;
-            $('.net_amount_dis').each(function(i, obj) {
-                amount += +$('#' + obj.id).val();
-            });
-            amount = parseFloat(amount);
-            $('#net').val(amount.toFixed(2));
+            var total_qty = 0;
+            var total_amount_pkr = 0;
+            var total_amount = 0;
+            var total_tax_amount = 0;
+            var total_discount_amount = 0;
+            var total_net_amount = 0;
+
+            $('.ActualQty').each(function() { total_qty += +$(this).val() || 0; });
+            $('.row_amount_pkr').each(function() { total_amount_pkr += +$(this).val() || 0; });
+            $('.actual_amount').each(function() { total_amount += +$(this).val() || 0; });
+            $('.row_tax_amount').each(function() { total_tax_amount += +$(this).val() || 0; });
+            $('.row_discount_amount').each(function() { total_discount_amount += +$(this).val() || 0; });
+            $('.net_amount_dis').each(function() { total_net_amount += +$(this).val() || 0; });
+
+            $('#total_qty').val(total_qty);
+            $('#total_amount_pkr').val(total_amount_pkr.toFixed(2));
+            $('#total_amount').val(total_amount.toFixed(2));
+            $('#total_tax_amount').val(total_tax_amount.toFixed(2));
+            $('#total_discount_amount').val(total_discount_amount.toFixed(2));
+            $('#net').val(total_net_amount.toFixed(2));
 
             var expense_amount = 0;
             $('input[name="expense_amount[]"]').each(function() {
@@ -626,7 +640,7 @@ endif;
             });
 
             var sales_tax = parseFloat($('#sales_amount_td').val()) || 0;
-            var net = (amount + sales_tax + expense_amount).toFixed(2);
+            var net = (total_net_amount - sales_tax + expense_amount).toFixed(2);
             $('#net_after_tax').val(net);
             $('#d_t_amount_1').val(net);
             // toWords(1);
@@ -751,25 +765,18 @@ endif;
             var qty = $('#actual_qty' + number).val();
             var rate = $('#rate' + number).val();
 
-            var total = parseFloat(qty * rate).toFixed(2);
+            var amount = parseFloat(qty * rate).toFixed(2);
 
-            $('#amount' + number).val(total);
+            $('#amount' + number).val(amount);
+            $('#actual_amount' + number).val(amount);
 
-            var amount = 0;
-            count = 1;
-            $('.net_amount_dis').each(function(i, obj) {
+            var tax_per = $('#tax_per' + number).val() || 0;
+            var tax_amount = (amount * tax_per / 100).toFixed(2);
+            $('#tax_amount' + number).val(tax_amount);
 
-                amount += +$('#' + obj.id).val();
-
-                count++;
-            });
-            amount = parseFloat(amount);
-
-
-            sales_tax('sales_taxx');
             discount_percent('discount_percent' + number);
             net_amount();
-            //  toWords(1);
+            sales_tax('sales_taxx');
         }
         function sales_tax(id) {
             var sales_tax = 0;
@@ -778,9 +785,7 @@ endif;
              
             if (sales_tax_per_value != '0') {
                 var net = $('#net').val();
-               
-                var sales_tax = (net / 100) * sales_tax_per_value;
-            
+                sales_tax = (net / 100) * sales_tax_per_value;
             }
             console.log(sales_tax)
             $('#sales_amount_td').val(sales_tax);
@@ -799,7 +804,7 @@ endif;
             $('#net').val(amount);
         
             var sales_tax = parseFloat($('#sales_amount_td').val());
-            var net = (amount + sales_tax).toFixed(2);
+            var net = (amount - sales_tax).toFixed(2);
           
             $('#net_after_tax').val(net);
             console.log(net);
@@ -963,29 +968,16 @@ endif;
             }, 500);
         });
         function amount_calculation(number) {
-            var amount = $('#amount' + number).val();
-               // var rate = $('#rate' + number).val();
+            var amount = $('#amount' + number).val() || 0;
+            $('#actual_amount' + number).val(amount);
 
-               
-            // $('#amount' + number).val(total);
-            var total = parseFloat(amount).toFixed(2);
-
-            var amount = 0;
-            count = 1;
-            $('.net_amount_dis').each(function(i, obj) {
-
-                amount += +$('#' + obj.id).val();
-
-                count++;
-            });
-            amount = parseFloat(amount);
-
-
+            var tax_per = $('#tax_per' + number).val() || 0;
+            var tax_amount = (amount * tax_per / 100).toFixed(2);
+            $('#tax_amount' + number).val(tax_amount);
 
             discount_percent('discount_percent' + number);
             net_amount();
             sales_tax('sales_taxx');
-            //  toWords(1);
         }
     </script>
     <script src="{{ URL::asset('assets/js/select2/js_tabindex.js') }}"></script>

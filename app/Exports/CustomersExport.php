@@ -31,6 +31,7 @@ class CustomersExport implements FromCollection, WithHeadings
             ->leftJoin('customer_types', 'customer_types.id', 'customers.CustomerType')
             ->leftJoin('warehouse as wf', 'wf.id', 'customers.warehouse_from')
             ->leftJoin('warehouse as wt', 'wt.id', 'customers.warehouse_to')
+            ->leftJoin('branch', 'branch.id', 'customers.branch_id')
             ->leftJoin('bank_detail', 'bank_detail.acc_id', 'customers.acc_id');
 
         // Apply filters
@@ -89,6 +90,7 @@ class CustomersExport implements FromCollection, WithHeadings
                 'bank_detail.account_no as bank_account_no',
                 'bank_detail.account_title as bank_account_title',
                 'bank_detail.bank_name',
+                'branch.branch_name',
                 'bank_detail.swift_code as branch_code',
                 'customer_types.name as customer_type_name',
                 'customers.status',
@@ -139,6 +141,7 @@ class CustomersExport implements FromCollection, WithHeadings
                     $item->bank_account_no,
                     $item->bank_account_title,
                     $item->bank_name,
+                    $item->branch_name,
                     $item->branch_code,
                     $item->customer_type_name,
                     $item->status == 1 ? 'Active' : 'Inactive',
@@ -194,6 +197,7 @@ class CustomersExport implements FromCollection, WithHeadings
             'Bank Account No',
             'Bank Account Title',
             'Bank',
+            'Branch Name',
             'Branch Code',
             'Customer Type',
             'Status',

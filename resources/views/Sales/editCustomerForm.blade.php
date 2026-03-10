@@ -191,12 +191,12 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                             <input type="radio" id="same_as_company_address"
                                                                                 name="company_shipping_type"
                                                                                 value="same as company address"
-                                                                                {{$Cusomter->company_shipping_type == "same as company address" ? 'checked' : ''}} />
+                                                                                {{ strtolower($Cusomter->company_shipping_type) == "same as company address" ? 'checked' : ''}} />
                                                                             <label for="contactChoice1">Same As Company
                                                                                 Address</label>
                                                                             </br>
                                                                             <input type="radio"
-                                                                                {{$Cusomter->company_shipping_type == "others" ? 'checked' : ''}}
+                                                                                {{ strtolower($Cusomter->company_shipping_type) == "others" ? 'checked' : ''}}
                                                                                 id="others" name="company_shipping_type"
                                                                                 value="others" />
                                                                             <label for="contactChoice2">Other</label>
@@ -204,7 +204,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                         <div
                                                                             class="col-lg-12 col-md-12 col-sm-12 col-xs-12 shippingfield">
                                                                             <label>Shipping City :</label>
-                                                                            <span class="rflabelsteric"></span>
+                                                                            <span class="rflabelsteric shipping_city_asterisk"></span>
                                                                             <input type="text" name="shipping_city"
                                                                                 id="shipping_city" class="form-control"
                                                                                 value="{{$Cusomter->shipping_city}}" />
@@ -212,7 +212,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                         <div
                                                                             class="col-lg-12 col-md-12 col-sm-12 col-xs-12 shippingfield">
                                                                             <label>Shipping State :</label>
-                                                                            <span class="rflabelsteric"></span>
+                                                                            <span class="rflabelsteric shipping_state_asterisk"></span>
                                                                             <input type="text" name="shipping_state"
                                                                                 id="shipping_state" class="form-control"
                                                                                 value="{{$Cusomter->shipping_state}}" />
@@ -220,7 +220,7 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                         <div
                                                                             class="col-lg-12 col-md-12 col-sm-12 col-xs-12 shippingfield">
                                                                             <label>Shipping Country :</label>
-                                                                            <span class="rflabelsteric"></span>
+                                                                            <span class="rflabelsteric shipping_country_asterisk"></span>
                                                                             <input type="text" name="shipping_country"
                                                                                 id="shipping_country" class="form-control"
                                                                                 value="{{$Cusomter->shipping_country}}" />
@@ -437,13 +437,14 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id',$Cusomter
                                                                                 value="{{isset($Bank->bank_name) ? $Bank->bank_name : ''}}"
                                                                                 id="bank" class="form-control" />
                                                                         </div>
-                                                                        <div
-                                                                            class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bankDetailField">
-                                                                            <label>Branch Code :</label>
-                                                                            {{-- <span class="rflabelsteric"><strong>*</strong></span> --}}
-                                                                            <input type="text" name="branch_code" id="branch_code"
-                                                                                class="form-control"
-                                                                                value="{{isset($Bank->swift_code) ? $Bank->swift_code : ''}}" />
+                                                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bankDetailField">
+                                                                            <label>Branch :</label>
+                                                                            <select name="branch_id" id="branch_id" class="form-control">
+                                                                                <option value="">Select Branch</option>
+                                                                                @foreach(\App\Helpers\CommonHelper::get_all_branch() as $branch)
+                                                                                    <option value="{{ $branch->id }}" {{ $Cusomter->branch_id == $branch->id ? 'selected' : '' }}>{{ $branch->branch_name }}</option>
+                                                                                @endforeach
+                                                                            </select>
                                                                         </div>
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                             <label>Customer Type :</label>
@@ -631,12 +632,40 @@ radioButtons.forEach(radio => {
             .value;
         if (selectedValue == "same as company address") {
             $('.shippingfield').addClass('hide');
+            $('#shipping_city').prop('required', false);
+            $('#shipping_state').prop('required', false);
+            $('#shipping_country').prop('required', false);
+            $('.shipping_city_asterisk').html('');
+            $('.shipping_state_asterisk').html('');
+            $('.shipping_country_asterisk').html('');
         }
         if (selectedValue == "others") {
             $('.shippingfield').removeClass('hide');
+            $('#shipping_city').prop('required', true);
+            $('#shipping_state').prop('required', true);
+            $('#shipping_country').prop('required', true);
+            $('.shipping_city_asterisk').html('<strong>*</strong>');
+            $('.shipping_state_asterisk').html('<strong>*</strong>');
+            $('.shipping_country_asterisk').html('<strong>*</strong>');
         }
     });
 });
+
+// Handle initial state on page load
+const currentlyChecked = document.querySelector('input[name="company_shipping_type"]:checked');
+if (currentlyChecked) {
+    if (currentlyChecked.value == "same as company address") {
+        $('.shippingfield').addClass('hide');
+    } else if (currentlyChecked.value == "others") {
+        $('.shippingfield').removeClass('hide');
+        $('#shipping_city').prop('required', true);
+        $('#shipping_state').prop('required', true);
+        $('#shipping_country').prop('required', true);
+        $('.shipping_city_asterisk').html('<strong>*</strong>');
+        $('.shipping_state_asterisk').html('<strong>*</strong>');
+        $('.shipping_country_asterisk').html('<strong>*</strong>');
+    }
+}
 
 function download_csv_file() {
     //define the heading for each row of the data

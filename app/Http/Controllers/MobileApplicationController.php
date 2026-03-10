@@ -658,6 +658,8 @@ public function get_stock(Request $request)
             'details.*.qty' => 'required|integer|min:1',
         ];
 
+
+      
         // Create the validator instance
         $validator = Validator::make($request->all(), $rules);
 
@@ -749,6 +751,20 @@ public function get_stock(Request $request)
         }
     }
 
+
+    public function getBranchName(Request $request){
+    $branch = DB::connection('mysql2')
+        ->table('branch')  // table name check kar lena
+        ->where('id', $request->id)
+        ->first();
+
+    
+    
+    return response()->json([
+        'name' => $branch ? $branch->branch_name : '-',
+        'code' => $branch ? $branch->id : '-'
+    ]);
+}
     // public function SaleOrderList(Request $request)
     // {
     //     $user = $this->getAuthenticatedUser();

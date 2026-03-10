@@ -3858,6 +3858,7 @@ public function get_stock_location_wise(Request $request)
             $id = $request->grn_id;
             $data['grn_status'] = 2;
             $data['approve_username'] = Auth::user()->name;
+            
 
 
             $grn_data = $request->grn_data_id;
