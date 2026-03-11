@@ -133,6 +133,7 @@ class SalesEditDetailController extends Controller
             $delivery_note_data->warehouse_to_id=$request->input('warehouse_to' . $i);
             $delivery_note_data->groupby = $request->input('groupby' . $i);
             $delivery_note_data->bundles_id = $request->input('bundles_id' . $i);
+            $delivery_note_data->mrp_price = $request->input('mrp_price' . $i);
             $delivery_note_data->status = 1;
             $delivery_note_data->date = date('Y-m-d');
             $delivery_note_data->username = Auth::user()->name;
