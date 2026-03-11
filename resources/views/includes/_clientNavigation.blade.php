@@ -415,7 +415,7 @@ CommonHelper::reconnectMasterDatabase();
                             </a>
                         @endif
                         @if($pending_grns_creation > 0)
-                            <a class="d-flex" href="/purchase/createGoodsReceiptNoteForm?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                           <a class="d-flex" href="/purchase/createGoodsReceiptNoteForm?pageType=add&&parentCode={{ request()->parentCode }}&&m={{ request()->m }}#premiorsCable">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
