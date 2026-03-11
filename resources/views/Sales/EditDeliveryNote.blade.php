@@ -444,7 +444,8 @@ label {
                                                                             $qty = $dnQty =SalesHelper::get_dn_total_qty($row1->so_data_id);
                                                                             $SODQTY = CommonHelper::get_sod_qty($row1->so_data_id);
 
-                                                                            $qty = $SODQTY - $qty;
+                                                                            $qty = $qty;
+                                                                            // $qty = $SODQTY - $qty;
 
 
                                                                             $working_counter++;
@@ -506,6 +507,12 @@ label {
 
 
                                                                                 <?php $total_qty+=$row1->qty; ?>
+
+  <?php
+                                                                                    $actual_qty = DB::Connection('mysql2')->table('sales_order_data')->where('id',$row1->so_data_id)->first()->qty;
+                                                                                    $dn_qty = DB::Connection('mysql2')->table('delivery_note_data')->where('so_data_id',$row1->so_data_id)->sum('qty');
+                                                                                    ?>
+
                                                                                 <td class="text-right">
                                                                                     <input
                                                                                         onkeyup="calc('{{$id_count}}')"
@@ -515,10 +522,7 @@ label {
                                                                                         name="send_qty{{$id_count}}"
                                                                                         id="send_qty{{$id_count}}"
                                                                                         value="{{$qty}}" />
-                                                                                    <?php
-                                                                                    $actual_qty = DB::Connection('mysql2')->table('sales_order_data')->where('id',$row1->so_data_id)->first()->qty;
-                                                                                    $dn_qty = DB::Connection('mysql2')->table('delivery_note_data')->where('so_data_id',$row1->so_data_id)->sum('qty');
-                                                                                    ?>
+                                                                                  
                                                                                     <input type="hidden"
                                                                                         name="qty{{$id_count}}"
                                                                                         id="qty{{$id_count}}"
@@ -986,7 +990,7 @@ function required_none(number, qry) {
     if ($("#check" + number).prop('checked') == true) {
         $("#batch_code" + number).removeClass("requiredField");
         $('#send_qty' + number).attr('readonly', true);
-        $('#send_qty' + number).val(0);
+        $('#send_qty' + number).val();
         calc(number);
         //     sales_tax();
         net();
