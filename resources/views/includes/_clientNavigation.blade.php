@@ -204,6 +204,7 @@ CommonHelper::reconnectMasterDatabase();
   @php
                         $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
                         $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1, true);
+                        $pending_sale_tax_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "sales_tax_invoice", 0, "status", 1);
                         $pending_sale_returns = \App\Helpers\CommonHelper::pendingDocuments("credit_note", "status", 0);
                         $pending_purchase_requests = \App\Helpers\CommonHelper::pendingDocuments("demand", "demand_status", 1, "status", 1);
                         $pending_purchase_quotations = \App\Helpers\CommonHelper::pendingDocuments("quotation", "quotation_status", 1, "status", 1);
@@ -227,17 +228,17 @@ CommonHelper::reconnectMasterDatabase();
                                     ]
                                 );
                             $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
-                        $pending_grns_creation = \App\Helpers\CommonHelper::pendingDocuments(
-    "purchase_request",
-    "status",     // column_name
-    1,                // pending_status -> grn_status = 1
-    "status",         // conditional_column -> status column
-    1,                // conditional_status -> status = 1
-    false,           
-    [                 // extra conditions
-        'purchase_request_status' =>  ['!=', 2]  // purchase_request_status = 2
-    ]
-);
+                            $pending_grns_creation = \App\Helpers\CommonHelper::pendingDocuments(
+                                    "purchase_request",
+                                    "status",     // column_name
+                                    1,                // pending_status -> grn_status = 1
+                                    "status",         // conditional_column -> status column
+                                    1,                // conditional_status -> status = 1
+                                    false,           
+                                    [                 // extra conditions
+                                        'purchase_request_status' =>  ['!=', 2]  // purchase_request_status = 2
+                                    ]
+                                );
                         $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
                         $pending_purchase_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 2, "status", 1, false, ['type' => ['!=', 3]]);
                         $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
@@ -245,6 +246,7 @@ CommonHelper::reconnectMasterDatabase();
                         $total_pending = 
                             $pending_delivery_notes +
                             $pending_sale_tax_invoices +
+                            $pending_sale_tax_invoices_creation +
                             $pending_sale_returns +
                             $pending_purchase_requests +
                             $pending_purchase_quotations +
@@ -301,6 +303,19 @@ CommonHelper::reconnectMasterDatabase();
                                             <span class="fw-bolder">Delivery Note Are Approval Pending</span>
                                         </p>
                                         <small class="notification-text">{{ $pending_delivery_notes }} Delivery Notes are Approval pending</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
+                        @if($pending_sale_tax_invoices_creation > 0)
+                            <a class="d-flex" href="/sales/CreateSalesTaxInvoiceList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Sales Tax Invoice Are Creation Pending</span>
+                                        </p>
+                                        <small class="notification-text">{{ $pending_sale_tax_invoices_creation }} Sales Tax Invoice are Creation pending</small>
                                         <br>
                                     </div>
                                 </div>
