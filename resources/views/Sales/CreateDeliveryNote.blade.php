@@ -1061,7 +1061,7 @@ $buyer_detail = CommonHelper::get_buyer_detail($sales_order->buyers_id);
 
                                                                                 <td id="total_"
                                                                                     style="background-color: darkgray"
-                                                                                    class="text-center" colspan="3">Total
+                                                                                    class="text-center" colspan="5">Total
                                                                                 </td>
                                                                                 <td style="background-color: darkgray"
                                                                                     class="text-right" colspan="1">
