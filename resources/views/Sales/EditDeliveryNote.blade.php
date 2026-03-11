@@ -1441,6 +1441,13 @@ function calc(num) {
 
 
 
+    if (send_qty <= 0) {
+        alert('Quantity must be greater than zero. Please use the delete button to remove this item.');
+        $('#send_qty' + num).val(aterCalcQty);
+        net();
+        return false;
+    }
+
     if (send_qty > actual_qty) {
         alert('amount can not greater than sales order QTY');
         $('#send_qty' + num).val(aterCalcQty);
