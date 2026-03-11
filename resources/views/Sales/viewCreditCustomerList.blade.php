@@ -86,6 +86,19 @@ use App\Helpers\CommonHelper;
                                                                 </select>
                                                             </div>
                                                             <div class="col-md-2 mb-3">
+                                                                <label for="branch_id" class="form-label">Branch</label>
+                                                                <select name="branch_id[]" id="branch_id" multiple class="form-control select2">
+                                                                    <option disabled>Select Branch</option>
+                                                                    @if(isset($branches) && $branches)
+                                                                    @foreach($branches as $branch)
+                                                                        <option value="{{ $branch->id }}">
+                                                                            {{ $branch->branch_name }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                    @endif
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2 mb-3">
                                                                 <label for="customer_type" class="form-label">Customer Type</label>
                                                                 <select name="customer_type[]" id="customer_type" multiple class="form-control select2">
                                                                     <option disabled>Select type</option>

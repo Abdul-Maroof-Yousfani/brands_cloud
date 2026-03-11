@@ -1491,7 +1491,8 @@ public function uploadProduct(Request $request)
         $customerApprove->status = 1;
         $customerApprove->save();
         $territories = Territory::all();
-        return view('Sales.viewCreditCustomerList', compact('territories'));
+        $branches = \App\Models\Branch::where('status', 1)->get();
+        return view('Sales.viewCreditCustomerList', compact('territories', 'branches'));
     }
 
 
@@ -1499,7 +1500,8 @@ public function uploadProduct(Request $request)
     public function viewCreditCustomerList()
     {
         $territories = Territory::all();
-        return view('Sales.viewCreditCustomerList', compact('territories'));
+        $branches = \App\Models\Branch::where('status', 1)->get();
+        return view('Sales.viewCreditCustomerList', compact('territories', 'branches'));
     }
     public function add_agent_list()
     {

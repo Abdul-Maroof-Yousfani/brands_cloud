@@ -285,6 +285,11 @@ class SalesDataCallController extends Controller
             $customers = $customers->whereIn('territory_id', $territoryIds);
         }
 
+        if ($request->has('branch_id') && count($request->branch_id) > 0) {
+            $branchIds = $request->branch_id;
+            $customers = $customers->whereIn('branch_id', $branchIds);
+        }
+
         if ($request->has('search') && $request->search != '') {
             $search = strtolower($request->search); 
             $customers =    $customers->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%'])
