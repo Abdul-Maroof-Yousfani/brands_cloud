@@ -199,7 +199,7 @@ label {
                                                                                 class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                                                                 <label class="sf-label">Despatched
                                                                                     through<span
-                                                                                        class="rflabelsteric"><strong>*</strong></span></label>
+                                                                                        class="rflabelsteric"></span></label>
                                                                                 <input readonly type="text"
                                                                                     class="form-control"
                                                                                     placeholder=""
@@ -291,11 +291,11 @@ label {
                                                                                 <label
                                                                                     class="sf-label">Description</label>
                                                                                 <span
-                                                                                    class="rflabelsteric"><strong>*</strong></span>
+                                                                                    class="rflabelsteric"></span>
                                                                                 <textarea name="description"
                                                                                     id="description" rows="4" cols="50"
                                                                                     style="resize:none;text-transform: capitalize"
-                                                                                    class="form-control requiredField">{{$delivery_note->description}}</textarea>
+                                                                                    class="form-control">{{$delivery_note->description}}</textarea>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -450,12 +450,13 @@ label {
 
                                                                             $working_counter++;
                                                                             $id_count++;     ?>
+                                                                            <tr>
                                                                             {{--hidden data--}}
                                                                             <input type="hidden"
-                                                                                name="data_id{{$id_count}}" id="data_id"
+                                                                                name="data_id{{$id_count}}"
                                                                                 value="{{$row1->so_data_id}}" />
                                                                             <input type="hidden"
-                                                                                name="groupby{{$id_count}}" id="groupby"
+                                                                                name="groupby{{$id_count}}"
                                                                                 value="{{$row1->groupby}}" />
                                                                             <input type="hidden"
                                                                                 name="item_id{{$working_counter}}"
@@ -465,22 +466,12 @@ label {
                                                                                 name="rate{{$working_counter}}"
                                                                                 id="rate{{$working_counter}}"
                                                                                 value="{{$row1->rate}}" />
-                                                                            {{-- <input type="hidden" name="discount_percent{{$working_counter}}"
-                                                                            id="discount_percent{{$working_counter}}"
-                                                                            value="{{$row1->discount_percent}}"/> --}}
-                                                                            {{-- <input type="hidden" name="discount_amount{{$working_counter}}"
-                                                                            id="discount_amount{{$working_counter}}"
-                                                                            value="{{$row1->discount_amount}}"/> --}}
                                                                             <input type="hidden"
                                                                                 name="amount{{$working_counter}}"
                                                                                 id="amount{{$working_counter}}"
                                                                                 value="{{$row1->amount}}" />
-
-
                                                                             {{--hidden data End --}}
 
-
-                                                                            <tr>
                                                                                 <td class="text-center"
                                                                                     class="text-center">
                                                                                     <?php echo $counter;?>
@@ -709,12 +700,10 @@ label {
                                                                             <?php $bundle_stop++ ?>
                                                                             @endif
 
+                                                                            <tr style="background-color: lightyellow">
                                                                             <input type="hidden"
-                                                                                name="data_id{{$id_count}}" id="data_id"
+                                                                                name="data_id{{$id_count}}"
                                                                                 value="{{$bundle_data->so_data_id}}" />
-                                                                            {{--<input type="hidden" name="qty{{$working_counter}}"
-                                                                            id="qty{{$working_counter}}"
-                                                                            value="{{$bundle_data->qty}}"/>--}}
                                                                             <input type="hidden"
                                                                                 name="bundles_id{{$working_counter}}"
                                                                                 value="{{$bundle_data->bundles_id}}" />
@@ -722,8 +711,6 @@ label {
                                                                                 name="item_id{{$working_counter}}"
                                                                                 id="item_id{{$working_counter}}"
                                                                                 value="{{$bundle_data->item_id}}" />
-
-                                                                            <tr style="background-color: lightyellow">
                                                                                 <td class="text-center"
                                                                                     class="text-center">
                                                                                     <?php echo $item_count;?></td>
@@ -963,7 +950,7 @@ label {
                                             </div>
                                         </div>
                                         <div class="demandsSection"></div>
-                                        <div class="row" id="subm">
+                                        <div class="row" id="">
                                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
                                                 {{ Form::submit('Submit', ['class' => 'btn btn-success']) }}
 

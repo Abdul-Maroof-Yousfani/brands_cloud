@@ -96,6 +96,19 @@ class SalesEditDetailController extends Controller
         $Actualsend_qty =0;
         $total_send_qty = 0;
         for ($i = 1; $i <= $count; $i++):
+            if (!$request->has('data_id' . $i) || $request->input('data_id' . $i) == null) {
+                continue;
+            }
+
+            $qty = CommonHelper::check_str_replace($request->input('qty' . $i));
+            $actual_qty += DB::Connection('mysql2')->table('sales_order_data')->where('id',$request->input('data_id' . $i))->first()->qty;
+            
+            $send_qty = CommonHelper::check_str_replace($request->input('send_qty' . $i));
+
+            if ($send_qty == 0 || $send_qty == '') {
+                continue;
+            }
+
             $delivery_note_data = new DeliveryNoteData();
             $delivery_note_data = $delivery_note_data->SetConnection('mysql2');
             $delivery_note_data->master_id = $request->edit_id;
@@ -104,25 +117,10 @@ class SalesEditDetailController extends Controller
             $delivery_note_data->gd_no = $request->gd_no;
             $delivery_note_data->gd_date = $request->input('gd_date');
             $delivery_note_data->item_id = $request->input('item_id' . $i);
-
-
-            $qty = CommonHelper::check_str_replace($request->input('qty' . $i));
-            $actual_qty += DB::Connection('mysql2')->table('sales_order_data')->where('id',$request->input('data_id' . $i))->first()->qty;
-            
-            
-            $send_qty = CommonHelper::check_str_replace($request->input('send_qty' . $i));
-
+            $delivery_note_data->qty = $send_qty;
 
             $rate = CommonHelper::check_str_replace($request->input('send_rate' . $i));
             $amount = CommonHelper::check_str_replace($request->input('send_amount' . $i));
-
-            if($send_qty == 0){
-                 
-            }else{
-
-                $delivery_note_data->qty = $send_qty;
-            }
-            
 
             $delivery_note_data->rate = $rate;
             $delivery_note_data->tax=$request->input('send_discount' . $i);
