@@ -119,13 +119,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-6 col-md-6 col-sm-12 col-xs-12">
-                                                    <div class="form-group">
-                                                        <label class="control-label" style="margin-bottom: 0;">Mode / Terms Of Payment</label>
-                                                        <input name="model_terms_of_payment" id="model_terms_of_payment" class="form-control"
-                                                               type="text">
-                                                    </div>
-                                                </div>
+                                               
 
 
                                                 <div class="col-md-6 col-md-6 col-sm-12 col-xs-12">
@@ -139,6 +133,26 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                                    <div class="col-md-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <div class="form-group">
+                                                        <label class="control-label" style="margin-bottom: 0;">Mode / Terms Of Payment</label>
+                                                        <input name="model_terms_of_payment" id="model_terms_of_payment" class="form-control"
+                                                               type="text">
+                                                    </div>
+                                                </div>
+
+
+   
+                                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <label class="control-label" style="margin-bottom: 0;">Warehouse</label>
+                                                    <select style="wiidth: 100%;" id="warehouse_from"
+                                                            name="warehouse" class="form-control select2 warehouse_from form-group">
+                                                        <option value="">Select Warehouse</option>
+                                                        @foreach(CommonHelper::get_all_warehouse() as $item)
+                                                            <option value="{{$item->id}}">{{$item->name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
 
                                                 <div class="col-md-6 col-md-6 col-sm-12 col-xs-12">
                                                     <div class="form-group">
@@ -150,17 +164,7 @@
                                                     </div>
                                                 </div>
 
-                                               
-                                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                                    <label class="control-label" style="margin-bottom: 0;">Warehouse</label>
-                                                    <select style="wiidth: 100%;" id="warehouse_from"
-                                                            name="warehouse" class="form-control select2 warehouse_from form-group">
-                                                        <option value="">Select Warehouse</option>
-                                                        @foreach(CommonHelper::get_all_warehouse() as $item)
-                                                            <option value="{{$item->id}}">{{$item->name}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
+                                            
 
                                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                     <label class="control-label" style="margin-bottom: 0;">Select Principal Groups</label>

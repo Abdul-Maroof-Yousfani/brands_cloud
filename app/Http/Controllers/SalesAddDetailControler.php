@@ -471,7 +471,7 @@ class SalesAddDetailControler extends Controller
         $data3['acc_id'] =    $acc_id;
         $data3['acc_code'] =    $code;
         $data3['debit_credit'] = 1;
-        $data3['amount']       = 0.00;
+        $data3['amount']       = $request->opening_balance ?? '0.00'; 
         $data3['opening_bal']       =     1;
         $data3['username']              = Auth::user()->name;
         $data3['date']               = date("Y-m-d");
