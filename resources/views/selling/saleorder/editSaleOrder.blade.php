@@ -136,22 +136,8 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-6 col-md-6 col-sm-12 col-xs-12">
-                                                    <div class="form-group">
-                                                        <label class="control-label" style="margin-bottom: 0;">Special Price Mappeds
-                                                        </label>
-                                                       <input readonly name="special_price_mapped" value="" class="form-control"
-                                                               id="special_price_mapped" type="text">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6 col-sm-12 col-xs-12">
-                                                    <div class="form-group">
-                                                        <label class="control-label" style="margin-bottom: 0;">Remark</label>
-                                                                                                              <textarea name="remark" id="remark" class="form-control" rows="3">{{$sale_orders->remark}}</textarea>
-
-                                                    </div>
-                                                </div>
+                            
+                                             
                                                 @php
                                                     $buyer_detail = App\Helpers\CommonHelper::get_buyer_detail($sale_orders->buyers_id);
                                                 @endphp
@@ -167,6 +153,14 @@
                                                     </select>
                                                 </div>
 
+                    <div class="col-md-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <div class="form-group">
+                                                        <label class="control-label" style="margin-bottom: 0;">Special Price Mapped
+                                                        </label>
+                                                       <input readonly name="special_price_mapped" value="" class="form-control"
+                                                               id="special_price_mapped" type="text">
+                                                    </div>
+                                                </div>
 
 
                                             </div>
@@ -453,7 +447,19 @@
                                             </ul>
                                           </div>
                                     </div>
+
+
+
+                                      
                                 </div>
+
+                                 <div class="col-md-6 col-sm-12 col-xs-12">
+                                                    <div class="form-group">
+                                                        <label class="control-label" style="margin-bottom: 0;">Remark</label>
+                                                                                                              <textarea name="remark" id="remark" class="form-control" rows="3">{{$sale_orders->remark}}</textarea>
+
+                                                    </div>
+                                                </div>
                                 <div class="col-md-12 padtb text-right">
                                     <div class=" my-lab">
                                         <button type="submit" class="btn btn-primary mr-1"
