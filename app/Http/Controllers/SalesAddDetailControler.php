@@ -1513,114 +1513,398 @@ class SalesAddDetailControler extends Controller
         return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
     }
 
-    public function approveDeliveryNote(Request $request)
-    {
+//     public function approveDeliveryNote(Request $request)
+//     {
 
-        try {
-            $delivery_note = DeliveryNote::find($request->m);
-            $getSo = Sales_Order::find($delivery_note->master_id);
-            $getDeliveryNoteDetail = DeliveryNoteData::where('master_id', $delivery_note->id)->get();
-            foreach ($getDeliveryNoteDetail as $key => $value) {
-                $average_cost = ReuseableCode::average_cost_sales($value->item_id, $value->warehouse, $value->batch_code);
+//         try {
+//             $delivery_note = DeliveryNote::find($request->m);
+//             $getSo = Sales_Order::find($delivery_note->master_id);
+//             $getDeliveryNoteDetail = DeliveryNoteData::where('master_id', $delivery_note->id)->get();
+//             foreach ($getDeliveryNoteDetail as $key => $value) {
 
-                $stock = array(
-                    'main_id' => $delivery_note->id,   //  delivery note id
-                    'master_id' => $value->master_id, // delievry note data id
-                    'voucher_no' => $delivery_note->gd_no,      //DN gd_no
-                    'voucher_date' => $delivery_note->gd_date,  // DN
+// $purchase_price = DB::connection("mysql2")->table("subitem")
+//                                         ->select("id", "purchase_price")
+//                                         ->where("id",$value->item_id)
+//                                         ->first();
+
+
+//                 $average_cost = ReuseableCode::average_cost_sales($value->item_id, $value->warehouse, $value->batch_code);
+
+//                 $stock = array(
+//                     'main_id' => $delivery_note->id,   //  delivery note id
+//                     'master_id' => $value->master_id, // delievry note data id
+//                     'voucher_no' => $delivery_note->gd_no,      //DN gd_no
+//                     'voucher_date' => $delivery_note->gd_date,  // DN
+//                     'supplier_id' => 0,
+//                     'customer_id' => $delivery_note->buyers_id,   //DN
+//                     'voucher_type' => 5,
+//                     'rate' => $value->rate,    //DNA
+//                     'sub_item_id' => $value->item_id, // DNA
+//                     'batch_code' => $value->batch_code ?? "",  //DNA
+//                     'qty' => $value->qty,     //DNA
+//                     'discount_percent' => 0,    //DNA
+//                     'discount_amount' => 0, // $request->input('send_discount_amount' . $i),    //DNA
+//                     'amount' => $value->qty * $average_cost,  //DNA
+//                     'status' => 1,
+//                     'warehouse_id' => $value->warehouse_id,   //DNA
+//                     'username' => Auth::user()->username,
+//                     'created_date' => date('Y-m-d'),
+//                     'opening' => 0,
+//                     'so_data_id' => $value->so_data_id   //DNA
+//                 );
+//                 DB::Connection('mysql2')->table('stock')->insert($stock);
+
+
+
+                
+
+//                 $data4=array
+//                 (
+//                     'master_id'=>$value->master_id,
+//                     'acc_id'=>1053,
+//                     'acc_code'=>'7-1',
+//                     'cost_center'=>$delivery_note->gd_no,
+//                     'particulars'=>$getSo->so_no,
+//                     'opening_bal'=>0,
+//                     'debit_credit'=>1,
+//                     'amount'=>$purchase_price->purchase_price * $value->qty,
+//                     'voucher_no'=>$delivery_note->gd_no,
+//                     'voucher_type'=>12,
+//                     'v_date'=> $delivery_note->gd_date,
+//                     'date'=>date('Y-m-d'),
+//                     'action'=>'insert',
+//                     'username'=>Auth::user()->name,
+//                     'status'=>1
+//                 );
+//                 DB::Connection('mysql2')->table('transactions')->insertGetId($data4);
+
+//                 $data5=array
+//                 (
+//                     'master_id'=>$value->master_id,
+//                     'acc_id'=>1101,
+//                     'acc_code'=>'1-2-1',
+//                     'cost_center'=>$delivery_note->gd_no,
+//                     'particulars'=>$getSo->so_no,
+//                     'opening_bal'=>0,
+//                     'debit_credit'=>0,
+//                     'amount'=>$purchase_price->purchase_price * $value->qty,
+//                     'voucher_no'=>$delivery_note->gd_no,
+//                     'voucher_type'=>12,
+//                     'v_date'=> $delivery_note->gd_date,
+//                     'date'=>date('Y-m-d'),
+//                     'action'=>'insert',
+//                     'username'=>Auth::user()->name,
+//                     'status'=>1
+//                 );
+//                 DB::Connection('mysql2')->table('transactions')->insertGetId($data5);
+
+
+
+
+
+//                 $customer = DB::connection("mysql2")->table("customers")
+//                                         ->select("id", "CustomerType")
+//                                         ->where("id", $delivery_note->buyers_id)
+//                                         ->first();
+             
+//                 // Customer is distributes/reseller
+//                 if($customer->CustomerType == 3 && isset($value->warehouse_to_id)) {
+//                     $virtualWarehouseStock = array(
+//                         'main_id' => $delivery_note->id,   //  delivery note id
+//                         'master_id' => $value->master_id, // delievry note data id
+//                         'voucher_no' => $delivery_note->gd_no,      //DN gd_no
+//                         'voucher_date' => $delivery_note->gd_date,  // DN
+//                         'supplier_id' => 0,
+//                         'customer_id' => $delivery_note->buyers_id,   //DN
+//                         'voucher_type' => 9,
+//                         'rate' => $value->rate,    //DNA
+//                         'sub_item_id' => $value->item_id, // DNA
+//                         'batch_code' => $value->batch_code ?? "",  //DNA
+//                         'qty' => $value->qty,     //DNA
+//                         'discount_percent' => 0,    //DNA
+//                         'discount_amount' => 0, // $request->input('send_discount_amount' . $i),    //DNA
+//                         'amount' => $value->qty * $average_cost,  //DNA
+//                         'status' => 1,
+//                         'warehouse_id' => $value->warehouse_to_id,   //DNA
+//                         'warehouse_id_to' => $value->warehouse_to_id,   //DNA
+//                         'username' => Auth::user()->username,
+//                         'created_date' => date('Y-m-d'),
+//                         'opening' => 0,
+//                         'so_data_id' => $value->so_data_id   //DNA
+//                     );
+//                     DB::Connection('mysql2')->table('ba_stock')->insert($virtualWarehouseStock);
+//                 }
+
+
+//                 if (isset($value->warehouse_to_id)) {
+//                     $virtualWarehouseStock = array(
+//                         'main_id' => $delivery_note->id,   //  delivery note id
+//                         'master_id' => $value->master_id, // delievry note data id
+//                         'voucher_no' => $delivery_note->gd_no,      //DN gd_no
+//                         'voucher_date' => $delivery_note->gd_date,  // DN
+//                         'supplier_id' => 0,
+//                         'customer_id' => $delivery_note->buyers_id,   //DN
+//                         'voucher_type' => 1,
+//                         'rate' => $value->rate,    //DNA
+//                         'sub_item_id' => $value->item_id, // DNA
+//                         'batch_code' => $value->batch_code ?? "",  //DNA
+//                         'qty' => $value->qty,     //DNA
+//                         'discount_percent' => 0,    //DNA
+//                         'discount_amount' => 0, // $request->input('send_discount_amount' . $i),    //DNA
+//                         'amount' => $value->qty * $average_cost,  //DNA
+//                         'status' => 1,
+//                         'warehouse_id' => $value->warehouse_to_id,   //DNA
+//                         'warehouse_id_to' => $value->warehouse_to_id,   //DNA
+//                         'username' => Auth::user()->username,
+//                         'created_date' => date('Y-m-d'),
+//                         'created_date' => date('Y-m-d'),
+//                         'opening' => 0,
+//                         'so_data_id' => $value->so_data_id   //DNA
+//                     );
+//                     DB::Connection('mysql2')->table('stock')->insert($virtualWarehouseStock);
+//                 }
+//             }
+//             $delivery_note->status = 1;
+//             $delivery_note->save();
+
+//             $getSo->dn_approve = 1;
+//             $getSo->save();
+//             DB::Connection('mysql2')->commit();
+//         } catch (Exception $ex) {
+//             DB::rollBack();
+//         }
+//         return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
+//     }
+
+
+
+public function approveDeliveryNote(Request $request)
+{
+    // Start transaction on mysql2 connection
+    DB::connection('mysql2')->beginTransaction();
+    
+    try {
+        $delivery_note = DeliveryNote::find($request->m);
+        
+        if (!$delivery_note) {
+            throw new Exception("Delivery note not found");
+        }
+        
+        $getSo = Sales_Order::find($delivery_note->master_id);
+        if (!$getSo) {
+            throw new Exception("Sales order not found");
+        }
+        
+        $getDeliveryNoteDetail = DeliveryNoteData::where('master_id', $delivery_note->id)->get();
+        
+        if ($getDeliveryNoteDetail->isEmpty()) {
+            throw new Exception("No delivery note details found");
+        }
+        
+        // Initialize total amount for transactions
+        $totalTransactionAmount = 0;
+        
+        foreach ($getDeliveryNoteDetail as $key => $value) {
+            // Get purchase price
+            $purchase_price = DB::connection("mysql2")
+                ->table("subitem")
+                ->select("id", "purchase_price")
+                ->where("id", $value->item_id)
+                ->first();
+                
+            if (!$purchase_price) {
+                throw new Exception("Purchase price not found for item: " . $value->item_id);
+            }
+
+            // Get average cost
+            $average_cost = ReuseableCode::average_cost_sales(
+                $value->item_id, 
+                $value->warehouse, 
+                $value->batch_code
+            );
+
+            // Insert stock record (यह per item रहेगा क्योंकि stock हर item के लिए अलग track होता है)
+            $stock = array(
+                'main_id' => $delivery_note->id,
+                'master_id' => $value->master_id,
+                'voucher_no' => $delivery_note->gd_no,
+                'voucher_date' => $delivery_note->gd_date,
+                'supplier_id' => 0,
+                'customer_id' => $delivery_note->buyers_id,
+                'voucher_type' => 5,
+                'rate' => $value->rate,
+                'sub_item_id' => $value->item_id,
+                'batch_code' => $value->batch_code ?? "",
+                'qty' => $value->qty,
+                'discount_percent' => 0,
+                'discount_amount' => 0,
+                'amount' => $value->qty * $average_cost,
+                'status' => 1,
+                'warehouse_id' => $value->warehouse_id,
+                'username' => Auth::user()->username,
+                'created_date' => date('Y-m-d'),
+                'opening' => 0,
+                'so_data_id' => $value->so_data_id
+            );
+            
+            if (!DB::connection('mysql2')->table('stock')->insert($stock)) {
+                throw new Exception("Failed to insert stock record");
+            }
+
+            // Add to total transaction amount
+            $totalTransactionAmount += $purchase_price->purchase_price * $value->qty;
+
+            // Get customer details
+            $customer = DB::connection("mysql2")
+                ->table("customers")
+                ->select("id", "CustomerType")
+                ->where("id", $delivery_note->buyers_id)
+                ->first();
+
+            // Customer is distributor/reseller
+            if ($customer && $customer->CustomerType == 3 && isset($value->warehouse_to_id)) {
+                $virtualWarehouseStock = array(
+                    'main_id' => $delivery_note->id,
+                    'master_id' => $value->master_id,
+                    'voucher_no' => $delivery_note->gd_no,
+                    'voucher_date' => $delivery_note->gd_date,
                     'supplier_id' => 0,
-                    'customer_id' => $delivery_note->buyers_id,   //DN
-                    'voucher_type' => 5,
-                    'rate' => $value->rate,    //DNA
-                    'sub_item_id' => $value->item_id, // DNA
-                    'batch_code' => $value->batch_code ?? "",  //DNA
-                    'qty' => $value->qty,     //DNA
-                    'discount_percent' => 0,    //DNA
-                    'discount_amount' => 0, // $request->input('send_discount_amount' . $i),    //DNA
-                    'amount' => $value->qty * $average_cost,  //DNA
+                    'customer_id' => $delivery_note->buyers_id,
+                    'voucher_type' => 9,
+                    'rate' => $value->rate,
+                    'sub_item_id' => $value->item_id,
+                    'batch_code' => $value->batch_code ?? "",
+                    'qty' => $value->qty,
+                    'discount_percent' => 0,
+                    'discount_amount' => 0,
+                    'amount' => $value->qty * $average_cost,
                     'status' => 1,
-                    'warehouse_id' => $value->warehouse_id,   //DNA
+                    'warehouse_id' => $value->warehouse_to_id,
+                    'warehouse_id_to' => $value->warehouse_to_id,
                     'username' => Auth::user()->username,
                     'created_date' => date('Y-m-d'),
                     'opening' => 0,
-                    'so_data_id' => $value->so_data_id   //DNA
+                    'so_data_id' => $value->so_data_id
                 );
-                DB::Connection('mysql2')->table('stock')->insert($stock);
-
-                $customer = DB::connection("mysql2")->table("customers")
-                                        ->select("id", "CustomerType")
-                                        ->where("id", $delivery_note->buyers_id)
-                                        ->first();
-             
-                // Customer is distributes/reseller
-                if($customer->CustomerType == 3 && isset($value->warehouse_to_id)) {
-                    $virtualWarehouseStock = array(
-                        'main_id' => $delivery_note->id,   //  delivery note id
-                        'master_id' => $value->master_id, // delievry note data id
-                        'voucher_no' => $delivery_note->gd_no,      //DN gd_no
-                        'voucher_date' => $delivery_note->gd_date,  // DN
-                        'supplier_id' => 0,
-                        'customer_id' => $delivery_note->buyers_id,   //DN
-                        'voucher_type' => 9,
-                        'rate' => $value->rate,    //DNA
-                        'sub_item_id' => $value->item_id, // DNA
-                        'batch_code' => $value->batch_code ?? "",  //DNA
-                        'qty' => $value->qty,     //DNA
-                        'discount_percent' => 0,    //DNA
-                        'discount_amount' => 0, // $request->input('send_discount_amount' . $i),    //DNA
-                        'amount' => $value->qty * $average_cost,  //DNA
-                        'status' => 1,
-                        'warehouse_id' => $value->warehouse_to_id,   //DNA
-                        'warehouse_id_to' => $value->warehouse_to_id,   //DNA
-                        'username' => Auth::user()->username,
-                        'created_date' => date('Y-m-d'),
-                        'opening' => 0,
-                        'so_data_id' => $value->so_data_id   //DNA
-                    );
-                    DB::Connection('mysql2')->table('ba_stock')->insert($virtualWarehouseStock);
-                }
-
-
-                if (isset($value->warehouse_to_id)) {
-                    $virtualWarehouseStock = array(
-                        'main_id' => $delivery_note->id,   //  delivery note id
-                        'master_id' => $value->master_id, // delievry note data id
-                        'voucher_no' => $delivery_note->gd_no,      //DN gd_no
-                        'voucher_date' => $delivery_note->gd_date,  // DN
-                        'supplier_id' => 0,
-                        'customer_id' => $delivery_note->buyers_id,   //DN
-                        'voucher_type' => 1,
-                        'rate' => $value->rate,    //DNA
-                        'sub_item_id' => $value->item_id, // DNA
-                        'batch_code' => $value->batch_code ?? "",  //DNA
-                        'qty' => $value->qty,     //DNA
-                        'discount_percent' => 0,    //DNA
-                        'discount_amount' => 0, // $request->input('send_discount_amount' . $i),    //DNA
-                        'amount' => $value->qty * $average_cost,  //DNA
-                        'status' => 1,
-                        'warehouse_id' => $value->warehouse_to_id,   //DNA
-                        'warehouse_id_to' => $value->warehouse_to_id,   //DNA
-                        'username' => Auth::user()->username,
-                        'created_date' => date('Y-m-d'),
-                        'created_date' => date('Y-m-d'),
-                        'opening' => 0,
-                        'so_data_id' => $value->so_data_id   //DNA
-                    );
-                    DB::Connection('mysql2')->table('stock')->insert($virtualWarehouseStock);
+                
+                if (!DB::connection('mysql2')->table('ba_stock')->insert($virtualWarehouseStock)) {
+                    throw new Exception("Failed to insert ba_stock record");
                 }
             }
-            $delivery_note->status = 1;
-            $delivery_note->save();
 
-            $getSo->dn_approve = 1;
-            $getSo->save();
-            DB::Connection('mysql2')->commit();
-        } catch (Exception $ex) {
-            DB::rollBack();
+            // Virtual warehouse stock
+            if (isset($value->warehouse_to_id)) {
+                $virtualWarehouseStock = array(
+                    'main_id' => $delivery_note->id,
+                    'master_id' => $value->master_id,
+                    'voucher_no' => $delivery_note->gd_no,
+                    'voucher_date' => $delivery_note->gd_date,
+                    'supplier_id' => 0,
+                    'customer_id' => $delivery_note->buyers_id,
+                    'voucher_type' => 1,
+                    'rate' => $value->rate,
+                    'sub_item_id' => $value->item_id,
+                    'batch_code' => $value->batch_code ?? "",
+                    'qty' => $value->qty,
+                    'discount_percent' => 0,
+                    'discount_amount' => 0,
+                    'amount' => $value->qty * $average_cost,
+                    'status' => 1,
+                    'warehouse_id' => $value->warehouse_to_id,
+                    'warehouse_id_to' => $value->warehouse_to_id,
+                    'username' => Auth::user()->username,
+                    'created_date' => date('Y-m-d'),
+                    'opening' => 0,
+                    'so_data_id' => $value->so_data_id
+                );
+                
+                if (!DB::connection('mysql2')->table('stock')->insert($virtualWarehouseStock)) {
+                    throw new Exception("Failed to insert virtual stock record");
+                }
+            }
         }
-        return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
-    }
 
+        
+        if ($totalTransactionAmount > 0) {
+            // Transaction entry 1 (Debit) 
+            $data4 = array(
+                'master_id' => $delivery_note->id,  // delivery note id as master
+                'acc_id' => 1053,
+                'acc_code' => '7-1',
+                'cost_center' => $delivery_note->gd_no,
+                'particulars' => 'DN: ' . $delivery_note->gd_no . ' - SO: ' . $getSo->so_no,
+                'opening_bal' => 0,
+                'debit_credit' => 1, // Debit
+                'amount' => $totalTransactionAmount,
+                'voucher_no' => $delivery_note->gd_no,
+                'voucher_type' => 13,
+                'v_date' => $delivery_note->gd_date,
+                'date' => date('Y-m-d'),
+                'action' => 'insert',
+                'username' => Auth::user()->name,
+                'status' => 1
+            );
+            
+            if (!DB::connection('mysql2')->table('transactions')->insertGetId($data4)) {
+                throw new Exception("Failed to insert debit transaction");
+            }
+
+            // Transaction entry 2 (Credit) 
+            $data5 = array(
+                'master_id' => $delivery_note->id,  // delivery note id as master
+                'acc_id' => 1101,
+                'acc_code' => '1-2-1',
+                'cost_center' => $delivery_note->gd_no,
+                'particulars' => 'DN: ' . $delivery_note->gd_no . ' - SO: ' . $getSo->so_no,
+                'opening_bal' => 0,
+                'debit_credit' => 0, // Credit
+                'amount' => $totalTransactionAmount,
+                'voucher_no' => $delivery_note->gd_no,
+                'voucher_type' => 13,
+                'v_date' => $delivery_note->gd_date,
+                'date' => date('Y-m-d'),
+                'action' => 'insert',
+                'username' => Auth::user()->name,
+                'status' => 1
+            );
+            
+            if (!DB::connection('mysql2')->table('transactions')->insertGetId($data5)) {
+                throw new Exception("Failed to insert credit transaction");
+            }
+        }
+
+        // Update delivery note status
+        $delivery_note->status = 1;
+        if (!$delivery_note->save()) {
+            throw new Exception("Failed to update delivery note");
+        }
+
+        // Update sales order
+        $getSo->dn_approve = 1;
+        if (!$getSo->save()) {
+            throw new Exception("Failed to update sales order");
+        }
+
+        // Commit transaction if everything is successful
+        DB::connection('mysql2')->commit();
+
+        return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') . 
+            '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
+            ->with('success', 'Delivery note approved successfully. Total amount: ' . $totalTransactionAmount);
+
+    } catch (Exception $ex) {
+        // Rollback transaction on error
+        DB::connection('mysql2')->rollBack();
+        
+        // Log the error for debugging
+        Log::error('Delivery Note Approval Failed: ' . $ex->getMessage());
+        
+        // Return with error message
+        return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') . 
+            '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
+            ->with('error', 'Failed to approve delivery note: ' . $ex->getMessage());
+    }
+}
     function addeDeliveryChallan(Request $request)
     {
         //    echo "<pre>";
