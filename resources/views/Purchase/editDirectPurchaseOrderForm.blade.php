@@ -1,3 +1,4 @@
+
 <?php
 use App\Helpers\CommonHelper;
 use App\Helpers\StoreHelper;
@@ -407,80 +408,123 @@ endif;
         $('[name="brand_id[]"]').trigger("change");
         var Counter = {{ count($purchaseDetails) ?: 1 }};
         // TAB key to add new row from last editable field
-        $(document).on('keydown', 'input, select', function(e) {
-            if (e.key === "Tab") {
-                let $inputs = $('input:enabled:not([readonly]), select:enabled:not([readonly])').filter(':visible');
-                let idx = $inputs.index(this);
-                if (idx === $inputs.length - 1) {
-                    e.preventDefault();
-                    AddMoreDetails();
-                    setTimeout(() => {
-                        const $newField = $(`#AppnedHtml tr.main:last`)
-                            .find('input:enabled:not([readonly]), select:enabled:not([readonly])')
-                            .first();
-                        if ($newField.length) $newField.focus();
-                    }, 200);
+        // $(document).on('keydown', 'input, select', function(e) {
+        //     if (e.key === "Tab") {
+        //         let $inputs = $('input:enabled:not([readonly]), select:enabled:not([readonly])').filter(':visible');
+        //         let idx = $inputs.index(this);
+        //         if (idx === $inputs.length - 1) {
+        //             e.preventDefault();
+        //             AddMoreDetails();
+        //             setTimeout(() => {
+        //                 const $newField = $(`#AppnedHtml tr.main:last`)
+        //                     .find('input:enabled:not([readonly]), select:enabled:not([readonly])')
+        //                     .first();
+        //                 if ($newField.length) $newField.focus();
+        //             }, 200);
+        //         }
+        //     }
+        // });
+
+
+        // TAB key to add new row from last editable field - IMPROVED VERSION
+$(document).on('keydown', 'input, select', function(e) {
+    if (e.key === "Tab" && !e.shiftKey) { // Only Tab, not Shift+Tab
+        // Get all editable fields in the current table only
+        let $currentTable = $(this).closest('table');
+        let $inputs = $currentTable.find('input:enabled:not([readonly]), select:enabled:not([readonly])').filter(':visible');
+        
+        let idx = $inputs.index(this);
+        
+        // If this is the last input (the '+' button or the last text field)
+        if (idx === $inputs.length - 1) {
+            e.preventDefault();
+            
+            // Get previous brand before adding new
+            var previousBrandId = $('#brand_id' + Counter).val();
+            
+            // Call AddMoreDetails
+            AddMoreDetails();
+            
+            // Focus on correct field of new row after a short delay
+            setTimeout(() => {
+                let $newRow = $('#AppnedHtml tr.main:last');
+                let $targetField;
+                
+                if (previousBrandId) {
+                    // If brand was copied, focus on product selection
+                    $targetField = $newRow.find('select.product-select');
+                } else {
+                    // Otherwise focus on brand selection
+                    $targetField = $newRow.find('select.brand-select');
                 }
-            }
-        });
-
-        function AddMoreDetails() {
-            Counter++;
-            var previousBrandId = $('#brand_id' + (Counter - 1)).val();
-
-            $('#AppnedHtml').append(`
-            <tr id="RemoveRows${Counter}" class="AutoNo main">
-                <td>
-                    <select style="width: 150px;" onChange="get_product_by_brand(this, ${Counter})" name="brand_id[]" class="form-control select2 brand-select" id="brand_id${Counter}">
-                        <option value="">Select</option>
-                        @foreach (CommonHelper::get_all_brand() as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                        @endforeach
-                    </select>
-                </td>
-                <td>
-                    <select name="item_id[]" id="productName${Counter}" onchange="get_type_barcode_by_product('productName${Counter}')"
-                            class="form-control select2 product-select itemsclass" style="width:200px !important;">
-                        <option value="">Select Products</option>
-                    </select>
-                </td>
-                <td><input readonly type="text" class="form-control" name="product_type[]" id="product_type${Counter}"></td>
-                <td><input readonly type="text" class="form-control" name="product_barcode[]" id="product_barcode${Counter}"></td>
-                <td><input readonly type="text" class="form-control" name="classification_name[]" id="product_classification${Counter}"></td>
-                <td><input readonly type="text" class="form-control" name="product_trend[]" id="product_trend${Counter}"></td>
-                <td>
-                    <input readonly type="text" class="form-control" name="uom_id[]" id="uom_id${Counter}">
-                    <input readonly type="hidden" class="form-control mainIcId" name="cat_id[]" id="mainIcId_${Counter}">
-                </td>
-                <td><input type="text" onkeyup="claculation(${Counter})" class="form-control ActualQty" name="actual_qty[]" id="actual_qty${Counter}" placeholder="ACTUAL QTY"></td>
-                <td><input type="text" onkeyup="claculation(${Counter})" class="form-control ActualRate" name="rate[]" id="rate${Counter}" placeholder="RATE"></td>
-                <td><input readonly type="text" class="form-control" name="amount[]" id="amount${Counter}" placeholder="AMOUNT"></td>
-                <td><input readonly type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount${Counter}" placeholder="AMOUNT"></td>
-                <td class="hide"><input type="text" onkeyup="discount_percent(this.id)" class="form-control" value="0" name="discount_percent[]" id="discount_percent${Counter}"></td>
-                <td class="hide"><input type="text" onkeyup="discount_amount(this.id)" class="form-control" value="0" name="discount_amount[]" id="discount_amount${Counter}"></td>
-                <td><input type="text" onkeyup="claculation(${Counter})" class="form-control" value="0" name="tax_per[]" id="tax_per${Counter}" placeholder="Tax %"></td>
-                <td><input type="text" onkeyup="net_amount()" class="form-control" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
-                <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" value="0.00"></td>
-              
-                <td class="text-center" style="display: flex; gap: 10px;">
-                         <input type="button" class="btn btn-sm btn-primary"
-                         style="width: 50px;"
-                                                                    onclick="AddMoreDetails()" value="+" />
-                                                       
-                    <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection(${Counter})"> - </button>
-                </td>
-            </tr>
-        `);
-
-            $('#brand_id' + Counter).select2();
-            if (previousBrandId) {
-                $('#brand_id' + Counter).val(previousBrandId).trigger('change');
-            }
-
-            $('#productName' + Counter).select2();
-
-            $('#span').text($('.AutoNo').length);
+                
+                if ($targetField.length) {
+                    $targetField.select2('focus');
+                    // Or open it
+                    $targetField.select2('open');
+                }
+            }, 300);
         }
+    }
+});
+
+function AddMoreDetails() {
+    var previousBrandId = $('#brand_id' + Counter).val();
+    Counter++;
+
+    $('#AppnedHtml').append(`
+    <tr id="RemoveRows${Counter}" class="AutoNo main">
+        <td>
+            <select style="width: 150px;" onChange="get_product_by_brand(this, ${Counter})" name="brand_id[]" class="form-control select2 brand-select" id="brand_id${Counter}">
+                <option value="">Select</option>
+                @foreach (CommonHelper::get_all_brand() as $item)
+                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                @endforeach
+            </select>
+        </td>
+        <td>
+            <select name="item_id[]" id="productName${Counter}" onchange="get_type_barcode_by_product('productName${Counter}')"
+                    class="form-control select2 product-select itemsclass" style="width:200px !important;">
+                <option value="">Select Products</option>
+            </select>
+        </td>
+        <td><input readonly type="text" class="form-control" name="product_type[]" id="product_type${Counter}"></td>
+        <td><input readonly type="text" class="form-control" name="product_barcode[]" id="product_barcode${Counter}"></td>
+        <td><input readonly type="text" class="form-control" name="classification_name[]" id="product_classification${Counter}"></td>
+        <td><input readonly type="text" class="form-control" name="product_trend[]" id="product_trend${Counter}"></td>
+        <td>
+            <input readonly type="text" class="form-control" name="uom_id[]" id="uom_id${Counter}">
+            <input readonly type="hidden" class="form-control mainIcId" name="cat_id[]" id="mainIcId_${Counter}">
+        </td>
+        <td><input type="text" onkeyup="claculation(${Counter})" class="form-control ActualQty" name="actual_qty[]" id="actual_qty${Counter}" placeholder="ACTUAL QTY"></td>
+        <td><input type="text" onkeyup="claculation(${Counter})" class="form-control ActualRate" name="rate[]" id="rate${Counter}" placeholder="RATE"></td>
+        <td><input readonly type="text" class="form-control" name="amount[]" id="amount${Counter}" placeholder="AMOUNT"></td>
+        <td><input readonly type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount${Counter}" placeholder="AMOUNT"></td>
+        <td class="hide"><input type="text" onkeyup="discount_percent(this.id)" class="form-control" value="0" name="discount_percent[]" id="discount_percent${Counter}"></td>
+        <td class="hide"><input type="text" onkeyup="discount_amount(this.id)" class="form-control" value="0" name="discount_amount[]" id="discount_amount${Counter}"></td>
+        <td><input type="text" onkeyup="claculation(${Counter})" class="form-control" value="0" name="tax_per[]" id="tax_per${Counter}" placeholder="Tax %"></td>
+        <td><input type="text" onkeyup="net_amount()" class="form-control" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
+        <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" value="0.00"></td>
+      
+        <td class="text-center" style="display: flex; gap: 10px;">
+                 <input type="button" class="btn btn-sm btn-primary"
+                 style="width: 50px;"
+                                                            onclick="AddMoreDetails()" value="+" />
+                                               
+            <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection(${Counter})"> - </button>
+        </td>
+    </tr>
+`);
+
+    $('#brand_id' + Counter).select2();
+    $('#productName' + Counter).select2();
+
+    if (previousBrandId) {
+        $('#brand_id' + Counter).val(previousBrandId).trigger('change');
+    }
+
+    $('#span').text($('.AutoNo').length);
+}
 
         function RemoveSection(Row) {
             $('#RemoveRows' + Row).remove();
