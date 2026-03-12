@@ -207,13 +207,31 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                 <?php
                                                     $customer=CommonHelper::byers_name($row->buyers_id); 
                                                     $saleOrderDetail = CommonHelper::get_so_by_SONO($row->so_no);
+                                                    
+                                                    // Calculate exact performa total amount
+                                                    $delivery_note_data_items = DB::Connection('mysql2')->table('delivery_note_data')->where('master_id', $row->id)->get();
+                                                    $performa_total_amount = 0;
+                                                    foreach($delivery_note_data_items as $sale_order_item) {
+                                                        $saleOrderDetailItem = CommonHelper::get_item_detials($sale_order_item->so_data_id);
+                                                        
+                                                        $gross_amount = $sale_order_item->rate * $sale_order_item->qty;
+                                                        
+                                                        $percentage_amount = $saleOrderDetailItem ? $saleOrderDetailItem->discount_percent_1 : 0;
+                                                        $discount_amount = ($gross_amount * $percentage_amount) / 100;
+                                                        
+                                                        $tax_amount = $sale_order_item->tax;
+                                                        $tax_amount = ($tax_amount * $gross_amount) / 100;
+                                                        
+                                                        $performa_total_amount += ($gross_amount - $discount_amount + $tax_amount);
+                                                    }
+
                                                     $sale_taxes_amount_rate = 0;
                                                     if($saleOrderDetail){
                                                         $sale_taxes_amount_rate = $saleOrderDetail->sale_taxes_amount_rate ?? 0;
                                                     }
-                                                ?>
-
-                                                <tr @if($status=='Open') style="background-color: #fdc8c8" @elseif($status=='partial') style="background-color: #c9d6ec"  @endif title="{{$row->id}}" id="{{$row->id}}">
+                                                    
+                                                    $final_performa_total = $performa_total_amount - $sale_taxes_amount_rate;
+                                                ?>                                                <tr @if($status=='Open') style="background-color: #fdc8c8" @elseif($status=='partial') style="background-color: #c9d6ec"  @endif title="{{$row->id}}" id="{{$row->id}}">
                                                     <td style="text-align:center;" class="text-center">{{$counter++}}</td>
                                                     <td class="text-center"><?php echo  strtoupper($row->so_no) ?></td>
                                                     <td title="{{$row->id}}" class="text-center">{{strtoupper($row->gd_no)}}</td>
@@ -241,7 +259,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <td style="text-align:left;" class="text-center"><strong>{{$customer->name}}</strong></td>
                                                     <td style="text-align: center !important;" class="text-center">{{number_format($data->qty,0)}}</td>
                                                   
-                                                    <td   style="text-align: center !important;" class="text-center">{{number_format($data->amount + $row->sales_tax_amount + $sale_taxes_amount_rate, 0)}}</td>
+                                                    <td   style="text-align: center !important;" class="text-center">{{$final_performa_total}}</td>
                                                     <!-- <td>{{$status}}</td> -->
                                                     <td>{{$approvalStatus}}</td>
                                                     <!-- <td class="text-center"><?php echo $row->username?></td> -->
