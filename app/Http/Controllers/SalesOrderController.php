@@ -1171,6 +1171,15 @@ class SalesOrderController extends Controller
     return redirect()->back()->with('success', 'Sale order deleted successfully.');
 }
 
+public function closeSaleOrder($id)
+{
+    DB::connection('mysql2')->table('sales_order')
+        ->where('id', $id)
+        ->update(['delivery_note_status' => 1]);
+
+    return redirect()->back()->with('success', 'Sale order closed successfully.');
+}
+
 
     public function viewSaleOrder($id)
     {

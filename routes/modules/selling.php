@@ -70,6 +70,7 @@ Route::group(['prefix' => 'saleQuotation'], function () {
 
     Route::get('editSaleOrder/{id}','SalesOrderController@edit')->name('editSaleOrder');
     Route::get('deleteSaleOrder/{id}','SalesOrderController@destroy')->name('deleteSaleOrder');
+    Route::get('closeSaleOrder/{id}','SalesOrderController@closeSaleOrder')->name('closeSaleOrder');
     Route::post('updateSaleOrder/{id}','SalesOrderController@update')->name('updateSaleOrder');
 
 // ---- --------------      ----- Sale Order   ----        --------------------//

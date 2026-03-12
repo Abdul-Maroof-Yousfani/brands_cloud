@@ -97,6 +97,10 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <a href="{{ route('editSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-warning "
                                                         target="_blank"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a>
                         
+                                                    <a href="{{ route('closeSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-primary" onclick="return confirm('Are you sure you want to close this sale order?')">
+                                                        <i class="fa fa-close" aria-hidden="true"></i> Close
+                                                    </a>
+
                                                     <!-- <a href="{{ route('deleteSaleOrder', $sale_order->id) }}" class="btn btn-xs btn-danger"><i class="fa fa-trash-o"
                                                             aria-hidden="true"></i> Delete</a> -->
                         
