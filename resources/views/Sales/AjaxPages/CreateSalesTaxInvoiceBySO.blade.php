@@ -54,18 +54,32 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                         <?php
                         $data=SalesHelper::get_total_amount_for_delivery_not_by_id($row->id); 
 
-                      
+                        $saleOrderDetail = CommonHelper::get_so_by_SONO($row->so_no);
                         
-                         $saleOrderDetail = CommonHelper::get_so_by_SONO($row->so_no);
-                                                    $sale_taxes_amount_rate = 0;
-                                                    if($saleOrderDetail){
-                                                        $sale_taxes_amount_rate = $saleOrderDetail->sale_taxes_amount_rate ?? 0;
-                                                    }
-                        ?>
+                        // Calculate exact performa total amount
+                        $delivery_note_data_items = DB::Connection('mysql2')->table('delivery_note_data')->where('master_id', $row->id)->get();
+                        $performa_total_amount = 0;
+                        foreach($delivery_note_data_items as $sale_order_item) {
+                            $saleOrderDetailItem = CommonHelper::get_item_detials($sale_order_item->so_data_id);
+                            
+                            $gross_amount = $sale_order_item->rate * $sale_order_item->qty;
+                            
+                            $percentage_amount = $saleOrderDetailItem ? $saleOrderDetailItem->discount_percent_1 : 0;
+                            $discount_amount = ($gross_amount * $percentage_amount) / 100;
+                            
+                            $tax_amount = $sale_order_item->tax;
+                            $tax_amount = ($tax_amount * $gross_amount) / 100;
+                            
+                            $performa_total_amount += ($gross_amount - $discount_amount + $tax_amount);
+                        }
 
+                        $sale_taxes_amount_rate = 0;
+                        if($saleOrderDetail){
+                            $sale_taxes_amount_rate = $saleOrderDetail->sale_taxes_amount_rate ?? 0;
+                        }
+                        
+                        $final_performa_total = $performa_total_amount - $sale_taxes_amount_rate;
 
-
-                        <?php
                         $customer=CommonHelper::byers_name($row->buyers_id); ?>
                         <tr title="{{$row->id}}" id="{{$row->id}}">
                             <td class="text-center">
@@ -88,7 +102,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                 </td>
                             <td class="text-center"><strong>{{$customer->name}}</strong></td>
                             <td class="text-right">{{number_format(round($data->qty),0)}}</td>
-                            <td class="text-right">{{number_format(round($data->amount+$row->sales_tax_amount +  $sale_taxes_amount_rate),0)}}</td>
+                            <td class="text-right">{{number_format(round($final_performa_total),0)}}</td>
                             <td class="text-center">
                                   <div class="dropdown">
 
