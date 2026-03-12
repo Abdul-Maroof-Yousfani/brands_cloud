@@ -3379,72 +3379,10 @@ if (in_array($user->acc_type, ['user'])) {
                     ->update(['approve_user_2' => Auth::user()->name, 'si_status' =>  3]);
 
 
-                $accounts = self::getAccountIds();
-
-                // Customer Debit Entry
-                DB::connection('mysql2')->table('transactions')->insert([
-                    'voucher_no' => $gi_no,
-                    'v_date' => $si_data->gi_date,
-                    'acc_id' => $si_data->acc_id,
-                    'acc_code' => \App\Helpers\FinanceHelper::getAccountCodeByAccId($si_data->acc_id),
-                    'particulars' => $si_data->description ?? 'Sales Tax Invoice ' . $gi_no,
-                    'opening_bal' => 0,
-                    'debit_credit' => 1,
-                    'amount' => ($si_data->total - $si_data->wh_tax),
-                    'username' => Auth::user()->name ?? 'system',
-                    'status' => 1,
-                    'voucher_type' => 6,
-                ]);
-
-                // Advance Tax Receivable Entry
-                if (!empty($si_data->wh_tax) && $si_data->wh_tax > 0) {
-                    DB::connection('mysql2')->table('transactions')->insert([
-                        'voucher_no' => $gi_no,
-                        'v_date' => $si_data->gi_date,
-                        'acc_id' => $accounts['advance_tax_receivable'],
-                        'acc_code' => $accounts['advance_tax_receivable_code'],
-                        'particulars' => $si_data->description ?? 'Advance Tax - ' . $gi_no,
-                        'opening_bal' => 0,
-                        'debit_credit' => 1,
-                        'amount' => $si_data->wh_tax,
-                        'username' => Auth::user()->name ?? 'system',
-                        'status' => 1,
-                        'voucher_type' => 6,
-                    ]);
-                }
-
-                // Sales Revenue Entry
-                DB::connection('mysql2')->table('transactions')->insert([
-                    'voucher_no' => $gi_no,
-                    'v_date' => $si_data->gi_date,
-                    'acc_id' => $accounts['sales_revenue'],
-                    'acc_code' => $accounts['sales_revenue_code'],
-                    'particulars' => $si_data->description ?? 'Sales Revenue - ' . $gi_no,
-                    'opening_bal' => 0,
-                    'debit_credit' => 0,
-                    'amount' => ($si_data->total - $si_data->sales_tax),
-                    'username' => Auth::user()->name ?? 'system',
-                    'status' => 1,
-                    'voucher_type' => 6,
-                ]);
-
-                // Sales Tax Payable Entry
-                if (!empty($si_data->sales_tax) && $si_data->sales_tax > 0) {
-                    DB::connection('mysql2')->table('transactions')->insert([
-                        'voucher_no' => $gi_no,
-                        'v_date' => $si_data->gi_date,
-                        'acc_id' => $accounts['sales_tax_payable'],
-                        'acc_code' => $accounts['sales_tax_payable_code'],
-                        'particulars' => $si_data->description ?? 'Sales Tax Payable - ' . $gi_no,
-                        'opening_bal' => 0,
-                        'debit_credit' => 0,
-                        'amount' => $si_data->sales_tax,
-                        'username' => Auth::user()->name ?? 'system',
-                        'status' => 1,
-                        'voucher_type' => 6,
-                    ]);
-                }
-
+                DB::Connection('mysql2')->table('transactions')
+                    ->where('voucher_no', $gi_no)
+                    ->where('status', 100)
+                    ->update(['status' => 1]);
                 $approve = 'Approved';
                 $behavior = 'Approve 2';
 
@@ -3503,12 +3441,6 @@ if (in_array($user->acc_type, ['user'])) {
                 $subject = 'Sales Tax Invoice Approved For ' . $so_no;
                 NotificationHelper::send_email('Sales tax Invoice', $behavior, $dept_id, $voucher_no, $subject, $p_type);
             endif;
-            $type = "Sales Tax Invoice";
-            \App\Helpers\CommonHelper::createNotification(
-                $type . " with " . $gi_no . " is approved by " . auth()->user()->name, 
-                $type . ""
-            );
-        
             DB::Connection('mysql2')->commit();
         } catch (Exception $ex) {
 
