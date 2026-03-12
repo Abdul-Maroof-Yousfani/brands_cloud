@@ -361,7 +361,7 @@ foreach ($delivery_note_data as $sale_order_item) {
                                         </div>
                                         <div class="totlas">
                                             <p><strong>Total</strong></p>
-                                            <p><strong>{{ number_format((float)$total_amount_after_tax + (float)$sale_order->sale_taxes_amount_rate, 2) }}</strong></p>
+                                            <p><strong>{{ number_format((float)$total_amount + (float)$sale_order->sale_taxes_amount_rate, 2) }}</strong></p>
                                         </div>
                                     </div>
 
