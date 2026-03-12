@@ -29,22 +29,24 @@ if ($sales_tax_invoice->currency != 0) {
 foreach ($sales_tax_invoice_data as $item) {
     $saleOrderDetail = CommonHelper::get_item_detials($item->so_data_id);
     $total_expense = 0;
-    $total_before_tax += $item->rate * $item->qty;
-    $total_tax += $item->tax_amount;
-    $total_after_tax += $item->amount;
-    $total_tax_amount += $item->tax_amount;
+    
+    $gross_amount = $item->rate * $item->qty;
+    $percentage_amount = $saleOrderDetail ? $saleOrderDetail->discount_percent_1 : 0;
+    $discount_amount = ($gross_amount * $percentage_amount) / 100;
+
+    $tax = $item->tax;
+    $tax_amount = ($tax * $gross_amount) / 100;
+
+    $amount = ($gross_amount - $discount_amount + $tax_amount);
+
+    $total_before_tax += $gross_amount;
+    $total_tax += $tax_amount;
+    $total_after_tax += $amount;
+    $total_tax_amount += $tax_amount;
     $total_qty += $item->qty;
-    $total_discount_amount += $saleOrderDetail->discount_amount_1 ?? 0;
-    $total_gross_amount += $saleOrderDetail->sub_total ?? 0;
-    $total_amount_after_tax += $saleOrderDetail->amount ?? 0;
-    // $saleOrderDetail = CommonHelper::get_item_detials($item->so_data_id);
-    // $total_qty += $item->qty;
-    // $total_before_tax += $item->qty * $item->rate;
-    // $total_foc += $item->foc;
-    // $total_discount_amount += $saleOrderDetail->discount_amount_1;
-    // $total_gross_amount += $saleOrderDetail->sub_total;
-    // $total_tax += $item->tax_amount;
-    // $total_after_tax += $item->amount;
+    $total_discount_amount += $discount_amount;
+    $total_gross_amount += $gross_amount;
+    $total_amount_after_tax += $amount;
 }
 ?>
 <style>
@@ -338,18 +340,19 @@ input.form-control.form-control2{margin:0!important;}
 
                                         @foreach ($sales_tax_invoice_data as $row)
                                             @php
-                                                
                                                 $saleOrderDetail = CommonHelper::get_item_detials($row->so_data_id);
                                                 $productbarcode = CommonHelper::product_barcode($row->item_id);
+
+                                                $gross_amount = $row->rate * $row->qty;
+                                                $percentage_amount = $saleOrderDetail ? $saleOrderDetail->discount_percent_1 : 0;
+                                                $discount_amount = ($gross_amount * $percentage_amount) / 100;
+
+                                                $tax = $row->tax;
+                                                $tax_amount = ($tax * $gross_amount) / 100;
+
+                                                $amount = ($gross_amount - $discount_amount + $tax_amount);
                                             @endphp
                                             <tr>
-                                                {{-- $total_expense = 0;
-                                        $total_before_tax += $row->rate * $row->qty;
-                                        <!-- $total_tax += $row->tax_amount; -->
-                                        $total_tax = number_format($items->sum('tax_amount'), 2, '.', '');
-
-                                        
-                                        $total_after_tax += $row->amount; --}}
                                             <tr>
                                                 <td style="text-align: center !important;">{{ $count++ }}</td>
                                                 <td><strong>{{ CommonHelper::get_product_sku($row->item_id) }}-{{ CommonHelper::get_product_name($row->item_id) }}</strong></td>
@@ -358,12 +361,12 @@ input.form-control.form-control2{margin:0!important;}
                                                 <td style="text-align: center !important;" class="wsale2"><p>{{ number_format($row->qty) }}</p></td>
                                                 <td style="text-align: center !important;">{{ CommonHelper::get_product_mrp_price($row->item_id) }}</td>
                                                 <td style="text-align: center !important;">{{ number_format($row->rate, 2) }}</td>
-                                                <td style="text-align: center !important;"> {{ number_format($saleOrderDetail->sub_total, 2) }}</td>
-                                                <td style="text-align: center !important;">{{ number_format($saleOrderDetail->discount_percent_1, 2) }}% </td>
-                                                <td style="text-align: center !important;">{{ number_format($saleOrderDetail->discount_amount_1, 2) }}</td>
-                                                <td style="text-align: center !important;">{{ number_format($row->tax, 2) }}%</td>
-                                                <td style="text-align: center !important;">{{ number_format($row->tax_amount, 2) }}</td>
-                                                <td style="text-align: center !important;">{{ number_format($saleOrderDetail->amount, 2) }}</td>
+                                                <td style="text-align: center !important;"> {{ number_format($gross_amount, 2) }}</td>
+                                                <td style="text-align: center !important;">{{ number_format($percentage_amount, 2) }}% </td>
+                                                <td style="text-align: center !important;">{{ number_format($discount_amount, 2) }}</td>
+                                                <td style="text-align: center !important;">{{ number_format($tax, 2) }}%</td>
+                                                <td style="text-align: center !important;">{{ number_format($tax_amount, 2) }}</td>
+                                                <td style="text-align: center !important;">{{ number_format($amount, 2) }}</td>
                                             </tr>
                                             <tr>
                                                 {{-- <td style="text-align: center !important;"> {{ $count++ }} </td> --}}
@@ -500,7 +503,7 @@ input.form-control.form-control2{margin:0!important;}
                         </div>
                         <div class="totlas">
                             <p><strong>Total</strong></p>
-                            <p><strong>{{ number_format((float) $total_amount_after_tax + (float) $sale_order->sale_taxes_amount_rate, 2) }} </strong></p>
+                            <p><strong>{{ number_format((float) $total_amount_after_tax - (float) $sale_order->sale_taxes_amount_rate, 2) }} </strong></p>
                         </div>
                     </div>
                 </div>
