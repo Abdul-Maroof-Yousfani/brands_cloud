@@ -323,7 +323,9 @@ endif;
                                             </tbody>
                                             <tbody>
                                                 <tr style="font-size:large;font-weight: bold">
-                                                    <td class="text-center" colspan="9">Total</td>
+                                                    <td class="text-center" colspan="7">Total</td>
+                                                    <td class="text-right" colspan="1"><input readonly class="form-control" type="text" id="total_qty" value="{{ $purchaseDetails->sum('purchase_request_qty') }}"/> </td>
+                                                    <td class="text-right" colspan="1"><input readonly class="form-control" type="text" id="total_rate" value="{{ $purchaseDetails->sum('rate') }}"/> </td>
                                                     <td class="text-right" colspan="1"><input readonly class="form-control" type="text" id="actual_net" value="{{ $purchaseDetails->sum('actual_amount') }}"/> </td>
                                                     <td class="text-right" colspan="1"><input readonly class="form-control" type="text" id="net" value="{{ $purchaseDetails->sum('amount') }}"/> </td>
                                                     <td colspan="4"></td>
@@ -426,9 +428,37 @@ endif;
         // });
 
 
-        // TAB key to add new row from last editable field - IMPROVED VERSION
+        // TAB key to jump from Actual Qty to next row's Item
+$(document).on('keydown', '.ActualQty', function(e) {
+    if (e.key === "Tab" && !e.shiftKey) { // Only Tab, not Shift+Tab
+        e.preventDefault();
+        
+        let $currentRow = $(this).closest('tr');
+        let $nextRow = $currentRow.next('.main');
+        
+        if ($nextRow.length) {
+            // Go to next existing row's product
+            $nextRow.find('select.product-select').select2('focus');
+            $nextRow.find('select.product-select').select2('open');
+        } else {
+            // Last row, add new row and focus on its product
+            AddMoreDetails();
+            setTimeout(() => {
+                let $newRow = $('#AppnedHtml tr.main:last');
+                $newRow.find('select.product-select').select2('focus');
+                $newRow.find('select.product-select').select2('open');
+            }, 300);
+        }
+    }
+});
+
+// TAB key to add new row from last editable field - IMPROVED VERSION
 $(document).on('keydown', 'input, select', function(e) {
     if (e.key === "Tab" && !e.shiftKey) { // Only Tab, not Shift+Tab
+        
+        // Skip if this is ActualQty as it's handled above
+        if($(this).hasClass('ActualQty')) return;
+
         // Get all editable fields in the current table only
         let $currentTable = $(this).closest('table');
         let $inputs = $currentTable.find('input:enabled:not([readonly]), select:enabled:not([readonly])').filter(':visible');
@@ -606,7 +636,7 @@ function AddMoreDetails() {
                         $('#product_classification' + index_val).val(response.product_classification_id);
                         $('#product_trend' + index_val).val(response.product_trend_id);
                         $('#uom_id' + index_val).val(response.uom);
-                        //$("#rate" + index_val).val(response.purchase_price);
+                        $("#rate" + index_val).val(response.purchase_price);
                         claculation(index_val);
                     }
                 });
@@ -696,6 +726,15 @@ function AddMoreDetails() {
             var amount = 0;
             var actual_amount = 0;
             var total_net = 0;
+            var total_qty = 0;
+            var total_rate = 0;
+
+            $('.ActualQty').each(function() {
+                total_qty += parseFloat($(this).val()) || 0;
+            });
+            $('.ActualRate').each(function() {
+                total_rate += parseFloat($(this).val()) || 0;
+            });
 
             $('.net_amount_dis').each(function() {
                 total_net += parseFloat($(this).val()) || 0;
@@ -711,6 +750,8 @@ function AddMoreDetails() {
                 amount += (qty * rate * currency);
             });
 
+            $('#total_qty').val(total_qty.toFixed(2));
+            $('#total_rate').val(total_rate.toFixed(2));
             $('#net').val(amount.toFixed(2));
             $('#actual_net').val(actual_amount.toFixed(2));
             $('#total_net').val(total_net.toFixed(2));
