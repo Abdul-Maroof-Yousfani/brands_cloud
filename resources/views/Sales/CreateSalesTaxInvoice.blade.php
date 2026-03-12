@@ -468,7 +468,7 @@ label {
                                                                                 {{--<th class="text-center">DN No.</th>--}}
                                                                                 <th class="text-center">Uom</th>
 
-                                                                                <th class="text-center">Orderd QTY</th>
+                                                                                <th class="text-center hide">Orderd QTY</th>
                                                                                 <th class="text-center">DN QTY</th>
                                                                                 <th class="text-center hide">Return QTY
                                                                                 </th>
@@ -478,12 +478,9 @@ label {
                                                                                
                                                                                 <th class="text-center hidee">Rate</th>
                                                                                 <th class="text-center hidee">Tax %</th>
-                                                                                <th class="text-center hide">Tax Amount</th>
-
-                                                                                <th class="text-center hidee">Amount
-                                                                                </th>
-                                                                                <th class="text-center hidee">Net Amount
-                                                                                </th>
+                                                                                <th class="text-center">Tax Amount</th>
+                                                                                <th class="text-center hidee">Amount</th>
+                                                                                <th class="text-center hidee">Net Amount</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -593,7 +590,7 @@ label {
                                                                                         value="<?php echo CommonHelper::get_uom_name($sub_ic_detail[0]);?>" />
                                                                                 </td>
 
-                                                                                <td class="text-center"><input
+                                                                                <td class="text-center hide"><input
                                                                                         style="width:150px;" readonly
                                                                                         type="text"
                                                                                         class="form-control OrderQty"
@@ -618,25 +615,21 @@ label {
                                                                                         value="{{$return_qty}}" /></td>
                                                                                 </td>
 
-                                                                                <?php  $total_qty+=$dn_qty-$return_qty;
+                                                                                <?php  
+                                                                                        $total_qty += $dn_qty - $return_qty;
+                                                                                        $real_qty = $dn_qty - $return_qty;
 
-                                                                                        $amount=$dn_rate*$dn_qty;
+                                                                                        $amount = $dn_rate * $real_qty;
                                                                                         
-                                                                                        // $discount_amount=0;
-                                                                                        
-                                                                                        // $net_amount=0;
-                                                                                        // if ($row1->tax!=0):
-                                                                                        // $discount_amount=($amount/100)*$discount_percent;
-                                                                                        // $net_amount=$amount+$discount_amount;
-                                                                                        // endif;
                                                                                         $soData = CommonHelper::get_item_detials($row1->so_data_id);
 
-                                                                                        $net_amount=$soData->amount ?? 0;
-                                                                                        $discount_amount=$soData->discount_amount_1 ?? 0;
+                                                                                        $percentage_amount = $soData ? $soData->discount_percent_1 : 0;
+                                                                                        $discount_amount = ($amount * $percentage_amount) / 100;
 
+                                                                                        $tax_percent_val = $row1->tax;
+                                                                                        $tax_amount = ($tax_percent_val * $amount) / 100;
 
-
-
+                                                                                        $net_amount = $amount - $discount_amount + $tax_amount;
                                                                                 ?>
                                                                                 <td class="text-right">
                                                                                     <input style="width:150px;" readonly
@@ -665,12 +658,12 @@ label {
                                                                                         value="{{$row1->tax}}" />
 
                                                                                 </td>
-                                                                            <td class="text-right hide">
+                                                                            <td class="text-right">
                                                             <input style="width:150px;" readonly type="text"
                                                                 class="form-control tax_amount"
                                                                 name="tax_amount{{$id_count}}"
                                                                 id="tax_amount{{$id_count}}"
-                                                                value="{{$row1->tax_amount}}" />
+                                                                value="{{$tax_amount}}" />
                                                         </td>
 
                                                                                 </td>
@@ -949,14 +942,14 @@ label {
                                                                             </td>
                                                                         </tr>
                                                                         @endif
-                                                                        <tr class="hidee">
+                                                                        <tr class="hide">
                                                                             <td style="background-color: darkgray;font-weight: bolder;font-size: x-large"class="text-center" colspan="9">W.H Tax
                                                                             </td>
                                                                             <td colspan="1"style="background-color: darkgray;font-weight: bolder;font-size: x-large">
                                                                                 <input readonly type="text" class="text-right comma_seprated"name="wh_tax" value="{{$customerDetail->wh_tax ?? 0}}" id="wh_tax" />
                                                                             </td>
                                                                         </tr>
-                                                                        <tr class="hidee">
+                                                                        <tr class="hide">
                                                                             <td style="background-color: darkgray;font-weight: bolder;font-size: x-large" class="text-center" colspan="9">Adv. Tax</td>
                                                                             <td colspan="1"style="background-color: darkgray;font-weight: bolder;font-size: x-large">
                                                                                 <input readonly type="text" class="text-right comma_seprated" name="adv_tax" value="{{$customerDetail->adv_tax ?? 0}}" id="adv_tax" />
@@ -1084,6 +1077,14 @@ label {
                                                                 value="" type="text" readonly></li>
                                                     </ul>
                                                     <ul class="sale-l sale-l2">
+                                                        <li>PST</li>
+                                                        <li class="text-left"><input name="pst_amount"
+                                                                id="pst_amount"
+                                                                class="form-control form-control2" value="{{ $sales_order->sale_taxes_amount_rate ?? 0 }}" type="text"
+                                                                readonly>
+                                                        </li>
+                                                    </ul>
+                                                    <ul class="sale-l sale-l2 hide">
                                                         <li>WH Tax Amount</li>
                                                         <li class="text-left"><input name="wh_tax_amount"
                                                                 id="wh_tax_amount"
@@ -1091,7 +1092,7 @@ label {
                                                                 readonly>
                                                         </li>
                                                     </ul>
-                                                    <ul class="sale-l sale-l2">
+                                                    <ul class="sale-l sale-l2 hide">
                                                         <li>Adv Tax Amount</li>
                                                         <li class="text-left"><input name="adv_tax_amount"
                                                                 id="adv_tax_amount"
@@ -1643,38 +1644,35 @@ label {
             $('#total_sales_tax').val(totalTaxAmount);
         }
 
-        // function totalAmount() {
-        //     var totalAmount = 0;
-        //     $('.amount').each(function() {
-        //         var amount = parseFloat($(this).val()) || 0; // Convert value to float, default to 0 if NaN
-        //         totalAmount += amount;
-        //     });
-
-        //     let WH_Tax = parseFloat($('#wh_tax').val()) || 0; 
-        //     let ADV_Tax = parseFloat($('#adv_tax').val()) || 0; 
-
-        //     let wh_tax_amount = (WH_Tax / 100) * totalAmount;
-        //     let adv_tax_amount = (ADV_Tax / 100) * totalAmount;
-
-        //     // Set the calculated tax values in the respective fields
-        //     // $('#wh_tax_amount').val(wh_tax_amount.toFixed(2));
-        //     // $('#adv_tax_amount').val(adv_tax_amount.toFixed(2))
-
-        //     totalAmount += wh_tax_amount + adv_tax_amount;
-        //     // $('#grand_total').val(totalAmount);
-        //     $('#wh_tax_amount').val(wh_tax_amount.toFixed());
-        //     $('#adv_tax_amount').val(adv_tax_amount.toFixed());
-        //     $('#total_amount_after_sale_tax').val(totalAmount.toFixed());
-        // }
-
         function totalTaxAmount() {
-    var totalTaxAmount = 0;
-    $('.tax_amount').each(function() {
-        var taxAmount = parseFloat($(this).val()) || 0;
-        totalTaxAmount += taxAmount;
-    });
-    $('#total_sales_tax').val(totalTaxAmount.toFixed(2));
-}
+            var totalTaxAmount = 0;
+            $('.tax_amount').each(function() {
+                var taxAmount = parseFloat($(this).val()) || 0;
+                totalTaxAmount += taxAmount;
+            });
+            $('#total_sales_tax').val(totalTaxAmount.toFixed(2));
+        }
+        
+        function totalAmount() {
+            var totalAmount = 0;
+            $('.amount').each(function() {
+                var amount = parseFloat($(this).val()) || 0; 
+                totalAmount += amount;
+            });
+
+            let WH_Tax = parseFloat($('#wh_tax').val()) || 0; 
+            let ADV_Tax = parseFloat($('#adv_tax').val()) || 0; 
+
+            let wh_tax_amount = (WH_Tax / 100) * totalAmount;
+            let adv_tax_amount = (ADV_Tax / 100) * totalAmount;
+            let pst_amount = parseFloat($('#pst_amount').val()) || 0;
+
+            let finalNet = totalAmount - pst_amount; // Do not add WH tax and ADV tax to the final net amount here, but subtract PST.
+            
+            $('#wh_tax_amount').val(wh_tax_amount.toFixed(2));
+            $('#adv_tax_amount').val(adv_tax_amount.toFixed(2));
+            $('#total_amount_after_sale_tax').val(finalNet.toFixed(2));
+        }
         </script>
         <script type="text/javascript">
         $('.select2').select2()
