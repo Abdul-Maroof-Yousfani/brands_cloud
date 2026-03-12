@@ -3339,6 +3339,20 @@ if (in_array($user->acc_type, ['user'])) {
     }
 
 
+    private static function getAccountIds()
+    {
+        // You can store these in .env file or database settings
+        return [
+            'advance_tax_receivable' => '1777',
+            'advance_tax_receivable_code' => '1-57-2',
+            'sales_revenue' => '1045',
+            'sales_revenue_code' => '5-2',
+            'sales_tax_payable' => '1778',
+            'sales_tax_payable_code' => '2-371',
+        ];
+    }
+
+
     public static function si_approve(Request $request)
     {
         DB::Connection('mysql2')->beginTransaction();
@@ -3365,10 +3379,72 @@ if (in_array($user->acc_type, ['user'])) {
                     ->update(['approve_user_2' => Auth::user()->name, 'si_status' =>  3]);
 
 
-                DB::Connection('mysql2')->table('transactions')
-                    ->where('voucher_no', $gi_no)
-                    ->where('status', 100)
-                    ->update(['status' => 1]);
+                $accounts = self::getAccountIds();
+
+                // Customer Debit Entry
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => $gi_no,
+                    'v_date' => $si_data->gi_date,
+                    'acc_id' => $si_data->acc_id,
+                    'acc_code' => \App\Helpers\FinanceHelper::getAccountCodeByAccId($si_data->acc_id),
+                    'particulars' => $si_data->description ?? 'Sales Tax Invoice ' . $gi_no,
+                    'opening_bal' => 0,
+                    'debit_credit' => 1,
+                    'amount' => ($si_data->total - $si_data->wh_tax),
+                    'username' => Auth::user()->name ?? 'system',
+                    'status' => 1,
+                    'voucher_type' => 6,
+                ]);
+
+                // Advance Tax Receivable Entry
+                if (!empty($si_data->wh_tax) && $si_data->wh_tax > 0) {
+                    DB::connection('mysql2')->table('transactions')->insert([
+                        'voucher_no' => $gi_no,
+                        'v_date' => $si_data->gi_date,
+                        'acc_id' => $accounts['advance_tax_receivable'],
+                        'acc_code' => $accounts['advance_tax_receivable_code'],
+                        'particulars' => $si_data->description ?? 'Advance Tax - ' . $gi_no,
+                        'opening_bal' => 0,
+                        'debit_credit' => 1,
+                        'amount' => $si_data->wh_tax,
+                        'username' => Auth::user()->name ?? 'system',
+                        'status' => 1,
+                        'voucher_type' => 6,
+                    ]);
+                }
+
+                // Sales Revenue Entry
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => $gi_no,
+                    'v_date' => $si_data->gi_date,
+                    'acc_id' => $accounts['sales_revenue'],
+                    'acc_code' => $accounts['sales_revenue_code'],
+                    'particulars' => $si_data->description ?? 'Sales Revenue - ' . $gi_no,
+                    'opening_bal' => 0,
+                    'debit_credit' => 0,
+                    'amount' => ($si_data->total - $si_data->sales_tax),
+                    'username' => Auth::user()->name ?? 'system',
+                    'status' => 1,
+                    'voucher_type' => 6,
+                ]);
+
+                // Sales Tax Payable Entry
+                if (!empty($si_data->sales_tax) && $si_data->sales_tax > 0) {
+                    DB::connection('mysql2')->table('transactions')->insert([
+                        'voucher_no' => $gi_no,
+                        'v_date' => $si_data->gi_date,
+                        'acc_id' => $accounts['sales_tax_payable'],
+                        'acc_code' => $accounts['sales_tax_payable_code'],
+                        'particulars' => $si_data->description ?? 'Sales Tax Payable - ' . $gi_no,
+                        'opening_bal' => 0,
+                        'debit_credit' => 0,
+                        'amount' => $si_data->sales_tax,
+                        'username' => Auth::user()->name ?? 'system',
+                        'status' => 1,
+                        'voucher_type' => 6,
+                    ]);
+                }
+
                 $approve = 'Approved';
                 $behavior = 'Approve 2';
 

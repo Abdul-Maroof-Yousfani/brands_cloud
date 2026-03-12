@@ -3313,6 +3313,7 @@ public function approveDeliveryNote(Request $request)
             DB::connection('mysql2')->table('sales_tax_invoice_data')->insert($itemsData);
         }
         
+        /* 
         // Get Account IDs from Configuration (Fix Hardcoded Values)
         $accounts = $this->getAccountIds();
         
@@ -3387,6 +3388,7 @@ public function approveDeliveryNote(Request $request)
                 // 'updated_at' => now()
             ]);
         }
+        */
         
         // Update Delivery Notes
         DB::connection('mysql2')->table('delivery_note')

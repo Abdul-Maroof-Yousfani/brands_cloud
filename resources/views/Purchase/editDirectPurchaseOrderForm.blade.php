@@ -431,23 +431,31 @@ endif;
         // TAB key to jump from Actual Qty to next row's Item
 $(document).on('keydown', '.ActualQty', function(e) {
     if (e.key === "Tab" && !e.shiftKey) { // Only Tab, not Shift+Tab
-        e.preventDefault();
-        
+        let qty = $(this).val().trim();
         let $currentRow = $(this).closest('tr');
         let $nextRow = $currentRow.next('.main');
-        
-        if ($nextRow.length) {
-            // Go to next existing row's product
-            $nextRow.find('select.product-select').select2('focus');
-            $nextRow.find('select.product-select').select2('open');
+
+        if (qty !== "" && parseFloat(qty) > 0) {
+            e.preventDefault();
+            if ($nextRow.length) {
+                // Go to next existing row's product
+                $nextRow.find('select.product-select').select2('focus');
+                $nextRow.find('select.product-select').select2('open');
+            } else {
+                // Last row, add new row and focus on its product
+                AddMoreDetails();
+                setTimeout(() => {
+                    let $newRow = $('#AppnedHtml tr.main:last');
+                    // Only focus if a new row was actually added (AddMoreDetails might return early if qty is zero)
+                    if ($newRow.length && $newRow[0] !== $currentRow[0]) {
+                        $newRow.find('select.product-select').select2('focus');
+                        $newRow.find('select.product-select').select2('open');
+                    }
+                }, 300);
+            }
         } else {
-            // Last row, add new row and focus on its product
-            AddMoreDetails();
-            setTimeout(() => {
-                let $newRow = $('#AppnedHtml tr.main:last');
-                $newRow.find('select.product-select').select2('focus');
-                $newRow.find('select.product-select').select2('open');
-            }, 300);
+            // If Qty is empty, let it tab to the next field (Rate) normally
+            // This satisfies the requirement "row open na ho" (new row won't be opened)
         }
     }
 });
@@ -467,6 +475,16 @@ $(document).on('keydown', 'input, select', function(e) {
         
         // If this is the last input (the '+' button or the last text field)
         if (idx === $inputs.length - 1) {
+            // Check if current row's qty is filled before adding
+            let $currentRow = $(this).closest('tr');
+            let qty = $currentRow.find('.ActualQty').val();
+            
+            if (!qty || parseFloat(qty) <= 0) {
+                // Don't prevent default, just let it cycle or stay if it's the last element
+                // But definitely don't call AddMoreDetails
+                return;
+            }
+
             e.preventDefault();
             
             // Get previous brand before adding new
@@ -488,7 +506,7 @@ $(document).on('keydown', 'input, select', function(e) {
                     $targetField = $newRow.find('select.brand-select');
                 }
                 
-                if ($targetField.length) {
+                if ($targetField.length && $newRow[0] !== $currentRow[0]) {
                     $targetField.select2('focus');
                     // Or open it
                     $targetField.select2('open');
@@ -499,6 +517,15 @@ $(document).on('keydown', 'input, select', function(e) {
 });
 
 function AddMoreDetails() {
+    // Check if the last row's quantity is added before adding a new one
+    let $lastRow = $('#AppnedHtml tr.main:last');
+    if ($lastRow.length) {
+        let lastQty = $lastRow.find('.ActualQty').val();
+        if (!lastQty || parseFloat(lastQty) <= 0) {
+            return; // Don't add a new row
+        }
+    }
+
     var previousBrandId = $('#brand_id' + Counter).val();
     Counter++;
 
