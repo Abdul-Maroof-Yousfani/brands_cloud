@@ -3313,16 +3313,17 @@ public function approveDeliveryNote(Request $request)
             DB::connection('mysql2')->table('sales_tax_invoice_data')->insert($itemsData);
         }
         
-        /* 
-        // Get Account IDs from Configuration (Fix Hardcoded Values)
+       
         $accounts = $this->getAccountIds();
+
+                    $customer_acc_id = SalesHelper::get_customer_acc_id($request->buyers_id);;
         
         // Customer Debit Entry
         DB::connection('mysql2')->table('transactions')->insert([
             'voucher_no' => $gi_no,
             'v_date' => $request->gi_date,
-            'acc_id' => $customer->acc_id,
-            'acc_code' => FinanceHelper::getAccountCodeByAccId($customer->acc_id),
+            'acc_id' =>  $customer->acc_id,
+            'acc_code' => FinanceHelper::getAccountCodeByAccId($customer_acc_id),
             'particulars' => $request->description ?? 'Sales Tax Invoice ' . $gi_no,
             'opening_bal' => 0,
             'debit_credit' => 1,
@@ -3375,8 +3376,8 @@ public function approveDeliveryNote(Request $request)
             DB::connection('mysql2')->table('transactions')->insert([
                 'voucher_no' => $gi_no,
                 'v_date' => $request->gi_date,
-                'acc_id' => $accounts['sales_tax_payable'],
-                'acc_code' => $accounts['sales_tax_payable_code'],
+                'acc_id' => $accounts['Output_GST_Payable'],
+                'acc_code' => $accounts['Output_GST_Payable_code'],
                 'particulars' => $request->description ?? 'Sales Tax Payable - ' . $gi_no,
                 'opening_bal' => 0,
                 'debit_credit' => 0,
@@ -3388,7 +3389,7 @@ public function approveDeliveryNote(Request $request)
                 // 'updated_at' => now()
             ]);
         }
-        */
+    
         
         // Update Delivery Notes
         DB::connection('mysql2')->table('delivery_note')
@@ -3488,8 +3489,9 @@ private function getAccountIds()
         'advance_tax_receivable_code' => '1-57-2',
         'sales_revenue' => '1045',
         'sales_revenue_code' => '5-2',
-        'sales_tax_payable' => '1778',
-        'sales_tax_payable_code' => '2-371',
+        'Output_GST_Payable' => '1778',
+        'Output_GST_Payable_code' => '2-371',
+       
     ];
 }
     function updateSalesTaxInvoice(Request $request)
