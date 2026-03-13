@@ -95,11 +95,20 @@ class SpecialPriceController extends Controller
      * @param  \App\SpecialPrice  $specialPrice
      * @return \Illuminate\Http\Response
      */
-    public function destroy(SpecialPrice $specialPrice)
-    {
-        //
+  public function destroy($id)
+{
+    
+    try {
+        $customerSpecialPrice = CustomerSpecialPrice::findOrFail($id);
+        $customerSpecialPrice->update(['status' => 0]); // Soft delete by setting status to 0
+        
+        return redirect()->route('specialPrice.index')
+            ->with('success', 'Special price deleted successfully.');
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->with('error', 'Error deleting special price: ' . $e->getMessage());
     }
-
+}
 
 
     public function import(Request $request)

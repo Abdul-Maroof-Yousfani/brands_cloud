@@ -1,5 +1,49 @@
 @extends('layouts.default')
 @section('content')
+
+<style>
+    .btn-group {
+    display: inline-flex;
+    gap: 5px;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.fa {
+    font-size: 14px;
+}
+</style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
     <div class="well_N">
@@ -56,103 +100,60 @@
                 </div>
             </div>
         </div>
-        <table class="table table-bordered sf-table-list">
-            <thead >
+       <table class="table table-bordered sf-table-list">
+    <thead>
+        <tr class="text-center">
+            <th class="text-center">S.no</th>
+            <th class="text-center">Customer</th>
+            <th class="text-center">Product Name</th>
+            <th class="text-center">Product Code</th>
+            <th class="text-center">MRP</th>
+            <th class="text-center">Sale Price</th>
+            <th class="text-center">Creation Date</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($CustomerSpecialPrice as $key => $csp)
             <tr class="text-center">
-                <th class="text-center">S.no</th>
-                <th class="text-center">Customer</th>
-                <th class="text-center">Product Name</th>
-                <th class="text-center">Product COde</th>
-                <th class="text-center">MRP</th>
-                <th class="text-center">Sale Price</th>
-                <th class="text-center">Creation Date</th>
-                <th class="text-center">Action</th>
+                <td>{{ ++$key }}</td>
+                <td>{{ $csp->customer_name }}</td>
+                <td>{{ App\Helpers\CommonHelper::get_product_name($csp->product_id) }}</td>
+                <td>{{ $csp->product_code }}</td>
+                <td>{{ number_format($csp->mrp_price, 2) }}</td>
+                <td>{{ number_format($csp->sale_price, 2) }}</td>
+                <td>{{ \Carbon\Carbon::parse($csp->created_at)->format('m/d/Y') }}</td>
+                <td class="text-center">
+                    <div class="btn-group" role="group">
+                        <a href="{{ route('specialPrice.edit', $csp->id) }}" 
+                           class="btn btn-sm btn-primary" 
+                           title="Edit">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                       <form action="{{ route('specialPrice.destroy', $csp->id) }}" 
+                        method="POST" 
+                        style="display: inline-block;"
+                        onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                  {{ csrf_field() }}
+            {{ method_field('DELETE') }}
+
+            <button type="submit" class="btn btn-sm btn-danger">
+                Delete
+            </button>
+        </form>
+                    </div>
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            @foreach($CustomerSpecialPrice as $key => $csp)
-                <tr class="text-center">
-                    <td>{{ ++$key }}</td>
-                    <td>{{ $csp->customer_name }}</td>
-                    <td>{{ App\Helpers\CommonHelper::get_product_name($csp->product_id) }}</td>
-                    <td>{{ $csp->product_code }}</td>
-                    <td>{{ $csp->mrp_price }}</td>
-                    <td>{{ $csp->sale_price }}</td>
-                    <td>{{ \Carbon\Carbon::parse($csp->created_at)->format('m/d/Y') }}</td>
-                    <td><a href="{{ route('specialPrice.edit', $csp->id) }}">Edit</a></td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
+        @endforeach
+    </tbody>
+</table>
     </div>
 @endsection
 @section('script')
 
     <script>
 
-        {{--$(document).ready(function () {--}}
-        {{--    $('#importForm').submit(function (e) {--}}
-        {{--        e.preventDefault();--}}
-
-        {{--        let formData = new FormData(this);--}}
-
-        {{--        Swal.fire({--}}
-        {{--            title: 'Processing...',--}}
-        {{--            text: 'Please wait while the file is being uploaded.',--}}
-        {{--            allowOutsideClick: false,--}}
-        {{--            showConfirmButton: false,--}}
-        {{--            didOpen: () => {--}}
-        {{--                Swal.showLoading();--}}
-        {{--            }--}}
-        {{--        });--}}
-
-        {{--        $.ajax({--}}
-        {{--            url: "{{ route('import.customerSpecialPrices') }}", // Create this route in your web.php--}}
-        {{--            method: "POST",--}}
-        {{--            data: formData,--}}
-        {{--            contentType: false,--}}
-        {{--            processData: false,--}}
-        {{--            success: function (response) {--}}
-        {{--                Swal.close();--}}
-        {{--                if (response.success) {--}}
-        {{--                    Swal.fire({--}}
-        {{--                        icon: 'success',--}}
-        {{--                        title: 'Import Successful!',--}}
-        {{--                        text: response.message--}}
-        {{--                    }).then(() => {--}}
-        {{--                        // Refresh the page after the alert is closed--}}
-        {{--                        location.reload();--}}
-        {{--                    });--}}
-        {{--                } else {--}}
-        {{--                    Swal.fire({--}}
-        {{--                        icon: 'error',--}}
-        {{--                        title: 'Import Failed',--}}
-        {{--                        text: response.message--}}
-        {{--                    });--}}
-        {{--                }--}}
-        {{--            },--}}
-
-        {{--            error: function (xhr) {--}}
-        {{--                Swal.close();--}}
-        {{--                let errors = xhr.responseJSON.errors;--}}
-        {{--                let errorMessage = 'An error occurred.';--}}
-
-        {{--                if (errors) {--}}
-        {{--                    errorMessage = Object.values(errors).join(' ');--}}
-        {{--                }--}}
-
-        {{--                Swal.fire({--}}
-        {{--                    icon: 'error',--}}
-        {{--                    title: 'Error',--}}
-        {{--                    text: errorMessage--}}
-        {{--                });--}}
-        {{--            }--}}
-        {{--        });--}}
-        {{--    });--}}
-        {{--});--}}
-
-
-
+       
 
 
         $(document).ready(function () {

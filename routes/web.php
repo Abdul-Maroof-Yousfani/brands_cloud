@@ -912,6 +912,10 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
     Route::get('/viewSubItemList', 'PurchaseController@viewSubItemList');
     Route::get('/viewSubItemListWithoutEditing', 'PurchaseController@viewSubItemListWithoutEditing');
     Route::resource('specialPrice', 'SpecialPriceController');
+
+  Route::delete('/special-price/{id}', 'SpecialPriceController@destroy')->name('specialPrice.destroy');
+
+
     Route::resource('customerDiscount', 'CustomerDiscountController');
     Route::resource('stockBarcode', 'StockBarcodeController');
     Route::post('getBarcodeListAgainstProduct', 'StockBarcodeController@getBarcodeListAgainstProduct')->name('getBarcodeListAgainstProduct');
