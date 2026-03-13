@@ -181,12 +181,14 @@ class SaleQuotationController extends Controller
         $result = DB::connection('mysql2')
             ->table('subitem')
             ->leftJoin('customer_special_prices', function ($join) use ($customerId) {
-                $join->on('customer_special_prices.product_id', '=', 'subitem.id')
-                    ->where('customer_special_prices.customer_id', $customerId);
+                $join->on('customer_special_prices.product_code', '=', 'subitem.sku_code')
+                    ->where('customer_special_prices.customer_id', $customerId)
+                    ->where('customer_special_prices.status', 1);
             })
             ->leftJoin('customer_discounts', function ($join) use ($customerId) {
                 $join->on('customer_discounts.product_id', '=', 'subitem.id')
-                    ->where('customer_discounts.customer_id', $customerId);
+                    ->where('customer_discounts.customer_id', $customerId)
+                    ->where('customer_discounts.status', 1);
             })
             ->where('subitem.id', $itemId)
             ->select(
@@ -208,8 +210,8 @@ class SaleQuotationController extends Controller
             ->first();
 
         // If special price exists → override product price
-        $finalMrp  = $result->special_mrp  ?? $result->mrp_price;
-        $finalSale = $result->special_sale ?? $result->sale_price;
+        $finalMrp  = (isset($result->special_mrp) && $result->special_mrp !== '') ? $result->special_mrp : $result->mrp_price;
+        $finalSale = (isset($result->special_sale) && $result->special_sale !== '') ? $result->special_sale : $result->sale_price;
 
         return response()->json([
             'tax'               => $result->tax,
