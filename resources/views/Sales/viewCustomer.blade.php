@@ -72,8 +72,9 @@ $accType = Auth::user()->acc_type;
                                                                          <label>Customer Code :</label>
                                                                          </div>
                                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                                                         <p id="Customer Code">{{ $customer->customer_code ?? '-' }}</p>
-                                                                        </div>
+                                                                        
+                                                                    <p id="Customer Code">{{ is_object($customer->customer_code) ? 'Invalid' : ($customer->customer_code ?? '-') }}</p>
+                                                                    </div>
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
@@ -104,7 +105,12 @@ $accType = Auth::user()->acc_type;
                                                                         <label>Country :</label>
                                                                         </div>
                                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                                                        <p id="Country">{{ CommonHelper::get_country_name_by_id($customer->country) ?? '' }}</p>
+                                                                      <p id="Country">
+    @php
+        $country = CommonHelper::get_country_name_by_id($customer->country);
+    @endphp
+    {{ is_object($country) ? 'Invalid Country' : ($country ?? '') }}
+</p>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -120,7 +126,12 @@ $accType = Auth::user()->acc_type;
                                                                         <label>City :</label>
                                                                         </div>
                                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                                                        <p id="City">{{ CommonHelper::get_city_name_by_id($customer->city) ?? '' }}</p>
+                                                                   <p id="City">
+    @php
+        $city = CommonHelper::get_city_name_by_id($customer->city);
+    @endphp
+    {{ is_object($city) ? 'Invalid City' : ($city ?? '') }}
+</p>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -311,8 +322,30 @@ $accType = Auth::user()->acc_type;
                                                                         <label>Sales Person :</label>
                                                                         </div>
                                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                                                     <p id="SalesPerson">{{ CommonHelper::get_sub_department($customer->SaleRep) ?? '' }}</p>
-
+                                                                    
+                                                                          <p id="SalesPerson">
+    @php
+        $salesRep = CommonHelper::get_sub_department($customer->SaleRep);
+    @endphp
+    
+    @if(is_object($salesRep))
+        {{ 'Object returned: ' . get_class($salesRep) }}
+        <!-- Try to access common properties -->
+        @if(property_exists($salesRep, 'name'))
+            {{ $salesRep->name }}
+        @elseif(property_exists($salesRep, 'title'))
+            {{ $salesRep->title }}
+        @elseif(method_exists($salesRep, '__toString'))
+            {{ $salesRep }}
+        @else
+            {{ 'Object cannot be converted to string' }}
+        @endif
+    @elseif(is_array($salesRep))
+        {{ json_encode($salesRep) }}
+    @else
+        {{ $salesRep ?? '-' }}
+    @endif
+</p>
                                                                        
                                                                         </div>
                                                                     </div>
@@ -361,7 +394,12 @@ $accType = Auth::user()->acc_type;
                                                                         <label>Branch :</label>
                                                                         </div>
                                                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                                                        <p id="Bank">{{  $customer->branch_id ? CommonHelper::get_branch_name_by_id($customer->branch_id) : "-"  }}</p>
+                                                                      <p id="Bank">
+    @php
+        $branch = $customer->branch_id ? CommonHelper::get_branch_name_by_id($customer->branch_id) : "-";
+    @endphp
+    {{ is_object($branch) ? 'Invalid Branch' : $branch }}
+</p>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
