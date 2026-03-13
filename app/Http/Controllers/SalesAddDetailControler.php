@@ -752,7 +752,7 @@ class SalesAddDetailControler extends Controller
             // Update 'transactions' table
             $data3 = [
                 'debit_credit' => 1,
-                'amount' => 0.00,
+                'amount' => $request->opening_balance ?? '0.00',
                 'opening_bal' => 1,
                 'username' => Auth::user()->name,
                 'date' => date("Y-m-d"),
