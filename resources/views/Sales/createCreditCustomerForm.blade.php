@@ -206,7 +206,7 @@ $m=Session::get('run_company');
                                                                         <select onChange="taxFiler(this)" name="tax_filer"
                                                                             class="form-control ">
                                                                             <option value="">Select Option</option>
-                                                                            <option value="Yes">Yes</option>
+                                                                            <option value="yes">Yes</option>
                                                                             <option value="no">No</option>
                                                                         </select>
                                                                     </div>

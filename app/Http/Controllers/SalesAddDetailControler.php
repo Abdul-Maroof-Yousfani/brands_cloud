@@ -439,7 +439,14 @@ class SalesAddDetailControler extends Controller
         $data2['shipping_country']               = $request->shipping_country;
         $data2['opening_balance']               = $request->opening_balance ?? '';
         $data2['opening_balance_date']               = $request->opening_balance_date ?? '';
-        $data2['regd_in_income_tax']               = $request->tax_filer ?? '';
+        if($request->ntn && $request->ntn != '-' && $request->ntn != ''){
+            $data2['regd_in_income_tax']               = $request->tax_filer ?? 'yes';
+        }
+        else{
+            $data2['regd_in_income_tax']               = 'no';
+        }
+
+       
         $data2['cnic_ntn']                 = $ntn ?? '';
         $data2['strn']                 = $strn ?? '';
         $data2['strn_term']                 = $request->strn_term ?? '';
