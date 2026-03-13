@@ -1414,7 +1414,8 @@ class SalesAddDetailControler extends Controller
               
                 $item_name = CommonHelper::get_product_name($request->input('item_id' . $i));
                 $item_qty = $request->input('qty' . $i);
-                 $qty = ReuseableCode::get_stock_new($request->input('item_id' . $i), $request->input('warehouse' . $i));
+                 $qty = ReuseableCode::get_stock($request->input('item_id' . $i), $request->input('warehouse' . $i));
+                //  $qty = ReuseableCode::get_stock_new($request->input('item_id' . $i), $request->input('warehouse' . $i));
                  $qty = (float) $qty;
                 // $qty = number_format($qty, 2);
                 
