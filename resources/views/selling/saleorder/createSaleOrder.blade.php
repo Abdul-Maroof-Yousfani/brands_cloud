@@ -1120,7 +1120,123 @@ $(document).on('keydown', '.next-total', function (event) {
     //         }
     //     });
     // }
-    function getCustomer(element) {
+//     function getCustomer(element) {
+//     var id = element.value;
+//     var selectedOption = $(element).find('option:selected');
+//     var stockValue = selectedOption.data('type');
+
+//     if(stockValue == 3){
+//         $('.hideon3').show();
+//     }else{
+//         $('.hideon3').hide();
+//     }
+    
+//     if (!id) {
+//         // Agar customer deselect kiya to fields clear karein
+//         $('#opening_balance, #amount_limit, #current_balance_due, #address, #phone_no, #branch, #NTN_No, #ST_No, #special_price_mapped').val('');
+        
+//         // Restore all salespersons
+//         var $salepersonSelect = $('#saleperson_id');
+//         $salepersonSelect.empty().append('<option value="">Select Sales Person</option>');
+//         allSalesmen.forEach(function(person) {
+//             $salepersonSelect.append(`<option value="${person.id}">${person.text}</option>`);
+//         });
+//         $salepersonSelect.trigger('change');
+        
+//         return;
+//     }
+    
+//     $.ajax({
+//         url: '{{ url("stad/getCustomerById") }}',
+//         type: 'GET',
+//         data: {
+//             id: id,
+//         },
+//         success: function(response) {
+//             console.log(response); // Debug ke liye
+            
+//             // Warehouse handling
+//             warehouses = response.warehouse_from ? response.warehouse_from.split(",") : [];
+            
+//             $('#warehouse_from').select2({
+//                 matcher: function(params, data) {
+//                     if(warehouses.includes("all")) return data;
+//                     if (!warehouses.includes(data.id)) {
+//                         return null;
+//                     }
+//                     return data;
+//                 }
+//             });
+
+//             // Basic fields
+//             $('#opening_balance').val(response.balance_amount || '0.00');
+//             $('#amount_limit').val(response.creditLimit || '0.00');
+//             $('#current_balance_due').val(response.balance_amount || '0.00');
+//             $('#address').val(response.address || '');
+//             $('#phone_no').val(response.phone_1 || '');
+            
+//             // YAHAN BRANCH NAME SET HO RAHA HAI
+//             // Pehle check karein ke branch_name response mein hai ya nahi
+//             if (response.branch_name) {
+//                 $('#branch').val(response.branch_name);
+                
+//             } else if (response.branch_id) {
+//                 // Agar branch_name nahi hai to branch_id se fetch karna hoga
+//                 getBranchName(response.branch_id);
+//             } else {
+//                 $('#branch').val('-');
+//             }
+            
+//             // NTN/STRN fields
+//             $('#NTN_No').val(response.cnic_ntn && response.cnic_ntn != "" ? response.cnic_ntn : "-");
+//             $('#ST_No').val(response.strn && response.strn != "" ? response.strn : "-");
+            
+//             // Special price mapped
+//             $('#special_price_mapped').val(response.special_price_mapped == 1 ? "yes" : "no");
+
+//             // Terms of Payment
+//             if (response.terms_of_payment) {
+//                 $('#model_terms_of_payment').val(response.terms_of_payment);
+//             }
+
+//             // Auto populate and filter Sales Person
+//             var salesPersonId = response.SaleRep || response.sale_person || response.sales_person_id;
+//             var $salepersonSelect = $('#saleperson_id');
+            
+//             // Empty the select first
+//             $salepersonSelect.empty().append('<option value="">Select Sales Person</option>');
+            
+//             if (salesPersonId && salesPersonId != 0) {
+//                 // Find matching salesperson from our stored list
+//                 var person = allSalesmen.find(p => p.id == salesPersonId);
+//                 if (person) {
+//                     $salepersonSelect.append(`<option value="${person.id}" selected>${person.text}</option>`);
+//                 } else {
+//                     // Fallback: if not in our list, use name from response if available
+//                     var personName = response.sales_person_name || ('Sales Person ID: ' + salesPersonId);
+//                     $salepersonSelect.append(`<option value="${salesPersonId}" selected>${personName}</option>`);
+//                 }
+//             } else {
+//                 // If no specific salesperson for customer, show all options
+//                 allSalesmen.forEach(function(person) {
+//                     $salepersonSelect.append(`<option value="${person.id}">${person.text}</option>`);
+//                 });
+//             }
+//             $salepersonSelect.trigger('change');
+//         },
+//         error: function(xhr, status, error) {
+//             console.error('Error fetching customer data:', error);
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Error',
+//                 text: 'Failed to load customer data. Please try again.'
+//             });
+//         }
+//     });
+// }
+
+
+function getCustomer(element) {
     var id = element.value;
     var selectedOption = $(element).find('option:selected');
     var stockValue = selectedOption.data('type');
@@ -1153,7 +1269,7 @@ $(document).on('keydown', '.next-total', function (event) {
             id: id,
         },
         success: function(response) {
-            console.log(response); // Debug ke liye
+            console.log("Customer Response:", response); // Debug ke liye - check if balance_amount is coming
             
             // Warehouse handling
             warehouses = response.warehouse_from ? response.warehouse_from.split(",") : [];
@@ -1168,20 +1284,17 @@ $(document).on('keydown', '.next-total', function (event) {
                 }
             });
 
-            // Basic fields
-            $('#opening_balance').val(response.balance_amount || '0.00');
+            // Basic fields - MAKE SURE THESE MATCH YOUR RESPONSE PROPERTIES
+            $('#opening_balance').val(response.balance_amount || '0.00');      // Changed from response.opening_balance
             $('#amount_limit').val(response.creditLimit || '0.00');
-            $('#current_balance_due').val(response.balance_amount || '0.00');
+            $('#current_balance_due').val(response.balance_amount || '0.00'); // Changed from response.balance_amount
             $('#address').val(response.address || '');
             $('#phone_no').val(response.phone_1 || '');
             
-            // YAHAN BRANCH NAME SET HO RAHA HAI
-            // Pehle check karein ke branch_name response mein hai ya nahi
+            // Branch name
             if (response.branch_name) {
                 $('#branch').val(response.branch_name);
-                
             } else if (response.branch_id) {
-                // Agar branch_name nahi hai to branch_id se fetch karna hoga
                 getBranchName(response.branch_id);
             } else {
                 $('#branch').val('-');

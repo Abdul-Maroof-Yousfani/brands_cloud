@@ -221,8 +221,7 @@ class StoreDataCallController extends Controller
     // }
 
 
-
-    public function getCustomerById(Request $request){
+public function getCustomerById(Request $request){
     $customer = DB::connection('mysql2')
         ->table('customers')
         ->where('id', $request->id)
@@ -250,25 +249,27 @@ class StoreDataCallController extends Controller
         ->where('acc_id', $customer->acc_id)
         ->where('debit_credit', 1)
         ->sum('amount');
-    
+
     $creditSum = DB::connection('mysql2')
         ->table('transactions')
         ->where('acc_id', $customer->acc_id)
         ->where('debit_credit', 0)
         ->sum('amount');
-    
+
     $balanceAmount = $debitSum - $creditSum;
+
+    // IMPORTANT: Use 'balance_amount' as the property name to match JavaScript
     $customer->balance_amount = $balanceAmount;
 
     // Branch name fetch karna
     if ($customer->branch_id) {
         $branch = DB::connection('mysql2')
-            ->table('branch')  // assume table name 'branches' hai
+            ->table('branch')
             ->where('id', $customer->branch_id)
             ->first();
         
         $customer->branch_name = $branch ? $branch->branch_name : '-';
-        $customer->branch_code = $branch ? $branch->id : '-'; // agar code bhi chahiye to
+        $customer->branch_code = $branch ? $branch->id : '-';
     } else {
         $customer->branch_name = '-';
         $customer->branch_code = '-';
@@ -276,6 +277,65 @@ class StoreDataCallController extends Controller
     
     return response()->json($customer);
 }
+//     public function getCustomerById(Request $request){
+//     $customer = DB::connection('mysql2')
+//         ->table('customers')
+//         ->where('id', $request->id)
+//         ->where('status', 1)
+//         ->select('*')
+//         ->first();
+    
+//     if (!$customer) {
+//         return response()->json(['error' => 'Customer not found'], 404);
+//     }
+
+//     // Sales person name fetch karna
+//     if ($customer->SaleRep) {
+//         $salesPerson = DB::table('sub_department')
+//             ->where('id', $customer->SaleRep)
+//             ->first();
+//         $customer->sales_person_name = $salesPerson ? $salesPerson->sub_department_name : '-';
+//     } else {
+//         $customer->sales_person_name = '-';
+//     }
+
+//     // Balance calculation
+//     $debitSum = DB::connection('mysql2')
+//         ->table('transactions')
+//         ->where('acc_id', $customer->acc_id)
+//         ->where('debit_credit', 1)
+//         ->sum('amount');
+
+       
+    
+//     $creditSum = DB::connection('mysql2')
+//         ->table('transactions')
+//         ->where('acc_id', $customer->acc_id)
+//         ->where('debit_credit', 0)
+//         ->sum('amount');
+
+    
+//     $balanceAmount = $debitSum - $creditSum;
+
+             
+//     $customer->balance_amount = $balanceAmount;
+
+//     // Branch name fetch karna
+//     if ($customer->branch_id) {
+//         $branch = DB::connection('mysql2')
+//             ->table('branch')  // assume table name 'branches' hai
+//             ->where('id', $customer->branch_id)
+//             ->first();
+        
+//         $customer->branch_name = $branch ? $branch->branch_name : '-';
+//         $customer->branch_code = $branch ? $branch->id : '-'; // agar code bhi chahiye to
+//     } else {
+//         $customer->branch_name = '-';
+//         $customer->branch_code = '-';
+//     }
+    
+//     return response()->json($customer);
+// }
     public function createPurchaseRequestSaleDetailForm(Request $request){
         $m = $_GET['m'];
         CommonHelper::companyDatabaseConnection($m);
