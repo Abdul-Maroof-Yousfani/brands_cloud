@@ -395,7 +395,6 @@ class SalesOrderController extends Controller
         }
 
         $salesmen = SubDepartment::where('status', 1)
-            ->whereIn('territory_id', $territory_ids)
             ->get();
         return view($this->path . 'createSaleOrder', compact('salesmen'));
     }

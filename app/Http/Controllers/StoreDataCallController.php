@@ -230,6 +230,20 @@ class StoreDataCallController extends Controller
         ->select('*')
         ->first();
     
+    if (!$customer) {
+        return response()->json(['error' => 'Customer not found'], 404);
+    }
+
+    // Sales person name fetch karna
+    if ($customer->SaleRep) {
+        $salesPerson = DB::table('sub_department')
+            ->where('id', $customer->SaleRep)
+            ->first();
+        $customer->sales_person_name = $salesPerson ? $salesPerson->sub_department_name : '-';
+    } else {
+        $customer->sales_person_name = '-';
+    }
+
     // Balance calculation
     $debitSum = DB::connection('mysql2')
         ->table('transactions')
@@ -246,16 +260,12 @@ class StoreDataCallController extends Controller
     $balanceAmount = $debitSum - $creditSum;
     $customer->balance_amount = $balanceAmount;
 
-  
-    
     // Branch name fetch karna
     if ($customer->branch_id) {
         $branch = DB::connection('mysql2')
             ->table('branch')  // assume table name 'branches' hai
             ->where('id', $customer->branch_id)
             ->first();
-
-           
         
         $customer->branch_name = $branch ? $branch->branch_name : '-';
         $customer->branch_code = $branch ? $branch->id : '-'; // agar code bhi chahiye to

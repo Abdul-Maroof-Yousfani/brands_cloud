@@ -508,7 +508,14 @@ function applySaleTax(selectElement) {
 
 let warehouses = [];
 
+let allSalesmen = [];
 jQuery(document).ready(function($) {
+    // Store all original salepersons
+    $('#saleperson_id option').each(function() {
+        if ($(this).val() != "") {
+            allSalesmen.push({ id: $(this).val(), text: $(this).text() });
+        }
+    });
     // Initialize row count
     getTableRowCount();
 });
@@ -1127,6 +1134,15 @@ $(document).on('keydown', '.next-total', function (event) {
     if (!id) {
         // Agar customer deselect kiya to fields clear karein
         $('#opening_balance, #amount_limit, #current_balance_due, #address, #phone_no, #branch, #NTN_No, #ST_No, #special_price_mapped').val('');
+        
+        // Restore all salespersons
+        var $salepersonSelect = $('#saleperson_id');
+        $salepersonSelect.empty().append('<option value="">Select Sales Person</option>');
+        allSalesmen.forEach(function(person) {
+            $salepersonSelect.append(`<option value="${person.id}">${person.text}</option>`);
+        });
+        $salepersonSelect.trigger('change');
+        
         return;
     }
     
@@ -1177,6 +1193,36 @@ $(document).on('keydown', '.next-total', function (event) {
             
             // Special price mapped
             $('#special_price_mapped').val(response.special_price_mapped == 1 ? "yes" : "no");
+
+            // Terms of Payment
+            if (response.terms_of_payment) {
+                $('#model_terms_of_payment').val(response.terms_of_payment);
+            }
+
+            // Auto populate and filter Sales Person
+            var salesPersonId = response.SaleRep || response.sale_person || response.sales_person_id;
+            var $salepersonSelect = $('#saleperson_id');
+            
+            // Empty the select first
+            $salepersonSelect.empty().append('<option value="">Select Sales Person</option>');
+            
+            if (salesPersonId && salesPersonId != 0) {
+                // Find matching salesperson from our stored list
+                var person = allSalesmen.find(p => p.id == salesPersonId);
+                if (person) {
+                    $salepersonSelect.append(`<option value="${person.id}" selected>${person.text}</option>`);
+                } else {
+                    // Fallback: if not in our list, use name from response if available
+                    var personName = response.sales_person_name || ('Sales Person ID: ' + salesPersonId);
+                    $salepersonSelect.append(`<option value="${salesPersonId}" selected>${personName}</option>`);
+                }
+            } else {
+                // If no specific salesperson for customer, show all options
+                allSalesmen.forEach(function(person) {
+                    $salepersonSelect.append(`<option value="${person.id}">${person.text}</option>`);
+                });
+            }
+            $salepersonSelect.trigger('change');
         },
         error: function(xhr, status, error) {
             console.error('Error fetching customer data:', error);
