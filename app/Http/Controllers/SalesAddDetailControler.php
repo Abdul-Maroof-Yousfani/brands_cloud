@@ -348,9 +348,19 @@ class SalesAddDetailControler extends Controller
             'warehouse_to.required_if' => 'Warehouse To is required for Reseller/Distributor.',
         ]);
 
+        // if ($validator->fails()) {
+        //     return response()->json(['errors' => $validator->errors()], 422);
+        // }
+
+
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    return redirect()->back()
+        ->with([
+            "error" => implode('<br>', $validator->errors()->all()),
+            "status" => 404
+        ])
+        ->withInput();
+}
 
         CommonHelper::companyDatabaseConnection($_GET['m']);
 
@@ -522,20 +532,11 @@ class SalesAddDetailControler extends Controller
         //     endif;
         CommonHelper::reconnectMasterDatabase();
         // return Redirect::to('sales/viewCreditCustomerList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
-   if ($validator->fails()) {
-    return redirect()->back()
-        ->with([
-            "error" => implode('<br>', $validator->errors()->all()),
-            "status" => 404
-        ])
-        ->withInput();
-}
-
-return redirect('sales/viewCreditCustomerList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
-    ->with([
-        "success" => "Customer created successfully",
-        "status" => 200
-    ]);
+        return redirect('sales/viewCreditCustomerList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
+            ->with([
+                "success" => "Customer created successfully",
+                "status" => 200
+            ]);
    
    
     }
