@@ -134,18 +134,44 @@ class SalesOrderController extends Controller
         $cusIdget = $request->cusId;
 
        
+// $warehouses = DB::connection('mysql2')
+//     ->table('warehouse')
+//     ->leftJoin('ba_stock', function ($join) use ($itemId, $cusIdget) {
+//         $join->on('ba_stock.warehouse_id', '=', 'warehouse.id')
+//              ->where('ba_stock.sub_item_id', $itemId)
+//              ->where('ba_stock.customer_id', $cusIdget);
+//     })
+//     ->select(
+//         'warehouse.id',
+//         'warehouse.name',
+//         'warehouse.is_virtual',
+//         DB::raw('COALESCE(SUM(ba_stock.qty),0) as total_qty'),
+        
+//     )
+//     ->groupBy('warehouse.id','warehouse.name','warehouse.is_virtual')
+//     ->get();
+
 $warehouses = DB::connection('mysql2')
     ->table('warehouse')
-    ->leftJoin('ba_stock', function ($join) use ($itemId, $cusIdget) {
-        $join->on('ba_stock.warehouse_id', '=', 'warehouse.id')
-             ->where('ba_stock.sub_item_id', $itemId)
-             ->where('ba_stock.customer_id', $cusIdget);
+    ->leftJoin('ba_stock as s', function ($join) use ($itemId, $cusIdget) {
+        $join->on('s.warehouse_id', '=', 'warehouse.id')
+            ->where('s.sub_item_id', $itemId)
+            ->where('s.customer_id', $cusIdget);
     })
     ->select(
         'warehouse.id',
         'warehouse.name',
         'warehouse.is_virtual',
-        DB::raw('COALESCE(SUM(ba_stock.qty),0) as total_qty')
+
+
+        DB::raw('COALESCE(SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END),0) as out_stock'),
+
+        DB::raw('
+            COALESCE(SUM(CASE WHEN s.voucher_type IN (51,1,9) THEN s.qty ELSE 0 END),0) 
+            -
+            COALESCE(SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END),0) 
+            as total_qty
+        ')
     )
     ->groupBy('warehouse.id','warehouse.name','warehouse.is_virtual')
     ->get();
