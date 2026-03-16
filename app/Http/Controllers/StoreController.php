@@ -2047,7 +2047,7 @@ public function getBrandsByWarehouse(Request $request)
             ->get();
             
         $customers = DB::connection("mysql2")->table("customers")
-            ->where("status", "active")
+            ->where("status",1)
             ->get();
 
         $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
