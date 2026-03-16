@@ -3562,9 +3562,11 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     public static function get_all_regions()
     {
-        $region = new Region();
-        $region = $region->SetConnection('mysql2');
-        return  $region=$region->where('status',1)->get();
+        // $region =  new Region();
+        // $region = $region->SetConnection('mysql2');
+        // return  $region=$region->where('status',1)->get();
+
+       return DB::Connection('mysql2')->table('territories')->where('status',1)->get();
     }
 
     public static function get_rgion_name_by_id($id)
