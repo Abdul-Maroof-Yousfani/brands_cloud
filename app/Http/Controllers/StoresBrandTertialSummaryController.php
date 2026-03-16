@@ -20,7 +20,7 @@ class StoresBrandTertialSummaryController extends Controller
             $stocks = [];
 
             $stores = DB::connection('mysql2')->table('customers')
-    ->leftJoin('stock as s', function ($join) {
+    ->leftJoin('ba_stock as s', function ($join) {
         $join->on('s.customer_id', '=', 'customers.id')
              ->where('s.status', 1);
         // If you want to filter by date range, add it here:
