@@ -34,7 +34,7 @@
 
                                     <button onclick="get_data_opening()" style="margin-top:30px" type="button"
                                         class="btn btn-success">Show</button>
-                                    <a href="{{ url('itemWiseOpening?m=1') }}" style="margin-top:30px" class="btn btn-primary">View Opening List</a>
+                                    <a href="{{ url('store/itemWiseOpening?m=1') }}" style="margin-top:30px" class="btn btn-primary">View Opening List</a>
 
                                 </div>
                             </div>
