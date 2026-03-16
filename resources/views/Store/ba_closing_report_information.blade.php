@@ -35,7 +35,7 @@ if (isset($_GET['item_id'])) {
                         <div class="panel panel-default">
 
                             <div class="panel-heading clearfix">
-                                <h3 class="panel-title pull-left">Closing Report</h3>
+                                <h3 class="panel-title pull-left">Stock Information Report</h3>
                                 <div class="pull-right">
                                     <button type="button" onclick="exportBtn('Closing_Stock_Report_{{ date('Y-m-d') }}')"
                                         class="btn btn-success btn-sm">
