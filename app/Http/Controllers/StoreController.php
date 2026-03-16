@@ -2000,7 +2000,7 @@ public function getBrandsByWarehouse(Request $request)
         }
 
         $warehouseList = DB::connection('mysql2')->table('ba_stock')
-            ->whereIn('territory', $territory_ids)
+            //->whereIn('territory', $territory_ids)
             ->where('status', 1)
             ->distinct()
             ->pluck('warehouse_id');
