@@ -80,11 +80,15 @@ if (isset($_GET['item_id'])) {
                                             <select name="customer_id[]" id="customer_id" class="form-control select2"
                                                 multiple>
                                                 <option value="">all customers</option>
-                                                @foreach ($customers as $customer)
-                                                    <option value="{{ $customer->id }}">
-                                                        {{ $customer->name }}
-                                                    </option>
-                                                @endforeach
+                                                   @foreach (App\Helpers\CommonHelper::get_all_customers() as $key => $value)
+                                        <option value="{{ $value->id }}">
+                                            {{ $value->name  }}
+                                        </option>
+                                    @endforeach
+
+
+
+                                       
                                             </select>
                                         </div>
                                     </div>
