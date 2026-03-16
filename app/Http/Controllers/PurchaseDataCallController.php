@@ -3770,6 +3770,14 @@ public function get_stock_location_wise(Request $request)
         $yearwise_ope=DB::Connection('mysql2')->table('year_wise_opening')->where('item_id',$item_id)->get();
         return view('Store.AjaxPages.year_wise_data',compact('year_wise_dataa','item_id','stock','yearwise_ope'));
     }
+    public  function get_data_opening_single(Request $request)
+    {
+        $item_id=$request->item;
+        $year_wise_dataa=DB::Connection('mysql2')->table('year_wise_opening')->where('item_id',$item_id)->get();
+        $stock=DB::Connection('mysql2')->table('stock')->where('sub_item_id',$item_id)->where('opening',1)->get()->where('amount','>',0);
+        $yearwise_ope=DB::Connection('mysql2')->table('year_wise_opening')->where('item_id',$item_id)->get();
+        return view('Store.AjaxPages.year_wise_data_single',compact('year_wise_dataa','item_id','stock','yearwise_ope'));
+    }
 
     public function getDataAjaxSupplierWise(Request $request)
     {

@@ -1251,6 +1251,7 @@ Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
 
     // for opening
     Route::get('/get_data_opening', 'PurchaseDataCallController@get_data_opening');
+    Route::get('/get_data_opening_single', 'PurchaseDataCallController@get_data_opening_single');
 
     // for  currency ajax
     Route::get('/createCurrencyTypeForm', 'PurchaseDataCallController@createCurrencyTypeForm');
@@ -1445,6 +1446,10 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get('/createIssuanceForm', 'StoreController@createIssuanceForm');
     Route::get('/editIssuanceForm', 'StoreController@editIssuanceForm');
 
+
+    Route::get('/add_opening_single_item', 'StoreController@add_opening_single_item');
+
+
     Route::get('/issuanceList', 'StoreController@issuanceList');
 
 
@@ -1542,6 +1547,7 @@ Route::group(['prefix' => 'stad', 'middleware' => 'mysql2', 'before' => 'csrf'],
     Route::post('/updateDirectPurchaseOrder', 'StoreAddDetailControler@updateDirectPurchaseOrder')->name('updateDirectPurchaseOrder');
 
     Route::post('/insert_opening_data', 'StoreAddDetailControler@insert_opening_data');
+    Route::post('/insert_opening_data_single', 'StoreAddDetailControler@insert_opening_data_single');
     Route::get('/getSupplierDiscounts', 'StoreDataCallController@getSupplierDiscounts');
     Route::get('/getCustomerDiscounts', 'StoreDataCallController@getCustomerDiscounts');
     Route::get('/getCustomerById', 'StoreDataCallController@getCustomerById');

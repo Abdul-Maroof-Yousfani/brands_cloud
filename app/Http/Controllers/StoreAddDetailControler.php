@@ -956,7 +956,57 @@ public function updateDirectPurchaseOrder(Request $request)
 
         return redirect()->back()->with('message', 'Submit!');
     }
+  public function insert_opening_data_single(Request $request)
+{
+    DB::connection('mysql2')->beginTransaction();
 
+    try {
+        // DB::connection('mysql2')->table('stock')->where('sub_item_id', $request->sub_1)->where('opening', 1)->delete();
+
+        $warehouse = $request->warehouse;
+
+        foreach ($warehouse as $key => $row) {
+
+            $qty = $request->input('closing_stock')[$key];
+            $amount = $request->input('closing_val')[$key];
+
+            $territory = DB::connection('mysql2')
+                ->table('warehouse')
+                ->where('id', $row)
+                ->value('territory_id');
+
+            if (is_numeric($qty)) {
+
+                $data = [
+                    'voucher_type' => 1,
+                    'sub_item_id' => $request->sub_1,
+                    'batch_code' => $request->input('batch_code')[$key],
+                    'qty' => $qty,
+                    'amount' => $amount,
+                    'warehouse_id' => $row,
+                    'opening' => 1,
+                    'created_date' => date('Y-m-d'),
+                    'username' => 'Amir Murshad',
+                    'status' => 1,
+                    'check_status' => 1,
+                    'Territory' => $territory ?? 0,
+                ];
+
+                DB::connection('mysql2')->table('stock')->insert($data);
+            }
+        }
+
+        DB::connection('mysql2')->commit();
+
+    } catch (\Exception $e) {
+
+        DB::connection('mysql2')->rollback();
+        dd($e->getMessage());
+
+    }
+
+    return redirect('itemWiseOpening?m=1')->with('message', 'Opening Stock Inserted Successfully!');
+}
     public function addConvertGrnData()
     {
 

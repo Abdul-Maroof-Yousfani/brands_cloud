@@ -1571,6 +1571,12 @@ public function getBrandsByWarehouse(Request $request)
         return view('Store.add_opening');
     }
 
+    public function add_opening_single_item(Request $request)
+    {
+  
+        return view('Store.add_opening_single_item');
+    }
+
     public function add_opening_import(Request $request)
     {
   
