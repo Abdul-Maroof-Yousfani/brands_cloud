@@ -1522,6 +1522,7 @@ Route::get('/ajax/get-brands-by-warehouse', 'StoreController@getBrandsByWarehous
     Route::get('/stock_transfer_list', 'StoreController@stock_transfer_list');
     Route::get('/editStockTransferForm/{id}/{TrNo}', 'StoreController@editStockTransferForm');
     Route::get('/itemWiseOpening', 'StoreController@itemWiseOpening');
+    Route::get('/itemWiseOpeningSingle', 'StoreController@itemWiseOpeningSingle');
     Route::get('/inventory_movement', 'StoreController@inventory_movement');
     Route::get('/inventory_movement_test', 'StoreController@inventory_movement_test');
     Route::get('/inventory_movement_fi', 'StoreController@inventory_movement_fi');

@@ -1006,7 +1006,7 @@ public function updateDirectPurchaseOrder(Request $request)
 
     }
 
-    return redirect('store/itemWiseOpening?m=1')->with('message', 'Opening Stock Inserted Successfully!');
+    return redirect('store/itemWiseOpeningSingle?m=1')->with('message', 'Opening Stock Inserted Successfully!');
 }
     public function addConvertGrnData()
     {

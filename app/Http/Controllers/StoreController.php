@@ -76,6 +76,10 @@ class StoreController extends Controller
         $OpeningItemWise = DB::Connection('mysql2')->table('stock')->where('opening',1)->where('status',1)->where('voucher_type',1)->where('amount','>',0)->where('warehouse_id','!=',0)->get();
         return view('Store.itemWiseOpening',compact('OpeningItemWise'));
     }
+    public  function itemWiseOpeningSingle(){
+        $OpeningItemWise = DB::Connection('mysql2')->table('stock')->where('opening',1)->where('status',1)->where('check_status',1)->where('voucher_type',1)->where('warehouse_id','!=',0)->get();
+        return view('Store.itemWiseOpeningSingle',compact('OpeningItemWise'));
+    }
 
     public function editStockTransferForm($id,$Trno){
         $Master = DB::Connection('mysql2')->table('stock_transfer')->where('status',1)->where('id',$id)->first();
