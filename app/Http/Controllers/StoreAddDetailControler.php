@@ -975,7 +975,8 @@ public function updateDirectPurchaseOrder(Request $request)
                 ->where('id', $row)
                 ->value('territory_id');
 
-            if (is_numeric($qty)) {
+            if (is_numeric($qty) && $qty > 0) {
+
 
                 $data = [
                     'voucher_type' => 1,
