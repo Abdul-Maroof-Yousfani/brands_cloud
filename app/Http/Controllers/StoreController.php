@@ -1979,89 +1979,96 @@ public function getBrandsByWarehouse(Request $request)
                         ));
         }
 
-        public function BAclosingReportView(Request $request)
-        {
-            // $from_date = $request->from ?? date('Y-m-d');
-                $from_date = $request->from ?? date('Y-m-d', strtotime('-2 years'));
+      public function BAclosingReportView(Request $request)
+{
+    // $from_date = $request->from ?? date('Y-m-d');
+    $from_date = $request->from ?? date('Y-m-d', strtotime('-2 years'));
+    $to_date = $request->to ?? date('Y-m-d');
+    $warehouse_ids = array_filter((array) $request->input('warehouse_id', []));
+    $customer_ids = array_filter((array) $request->input('customer_id', []));
+    $product_id = $request->product_id ?? null;
+    $brand_ids = array_filter((array) $request->input('brand_id', []));
+    $territory_id = $request->territory_id ?? null;
 
-                $to_date = $request->to ?? date('Y-m-d');
-                $warehouse_ids = array_filter((array) $request->input('warehouse_id', []));
-                $customer_ids = array_filter((array) $request->input('customer_id', []));
-                $product_id = $request->product_id ?? null;
-                $brand_ids = array_filter((array) $request->input('brand_id', []));
-                $territory_id = $request->territory_id ?? null;
+    $user = Auth::user();
+    $isUser = $user && $user->acc_type == 'user';
+    
+    if ($isUser) {
+        $territory_ids = json_decode($user->territory_id, true);
+        if (!is_array($territory_ids)) {
+            $territory_ids = [$user->territory_id];
+        }
 
-                $user = Auth::user();
-                $isUser = $user && $user->acc_type == 'user';
-                if ($isUser) {
-                    $territory_ids = json_decode($user->territory_id, true);
-                    if (!is_array($territory_ids)) {
-                        $territory_ids = [$user->territory_id];
-                    }
+        $warehouseList = DB::connection('mysql2')->table('stock')
+            ->whereIn('territory', $territory_ids)
+            ->where('status', 1)
+            ->distinct()
+            ->pluck('warehouse_id');
+     
+        $customers = \Illuminate\Support\Facades\DB::connection("mysql2")->table("customers")
+            ->where("status", "active")
+            ->get();
 
-                    $warehouseList = DB::connection('mysql2')->table('stock')
-                        ->whereIn('territory', $territory_ids)
-                        ->where('status', 1)
-                        ->distinct()
-                        ->pluck('warehouse_id');
-                 
-                    $customers = \Illuminate\Support\Facades\DB::connection("mysql2")->table("customers")
-                        ->where("status", "active")
-                        ->get();
+        $warehouses = DB::connection('mysql2')->table('warehouse')
+            ->whereIn('id', $warehouseList)
+            ->where("is_virtual", 1)
+            ->where('status', 1)
+            ->get();
 
-                    $warehouses = DB::connection('mysql2')->table('warehouse')
-                        ->whereIn('id', $warehouseList)
-                        ->where("is_virtual", 1)
-                        ->where('status', 1)
-                        ->get();
+        $subitem_ids = DB::connection('mysql2')->table('stock')
+            ->whereIn('territory', $territory_ids)
+            ->where('status', 1)
+            ->distinct()
+            ->pluck('sub_item_id');
 
-                    $subitem_ids = DB::connection('mysql2')->table('stock')
-                        ->whereIn('territory', $territory_ids)
-                        ->where('status', 1)
-                        ->distinct()
-                        ->pluck('sub_item_id');
+        $products = DB::connection('mysql2')->table('subitem')
+            ->whereIn('id', $subitem_ids)
+            ->where('status', 1)
+            ->get(['id', 'product_name']);
 
-                    $products = DB::connection('mysql2')->table('subitem')
-                        ->whereIn('id', $subitem_ids)
-                        ->where('status', 1)
-                        ->get(['id', 'product_name']);
+        $brandList = DB::connection('mysql2')->table('subitem')
+            ->whereIn('id', $subitem_ids)
+            ->whereNotNull('brand_id')
+            ->pluck('brand_id');
 
-                    $brandList = DB::connection('mysql2')->table('subitem')
-                        ->whereIn('id', $subitem_ids)
-                        ->whereNotNull('brand_id')
-                        ->pluck('brand_id');
+        $brands = DB::connection('mysql2')->table('brands')
+            ->whereIn('id', $brandList)
+            ->where('status', 1)
+            ->get(['id', 'name']);
 
-                    $brands = DB::connection('mysql2')->table('brands')
-                        ->whereIn('id', $brandList)
-                        ->where('status', 1)
-                        ->get(['id', 'name']);
+        $territories = DB::connection('mysql2')->table('territories')
+            ->whereIn('id', $territory_ids)
+            ->where('status', 1)
+            ->get(['id', 'name']);
+    } else {
+        $warehouses = DB::connection('mysql2')->table('warehouse')
+            ->where("is_virtual", 1)
+            ->where('status', 1)
+            ->get();
+            
+        $customers = DB::connection("mysql2")->table("customers")
+            ->where("status", "active")
+            ->get();
 
-                    $territories = DB::connection('mysql2')->table('territories')
-                        ->whereIn('id', $territory_ids)
-                        ->where('status', 1)
-                        ->get(['id', 'name']);
-                } else {
-                    $warehouses = DB::connection('mysql2')->table('warehouse')
-                                                                ->where("is_virtual", 1)
-                                                                ->where('status', 1)
-                                                                ->get();
-                    $customers = \Illuminate\Support\Facades\DB::connection("mysql2")->table("customers")
-                        ->where("status", "active")
-                        ->get();
+        $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
+        $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
+        $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
+    }
 
-                    $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
-                    $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
-                    $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
-                }
+    // Create warehouse names array with ID as key for the AJAX view
+    $warehouseNames = [];
+    foreach ($warehouses as $warehouse) {
+        $warehouseNames[$warehouse->id] = $warehouse->name;
+    }
 
-                $defaultProducts = DB::connection('mysql2')
-                    ->table('subitem')
-                    ->where('status', 1)
-                    ->limit(5)
-                    ->get(['id', 'product_name']);
+    $defaultProducts = DB::connection('mysql2')
+        ->table('subitem')
+        ->where('status', 1)
+        ->limit(5)
+        ->get(['id', 'product_name']);
 
-
-            if ($request->ajax()) {
+    if ($request->ajax()) {
+        try {
             $transitSub = DB::connection('mysql2')->table('stock_transfers_transit')
                 ->select(
                     'product_id',
@@ -2071,8 +2078,8 @@ public function getBrandsByWarehouse(Request $request)
                 ->where('tr_status', 1)
                 ->groupBy('product_id', 'warehouse_to_id');
 
-            $rawQuery = $transitSub->toSql(); // ye SQL string banega
-            $bindings = $transitSub->getBindings(); // bindings
+            $rawQuery = $transitSub->toSql();
+            $bindings = $transitSub->getBindings();
 
             $query = DB::connection('mysql2')->table('ba_stock as s')
                 ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
@@ -2092,87 +2099,98 @@ public function getBrandsByWarehouse(Request $request)
                     'si.product_name',
                     'si.product_barcode as barcode',
                     'pt.type as item_type',
-                    // 'si.type as item_type',
                     'si.pack_size as packing',
                     'b.name as brand',
                     'cus.name as customer_name',
                     'cus.id as customer_id',
+                    'w.id as warehouse_id',
+                    'w.name as warehouse_name',
                     DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,9) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
                     DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock'),
                     DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
                 )
                 ->where('s.status', 1)
-                
-                ->whereBetween('s.created_date', [$from_date, $to_date])
-                ->groupBy('si.id','cus.id');
+                ->whereBetween('s.created_date', [$from_date, $to_date]);
 
+            if (!empty($customer_ids)) {
+                $query->whereIn('s.customer_id', $customer_ids);
+            } elseif ($territory_id) {
+                $territoryWarehouseIds = DB::connection('mysql2')->table('ba_stock')
+                    ->where('territory', $territory_id)
+                    ->where('status', 1)
+                    ->distinct()
+                    ->pluck('warehouse_id');
 
-                if (!empty($customer_ids)) {
-                    $query->whereIn('s.customer_id', $customer_ids);
-                } elseif ($territory_id) {
-                    $territoryWarehouseIds = DB::connection('mysql2')->table('ba_stock')
-                        ->where('territory', $territory_id)
-                        ->where('status', 1)
-                        ->distinct()
-                        ->pluck('warehouse_id');
-
-                    if ($territoryWarehouseIds->isNotEmpty()) {
-                        $query->whereIn('s.warehouse_id', $territoryWarehouseIds);
-                    } else {
-                        $query->whereRaw('0=1');
-                    }
+                if ($territoryWarehouseIds->isNotEmpty()) {
+                    $query->whereIn('s.warehouse_id', $territoryWarehouseIds);
+                } else {
+                    $query->whereRaw('0=1');
                 }
-
-                if ($product_id) {
-                    $query->where('s.sub_item_id', $product_id);
-                }
-
-                if (!empty($brand_ids)) {
-                    $query->whereIn('si.brand_id', $brand_ids);
-                }
-
-                // ✅ Group only by product and warehouse (not transit_stock)
-                $rawStock = $query->groupBy('si.id', 'w.id')->get();
-
-                $stocks = [];
-                $customersMap = [];
-
-                foreach ($rawStock as $stock) {
-                    $key = $stock->product_id;
-
-                    if (!isset($stocks[$key])) {
-                        $stocks[$key] = [
-                            'sku_code' => $stock->sku_code,
-                            'product_name' => $stock->product_name,
-                            'barcode' => $stock->barcode,
-                            
-                            'item_type' => $stock->item_type,
-                            'brand' => $stock->brand,
-                            'packing' => $stock->packing,
-                            'transit_stock' => $stock->transit_stock
-                        ];
-                    }
-                       
-                    $stockQty = (float)$stock->in_stock - (float)$stock->out_stock;
-                    $stocks[$key][$stock->customer_name] = abs($stockQty);
-                    $customersMap[$stock->customer_id] = $stock->customer_name;
-                }
-
-                return view('Store.ba_closing_report_ajax', [
-                    'stocks' => $stocks,
-                    'from_date' => $from_date,
-                    'to_date' => $to_date,
-                    'customersMap' => $customersMap,
-                    'customers' => $customers
-                ]);
             }
 
-            
-            return view('Store.ba_closing_report', compact(
-                            'warehouses', 'products', 'brands', 'defaultProducts', 'territories', 'customers'
-                        ));
+            if ($product_id) {
+                $query->where('s.sub_item_id', $product_id);
+            }
 
+            if (!empty($brand_ids)) {
+                $query->whereIn('si.brand_id', $brand_ids);
+            }
+
+            // Group by product, warehouse, and customer
+            $rawStock = $query->groupBy('si.id', 'w.id', 'cus.id')->get();
+
+            $stocks = [];
+            $customersMap = [];
+
+            foreach ($rawStock as $stock) {
+                $productKey = $stock->product_id;
+                $warehouseId = $stock->warehouse_id;
+                $customerId = $stock->customer_id;
+                $customerName = $stock->customer_name;
+
+                if (!isset($stocks[$productKey])) {
+                    $stocks[$productKey] = [
+                        'sku_code' => $stock->sku_code,
+                        'product_name' => $stock->product_name,
+                        'barcode' => $stock->barcode,
+                        'item_type' => $stock->item_type,
+                        'brand' => $stock->brand,
+                        'packing' => $stock->packing,
+                        'transit_stock' => $stock->transit_stock,
+                        'warehouses' => [] // Store warehouse-wise stock
+                    ];
+                }
+                   
+                $stockQty = (float)$stock->in_stock - (float)$stock->out_stock;
+                
+                // Store by warehouse ID
+                if (!isset($stocks[$productKey]['warehouses'][$warehouseId])) {
+                    $stocks[$productKey]['warehouses'][$warehouseId] = [];
+                }
+                
+                $stocks[$productKey]['warehouses'][$warehouseId][$customerName] = abs($stockQty);
+                $customersMap[$customerId] = $customerName;
+            }
+
+            return view('Store.ba_closing_report_ajax', [
+                'stocks' => $stocks,
+                'from_date' => $from_date,
+                'to_date' => $to_date,
+                'customersMap' => $customersMap,
+                'customers' => $customers,
+                'warehouses' => $warehouseNames // Pass warehouse names with IDs as keys
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('BA Closing Report Error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    return view('Store.ba_closing_report', compact(
+        'warehouses', 'products', 'brands', 'defaultProducts', 'territories', 'customers'
+    ));
+}
 //  public function add_opening_import_post(Request $request)
 // {
 
