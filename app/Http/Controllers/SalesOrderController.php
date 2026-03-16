@@ -131,28 +131,24 @@ class SalesOrderController extends Controller
     {
         $itemId = $request->item;
         $warehouseFrom = $request->warehouse_id;
+        $cusIdget = $request->cusId;
 
        
-
-        // ✅ Single Query (company + store + stock)
-        $warehouses = DB::connection('mysql2')
-            ->table('warehouse')
-            ->leftJoin('ba_stock', function ($join) use ($itemId) {
-                $join->on('ba_stock.warehouse_id', '=', 'warehouse.id')
-                    ->where('ba_stock.sub_item_id', $itemId);
-            })
-            ->select(
-                'warehouse.id',
-                'warehouse.name',
-                'warehouse.is_virtual',
-                DB::raw('COALESCE(SUM(ba_stock.qty), 0) AS total_qty')
-            )
-            // ->when($warehouseFrom != 0, function ($query) use ($warehouseFrom) {
-            //     return $query->where('warehouse.id', $warehouseFrom);
-            // })
-            ->groupBy('warehouse.id', 'warehouse.name', 'warehouse.is_virtual')
-            ->get();
-
+$warehouses = DB::connection('mysql2')
+    ->table('warehouse')
+    ->leftJoin('ba_stock', function ($join) use ($itemId, $cusIdget) {
+        $join->on('ba_stock.warehouse_id', '=', 'warehouse.id')
+             ->where('ba_stock.sub_item_id', $itemId)
+             ->where('ba_stock.customer_id', $cusIdget);
+    })
+    ->select(
+        'warehouse.id',
+        'warehouse.name',
+        'warehouse.is_virtual',
+        DB::raw('COALESCE(SUM(ba_stock.qty),0) as total_qty')
+    )
+    ->groupBy('warehouse.id','warehouse.name','warehouse.is_virtual')
+    ->get();
         // Arrays & Totals
         $company_warehouses = [];
         $store_warehouses   = [];
