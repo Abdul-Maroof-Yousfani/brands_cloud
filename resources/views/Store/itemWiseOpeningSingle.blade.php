@@ -49,7 +49,9 @@ $currentMonthEndDate   = date('Y-m-t');
                                                             <table class="table table-bordered sf-table-list" id="goodsReceiptNoteList">
                                                                 <thead>
                                                                 <th class="text-center">S.No</th>
+                                                                <th class="text-center">Sku Code</th>
                                                                 <th class="text-center">Item Name</th>
+                                                                <th class="text-center">Barcode</th>
                                                                 <th class="text-center">Location</th>
                                                                 <th class="text-center">Qty</th>
                                                                 <!-- <th class="text-center">Amount</th> -->
@@ -63,14 +65,16 @@ $currentMonthEndDate   = date('Y-m-t');
                                                                 ?>
                                                                     <tr>
                                                                         <td><?php echo $Counter++;?></td>
+                                                                        <td><?php echo CommonHelper::get_item_sku_code($Fil->sub_item_id)?></td>
                                                                         <td><?php echo CommonHelper::get_item_name($Fil->sub_item_id)?></td>
+                                                                        <td><?php echo CommonHelper::get_item_product_barcode($Fil->sub_item_id)?></td>
                                                                         <td><?php echo strtoupper($Warehouse->name)?></td>
-                                                                        <td><?php echo number_format($Fil->qty,2)?></td>
+                                                                        <td><?php echo number_format($Fil->qty,2); $total+=$Fil->qty?></td>
                                                                         <!-- <td><?php echo number_format($Fil->amount,2);$total+=$Fil->amount?></td> -->
                                                                     </tr>
                                                                 <?php endforeach;?>
                                                                 <tr>
-                                                                    <td colspan="4">Total</td>
+                                                                    <td colspan="5">Total</td>
                                                                     <td>{{number_format($total,2)}}</td>
                                                                 </tr>
                                                                 </tbody>
