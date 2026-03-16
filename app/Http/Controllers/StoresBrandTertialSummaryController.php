@@ -35,8 +35,8 @@ class StoresBrandTertialSummaryController extends Controller
         'customers.territory_id',
         'customers.customer_code',
         'customers.name',
-        DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
-        DB::raw('SUM(CASE WHEN s.voucher_type IN (2,5,3,9) THEN s.qty ELSE 0 END) AS out_stock')
+    DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END)  AS in_stock'),
+
     )
     ->when(isset($from) && isset($to), function($query) use ($from, $to) {
         $query->whereBetween("s.voucher_date", [$from, $to]);;
@@ -54,7 +54,7 @@ class StoresBrandTertialSummaryController extends Controller
 
 
             foreach($stores as $store) {
-                $stockQty = (float)$store->in_stock - (float)$store->out_stock;
+                $stockQty = (float)$store->in_stock;
                 $stocks[$store->customer_id][$store->brand_id] = abs($stockQty);
             }
 
