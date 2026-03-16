@@ -126,63 +126,118 @@ class SalesOrderController extends Controller
 
     //     return response()->json($data);
     // }
+public function getCustomerAssignedWarehouseByWarehouseId(Request $request)
+{
+    $itemId = $request->item;
+    $warehouseFrom = $request->warehouse_id;
 
-     public function getCustomerAssignedWarehouseByWarehouseId(Request $request)
-    {
-        $itemId = $request->item;
-        $warehouseFrom = $request->warehouse_id;
+    // ✅ Single Query (company + store + stock) - Only changed stock to ba_stock
+    $warehouses = DB::connection('mysql2')
+        ->table('warehouse')
+        ->leftJoin('ba_stock', function ($join) use ($itemId) {
+            $join->on('ba_stock.warehouse_id', '=', 'warehouse.id')
+                ->where('ba_stock.sub_item_id', $itemId);
+        })
+        ->select(
+            'warehouse.id',
+            'warehouse.name',
+            'warehouse.is_virtual',
+            DB::raw('COALESCE(SUM(ba_stock.qty), 0) AS total_qty')
+        )
+        ->when($warehouseFrom != 0, function ($query) use ($warehouseFrom) {
+            return $query->where('warehouse.id', $warehouseFrom);
+        })
+        ->groupBy('warehouse.id', 'warehouse.name', 'warehouse.is_virtual')
+        ->get();
 
-        // ✅ Single Query (company + store + stock)
-        $warehouses = DB::connection('mysql2')
-            ->table('warehouse')
-            ->leftJoin('stock', function ($join) use ($itemId) {
-                $join->on('stock.warehouse_id', '=', 'warehouse.id')
-                    ->where('stock.sub_item_id', $itemId);
-            })
-            ->select(
-                'warehouse.id',
-                'warehouse.name',
-                'warehouse.is_virtual',
-                DB::raw('COALESCE(SUM(stock.qty), 0) AS total_qty')
-            )
-            ->when($warehouseFrom != 0, function ($query) use ($warehouseFrom) {
-                return $query->where('warehouse.id', $warehouseFrom);
-            })
-            ->groupBy('warehouse.id', 'warehouse.name', 'warehouse.is_virtual')
-            ->get();
+    // Arrays & Totals
+    $company_warehouses = [];
+    $store_warehouses   = [];
 
-        // Arrays & Totals
-        $company_warehouses = [];
-        $store_warehouses   = [];
+    $company_total_qty = 0;
+    $store_total_qty   = 0;
 
-        $company_total_qty = 0;
-        $store_total_qty   = 0;
+    foreach ($warehouses as $w) {
+        $warehouseData = [
+            'id'        => $w->id,
+            'name'      => $w->name,
+            'total_qty' => $w->total_qty,
+        ];
 
-        foreach ($warehouses as $w) {
-            $warehouseData = [
-                'id'        => $w->id,
-                'name'      => $w->name,
-                'total_qty' => $w->total_qty,
-            ];
-
-            if ($w->is_virtual == 0) {
-                $company_warehouses[] = $warehouseData;
-                $company_total_qty += $w->total_qty;
-            } else {
-                $store_warehouses[] = $warehouseData;
-                $store_total_qty += $w->total_qty;
-            }
+        if ($w->is_virtual == 0) {
+            $company_warehouses[] = $warehouseData;
+            $company_total_qty += $w->total_qty;
+        } else {
+            $store_warehouses[] = $warehouseData;
+            $store_total_qty += $w->total_qty;
         }
-
-        // Final Response
-        return response()->json([
-            'total_so'               => ReuseableCode::get_reserved_so($itemId, $request->cusId),
-            'company_warehouse'      => $company_warehouses,
-            'store_warehouse'        => $store_warehouses, 
-            'company_total_quantity' => ReuseableCode::get_stock($itemId, $warehouseFrom),
-            'store_total_quantity'   => $store_total_qty,
-        ]);
     }
+
+    // Final Response
+    return response()->json([
+        'total_so'               => ReuseableCode::get_reserved_so($itemId, $request->cusId),
+        'company_warehouse'      => $company_warehouses,
+        'store_warehouse'        => $store_warehouses, 
+        'company_total_quantity' => ReuseableCode::get_stock($itemId, $warehouseFrom),
+        'store_total_quantity'   => $store_total_qty,
+    ]);
+}
+    //  public function getCustomerAssignedWarehouseByWarehouseId(Request $request)
+    // {
+    //     $itemId = $request->item;
+    //     $warehouseFrom = $request->warehouse_id;
+
+    //     // ✅ Single Query (company + store + stock)
+    //     $warehouses = DB::connection('mysql2')
+    //         ->table('warehouse')
+    //         ->leftJoin('stock', function ($join) use ($itemId) {
+    //             $join->on('stock.warehouse_id', '=', 'warehouse.id')
+    //                 ->where('stock.sub_item_id', $itemId);
+    //         })
+    //         ->select(
+    //             'warehouse.id',
+    //             'warehouse.name',
+    //             'warehouse.is_virtual',
+    //             DB::raw('COALESCE(SUM(stock.qty), 0) AS total_qty')
+    //         )
+    //         ->when($warehouseFrom != 0, function ($query) use ($warehouseFrom) {
+    //             return $query->where('warehouse.id', $warehouseFrom);
+    //         })
+    //         ->groupBy('warehouse.id', 'warehouse.name', 'warehouse.is_virtual')
+    //         ->get();
+
+    //     // Arrays & Totals
+    //     $company_warehouses = [];
+    //     $store_warehouses   = [];
+
+    //     $company_total_qty = 0;
+    //     $store_total_qty   = 0;
+
+    //     foreach ($warehouses as $w) {
+    //         $warehouseData = [
+    //             'id'        => $w->id,
+    //             'name'      => $w->name,
+    //             'total_qty' => $w->total_qty,
+    //         ];
+
+    //         if ($w->is_virtual == 0) {
+    //             $company_warehouses[] = $warehouseData;
+    //             $company_total_qty += $w->total_qty;
+    //         } else {
+    //             $store_warehouses[] = $warehouseData;
+    //             $store_total_qty += $w->total_qty;
+    //         }
+    //     }
+
+    //     // Final Response
+    //     return response()->json([
+    //         'total_so'               => ReuseableCode::get_reserved_so($itemId, $request->cusId),
+    //         'company_warehouse'      => $company_warehouses,
+    //         'store_warehouse'        => $store_warehouses, 
+    //         'company_total_quantity' => ReuseableCode::get_stock($itemId, $warehouseFrom),
+    //         'store_total_quantity'   => $store_total_qty,
+    //     ]);
+    // }
 
     public function getCustomerAssignedWarehouse(Request $request)
     {
