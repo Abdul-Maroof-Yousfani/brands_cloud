@@ -1999,7 +1999,7 @@ public function getBrandsByWarehouse(Request $request)
             $territory_ids = [$user->territory_id];
         }
 
-        $warehouseList = DB::connection('mysql2')->table('stock')
+        $warehouseList = DB::connection('mysql2')->table('ba_stock')
             ->whereIn('territory', $territory_ids)
             ->where('status', 1)
             ->distinct()
@@ -2015,7 +2015,7 @@ public function getBrandsByWarehouse(Request $request)
             ->where('status', 1)
             ->get();
 
-        $subitem_ids = DB::connection('mysql2')->table('stock')
+        $subitem_ids = DB::connection('mysql2')->table('ba_stock')
             ->whereIn('territory', $territory_ids)
             ->where('status', 1)
             ->distinct()
