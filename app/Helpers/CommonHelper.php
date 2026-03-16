@@ -2161,7 +2161,7 @@ public static function get_all_groups() {
     }
 public static function get_all_subitems()
 {
-    $products = Subitem::where(['status' => 1])->select('product_name','id')->get();
+    $products = Subitem::where(['status' => 1])->select('product_name','sku_code','id')->get();
 
     return $products;
 }

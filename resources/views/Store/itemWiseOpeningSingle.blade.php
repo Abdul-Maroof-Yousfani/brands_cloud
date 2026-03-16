@@ -15,12 +15,53 @@ $currentMonthEndDate   = date('Y-m-t');
 ?>
 
 @extends('layouts.default')
-
 @section('content')
+@include('select2')
     <div class="well_N">
     <div class="dp_sdw">
         <div class="panel">
             <div class="panel-body">
+                <form action="{{ url('store/itemWiseOpeningSingle') }}" method="GET">
+                    <input type="hidden" name="m" value="{{ $m }}">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            <label>From Date</label>
+                            <input type="date" name="from_date" class="form-control" value="{{ request('from_date', $currentMonthStartDate) }}">
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            <label>To Date</label>
+                            <input type="date" name="to_date" class="form-control" value="{{ request('to_date', $currentMonthEndDate) }}">
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            <label>Warehouse</label>
+                            <select name="warehouse_id" class="form-control select2">
+                                <option value="">All Warehouses</option>
+                                @foreach (CommonHelper::get_all_warehouse() as $warehouse)
+                                    <option value="{{ $warehouse->id }}" {{ request('warehouse_id') == $warehouse->id ? 'selected' : '' }}>
+                                        {{ strtoupper($warehouse->name) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            <label>Item</label>
+                            <select name="sub_item_id" class="form-control select2">
+                                <option value="">All Items</option>
+                                @foreach (CommonHelper::get_all_subitems() as $item)
+                                    <option value="{{ $item->id }}" {{ request('sub_item_id') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->sku_code }} - {{ $item->product_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right" style="margin-top: 20px;">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ url('store/itemWiseOpeningSingle?m='.$m) }}" class="btn btn-primary">Reset</a>
+                        </div>
+                    </div>
+                </form>
+                <br>
+
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
                         <?php echo CommonHelper::displayPrintButtonInBlade('printGoodsReceiptNoteList','','1');?>

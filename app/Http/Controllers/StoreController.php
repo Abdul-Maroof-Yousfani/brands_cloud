@@ -76,9 +76,35 @@ class StoreController extends Controller
         $OpeningItemWise = DB::Connection('mysql2')->table('stock')->where('opening',1)->where('status',1)->where('voucher_type',1)->where('amount','>',0)->where('warehouse_id','!=',0)->get();
         return view('Store.itemWiseOpening',compact('OpeningItemWise'));
     }
-    public  function itemWiseOpeningSingle(){
-        $OpeningItemWise = DB::Connection('mysql2')->table('stock')->where('opening',1)->where('status',1)->where('check_status',1)->where('voucher_type',1)->where('warehouse_id','!=',0)->get();
-        return view('Store.itemWiseOpeningSingle',compact('OpeningItemWise'));
+    public function itemWiseOpeningSingle(Request $request)
+    {
+        $from_date = $request->from_date;
+        $to_date = $request->to_date;
+        $warehouse_id = $request->warehouse_id;
+        $sub_item_id = $request->sub_item_id;
+
+        $query = DB::Connection('mysql2')->table('stock')
+            ->where('opening', 1)
+            ->where('status', 1)
+            ->where('check_status', 1)
+            ->where('voucher_type', 1)
+            ->where('warehouse_id', '!=', 0);
+
+        if ($from_date && $to_date) {
+            $query->whereBetween('created_date', [$from_date, $to_date]);
+        }
+
+        if ($warehouse_id) {
+            $query->where('warehouse_id', $warehouse_id);
+        }
+
+        if ($sub_item_id) {
+            $query->where('sub_item_id', $sub_item_id);
+        }
+
+        $OpeningItemWise = $query->get();
+
+        return view('Store.itemWiseOpeningSingle', compact('OpeningItemWise'));
     }
 
     public function editStockTransferForm($id,$Trno){
