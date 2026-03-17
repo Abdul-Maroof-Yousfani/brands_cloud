@@ -3795,7 +3795,7 @@ private function getAccountIds()
                             $voucher_no = $dn_data->gi_no;
                         endif;
 
-            // dd($dn_data->so_data_id);
+                     // dd($dn_data->so_data_id);
 
                         $amount_data = DB::Connection('mysql2')->table('stock')->where('status', 1)
                             ->where('voucher_no', $voucher_no)
@@ -3872,6 +3872,7 @@ private function getAccountIds()
             if ($request->type == 2):
                 // DB::rollBack();
                 // dd('in');
+                
                 $data =   DB::Connection('mysql2')->select(
                     'select sum(a.amount) as amount,d.acc_id from credit_note_data as a
                     inner join

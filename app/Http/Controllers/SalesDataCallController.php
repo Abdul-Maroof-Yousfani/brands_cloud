@@ -1165,7 +1165,8 @@ class SalesDataCallController extends Controller
                 ->leftJoin('sales_order as b', 'a.master_id', '=', 'b.id')
                 ->where('a.status',1)
                 ->where('b.status',1)
-                ->where('a.so_no',$so)
+                ->where('a.gd_no',$so)
+                // ->where('a.so_no',$so)
                 ->select('a.id','a.gd_no as gi_no','a.gd_date as gi_date','b.buyers_id','a.master_id')
                 ->get();
 
@@ -1175,7 +1176,8 @@ class SalesDataCallController extends Controller
             $dataa=new SalesTaxInvoice();
             $dataa=$dataa->SetConnection('mysql2');
             $dataa=$dataa->where('status',1)->where(function ($query) use ($so) {
-                $query->where('so_no', strtolower(trim($so)))
+                $query->where('gi_no', strtolower(trim($so)))
+                // $query->where('so_no', strtolower(trim($so)))
                       ->orWhere('gi_no', strtolower(trim($so)));
             })->select('id','gi_no','gi_date','buyers_id')->get();
           

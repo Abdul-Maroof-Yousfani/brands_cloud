@@ -69,7 +69,7 @@ use App\Helpers\CommonHelper;
                                     <div class="row">
 
                                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                            <label>SO No.</label>
+                                            <label>No.</label>
                                             <input type="text" name="so_no" id="so_no" max="<?php ?>" value="" class="form-control" />
 
                                         </div>
@@ -154,7 +154,7 @@ use App\Helpers\CommonHelper;
 
             {
 
-               alert('Required So');
+               alert('Required No');
                 return false;
 
             }
