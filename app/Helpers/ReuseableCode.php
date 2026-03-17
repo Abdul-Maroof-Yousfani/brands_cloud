@@ -318,34 +318,38 @@ public static function get_purchased_amount($id)
     
         
 
-       $sumQty = DB::connection("mysql2")
-            ->table("sales_order_data")
-            ->where("item_id", $item_id)
-            ->select(DB::raw("SUM(CAST(qty AS DECIMAL(10,2))) as total_qty"))
-            ->join("sales_order", "sales_order.so_no", "=", "sales_order_data.so_no")
-            ->where("sales_order.buyers_id", $custId)
-            ->value("total_qty");
+    //    $sumQty = DB::connection("mysql2")
+    //         ->table("sales_order_data")
+    //         ->where("item_id", $item_id)
+    //         ->select(DB::raw("SUM(CAST(qty AS DECIMAL(10,2))) as total_qty"))
+    //         ->join("sales_order", "sales_order.so_no", "=", "sales_order_data.so_no")
+    //         ->where("sales_order.buyers_id", $custId)
+    //         ->value("total_qty");
 
-        return $sumQty;
+    //     return $sumQty;
 
-        // $in= DB::Connection('mysql2')->table('stock')->whereIn('status',array(1,3))
-        //     ->whereIn('voucher_type',[1,4,6,10,11])
-        //      ->where('sub_item_id',$item)
-        //     ->where('warehouse_id',$warehouse)
-        //     //  ->where('batch_code',$batch_code)
-        //     ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
-        //     ->first();
+$result = DB::connection("mysql2")
+    ->table("sales_order_data")
+    ->where("sales_order_data.item_id", $item_id)
+    ->join("sales_order", "sales_order.so_no", "=", "sales_order_data.so_no")
+    ->where("sales_order.buyers_id", $custId)
+    ->select(
+        DB::raw("SUM(CAST(sales_order_data.qty AS DECIMAL(10,2))) as ordered_qty"),
+        DB::raw("COALESCE(SUM(CAST(delivery_note_data.qty AS DECIMAL(10,2))), 0) as delivered_qty")
+    )
+    ->leftJoin("delivery_note", function($join) {
+        $join->on("delivery_note.so_no", "=", "sales_order.so_no")
+             ->where("delivery_note.status", "=", 1);  // Sirf status 0 wale delivery notes
+    })
+    ->leftJoin("delivery_note_data", function($join) use ($item_id) {
+        $join->on("delivery_note_data.gd_no", "=", "delivery_note.gd_no")
+             ->where("delivery_note_data.item_id", "=", $item_id);
+    })
+    ->first();
 
-        // $oout=  DB::Connection('mysql2')->table('stock')->whereIn('status',array(1,3))
-        //     ->whereIn('voucher_type',[2,5,3,9])
-        //      ->where('sub_item_id',$item)
-        //     // ->where('batch_code',$batch_code)
-        //     ->where('warehouse_id',$warehouse)
-        //     ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
-        //     ->first();
+return $result->ordered_qty - $result->delivered_qty;
 
-            // $out=$oout->qty+$qty;
-            // return  $in->qty-$out;
+       
 
     }
 
