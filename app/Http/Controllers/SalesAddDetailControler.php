@@ -3225,7 +3225,7 @@ public function approveDeliveryNote(Request $request)
 
 
 
-    function addeSalesTaxInvoice(Request $request)
+   function addeSalesTaxInvoice(Request $request)
 {
     $SavePrintVal = Input::get('SavePrintVal');
     
@@ -3968,9 +3968,7 @@ private function getAccountIds()
                 $total_tax_return = 0;
                 $total_discount_amount = 0;
 
-                   $accounts = $this->getAccountIds();
-
-                    $customer_acc_id = SalesHelper::get_customer_acc_id($request->buyers_id);;
+                 
 
                 foreach ($item_data as $row) {
                     $total_return_gross += $row->total_gross_amount;
