@@ -124,11 +124,11 @@ $export=ReuseableCode::check_rights(258);
                                                             <?php if($view == true):?>
                                                                 <button onclick="showDetailModelOneParamerter('sales/viewCreditNoteDetail','<?php echo $row->id ?>','View Sales Tax Invoice')"
                                                                         type="button" class="btn btn-success btn-xs">View</button>
-                                                                <a href="{{ route('sales.salereturn.edit', ['id'=> $row->id]) }}" type="button" class="btn btn-warning btn-xs">Edit</a>
+                                                                <!-- <a href="{{ route('sales.salereturn.edit', ['id'=> $row->id]) }}" type="button" class="btn btn-warning btn-xs">Edit</a> -->
                                                             <?php endif;?>
                                                             <?php if($edit == true):?>
                                                            
-                                                                <button onclick="delete_sales_return('{{$row->id}}','{{$row->cr_no}}')" type="button" class="btn btn-danger btn-xs">Delete</button>
+                                                                <!-- <button onclick="delete_sales_return('{{$row->id}}','{{$row->cr_no}}')" type="button" class="btn btn-danger btn-xs">Delete</button> -->
                                                             <?php endif;?>
                                                     
                                                     </td>
