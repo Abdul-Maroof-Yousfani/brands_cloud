@@ -592,7 +592,7 @@ public static function get_all_unregistered_employees()
 
     public static function get_customer_acc_id($id)
     {
-        return DB::Connection('mysql2')->table('customers')->where('id', $id)->select('acc_id')->first()->acc_id;
+        return DB::Connection('mysql2')->table('customers')->where('id', $id)->select('acc_id')->first();
     }
 
 

@@ -3682,7 +3682,7 @@ private function getAccountIds()
 
     function addCreditNote(Request $request)
     {
-        //  dd($request->all());
+        
 
         DB::Connection('mysql2')->beginTransaction();
         try {
@@ -3698,6 +3698,7 @@ private function getAccountIds()
             $credit_note->sales_tax = CommonHelper::check_str_replace($request->sales_tax);
             $credit_note->sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further);
             $credit_note->create_date = date('Y-m-d');
+            $credit_note->pst = $request->pst;
             $credit_note->status = 1;
             $credit_note->type = $request->type;
             $credit_note->username = Auth::user()->name;
@@ -3890,58 +3891,10 @@ private function getAccountIds()
                 $sales_tax_amount = $sales_tax->sum('discount_amount');
 
 
-                // if ($sales_tax_amount > 0):
-
-                //     $sales_tac_acc_id = ReuseableCode::sales_tax_acc_id($sales_tax->value("discount_percent"));
-                //     $transaction = new Transactions();
-                //     $transaction = $transaction->SetConnection('mysql2');
-                //     $transaction->voucher_no = $request->input('credit_not_no');
-                //     $transaction->v_date = $request->input('credit_date');
-                //     $transaction->acc_id = $sales_tac_acc_id->acc_id;
-                //     $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($sales_tac_acc_id->acc_id);
-                //     $transaction->particulars = $request->description_1;
-                //     $transaction->opening_bal = 0;
-                //     $transaction->debit_credit = 1;
-                //     $transaction->amount = $sales_tax_amount;
-                //     $transaction->username = Auth::user()->name;;
-                //     $transaction->status = 1;
-                //     $transaction->voucher_type = 7;
-                //     $transaction->save();
-                //     $total_amount += $sales_tax_amount;
-
-                // endif;
-
-
-
-
+        
 
                 $sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further);
 
-                // if ($sales_tax_further > 0):
-
-
-                //     $sales_tac_acc_id_further = DB::Connection('mysql2')->table('accounts')->where('status', 1)->where('name', '3% Additional Sales Tax')->select('id')->first()->id;
-
-                //     $transaction = new Transactions();
-                //     $transaction = $transaction->SetConnection('mysql2');
-                //     $transaction->voucher_no = $request->input('credit_not_no');
-                //     $transaction->v_date = $request->input('credit_date');
-                //     $transaction->acc_id = $sales_tac_acc_id_further;
-                //     $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($sales_tac_acc_id_further);
-                //     $transaction->particulars = $request->description_1;
-                //     $transaction->opening_bal = 0;
-                //     $transaction->debit_credit = 0;
-                //     $transaction->amount = $request->sales_tax_further;
-                //     $transaction->username = Auth::user()->name;;
-                //     $transaction->status = 1;
-                //     $transaction->voucher_type = 7;
-                //     $transaction->save();
-                // //  $total_amout+=$request->sales_tax_further;
-
-                // endif;
-
-                
-             
 
 
                  $transaction = new Transactions();
@@ -3990,161 +3943,160 @@ private function getAccountIds()
 
 
             if ($request->type == 2):
-                // DB::rollBack();
-                // dd('in');
-                
-                $data =   DB::Connection('mysql2')->select(
-                    'select sum(a.amount) as amount,d.acc_id from credit_note_data as a
-                    inner join
-                    subitem as c
-                    on
-                    c.id=a.item
-                    inner join
-                    category as d
-                    on
-                    c.main_ic_id=d.id
-                    where a.status=1
+                $cr_no = $request->input('credit_not_no');
+                $cr_date = $request->input('credit_date');
+                $accounts = $this->getAccountIds();
+                $customer_acc_id = SalesHelper::get_customer_acc_id($request->byer_id);
 
-                    and a.master_id="' . $id . '"
-                    group by d.id'
+                // Group items by their revenue accounts to mirror addeSalesTaxInvoice logic
+                $item_data = DB::Connection('mysql2')->table('credit_note_data as a')
+                    ->join('subitem as c', 'c.id', '=', 'a.item')
+                    ->join('category as d', 'd.id', '=', 'c.main_ic_id')
+                    ->where('a.status', 1)
+                    ->where('a.master_id', $id)
+                    ->select(
+                        DB::raw('SUM(a.amount) as total_gross_amount'),
+                        DB::raw('SUM(a.discount_amount) as total_tax_amount'),
+                        DB::raw('SUM(a.actual_discount_amount) as total_discount_amount'),
+                        DB::raw('SUM(a.net_amount) as net_amount'),
+                        'd.revenue_acc_id as acc_id' 
+                    )
+                    ->groupBy('d.id')
+                    ->get();
 
-                );
-                $total_amount = 0;
+                $total_return_gross = 0;
+                $total_tax_return = 0;
+                $total_discount_amount = 0;
 
-                
-                foreach ($data as $row):
-                    $transaction = new Transactions();
+                   $accounts = $this->getAccountIds();
+
+                    $customer_acc_id = SalesHelper::get_customer_acc_id($request->buyers_id);;
+
+                foreach ($item_data as $row) {
+                    $total_return_gross += $row->total_gross_amount;
+                    $total_tax_return += $row->total_tax_amount;
+                    $total_discount_amount += $row->total_discount_amount;
+
+                 
+                        // $transaction = new Transactions();
+                        // $transaction = $transaction->SetConnection('mysql2');
+                        // $transaction->master_id = $id;
+                        // $transaction->voucher_no = $cr_no;
+                        // $transaction->v_date = $cr_date;
+                        // $transaction->acc_id = $customer_acc_id;
+                        // $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($customer_acc_id);
+                        // $transaction->particulars = 'Sales Return: ' . $cr_no . ' - SO: ' . ($sale_order->so_no ?? '');
+                        // $transaction->opening_bal = 0;
+                        // $transaction->debit_credit = 1; // Debit for Sales Return
+                        // $transaction->amount = $row->total_gross_amount;
+                        // $transaction->username = Auth::user()->name;
+                        // $transaction->status = 1;
+                        // $transaction->voucher_type = 15;
+                        // $transaction->save();
+                    
+                }
+
+              
+
+        //sale return 
+                  $transaction = new Transactions();
                     $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->voucher_no = $request->input('credit_not_no');
-                    $transaction->v_date = $request->input('credit_date');
-                    $transaction->acc_id = $row->acc_id;
-                    $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($row->acc_id);
-                    $transaction->particulars = $request->description_1;
+                    $transaction->master_id = $id;
+                    $transaction->voucher_no = $cr_no;
+                    $transaction->v_date = $cr_date;
+                    $transaction->acc_id = 1051;
+                    $transaction->acc_code = '5-8';
+                    $transaction->particulars = 'Sales Return Output Adjustment: ' . $cr_no;
                     $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 1;
-                    $transaction->amount = $row->amount;
-                    $transaction->username = Auth::user()->name;;
+                    $transaction->debit_credit = 1; // Debit for Tax Adjustment
+                    $transaction->amount = $total_return_gross - $total_discount_amount;
+                    $transaction->username = Auth::user()->name;
                     $transaction->status = 1;
-                    $transaction->voucher_type = 7;
+                    $transaction->voucher_type = 15;
                     $transaction->save();
-                    $total_amount += $row->amount;
-                endforeach;
-
-                $sales_tax = DB::Connection('mysql2')->table('credit_note_data')->where('status', 1)->where('master_id', $id);
-                $sales_tax_amount = $sales_tax->sum('discount_amount');
 
 
-                if ($sales_tax_amount > 0):
 
-                    $sales_tac_acc_id = ReuseableCode::sales_tax_acc_id($sales_tax->value("discount_percent"));
-                    $transaction = new Transactions();
+         
+
+
+                       //GST Payable
+  
+                  $transaction = new Transactions();
                     $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->voucher_no = $request->input('credit_not_no');
-                    $transaction->v_date = $request->input('credit_date');
-                    $transaction->acc_id = $sales_tac_acc_id->acc_id;
-                    $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($sales_tac_acc_id->acc_id);
-                    $transaction->particulars = $request->description_1;
+                    $transaction->master_id = $id;
+                    $transaction->voucher_no = $cr_no;
+                    $transaction->v_date = $cr_date;
+                    $transaction->acc_id = 1778;
+                    $transaction->acc_code = '2-371';
+                    $transaction->particulars = 'Sales Return Output GST - Payable Adjustment: ' . $cr_no;
                     $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 1;
-                    $transaction->amount = $sales_tax_amount;
-                    $transaction->username = Auth::user()->name;;
+                    $transaction->debit_credit = 1; // Debit for Tax Adjustment
+                    $transaction->amount = $total_tax_return;
+                    $transaction->username = Auth::user()->name;
                     $transaction->status = 1;
-                    $transaction->voucher_type = 7;
+                    $transaction->voucher_type = 15;
                     $transaction->save();
-                    $total_amount += $sales_tax_amount;
-
-                endif;
 
 
 
-
-
-                $sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further);
-
-                if ($sales_tax_further > 0):
-
-
-                    $sales_tac_acc_id_further = DB::Connection('mysql2')->table('accounts')->where('status', 1)->where('name', '3% Additional Sales Tax')->select('id')->first()->id;
-
-                    $transaction = new Transactions();
+                       //Accounts receivable 
+  
+                  $transaction = new Transactions();
                     $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->voucher_no = $request->input('credit_not_no');
-                    $transaction->v_date = $request->input('credit_date');
-                    $transaction->acc_id = $sales_tac_acc_id_further;
-                    $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($sales_tac_acc_id_further);
-                    $transaction->particulars = $request->description_1;
+                    $transaction->master_id = $id;
+                    $transaction->voucher_no = $cr_no;
+                    $transaction->v_date = $cr_date;
+                    $transaction->acc_id = $customer_acc_id;
+                    $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($customer_acc_id);
+                    $transaction->particulars = 'Sales Return receivable- Payable Adjustment: ' . $cr_no;
                     $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 0;
-                    $transaction->amount = $request->sales_tax_further;
-                    $transaction->username = Auth::user()->name;;
+                    $transaction->debit_credit = 0; // Credit for Accounts Receivable
+                    $transaction->amount = $total_return_gross - $total_discount_amount + $total_tax_return;
+                    $transaction->username = Auth::user()->name;
                     $transaction->status = 1;
-                    $transaction->voucher_type = 7;
+                    $transaction->voucher_type = 15;
                     $transaction->save();
-                //  $total_amout+=$request->sales_tax_further;
-
-                endif;
 
 
-                $customer_acc_id = SalesHelper::get_customer_acc_id($request->byer_id);;
-                $transaction = new Transactions();
-                $transaction = $transaction->SetConnection('mysql2');
-                $transaction->voucher_no = $request->input('credit_not_no');
-                $transaction->v_date = $request->input('credit_date');
-                $transaction->acc_id = $customer_acc_id;
-                $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($customer_acc_id);
-                $transaction->particulars = $request->description_1;
-                $transaction->opening_bal = 0;
-                $transaction->debit_credit = 0;
-                $transaction->amount = $total_amount;
-                $transaction->username = Auth::user()->name;;
-                $transaction->status = 1;
-                $transaction->voucher_type = 7;
-                $transaction->save();
 
 
+                //Advance Tax Receivable
+  
+                  $transaction = new Transactions();
+                    $transaction = $transaction->SetConnection('mysql2');
+                    $transaction->master_id = $id;
+                    $transaction->voucher_no = $cr_no;
+                    $transaction->v_date = $cr_date;
+                    $transaction->acc_id = 1777;
+                    $transaction->acc_code = '1-57-2';
+                    $transaction->particulars = 'Sales Return Advance Tax Receivable: ' . $cr_no;
+                    $transaction->opening_bal = 0;
+                    $transaction->debit_credit = 0; // Credit for Accounts Receivable
+                  $transaction->amount = $request->pst ?? 0;
+                    $transaction->username = Auth::user()->name;
+                    $transaction->status = 1;
+                    $transaction->voucher_type = 15;
+                    $transaction->save();
+
+
+
+
+                   
+
+
+
+
+
+
+          
+             
             endif;
+
             // DB::rollBack();
             // dd('out');
 
-            if ($request->type == 2):
-               
-                $data_collection = DB::Connection('mysql2')->table('stock')->where('voucher_no', $request->input('credit_not_no'))->where('status', 1);
-                $data = $data_collection->first();
-                $amount = $data_collection->sum('amount');
 
-                $transaction = new Transactions();
-                $transaction = $transaction->SetConnection('mysql2');
-                $transaction->voucher_no = $cr_no;
-                $transaction->v_date = $request->input('credit_date');
-                $transaction->acc_id = 97;
-                $transaction->acc_code = '1-2-1-1';
-                $transaction->particulars = $request->description_1;
-                $transaction->opening_bal = 0;
-                $transaction->debit_credit = 1;
-                $transaction->amount = $amount;
-                $transaction->username = Auth::user()->name;;
-                $transaction->status = 1;
-                $transaction->voucher_type = 9;
-                //    $transaction->save();
-
-
-                $transaction = new Transactions();
-                $transaction = $transaction->SetConnection('mysql2');
-                $transaction->voucher_no = $cr_no;
-                $transaction->v_date = $request->input('credit_date');
-                $transaction->acc_id = 768;
-                $transaction->acc_code = '6-1';
-                $transaction->particulars = $request->description_1;
-                $transaction->opening_bal = 0;
-                $transaction->debit_credit = 0;
-                $transaction->amount = $amount;
-                $transaction->username = Auth::user()->name;;
-                $transaction->status = 1;
-                $transaction->voucher_type = 9;
-            //    $transaction->save();
-
-
-            endif;
 
 
             $type = "Sale Return";

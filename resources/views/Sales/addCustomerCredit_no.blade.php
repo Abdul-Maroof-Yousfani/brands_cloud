@@ -212,7 +212,12 @@ else
                                                                     <input type="hidden" name="warehouse{{$counter}}" id="type" value="{{$invoice_data->warehouse_id}}"/>
                                                                     <?php $counter++; ?>
                                                                     @endforeach
+                                                                    <?php 
+                                                                    
+                                                                      $pst=CommonHelper::generic('sales_tax_invoice',array('gi_no'=>$invoice_data->gi_no),'wh_tax')->first();
+                                                                    ?>
                                                                     <input type="hidden" name="so_id" value="{{$so_id}}"/>
+                                                                   
                                                                     
                                         <?php
 
@@ -277,6 +282,7 @@ else
                                                 </tr>
                                             </table>
 
+                                             <input type="hidden" name="pst" value="{{$pst->wh_tax ?? 0}}"/>
                                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                 <div class="row">
                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -289,6 +295,8 @@ else
                                         </div>
                                     </div>
                                 </div>
+
+                                
                                 
                                 <div class="pvsSection"></div>
                                 <div class="row">

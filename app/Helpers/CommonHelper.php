@@ -5200,7 +5200,7 @@ public static function get_customer_acc_id($id)
     $customer = $customer->SetConnection('mysql2');
     $customer = $customer->where('status', 1)->where('id',$id)->first();
 
-    return $customer->acc_id;
+    return $customer->acc_id ?? null;
 }
 
     public static function get_all_account_operat()
