@@ -261,6 +261,15 @@ $m=Session::get('run_company');
 
             endif;
 
+            if ($trow->voucher_type==14):
+            $detail='sales/viewCreditNoteDetail';
+            $page_typ='Sales Return after Delivery Note';
+            $total_debit_note+=$trow->amount;
+
+            $PageTitle = 'Sales Return after Delivery Note';
+            $type='Sales Return after Delivery Note';
+            endif;
+
             if ($trow->voucher_type==2):
             $detail='fdc/viewBankPaymentVoucherDetailInDetail';
             $PageTitle = 'View Payment Voucher Detail';
