@@ -494,6 +494,12 @@ label {
                                                                                 foreach ($delivery_note_data as $row1)
                                                                                 {
                                                                                 if ($row1->bundles_id==0):
+                                                                                $product_details = CommonHelper::get_product_by_id($row1->item_id);
+                                                                                $is_tax_apply_val = $product_details->is_tax_apply ?? 0;
+                                                                                $tax_type_id_val = $product_details->tax_type_id ?? 0;
+                                                                                $tax_applied_on_val = $product_details->tax_applied_on ?? 'SALE';
+                                                                                $mrp_price_val = $product_details->mrp_price ?? 0;
+                                                                                $tax_policy_val = $product_details->tax_policy ?? '';
                                                                                 $dn_data=SalesHelper::dn_qty($row1->so_data_id,$ids);
                                                                                 $dn_qty=   $row1->qty;
                                                                                 $dn_rate=   $row1->rate;
@@ -509,6 +515,11 @@ label {
 
                                                                             ?>
                                                                             {{--hidden data--}}
+                                                                            <input type="hidden" id="is_tax_apply{{$id_count}}" value="{{$is_tax_apply_val}}" />
+                                                                            <input type="hidden" id="tax_type_id{{$id_count}}" value="{{$tax_type_id_val}}" />
+                                                                            <input type="hidden" id="tax_applied_on{{$id_count}}" value="{{$tax_applied_on_val}}" />
+                                                                            <input type="hidden" id="mrp_price{{$id_count}}" value="{{$mrp_price_val}}" />
+                                                                            <input type="hidden" id="tax_policy{{$id_count}}" value="{{$tax_policy_val}}" />
                                                                             <input type="hidden" name="description"
                                                                                 id="description" value="-" />
                                                                             <input type="hidden" name="master_id[]"
@@ -619,18 +630,38 @@ label {
                                                                                         $total_qty += $dn_qty - $return_qty;
                                                                                         $real_qty = $dn_qty - $return_qty;
 
-                                                                                        $amount = $dn_rate * $real_qty;
+                                                                                        $gross_amount = $dn_rate * $real_qty;
                                                                                         
                                                                                         $soData = CommonHelper::get_item_detials($row1->so_data_id);
 
                                                                                         $percentage_amount = $soData ? $soData->discount_percent_1 : 0;
-                                                                                        $discount_amount = ($amount * $percentage_amount) / 100;
+                                                                                        $discount_amount = ($gross_amount * $percentage_amount) / 100;
+                                                                                        $taxable_amount = $gross_amount - $discount_amount;
 
-                                                                                        $tax_percent_val = $row1->tax;
-                                                                                        $tax_amount = ($tax_percent_val * $amount) / 100;
+                                                                                        $sale_tax = $row1->tax;
+                                                                                        $taxper = 100 + $sale_tax;
+                                                                                        $tax_amount = 0;
 
-                                                                                        $net_amount = $amount - $discount_amount + $tax_amount;
+                                                                                        if ($is_tax_apply_val == 1) {
+                                                                                            if ($tax_applied_on_val == 'MRP') {
+                                                                                                if ($tax_type_id_val == 1) { // Inclusive
+                                                                                                    $tax_amount = ($real_qty * $mrp_price_val) * ($sale_tax / $taxper);
+                                                                                                } else { // Exclusive
+                                                                                                    $tax_amount = ($real_qty * $mrp_price_val) * ($sale_tax / 100);
+                                                                                                }
+                                                                                            } else { // SALE
+                                                                                                if ($tax_type_id_val == 1) { // Inclusive
+                                                                                                    $tax_amount = ($real_qty * $dn_rate) * ($sale_tax / $taxper);
+                                                                                                } else { // Exclusive
+                                                                                                    $tax_amount = ($real_qty * $dn_rate) * ($sale_tax / 100);
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                        $tax_amount = round($tax_amount, 3);
+                                                                                        $net_amount = $taxable_amount + $tax_amount;
                                                                                 ?>
+                                                                                <input type="hidden" id="discount_percent{{$id_count}}" value="{{$percentage_amount}}" />
+                                                                                <input type="hidden" id="discount_amount_val{{$id_count}}" value="{{$discount_amount}}" />
                                                                                 <td class="text-right">
                                                                                     <input style="width:150px;" readonly
                                                                                         type="text"
@@ -656,32 +687,30 @@ label {
                                                                                         name="tax{{$id_count}}"
                                                                                         id="tax{{$id_count}}"
                                                                                         value="{{$row1->tax}}" />
-
                                                                                 </td>
-                                                                            <td class="text-right">
-                                                            <input style="width:150px;" readonly type="text"
-                                                                class="form-control tax_amount"
-                                                                name="tax_amount{{$id_count}}"
-                                                                id="tax_amount{{$id_count}}"
-                                                                value="{{$tax_amount}}" />
-                                                        </td>
-
+                                                                                <td class="text-right">
+                                                                                    <input style="width:150px;" readonly type="text"
+                                                                                        class="form-control tax_amount"
+                                                                                        name="tax_amount{{$id_count}}"
+                                                                                        id="tax_amount{{$id_count}}"
+                                                                                        value="{{$tax_amount}}" />
                                                                                 </td>
                                                                                 <td class="text-right hidee">
                                                                                     <input style="width:150px;" readonly
                                                                                         type="text"
                                                                                         class="form-control gross_amount"
-                                                                                        name="discount_amount{{$id_count}}"
-                                                                                        id="discount_amount{{$id_count}}"
-                                                                                        value="{{$amount}}" />
+                                                                                        name="gross_amount{{$id_count}}"
+                                                                                        id="gross_amount{{$id_count}}"
+                                                                                        value="{{$gross_amount}}" />
                                                                                 </td>
                                                                                 <td class="text-right hidee">
                                                                                     <input style="width:150px;" readonly
                                                                                         type="text"
                                                                                         class="form-control amount total comma_seprated"
                                                                                         name="net_amount{{$id_count}}"
-                                                                                        {{-- id="amount{{$id_count}}" --}}
+                                                                                        id="amount{{$id_count}}"
                                                                                         value="{{$net_amount}}" />
+                                                                                </td>
 
                                                                             </tr>
 
@@ -763,6 +792,19 @@ label {
 
                                                                             ?>
                                                                             {{--hidden data--}}
+                                                                            <?php
+                                                                                $product_details = CommonHelper::get_product_by_id($bundle_data->item_id);
+                                                                                $is_tax_apply_val = $product_details->is_tax_apply ?? 0;
+                                                                                $tax_type_id_val = $product_details->tax_type_id ?? 0;
+                                                                                $tax_applied_on_val = $product_details->tax_applied_on ?? 'SALE';
+                                                                                $mrp_price_val = $product_details->mrp_price ?? 0;
+                                                                                $tax_policy_val = $product_details->tax_policy ?? '';
+                                                                            ?>
+                                                                            <input type="hidden" id="is_tax_apply{{$id_count}}" value="{{$is_tax_apply_val}}" />
+                                                                            <input type="hidden" id="tax_type_id{{$id_count}}" value="{{$tax_type_id_val}}" />
+                                                                            <input type="hidden" id="tax_applied_on{{$id_count}}" value="{{$tax_applied_on_val}}" />
+                                                                            <input type="hidden" id="mrp_price{{$id_count}}" value="{{$mrp_price_val}}" />
+                                                                            <input type="hidden" id="tax_policy{{$id_count}}" value="{{$tax_policy_val}}" />
                                                                             <input type="hidden" name="master_id[]"
                                                                                 id="master_id"
                                                                                 value="{{$row1->master_id}}" />
@@ -839,25 +881,41 @@ label {
                                                                                 </td>
 
                                                                                 <?php
+                                                                                    $total_qty += $dn_qty - $return_qty;
+                                                                                    $real_qty = $dn_qty - $return_qty;
 
-                                                                                    $total_qty+=$dn_qty-$return_qty;
-
-
-
-                                                                                    $amount=$dn_rate*$dn_qty;
-                                                                                    // $discount_amount=0;
-                                                                                    // $net_amount=$amount=0;
-                                                                                    // if ($row1->discount_percent!=0):
-                                                                                    // $discount_amount=($amount/100)*$discount_percent;
-                                                                                    // $net_amount=$amount-$discount_amount;
-                                                                                    // endif;
+                                                                                    $gross_amount = $dn_rate * $real_qty;
+                                                                                    
                                                                                     $soData = CommonHelper::get_item_detials($bundle_data->so_data_id);
 
-                                                                                    $net_amount=$soData->sub_total ?? 0;
-                                                                                    $discount_amount=$soData->discount_amount_1 ?? 0;
+                                                                                    $percentage_amount = $soData ? $soData->discount_percent_1 : 0;
+                                                                                    $discount_amount = ($gross_amount * $percentage_amount) / 100;
+                                                                                    $taxable_amount = $gross_amount - $discount_amount;
 
+                                                                                    $sale_tax = $dn_data->tax; // Use tax from dn_data for bundles
+                                                                                    $taxper = 100 + $sale_tax;
+                                                                                    $tax_amount = 0;
 
+                                                                                    if ($is_tax_apply_val == 1) {
+                                                                                        if ($tax_applied_on_val == 'MRP') {
+                                                                                            if ($tax_type_id_val == 1) { // Inclusive
+                                                                                                $tax_amount = ($real_qty * $mrp_price_val) * ($sale_tax / $taxper);
+                                                                                            } else { // Exclusive
+                                                                                                $tax_amount = ($real_qty * $mrp_price_val) * ($sale_tax / 100);
+                                                                                            }
+                                                                                        } else { // SALE
+                                                                                            if ($tax_type_id_val == 1) { // Inclusive
+                                                                                                $tax_amount = ($real_qty * $dn_rate) * ($sale_tax / $taxper);
+                                                                                            } else { // Exclusive
+                                                                                                $tax_amount = ($real_qty * $dn_rate) * ($sale_tax / 100);
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                    $tax_amount = round($tax_amount, 3);
+                                                                                    $net_amount = $taxable_amount + $tax_amount;
                                                                                     ?>
+                                                                                <input type="hidden" id="discount_percent{{$id_count}}" value="{{$percentage_amount}}" />
+                                                                                <input type="hidden" id="discount_amount_val{{$id_count}}" value="{{$discount_amount}}" />
                                                                                 <td class="text-right">
                                                                                     <input readonly type="text"
                                                                                         class="form-control qty"
@@ -874,30 +932,34 @@ label {
                                                                                         id="rate{{$id_count}}"
                                                                                         value="{{$dn_rate}}" />
                                                                                 </td>
-
                                                                                 <td class="text-right hidee">
                                                                                     <input readonly type="text"
                                                                                         class="form-control"
-                                                                                        name="discount_percent{{$id_count}}"
-                                                                                        id="discount_percent{{$id_count}}"
-                                                                                        value="{{$discount_percent}}" />
-
+                                                                                        name="tax{{$id_count}}"
+                                                                                        id="tax{{$id_count}}"
+                                                                                        value="{{$sale_tax}}" />
+                                                                                </td>
+                                                                                <td class="text-right">
+                                                                                    <input readonly type="text"
+                                                                                        class="form-control tax_amount"
+                                                                                        name="tax_amount{{$id_count}}"
+                                                                                        id="tax_amount{{$id_count}}"
+                                                                                        value="{{$tax_amount}}" />
                                                                                 </td>
                                                                                 <td class="text-right hidee">
                                                                                     <input readonly type="text"
-                                                                                        class="form-control "
-                                                                                        name="discount_amount{{$id_count}}"
-                                                                                        id="discount_amount{{$id_count}}"
-                                                                                        value="{{$discount_amount}}" />
+                                                                                        class="form-control gross_amount"
+                                                                                        name="gross_amount{{$id_count}}"
+                                                                                        id="gross_amount{{$id_count}}"
+                                                                                        value="{{$gross_amount}}" />
                                                                                 </td>
                                                                                 <td class="text-right hidee">
                                                                                     <input readonly type="text"
                                                                                         class="form-control amount total comma_seprated"
                                                                                         name="net_amount{{$id_count}}"
-                                                                                        {{-- id="amount{{$id_count}}" --}}
+                                                                                        id="amount{{$id_count}}"
                                                                                         value="{{$net_amount}}" />
-
-
+                                                                                </td>
                                                                             </tr>
                                                                             <?php endif;
 
@@ -1507,42 +1569,52 @@ label {
         }
 
         function calc(num) {
+            var send_qty = parseFloat($('#qty' + num).val()) || 0;
+            var rate = parseFloat($('#rate' + num).val()) || 0;
+            var total = send_qty * rate; // Gross Amount
 
+            var discount1 = parseFloat($('#discount_percent' + num).val()) || 0;
+            var discount_amount = (total / 100) * discount1;
+            
+            var taxable_amount = total - discount_amount;
+            
+            var sale_tax = parseFloat($('#tax' + num).val()) || 0;
+            var is_tax_apply = parseInt($('#is_tax_apply' + num).val()) || 0;
+            var tax_type_id = parseInt($('#tax_type_id' + num).val()) || 0;
+            var tax_applied_on = $('#tax_applied_on' + num).val();
+            var mrp_price = parseFloat($('#mrp_price' + num).val()) || 0;
+            
+            var tax_amount = 0;
+            var taxper = 100 + sale_tax;
 
-            var send_qty = parseFloat($('#qty' + num).val());
-            var rate = parseFloat($('#rate' + num).val());
-            var total = send_qty * rate;
-
-            // discount
-            var x = parseFloat($('#discount_percent' + num).val());
-            if (isNaN(x)) {
-                x = 0;
+            if (is_tax_apply === 1) {
+                if (tax_applied_on === "MRP") {
+                    if (tax_type_id === 1) {
+                        tax_amount = send_qty * mrp_price * (sale_tax / taxper);
+                    } else {
+                        tax_amount = send_qty * mrp_price * (sale_tax / 100);
+                    }
+                } else if (tax_applied_on === "SALE") {
+                    if (tax_type_id === 1) {
+                        tax_amount = send_qty * rate * (sale_tax / taxper);
+                    } else {
+                        tax_amount = send_qty * rate * (sale_tax / 100);
+                    }
+                }
             }
-            if (x > 0) {
 
-                x = x * total;
+            tax_amount = parseFloat(tax_amount.toFixed(3));
+            var net_amount = taxable_amount + tax_amount;
 
-                var discount_amount = parseFloat(x / 100);
-
-
-                $('#discount_amount' + num).val(discount_amount.toFixed(2));
-                total = total + discount_amount;
-
-            }
-
-
-            // discount end
-
-            $('#amount' + num).val(total);
-
+            $('#discount_amount_val' + num).val(discount_amount.toFixed(2));
+            $('#tax_amount' + num).val(tax_amount.toFixed(2));
+            $('#gross_amount' + num).val(total.toFixed(2));
+            $('#amount' + num).val(net_amount.toFixed(2));
 
             net();
             totalAmount();
             totalGrossAmount();
             totalTaxAmount();
-            //   sales_tax();
-
-
         }
 
         function net() {
