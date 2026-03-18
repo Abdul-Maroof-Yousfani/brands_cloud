@@ -1175,7 +1175,7 @@ class SalesDataCallController extends Controller
 
             $dataa=new SalesTaxInvoice();
             $dataa=$dataa->SetConnection('mysql2');
-            $dataa=$dataa->where('status',1)->where(function ($query) use ($so) {
+            $dataa=$dataa->where('status',1)->where('si_status',3)->where(function ($query) use ($so) {
                 $query->where('gi_no', strtolower(trim($so)))
                 // $query->where('so_no', strtolower(trim($so)))
                       ->orWhere('gi_no', strtolower(trim($so)));
