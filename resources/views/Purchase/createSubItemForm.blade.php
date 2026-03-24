@@ -262,12 +262,10 @@ $sys_code =CommonHelper::generateUniquePosNo('subitem','sys_no','ITEM');
                                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                                             <label>Tax Applied :</label><br>
                                                             <span class="rflabelsteric"></span>
-                                                            <input  type="checkbox" id="tax_applied" name="tax_applied"value="1">
-
-                                                            <label for="tax_applied"> Yes </label>
-                                                            <input type="checkbox" id="tax_applied" name="tax_applied"value="0">
-                                                            <label for="tax_applied"> No </label>
-
+                                                            <input type="checkbox" id="tax_applied_yes" class="tax-applied-toggle" name="tax_applied" value="1">
+                                                            <label for="tax_applied_yes"> Yes </label>
+                                                            <input type="checkbox" id="tax_applied_no" class="tax-applied-toggle" name="tax_applied" value="0">
+                                                            <label for="tax_applied_no"> No </label>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -795,6 +793,11 @@ $(document).ready(function() {
             } else {
                 return false;
             }
+        }
+    });
+    $('.tax-applied-toggle').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('.tax-applied-toggle').not(this).prop('checked', false);
         }
     });
 });
