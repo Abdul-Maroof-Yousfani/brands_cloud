@@ -92,7 +92,7 @@ $accType = Auth::user()->acc_type;
                                     $rerun_amount=ReuseableCode::return_amount_by_date($row1->grn_id,2,$from,$to);
                                     $rerun_amount_summary_withholding_tax=ReuseableCode::rerun_amount_summary_withholding_tax($row1->grn_id,2,$from,$to);
                                     $paid_amount=CommonHelper::PaymentPurchaseAmountCheck_aging($row1->id,$from,$to);
-                                     $remaining_data=  $purchase_amount-$rerun_amount-$paid_amount;
+                                     $remaining_data=  ($purchase_amount - $row1->sales_tax_amount) - ($rerun_amount + $rerun_amount_summary_withholding_tax)-$paid_amount;
                                     ?>
                                     @if($remaining_data>0)
                                         <tr title="grn_id={{$row1->grn_id}}">
