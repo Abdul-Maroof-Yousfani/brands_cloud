@@ -3759,13 +3759,11 @@ private function getAccountIds()
                 $credit_note_data->save();
                 $master_data_id = $credit_note_data->id;
 
-                if ($request->type == 1) {
-                    $subitem_data = DB::connection("mysql2")->table("subitem")
-                        ->select("purchase_price")
-                        ->where("id", $credit_note_data->item)
-                        ->first();
-                    $totalPurchasePriceAmount += ($subitem_data->purchase_price ?? 0) * $credit_note_data->qty;
-                }
+                $subitem_data = DB::connection("mysql2")->table("subitem")
+                    ->select("purchase_price")
+                    ->where("id", $credit_note_data->item)
+                    ->first();
+                $totalPurchasePriceAmount += ($subitem_data->purchase_price ?? 0) * $credit_note_data->qty;
 
                 $amount = CommonHelper::check_str_replace($request->input('net_amount' . $i));
                 $type =  CommonHelper::get_item_type($request->input('item_id' . $i));
@@ -4077,6 +4075,46 @@ private function getAccountIds()
                     $transaction->voucher_type = 15;
                     $transaction->save();
 
+
+
+                    //Inventory
+
+  
+                  $transaction = new Transactions();
+                    $transaction = $transaction->SetConnection('mysql2');
+                    $transaction->master_id = $id;
+                    $transaction->voucher_no = $cr_no;
+                    $transaction->v_date = $cr_date;
+                    $transaction->acc_id = 1101;
+                    $transaction->acc_code = '1-2-1';
+                    $transaction->particulars = 'Sales Return Inventory: ' . $cr_no;
+                    $transaction->opening_bal = 0;
+                    $transaction->debit_credit = 1; // Debit for Inventory
+                  $transaction->amount = $totalPurchasePriceAmount;
+                    $transaction->username = Auth::user()->name;
+                    $transaction->status = 1;
+                    $transaction->voucher_type = 15;
+                    $transaction->save();
+
+
+                     //Cost of Goods Sold (COGS)
+
+  
+                  $transaction = new Transactions();
+                    $transaction = $transaction->SetConnection('mysql2');
+                    $transaction->master_id = $id;
+                    $transaction->voucher_no = $cr_no;
+                    $transaction->v_date = $cr_date;
+                    $transaction->acc_id = 1053;
+                    $transaction->acc_code = '7-1';
+                    $transaction->particulars = 'Sales Return Cost of Goods Sold: ' . $cr_no;
+                    $transaction->opening_bal = 0;
+                    $transaction->debit_credit = 0; // Credit for COGS
+                  $transaction->amount = $totalPurchasePriceAmount;
+                    $transaction->username = Auth::user()->name;
+                    $transaction->status = 1;
+                    $transaction->voucher_type = 15;
+                    $transaction->save();
 
 
 
