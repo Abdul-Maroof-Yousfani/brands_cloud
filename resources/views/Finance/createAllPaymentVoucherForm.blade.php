@@ -423,7 +423,9 @@ $pv_no=CommonHelper::uniqe_no_for_pv(date('y'),date('m'),2);
             $('#appendData').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
 
             $.ajax({
-                url: '/get_pv_merge_chunk',
+                // url: '/get_pv_merge_chunk',
+                url: "{{ route('get_pv_merge_chunk') }}",
+
                 type: 'Get',
                 data: {Supplier:Supplier,payment_for:payment_for,paid_to_type:paid_to_type,m:m},
 
@@ -456,7 +458,8 @@ var purchase_voucher_type  =   $('input[name="purchase_voucher_type"]').val();
             $('.accountheadchunk').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
 
             $.ajax({
-                url: '/pv_acount_head_po_pi_chunk',
+               // url: '/pv_acount_head_po_pi_chunk',
+                url: "{{ route('pv_acount_head_po_pi_chunk') }}",
                 type: 'Get',
                 data: {po_or_pi:checkedValues,m:m,purchase_voucher_type:purchase_voucher_type},
 
