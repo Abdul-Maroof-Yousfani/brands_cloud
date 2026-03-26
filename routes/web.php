@@ -1140,7 +1140,7 @@ Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/getPendingApporvedMultiList', 'PurchaseDataCallController@getPendingApporvedMultiList');
     Route::get('/getPendingApporvedMultiListForSales', 'PurchaseDataCallController@getPendingApporvedMultiListForSales');
     Route::get('/getPendingApporvedMultiListForFinance', 'PurchaseDataCallController@getPendingApporvedMultiListForFinance');
-    Route::get('/vendor_outstanding_data', 'PurchaseDataCallController@vendor_outstanding_data');
+    Route::get('/vendor_outstanding_data', 'PurchaseDataCallController@vendor_outstanding_data')->name('vendor_outstanding_data');
     Route::get('/vendor_balance_ajax_data', 'PurchaseDataCallController@vendor_balance_ajax_data');
 
     Route::get('/getDetailReportAjax', 'PurchaseDataCallController@getDetailReportAjax');

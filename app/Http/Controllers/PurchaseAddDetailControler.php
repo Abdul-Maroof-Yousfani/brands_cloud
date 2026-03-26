@@ -3103,6 +3103,8 @@ class PurchaseAddDetailControler extends Controller
 
     public function addPurchaseReturnDetail(Request $request)
     {
+
+        // dd($request->all());
         DB::Connection('mysql2')->beginTransaction();
         try {
         $str = DB::Connection('mysql2')->selectOne("select max(convert(substr(`pr_no`,3,length(substr(`pr_no`,3))-4),signed integer)) reg from `purchase_return` where substr(`pr_no`,-4,2) = " . date('m') . " and substr(`pr_no`,-2,2) = " . date('y') . "")->reg;
@@ -3114,6 +3116,7 @@ class PurchaseAddDetailControler extends Controller
         $GrnNo = $request->GrnNo;
         $GrnDate = $request->GrnDate;
         $Remarks = $request->Remarks;
+        $summary_withholding_tax = $request->summary_withholding_tax;
         $PurchaseReturnInsert['grn_id'] = $GrnId;
         $PurchaseReturnInsert['pr_no'] = $PurchaseReturnNo;
         $PurchaseReturnInsert['pr_date'] = $PurchaseReturnDate;
@@ -3124,6 +3127,7 @@ class PurchaseAddDetailControler extends Controller
         $PurchaseReturnInsert['created_date'] = date('Y-m-d');
         $PurchaseReturnInsert['status'] = 1;
         $PurchaseReturnInsert['username'] = Auth::user()->name;
+        $PurchaseReturnInsert['summary_withholding_tax'] = $summary_withholding_tax;
 
 
          

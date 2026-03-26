@@ -1007,6 +1007,19 @@ $data = [
             ->net_amount;
     }
 
+public static function rerun_amount_summary_withholding_tax($grn_id, $type, $from, $to)
+{
+    $data = DB::connection('mysql2')->table('purchase_return as a')
+        ->select('summary_withholding_tax')
+        ->where('a.status', 1)
+        ->where('a.grn_id', $grn_id)
+        ->where('a.type', $type)
+        ->whereBetween('a.pr_date', [$from, $to])
+        ->first();
+
+    return $data ? $data->summary_withholding_tax : 0;
+}
+
 
     public static function get_main_sub_rights($user_id,$company_id)
     {

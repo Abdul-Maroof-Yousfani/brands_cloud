@@ -101,30 +101,28 @@ $data=ReuseableCode::get_account_year_from_to(Session::get('run_company'));
 
 
 
-        function get_data()
+    function get_data()
+{
+    var from = $('#from').val();
+    var to = $('#to').val();
+    var vendor = $('#vendor').val();
+
+    $('#data').html('<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div>');
+
+    $.ajax({
+        url: "{{ route('vendor_outstanding_data') }}",
+        type: 'GET',
+        data: {
+            from: from,
+            to: to,
+            vendor: vendor
+        },
+        success: function (response)
         {
-
-            var from= $('#from').val();
-            var to= $('#to').val();
-            var vendor= $('#vendor').val();
-            $('#data').html('<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
-
-            $.ajax({
-                url: '/pdc/vendor_outstanding_data',
-                type: 'Get',
-                data: {from: from,to:to,vendor:vendor},
-
-                success: function (response)
-                {
-
-                    $('#data').html(response);
-
-
-                }
-            });
-
-
+            $('#data').html(response);
         }
+    });
+}
 
 
        </script>

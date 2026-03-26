@@ -200,7 +200,7 @@ $invoice = DB::connection('mysql2')->table('new_purchase_voucher')
         </div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
             <label class="sf-label" style="color: #999;">Withholding Tax</label>
-            <input readonly id="summary_withholding_tax" type="text" class="form-control" value="0.00" />
+            <input name="summary_withholding_tax" readonly id="summary_withholding_tax" type="text" class="form-control" value="0.00" />
         </div>
     </div>
 

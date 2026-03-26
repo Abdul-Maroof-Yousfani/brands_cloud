@@ -90,6 +90,7 @@ $accType = Auth::user()->acc_type;
                                     <?php
                                     $purchase_amount=ReuseableCode::get_purchase_net_amount($row1->id);
                                     $rerun_amount=ReuseableCode::return_amount_by_date($row1->grn_id,2,$from,$to);
+                                    $rerun_amount_summary_withholding_tax=ReuseableCode::rerun_amount_summary_withholding_tax($row1->grn_id,2,$from,$to);
                                     $paid_amount=CommonHelper::PaymentPurchaseAmountCheck_aging($row1->id,$from,$to);
                                      $remaining_data=  $purchase_amount-$rerun_amount-$paid_amount;
                                     ?>
@@ -99,13 +100,13 @@ $accType = Auth::user()->acc_type;
                                             <td class="text-center">{{$counter++}}</td>
                                             <td class="text-center">{{$row1->pv_no}}</td>
                                             <td class="text-center">{{CommonHelper::changeDateFormat($row1->pv_date)}}</td>
-                                            <td class="text-right">{{number_format($purchase_amount,2)}}</td>
-                                            <td class="text-right">{{number_format($rerun_amount,2)}}</td>
+                                            <td class="text-right">{{number_format($purchase_amount - $row1->sales_tax_amount,2)}}</td>
+                                            <td class="text-right">{{number_format($rerun_amount + $rerun_amount_summary_withholding_tax,2)}}</td>
                                             <td class="text-right">{{number_format($paid_amount,2)}}</td>
                                             <td class="text-right">{{number_format($remaining_data,2)}}</td>
                                             <?php
-                                            $total_pi_amount+=$purchase_amount;
-                                            $total_return_amount+=$rerun_amount;
+                                            $total_pi_amount+=$purchase_amount - $row1->sales_tax_amount ;
+                                            $total_return_amount+=$rerun_amount + $rerun_amount_summary_withholding_tax;
                                             $total_paid_amount+=   $paid_amount;
                                             $total_remainig+=$remaining_data;
                                             ?>
