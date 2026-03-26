@@ -143,11 +143,19 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                             <td>
                                                                 <select style="width: 100%" class="form-control requiredField select2" name="account_id[]" id="account_id_1_2">
                                                                     <option value="">Select Account</option>
-                                                                    @foreach(CommonHelper::get_all_account_operat_with_unique_code('1-2-8') as $key => $y)
+                                                                 @foreach(CommonHelper::get_all_account() as $y)
+                                                                    <option 
+                                                                        data-url="{{ $y->balance ?? 0 }}" 
+                                                                        value="{{ $y->id }}" 
+                                                                        {{ $y->id == 87 ? 'selected' : '' }}>
+                                                                        {{ "{$y->code} ---- {$y->name} Balance (" . number_format($y->balance ?? 0, 2) . ")" }}
+                                                                    </option>
+                                                                @endforeach
+                                                                    <!-- @foreach(CommonHelper::get_all_account_operat_with_unique_code('1-2-8') as $key => $y)
                                                                         <option data-url="{{ $y->balance ?? 0 }}" value="{{ $y->id}}" @if($y->id == 87) selected @endif >
                                                                             {{ $y->code .' ---- '. $y->name.' Balance ('.number_format($y->balance,2).')'}}
                                                                         </option>
-                                                                    @endforeach
+                                                                    @endforeach -->
                                                                 </select>
                                                             </td>
                                                             <td>
@@ -164,11 +172,19 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                             <td>
                                                                 <select style="width: 100%" class="form-control select2" name="account_id[]" id="account_id_1_3">
                                                                     <option value="">Select Account</option>
-                                                                    @foreach(CommonHelper::get_gst_account() as $key => $y)
+                                                                       @foreach(CommonHelper::get_all_account() as $y)
+                                                                    <option 
+                                                                        data-url="{{ $y->balance ?? 0 }}" 
+                                                                        value="{{ $y->id }}" 
+                                                                        {{ $y->id == 87 ? 'selected' : '' }}>
+                                                                        {{ "{$y->code} ---- {$y->name} Balance (" . number_format($y->balance ?? 0, 2) . ")" }}
+                                                                    </option>
+                                                                @endforeach
+                                                                    <!-- @foreach(CommonHelper::get_gst_account() as $key => $y)
                                                                         <option value="{{ $y->id}}" data-value="{{$y->rate}}" >
                                                                             {{$y->name}}
                                                                         </option>
-                                                                    @endforeach
+                                                                    @endforeach -->
                                                                 </select>
                                                             </td>
                                                             <td>
