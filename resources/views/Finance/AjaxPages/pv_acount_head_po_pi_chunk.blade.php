@@ -745,11 +745,14 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
 
 
                 total = $('#totalamount').val();
+
+                
                 //alert(total);
-                $('#d_amount_1_1').val(total);
-                $('#d_t_amount_1').val(total);
-                $('#c_amount_1_2').val(total);
-                $('#c_t_amount_1').val(total);
+               
+$('#d_amount_1_1').val(roundedTotal);
+$('#d_t_amount_1').val(roundedTotal);
+$('#c_amount_1_2').val(roundedTotal);
+$('#c_t_amount_1').val(roundedTotal);
 
 
             }
