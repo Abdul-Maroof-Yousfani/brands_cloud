@@ -4205,6 +4205,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
  public static function PurchaseAmountCheck($new_purchase_voucher_id)
 {
+
     return DB::Connection('mysql2')->table('new_purchase_voucher as a')
         ->join('new_purchase_voucher_data as b','a.id','b.master_id')
         ->select(DB::raw('SUM(b.net_amount) - a.sales_tax_amount as total_amount'))
