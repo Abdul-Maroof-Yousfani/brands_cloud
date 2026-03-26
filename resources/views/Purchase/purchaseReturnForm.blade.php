@@ -50,13 +50,14 @@ use App\Helpers\CommonHelper;
                                                 </div>
 
                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                                    <label class="sf-label">GRN NO</label>
+                                                    <label class="sf-label">NO</label>
                                                     <span class="rflabelsteric"><strong>*</strong></span>
                                                     <select class="form-control requiredField" required name="grn_no" id="grn_no" onchange="loadGoodsReceiptNoteDetailByGrnNo()">
                                                         <option>select</option>
 
                                                         <?php ?>
                                                     </select>
+                                                    <div id="pi_details_container" style="margin-top: 5px; font-weight: bold; color: #337ab7;"></div>
                                                 </div>
                                             </div>
                                             <div class="lineHeight">&nbsp;</div>
@@ -106,6 +107,18 @@ use App\Helpers\CommonHelper;
 
             var GrnNo = $('#grn_no').val();
             var m = '<?php echo $_GET['m']?>';
+
+            // Fetch and display linked Purchase Invoice info from data attributes
+            var pi_no = $('#grn_no option:selected').data('pi-no');
+            var pi_id = $('#grn_no option:selected').data('pi-id');
+
+            if(pi_no){
+                var pi_link = '<button onclick="showDetailModelOneParamerter(\'fdc/viewPurchaseVoucherDetail\',\''+pi_id+'\',\'View Purchase Voucher\',\''+m+'\')" type="button" class="btn btn-info btn-xs" style="margin-left: 10px;">View PI Detail</button>';
+                // $('#pi_details_container').html('Purchase Invoice: ' + pi_no.toUpperCase() + pi_link);
+            } else {
+                $('#pi_details_container').html('');
+            }
+
             if(GrnNo == ''){
                 alert('Please Select Purchase Request No');
                 $('.loadGoodsReceiptNoteDetailSection').html('');

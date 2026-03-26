@@ -862,15 +862,25 @@ function addDirectgrn()
 
     public static function getGrnNoBySupplier(){
         $id = $_GET['supplier_id'];
-        echo '<option value="">Select Grn No</option>';
+        echo '<option value="">Select No</option>';
 
-        $GoodsReceiptNote = new GoodsReceiptNote();
-        $GoodsReceiptNote=$GoodsReceiptNote->SetCOnnection('mysql2');
-        $GoodsReceiptNote =$GoodsReceiptNote->where('status',1)->where('supplier_id',$id)->whereIn('grn_status',[2,3])->select('id','grn_no','grn_date')->get();
+        $GoodsReceiptNote = DB::connection('mysql2')->table('goods_receipt_note as g')
+            ->leftJoin('new_purchase_voucher as p', 'p.grn_no', '=', 'g.grn_no')
+            ->where('g.status', 1)
+            ->where('g.supplier_id', $id)
+            ->whereIn('g.grn_status', [2, 3])
+            ->select('g.id', 'g.grn_no', 'g.grn_date', 'p.pv_no as pi_no', 'p.id as pi_id')
+            ->get();
 
         foreach($GoodsReceiptNote as $row){
+            $label = strtoupper($row->grn_no) . ' => ' . CommonHelper::changeDateFormat($row->grn_date);
+            $data_attr = '';
+            if ($row->pi_no) {
+                $label .= ' (PI: ' . strtoupper($row->pi_no) . ')';
+                $data_attr = ' data-pi-no="' . $row->pi_no . '" data-pi-id="' . $row->pi_id . '"';
+            }
             ?>
-            <option value="<?php echo $row->id.'*'.$row->grn_no.'*'.$row->grn_date;?>"> <?php echo strtoupper($row->grn_no).' => '.CommonHelper::changeDateFormat($row->grn_date)?></option>
+            <option value="<?php echo $row->id.'*'.$row->grn_no.'*'.$row->grn_date;?>" <?php echo $data_attr; ?>> <?php echo $label; ?></option>
             <?php
         }
     }
