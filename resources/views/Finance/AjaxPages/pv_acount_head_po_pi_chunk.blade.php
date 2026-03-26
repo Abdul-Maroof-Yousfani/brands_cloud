@@ -79,7 +79,7 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                    $remainamount = $PurchaseAmount - $paid_amt - $return_amount;
 
 
-                                                    $remainamount_formatted = number_format($remainamount, 1, '.', '');
+                                                    $remainamount = number_format($remainamount, 1, '.', '');
                                                     ?>
 
 
