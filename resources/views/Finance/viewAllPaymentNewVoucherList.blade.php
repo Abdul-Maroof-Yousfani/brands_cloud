@@ -330,7 +330,8 @@ $AccYearTo = $AccYearDate->accyearto;
             $('#data').html('<tr><td colspan="14"><div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div></td><tr>');
 
             $.ajax({
-                url: '/fdc/getAllpvsDateAccontWiseAndTypeWise',
+                // url: '/fdc/getAllpvsDateAccontWiseAndTypeWise',
+                 url: "{{ route('getAllpvsDateAccontWiseAndTypeWise') }}",
                 type: 'Get',
                 data: { username: username, FromDate: FromDate,ToDate:ToDate,pv_no:pv_no,PaymentType:PaymentType,AccountId:AccountId,VoucherStatus:VoucherStatus,m:m},
 

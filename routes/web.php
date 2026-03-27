@@ -2405,7 +2405,7 @@ Route::get('finance/createPaymentVoucherForm', 'AllInOnePaymentVoucherController
 Route::get('finance/viewAllPaymentNewVoucherList', 'AllInOnePaymentVoucherController@viewAllPaymentNewVoucherList');
 Route::get('finance/editAllPaymentNew/{id?}', 'AllInOnePaymentVoucherController@editAllPaymentNew');
 Route::get('fdc/viewAllPaymentVoucherDetailPrint', 'AllInOnePaymentVoucherController@viewAllPaymentVoucherDetailPrint');
-Route::get('fdc/getAllpvsDateAccontWiseAndTypeWise', 'AllInOnePaymentVoucherController@getAllpvsDateAccontWiseAndTypeWise');
+Route::get('fdc/getAllpvsDateAccontWiseAndTypeWise', 'AllInOnePaymentVoucherController@getAllpvsDateAccontWiseAndTypeWise')->name('getAllpvsDateAccontWiseAndTypeWise');
 Route::post('/insertAllPayment', 'AllInOnePaymentVoucherController@insertAllPayment');
 Route::get('/get_pv_merge_chunk', 'AllInOnePaymentVoucherController@get_pv_merge_chunk')->name('get_pv_merge_chunk');
 Route::get('/pv_acount_head_po_pi_chunk', 'AllInOnePaymentVoucherController@pv_acount_head_po_pi_chunk')->name('pv_acount_head_po_pi_chunk');

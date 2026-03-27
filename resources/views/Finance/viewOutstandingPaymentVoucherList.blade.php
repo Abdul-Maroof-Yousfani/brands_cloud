@@ -135,6 +135,8 @@ $AccYearTo = $AccYearDate->accyearto;
                                                                 $makeTotalAmount = 0;
 
                                                                 foreach ($pvs as $row1) {
+
+                                                                    
                                                                 ?>
                                                                 <tr @if ($row1->type==2) style="background-color: darkgray" @endif class="tr<?php echo $row1->id ?>" id="tr<?php echo $row1->id ?>" title="<?php echo $row1->id ?>" id="1row<?php echo $counter ?>" <?php if($row1->pv_status == 1):?>  onclick="checkUncheck('1chk<?php echo $counter ?>','1row<?php echo $counter ?>')"<?php endif;?>>
 

@@ -817,6 +817,8 @@ class FinanceController extends Controller
 			->get();
 		$pvs = new NewPv();
 		$pvs = $pvs::where('status','=','1')->where('type','=','2')->orderBy('id', 'DESC')->whereBetween('pv_date',[$currentMonthStartDate,$currentMonthEndDate])->get();
+	
+	
 		CommonHelper::reconnectMasterDatabase();
 		return view('Finance.viewOutstandingPaymentVoucherList',compact('accounts','pvs'));
 	}

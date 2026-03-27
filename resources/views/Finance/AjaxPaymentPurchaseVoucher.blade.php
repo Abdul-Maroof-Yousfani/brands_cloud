@@ -48,12 +48,21 @@ $supplier_id = $_GET['supplier_id'];
                                 $PaymentAmount = CommonHelper::PaymentPurchaseAmountCheck($row1->id);
 
 
-                                $return_amount=  DB::Connection('mysql2')->table('purchase_return as a')
-                                ->join('purchase_return_data as b','a.id','b.master_id')
-                                ->where('a.status',1)
-                                ->where('a.type',2)
-                                ->where('grn_no',$row1->grn_no)
-                                ->sum('b.net_amount');
+                              
+
+
+                                
+                                $return = DB::connection('mysql2')->table('purchase_return as a')
+                                    ->join('purchase_return_data as b', 'a.id', 'b.master_id')
+                                    ->where('a.status', 1)
+                                    ->where('a.type', 2)
+                                    ->where('a.grn_no',$row1->grn_no)
+                                    ->select('a.summary_withholding_tax', DB::raw('SUM(b.net_amount) as total_net_amount'))
+                                    ->groupBy('a.id', 'a.summary_withholding_tax')
+                                    ->first();
+
+                                $return_amount = $return ? ($return->total_net_amount + $return->summary_withholding_tax) : 0;
+
 
 
                                 $po_no='';
