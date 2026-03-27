@@ -837,6 +837,28 @@ function get_brand_by_principal_group(element) {
     //     });
     // });
 
+    // Prevent form submission on Enter key press
+$(document).ready(function() {
+    $('#create-sale-order-form').on('keypress', function(e) {
+        // Check if the pressed key is Enter (key code 13)
+        if (e.which === 13) {
+            // Check if the active element is a textarea (allow Enter in textarea)
+            if ($(e.target).is('textarea')) {
+                return true; // Allow Enter in textarea for new lines
+            }
+            
+            // Check if the active element is a select2 input
+            if ($(e.target).hasClass('select2-search__field')) {
+                return true; // Allow Enter in select2 search
+            }
+            
+            // For all other inputs, prevent form submission
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+
     $('#create-sale-order-form').on('submit', function(event) {
     event.preventDefault(); // Prevent default form submission
 
@@ -1482,6 +1504,11 @@ function getBranchName(branchId) {
 
             calculation_amount();
             get_discount();
+
+            // Automatically focus on the Qty field in the same row
+            setTimeout(function() {
+                row.find('.qty').focus();
+            }, 100);
         }
     });
 }
