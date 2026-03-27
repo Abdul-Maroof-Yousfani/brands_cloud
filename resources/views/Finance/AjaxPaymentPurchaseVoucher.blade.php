@@ -112,9 +112,9 @@ $supplier_id = $_GET['supplier_id'];
                                     {{--<td class="text-center">< ?php if($row1->pv_status == 2){echo "Approved";} else{echo "Pending";}?></td>--}}
 
 
-                                    <td class="text-center hidden-print">
+                                    <!-- <td class="text-center hidden-print">
                                         <a onclick="showDetailModelOneParamerter('adjust_amount/<?php echo $row1->id;?>/{{$row1->supplier}}','','Adjust Amount','<?php echo $_GET['m']?>')" class="btn btn-sm btn-success"> AdJust Amount</a>
-                                    </td>
+                                    </td> -->
 
                                 </tr>
 
@@ -123,8 +123,8 @@ $supplier_id = $_GET['supplier_id'];
                                 }
                                 ?>
                                 <tr class="text-center" style="font-size: large;font-weight: bold">
-                                    <td colspan="8">Total</td>
-                                    <td colspan="1">{{number_format($total_paid_amount,2)}}</td>
+                                    <td colspan="10">Total</td>
+                                    <!-- <td colspan="1">{{number_format($total_paid_amount,2)}}</td> -->
                                     <td colspan="1">{{number_format($total_remaining_amount,2)}}</td>
                                     <td></td>
                                 </tr>
