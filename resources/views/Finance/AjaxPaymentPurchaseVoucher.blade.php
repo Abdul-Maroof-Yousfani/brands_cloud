@@ -162,7 +162,7 @@ $supplier_id = $_GET['supplier_id'];
                                 ?>
 
                                 <tr>
-                                    <th colspan="10" class="text-center">xxxxx</th>
+                                    <th colspan="11" class="text-center">xxxxx</th>
                                 </tr>
                                 </tbody>
                             </table>
