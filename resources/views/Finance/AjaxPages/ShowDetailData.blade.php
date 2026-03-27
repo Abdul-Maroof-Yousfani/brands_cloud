@@ -109,18 +109,19 @@ $new_purchase_voucher_payment = DB::connection('mysql2')->table('new_purchase_vo
                         </td>
 
                         <td class="text-center"><?php echo $Acc = CommonHelper::get_supplier_name($val->supplier_id); ?></td>
-                        <td class="text-center">{{number_format(ReuseableCode::get_purchased_amount($val->new_purchase_voucher_id),2)}}<?php $AmountTotal+=$val->amount;?></td>
+                        <!-- <td class="text-center">{{number_format(ReuseableCode::get_purchased_amount($val->new_purchase_voucher_id),2)}}<?php $AmountTotal+=$val->amount;?></td> -->
+                        <td class="text-center">{{number_format(CommonHelper::PurchaseAmountCheck($val->new_purchase_voucher_id),2)}}<?php $AmountTotal+=$val->amount;?></td>
                         <td class="text-center">{{number_format(ReuseableCode::return_amount($grn_id,2))}}</td>
                         <td class="text-center">{{number_format($paid_previous,2)}} <?php  ?></td>
                         <td class="text-center">{{number_format($against_this,2)}} <?php  ?></td>
                         <td class="text-center">{{$val->username}}</td>
                     </tr>
                 @endforeach
-                    <tr>
+                    <!-- <tr>
                         <td colspan="6"><strong style="font-size: 18px;">TOTAL</strong></td>
                         <td><strong style="font-size: 18px;"><?php echo number_format($AmountTotal,2);?></strong></td>
                         <td></td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
         </div>
