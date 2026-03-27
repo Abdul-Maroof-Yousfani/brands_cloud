@@ -281,7 +281,7 @@
                                                         <select style="width: 150px;" onChange="item_change(this); getCustomerAssignedWarehouse(this)"
                                                                 name="product_id[]" class="form-control itemsclass select2"
                                                                 id="product_id{{ $key }}">
-                                                            {!! CommonHelper::getSubItemByBrand($item->brand_id,$item->item_id)!!}
+                                                            {!! CommonHelper::getSubItemByBrand_new($item->brand_id,$item->item_id)!!}
                                                         </select>
                                                     </td>
                                                     <td class="hide">

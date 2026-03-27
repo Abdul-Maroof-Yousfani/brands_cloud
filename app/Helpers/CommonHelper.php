@@ -2106,6 +2106,23 @@ public static function getSubItemByBrand($id, $item_id = null)
 
 
 
+public static function getSubItemByBrand_new($id, $item_id = null)
+{
+    $html = '<option value="">Select</option>';
+
+    $products = Subitem::where(['status' => 1, 'brand_id' => $id])->get();
+
+    foreach ($products as $product) {
+        $selected = $product->id == $item_id ? 'selected' : '';
+        $html .= '<option ' . $selected . ' value="' . $product->id . '" data-cat="' . $product->main_ic_id . '">'
+            . '(' . $product->sku_code . ') - ' . $product->product_name . '</option>';
+    }
+
+    return $html;
+}
+
+
+
     public static function get_subitems() {
         return Subitem::select("id", "product_name")->get();
     }
