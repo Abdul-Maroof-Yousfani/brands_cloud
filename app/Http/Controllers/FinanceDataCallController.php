@@ -532,70 +532,36 @@ class FinanceDataCallController extends Controller
 
     public function getOutstandingpvsDateAndAccontWise(Request $request)
     {
-
         $FromDate = $request->FromDate;
         $ToDate = $request->ToDate;
         $AccountId = $request->AccountId;
         $m = $request->m;
         $amount = $request->amount;
         $ref_no = $request->ref_no;
-        $pvs=new NewPv();
-        $pvs=$pvs->SetConnection('mysql2');
-
         $VoucherStatus = $request->VoucherStatus;
-        $Clause1 = '';
-        if($VoucherStatus == ''){$Clause1 = '';}
-        else{$Clause1 = 'a.pv_status = '.$VoucherStatus;}
 
-        $Clause2 = '';
-        if($ref_no == ''){$Clause2 = '';}
-        else{$Clause2 = 'AND a.ref_bill_no = '.$ref_no;}
+        $pvs = DB::Connection('mysql2')->table('new_pv as a')
+            ->join('new_pv_data as b', 'a.id', '=', 'b.master_id')
+            ->where('a.status', 1)
+            ->whereIn('a.type', [2, 3])
+            ->whereBetween('a.pv_date', [$FromDate, $ToDate]);
 
-        $Clause3 = '';
-        if($amount == ''){$Clause3 = '';}
-        else{$Clause3 = 'AND b.amount = '.$amount;}
-        if($AccountId !=""):
-
-           $pvs= DB::Connection('mysql2')->select('select a.* from new_pv a
-            inner join new_pv_data b ON a.id=b.master_id
-            inner join accounts c ON b.acc_id=c.id
-            where a.status=1
-            '.$Clause1.'
-            '.$Clause2.'
-            '.$Clause3.'
-            and a.type IN (2,3)
-            and c.id="'.$AccountId.'"
-            and a.pv_date Between "'.$FromDate.'" and "'.$ToDate.'"
-            ');
-        else:
-       
-        $pvs=$pvs->join('new_pv_data','new_pv_data.master_id','=','new_pv.id')->select('new_pv.*')->where('new_pv.status',1)->where('new_pv.pv_status',$VoucherStatus)->whereIn('new_pv.type',[2,3])->whereBetween('new_pv.pv_date',array($FromDate,$ToDate));
-        if($VoucherStatus !="")
-        {
-            $pvs=$pvs->where('new_pv.rv_status',$VoucherStatus);
+        if ($AccountId != "") {
+            $pvs->where('b.acc_id', $AccountId);
         }
-        if($amount != ""){
-            $pvs=$pvs->where('new_pv_data.amount',$amount);
+        if ($VoucherStatus != "") {
+            $pvs->where('a.pv_status', $VoucherStatus);
         }
-        if($ref_no != ""){
-            $pvs=$pvs->where('new_pv.ref_bill_no',$ref_no);
+        if ($amount != "") {
+            $pvs->where('b.amount', $amount);
         }
-            $pvs=$pvs->groupBy('new_pv_data.master_id')->get();
-       
-       
-            // if($VoucherStatus != "")
-        // {
-        //     $pvs=$pvs->where('status',1)->where('pv_status',$VoucherStatus)->whereIn('type',[2,3])->whereBetween('pv_date',array($FromDate,$ToDate))->get();
-        // }
-        // else
-        // {
-        //     $pvs=$pvs->where('status',1)->whereIn('type',[2,3])->whereBetween('pv_date',array($FromDate,$ToDate))->get();
-        // }
-        endif;
+        if ($ref_no != "") {
+            $pvs->where('a.ref_bill_no', $ref_no);
+        }
 
+        $pvs = $pvs->select('a.*')->groupBy('a.id')->get();
 
-
-        return view('Finance.AjaxPages.getOutstandingpvsDateAndAccontWise',compact('pvs','m','FromDate','ToDate'));
+        return view('Finance.AjaxPages.getOutstandingpvsDateAndAccontWise', compact('pvs', 'm', 'FromDate', 'ToDate'));
     }
 
     public function getOutstandingpvsDateAndAccontWiseImport(Request $request)
