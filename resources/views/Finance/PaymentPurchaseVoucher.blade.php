@@ -129,22 +129,22 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                                     </div>
 
                                                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                                                        <label class="sf-label" title="Purchased Amount">Purchased</label>
+                                                                        <label class="sf-label" title="Purchased Amount">Purchased Invoice</label>
                                                                         <input readonly type="text" class="form-control" value="{{number_format($PurchaseAmount, 2)}}" />
                                                                     </div>
 
                                                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                                                        <label class="sf-label" title="Return Amount">Return</label>
+                                                                        <label class="sf-label" title="Return Amount">Return Invoice</label>
                                                                         <input readonly type="text" class="form-control" value="{{number_format($return_amount, 2)}}" />
                                                                     </div>
 
                                                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                                                        <label class="sf-label" title="Paid Amount">Paid</label>
+                                                                        <label class="sf-label" title="Paid Amount">Paid Amount</label>
                                                                         <input readonly type="text" class="form-control" value="{{number_format($paid_amt, 2)}}" />
                                                                     </div>
 
                                                                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                                                                        <label class="sf-label">Amount<span class="rflabelsteric"><strong>*</strong></span></label>
+                                                                        <label class="sf-label">Remaining Amount<span class="rflabelsteric"><strong>*</strong></span></label>
                                                                         <input type="text" class="form-control requiredField amount" onkeyup="sumed();CheckAmount('<?= $purchase_voucher->id; ?>');sum(1)" name="amount{{$purchase_voucher->id}}" id="amount{{$purchase_voucher->id}}" value="{{$remainamount}}" />
                                                                         <input type="hidden" id="existAmount{{$purchase_voucher->id}}" value="{{$remainamount}}" />
                                                                     </div>
