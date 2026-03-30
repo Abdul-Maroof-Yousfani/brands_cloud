@@ -744,7 +744,7 @@ Route::group(['prefix' => 'fdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
 
     Route::get('/filterPurchaseJournalVoucherList', 'FinanceDataCallController@filterPurchaseJournalVoucherList');
     Route::get('/filterSaleJournalVoucherList', 'FinanceDataCallController@filterSaleJournalVoucherList');
-    Route::get('/getJvsDateAndAccontWise', 'FinanceDataCallController@getJvsDateAndAccontWise');
+    Route::get('/getJvsDateAndAccontWise', 'FinanceDataCallController@getJvsDateAndAccontWise')->name('getJvsDateAndAccontWise');
     Route::get('/getGJVDateAndAccontWise', 'FinanceDataCallController@getGJVDateAndAccontWise');
     //    For Sales Start
     Route::get('/getRvsDateAndAccontWiseForSales', 'FinanceDataCallController@getRvsDateAndAccontWiseForSales');
