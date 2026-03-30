@@ -254,7 +254,7 @@ if($accType == 'client'){
                                                                 </tr>
 
                                                                 {{--For Tax Amir--}}
-                                                                <tr>
+                                                                <!-- <tr>
                                                                     <td>
                                                                         <select style="width: 100%" class="form-control requiredField select2" name="account_id[]" id="account_id_1_3">
                                                                             <option value="0">Select Account</option>
@@ -269,8 +269,8 @@ if($accType == 'client'){
                                                                     <td>
                                                                         <input onkeyup="income_tax()"  placeholder="Credit" class="form-control  " type="text" name="c_amount[]" id="tax" value="{{$new_pv_data_amt3}}" />
                                                                     </td>
-                                                                    <!-- <td class="text-center">---</td> -->
-                                                                </tr>
+                                                                    
+                                                                </tr> -->
 
                                                                 {{--For Tax--}}
 
