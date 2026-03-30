@@ -176,9 +176,10 @@ FinanceHelper::reconnectMasterDatabase();
                                         <th class="text-center" style="width:50px;background: #dfe5ec !important;">S.No</th>
 
                                       
-                                        <th style="background: #dfe5ec !important;" class="text-center ">Description</th>
+                                        
                                         <th style="background: #dfe5ec !important;" class="text-center hide">Cost Center</th>
                                           <th style="background: #dfe5ec !important;" class="text-center">Account</th>
+                                          <th style="background: #dfe5ec !important;" class="text-center ">Narration</th>
                                         <th class="text-center" style="width:150px; background: #dfe5ec !important;">Debit</th>
                                         <th class="text-center" style="width:150px; background: #dfe5ec !important;">Credit</th>
 
@@ -201,11 +202,13 @@ FinanceHelper::reconnectMasterDatabase();
                                     <tr>
                                         <td class="text-center"><?php echo $counter++;?></td>
 
-                                      <td class=""><?php  echo $row2->description;?></td>
                                         <td class="hide">{{ CommonHelper::get_sub_dept_name($row2->sub_department_id) }}</td>
 
                                         
                                           <td><?php  echo $acc_code.'---'.$acc_name ;?></td>
+
+                                      <td class=""><?php  echo $row2->description;?></td>
+
                                         <td class="debit_amount text-right">
 
                                             <?php
