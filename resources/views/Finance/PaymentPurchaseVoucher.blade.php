@@ -252,15 +252,11 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                                     <!-- <td class="text-center">---</td> -->
                                                                 </tr>
 
-                                                                <tr>
+                                                                <!-- <tr>
                                                                     <td>
                                                                         <select style="width: 100%" class="form-control select2" name="account_id[]" id="account_id_1_3">
                                                                             <option value="">Select Account</option>
-                                                                            <!-- @foreach(CommonHelper::get_gst_account() as $key => $y)
-                                                                                <option value="{{ $y->id}}" data-value="{{$y->rate}}" >
-                                                                                    {{$y->name}}
-                                                                                </option>
-                                                                            @endforeach -->
+                                                                           
                                                                              @foreach(CommonHelper::get_all_account() as $y)
                                                                     <option 
                                                                         data-url="{{ $y->balance ?? 0 }}" 
@@ -277,8 +273,8 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                                     <td>
                                                                         <input placeholder="Credit" class="form-control c_amount_1 number_format" type="text" name="c_amount[]" id="c_amount_1_3" value="" onkeyup="with_hold();sum('1')"/>
                                                                     </td>
-                                                                    <!-- <td class="text-center">---</td> -->
-                                                                </tr>
+                                                                    
+                                                                </tr> -->
 
                                                                                     {{--For Tax Amir--}}
 
