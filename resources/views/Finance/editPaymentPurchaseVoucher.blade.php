@@ -210,7 +210,7 @@ if($accType == 'client'){
                                                                     </th>
                                                                     <th class="text-center" style="width:150px;">Debit <span class="rflabelsteric"><strong>*</strong></span></th>
                                                                     <th class="text-center" style="width:150px;">Credit <span class="rflabelsteric"><strong>*</strong></span></th>
-                                                                    <th class="text-center" style="width:150px;">Action</th>
+                                                                    <!-- <th class="text-center" style="width:150px;">Action</th> -->
                                                                 </tr>
                                                                 </thead>
                                                                 <tbody class="addMorePvsDetailRows_1" id="addMorePvsDetailRows_1">
@@ -269,7 +269,7 @@ if($accType == 'client'){
                                                                     <td>
                                                                         <input onkeyup="income_tax()"  placeholder="Credit" class="form-control  " type="text" name="c_amount[]" id="tax" value="{{$new_pv_data_amt3}}" />
                                                                     </td>
-                                                                    <td class="text-center">---</td>
+                                                                    <!-- <td class="text-center">---</td> -->
                                                                 </tr>
 
                                                                 {{--For Tax--}}

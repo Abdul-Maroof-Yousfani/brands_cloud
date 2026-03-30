@@ -199,7 +199,7 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                                     </th>
                                                                     <th class="text-center" style="width:150px;">Debit <span class="rflabelsteric"><strong>*</strong></span></th>
                                                                     <th class="text-center" style="width:150px;">Credit <span class="rflabelsteric"><strong>*</strong></span></th>
-                                                                    <th class="text-center" style="width:150px;">Action</th>
+                                                                    <!-- <th class="text-center" style="width:150px;">Action</th> -->
                                                                 </tr>
                                                                 </thead>
                                                                 <tbody class="addMorePvsDetailRows_1" id="addMorePvsDetailRows_1">
@@ -277,7 +277,7 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                                     <td>
                                                                         <input placeholder="Credit" class="form-control c_amount_1 number_format" type="text" name="c_amount[]" id="c_amount_1_3" value="" onkeyup="with_hold();sum('1')"/>
                                                                     </td>
-                                                                    <td class="text-center">---</td>
+                                                                    <!-- <td class="text-center">---</td> -->
                                                                 </tr>
 
                                                                                     {{--For Tax Amir--}}
