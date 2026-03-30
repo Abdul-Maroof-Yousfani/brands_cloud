@@ -232,7 +232,7 @@ if($accType == 'client'){
                                                                     <td>
                                                                         <input readonly placeholder="Credit" class="form-control requiredField " type="text" name="c_amount[]" id="" value="" />
                                                                     </td>
-                                                                    <td class="text-center">---</td>
+                                                                    <!-- <td class="text-center">---</td> -->
                                                                 </tr>
 
                                                                 <tr>
@@ -250,7 +250,7 @@ if($accType == 'client'){
                                                                     <td>
                                                                         <input readonly placeholder="Credit" class="form-control requiredField " type="text" name="c_amount[]" id="c_amount" value="{{$new_pv_data_amt2}}" />
                                                                     </td>
-                                                                    <td class="text-center">---</td>
+                                                                    <!-- <td class="text-center">---</td> -->
                                                                 </tr>
 
                                                                 {{--For Tax Amir--}}
@@ -302,9 +302,9 @@ if($accType == 'client'){
                                                                                 class="form-control  text-right number_format"
                                                                                 value=""/>
                                                                     </td>
-                                                                    <td class="diff" style="width:150px;font-size: 20px;">
+                                                                    <!-- <td class="diff" style="width:150px;font-size: 20px;">
                                                                         <input readonly style="color: blue;font-weight: 600" class="form-control" type="text" id="diff" value=""/>
-                                                                    </td>
+                                                                    </td> -->
                                                                 </tr>
                                                                 </tbody>
                                                             </table>
