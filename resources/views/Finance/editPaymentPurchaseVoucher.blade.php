@@ -129,19 +129,9 @@ if($accType == 'client'){
                                                                 </div>
 
                                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                                                                    <label class="sf-label">Purchase Amount<span class="rflabelsteric"><strong>*</strong></span></label>
-                                                                    <input type="text" class="form-control requiredField" readonly value="{{$purchase_amount}}" />
-                                                                </div>
-
-                                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                                                                    <label class="sf-label">Paid Amount<span class="rflabelsteric"><strong>*</strong></span></label>
-                                                                    <input type="text" class="form-control requiredField" readonly value="{{$paid_amount}}" />
-                                                                </div>
-
-                                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                                                     <label class="sf-label">Amount<span class="rflabelsteric"><strong>*</strong></span></label>
                                                                     <input type="text" class="form-control requiredField amount" onkeyup="sumed();CheckAmount('<?= $new_purchase_voucher_payment_id; ?>')" name="amount{{$new_purchase_voucher_payment_id}}" id="amount{{$new_purchase_voucher_payment_id}}" value="{{$amount}}" />
-                                                                    <span>{{'('.($total_remain_amount-$amount).')'}}</span>
+                                                                    <span class="hide">{{'('.($total_remain_amount-$amount).')'}}</span>
                                                                     <input type="hidden" id="existAmount{{$new_purchase_voucher_payment_id}}" value="{{$total_remain_amount}}" />
                                                                 </div>
 
@@ -156,13 +146,13 @@ if($accType == 'client'){
                                                             <div class="row">
 
                                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                                                                    <label class="sf-label">PV Date. <span class="rflabelsteric"><strong>*</strong></span></label>
-                                                                    <input type="date" class="form-control requiredField" name="bpv_date" id="bpv_date" value="<?php echo $pv_date; ?>" />
+                                                                    <label class="radio-inline"><input @if($payment_type==1): checked="checked" @endif onclick="bank_cash()" type="radio" name="payment_type_mod" id="bank_radio" value="1">Bank</label>
+                                                                    <label class="radio-inline"><input @if($payment_type==2): checked="checked" @endif onclick="bank_cash()" type="radio" name="payment_type_mod" id="cash_radio" value="2">Cash</label>
                                                                 </div>
 
                                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                                                                    <label class="radio-inline"><input @if($payment_type==1): checked="checked" @else disabled @endif onclick="bank_cash()" type="radio" name="payment_type_mod" id="bank_radio" value="1" readonly>Bank</label>
-                                                                    <label class="radio-inline"><input @if($payment_type==2): checked="checked" @else disabled @endif onclick="bank_cash()" type="radio" name="payment_type_mod" id="cash_radio" value="2" readonly>Cash</label>
+                                                                    <label class="sf-label">PV Date. <span class="rflabelsteric"><strong>*</strong></span></label>
+                                                                    <input type="date" class="form-control requiredField" name="bpv_date" id="bpv_date" value="<?php echo $pv_date; ?>" />
                                                                 </div>
 
                                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 payment_nature">

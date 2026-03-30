@@ -1039,7 +1039,7 @@ class PaymentVoucherDetails extends Controller
             dd($e->getMessage());
         }
 
-        return Redirect::to('finance/PurchaseVoucherList?m='.$m);
+        return Redirect::to('finance/PaymentVoucherList?m='.$m);
     }
 
     public function AddPaymentPurchaseVoucher(Request $request)
