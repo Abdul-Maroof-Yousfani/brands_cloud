@@ -221,7 +221,7 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                                     <td>
                                                                         <input readonly placeholder="Credit" class="form-control c_amount_1 number_format " type="text" name="c_amount[]" id="c_amount_1_1" value="" onkeyup="sum('1')" />
                                                                     </td>
-                                                                    <td class="text-center">---</td>
+                                                                    <!-- <td class="text-center">---</td> -->
                                                                 </tr>
 
                                                                 <tr>
@@ -249,7 +249,7 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                                     <td>
                                                                         <input placeholder="Credit" class="form-control c_amount_1 number_format" type="text" name="c_amount[]" id="c_amount_1_2" value="" onkeyup="sum('1')" readonly />
                                                                     </td>
-                                                                    <td class="text-center">---</td>
+                                                                    <!-- <td class="text-center">---</td> -->
                                                                 </tr>
 
                                                                 <tr>
@@ -312,9 +312,9 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
                                                                                 class="form-control requiredField text-right number_format"
                                                                                 value=""/>
                                                                     </td>
-                                                                    <td class="diff" style="width:150px;font-size: 20px;">
+                                                                    <!-- <td class="diff" style="width:150px;font-size: 20px;">
                                                                         <input readonly style="color: blue;font-weight: 600" class="form-control" type="text" id="diff" value=""/>
-                                                                    </td>
+                                                                    </td> -->
                                                                 </tr>
                                                                 </tbody>
                                                             </table>
