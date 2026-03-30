@@ -154,7 +154,7 @@ if($accType == 'client'){
 
                                                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                                                     <label class="sf-label">Remaining Amount<span class="rflabelsteric"><strong>*</strong></span></label>
-                                                                    <input type="text" class="form-control requiredField amount" onkeyup="sumed();CheckAmount('<?= $new_purchase_voucher_payment_id; ?>')" name="amount{{$new_purchase_voucher_payment_id}}" id="amount{{$new_purchase_voucher_payment_id}}" value="{{$amount}}" />
+                                                                    <input type="text" class="form-control requiredField amount" onkeyup="sumed();CheckAmount('<?= $new_purchase_voucher_payment_id; ?>')" name="amount{{$new_purchase_voucher_payment_id}}" id="amount{{$new_purchase_voucher_payment_id}}" value="{{round($amount)}}" />
                                                                     <span class="hide">{{'('.($total_remain_amount-$amount).')'}}</span>
                                                                     <input type="hidden" id="existAmount{{$new_purchase_voucher_payment_id}}" value="{{$total_remain_amount}}" />
                                                                 </div>
