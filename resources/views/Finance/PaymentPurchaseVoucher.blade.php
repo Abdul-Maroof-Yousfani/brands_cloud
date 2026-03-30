@@ -101,31 +101,46 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
 
                                                                 <div class="row">
                                                                     <input type="hidden" name="id[]" value="{{$purchase_voucher->id}}" />
-                                                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                                                                         <label class="sf-label">Purchase No. <span class="rflabelsteric"><strong>*</strong></span></label>
                                                                         <input readonly type="text" class="form-control requiredField" name="pv_no{{$purchase_voucher->id}}" id="pv_no" value="{{$purchase_voucher->pv_no}}" />
                                                                     </div>
 
-                                                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                                                                        <label class="sf-label">Purchase Date.</label>
+                                                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                                                        <label class="sf-label">P. Date.</label>
                                                                         <span class="rflabelsteric"><strong>*</strong></span>
-                                                                        <input readonly type="date" class="form-control requiredField" name="purchase_date{{$purchase_voucher->id}}" id="demand_date_1" value="{{$purchase_voucher->pv_date}}" />
+                                                                        <input readonly type="date" class="form-control requiredField" name="purchase_date{{$purchase_voucher->id}}" id="demand_date_{{$purchase_voucher->id}}" value="{{$purchase_voucher->pv_date}}" title="{{$purchase_voucher->pv_date}}" />
                                                                     </div>
 
                                                                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                                                         <label class="sf-label">Supplier Name<span class="rflabelsteric"><strong>*</strong></span></label>
-                                                                        <input readonly type="text" class="form-control requiredField" name="supplier{{$purchase_voucher->id}}" id="" value="{{$supplier_name}}" />
+                                                                        <input readonly title="{{$supplier_name}}" type="text" class="form-control requiredField" name="supplier{{$purchase_voucher->id}}" id="" value="{{$supplier_name}}" />
                                                                     </div>
 
-                                                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                                                                         <label class="sf-label">Ref / Bill No. <span class="rflabelsteric"><strong>*</strong></span></label>
-                                                                        <input readonly type="text" class="form-control" name="slip_no{{$purchase_voucher->id}}" id="slip_no_1" value="{{$purchase_voucher->slip_no}}" />
+                                                                        <input readonly type="text" class="form-control" name="slip_no{{$purchase_voucher->id}}" id="slip_no_{{$purchase_voucher->id}}" value="{{$purchase_voucher->slip_no}}" />
                                                                     </div>
 
-                                                                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                                                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                                                                         <label class="sf-label">Bill Date.</label>
                                                                         <span class="rflabelsteric"><strong>*</strong></span>
-                                                                        <input readonly type="date" class="form-control requiredField"  name="bill_date{{$purchase_voucher->id}}" id="bill_date" value="{{$purchase_voucher->bill_date}}" />
+                                                                        <input readonly type="date" class="form-control requiredField"  name="bill_date{{$purchase_voucher->id}}" id="bill_date_{{$purchase_voucher->id}}" value="{{$purchase_voucher->bill_date}}" title="{{$purchase_voucher->bill_date}}" />
+                                                                    </div>
+
+                                                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                                                        <label class="sf-label" title="Purchased Amount">Purchased</label>
+                                                                        <input readonly type="text" class="form-control" value="{{number_format($PurchaseAmount, 2)}}" />
+                                                                    </div>
+
+                                                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                                                        <label class="sf-label" title="Return Amount">Return</label>
+                                                                        <input readonly type="text" class="form-control" value="{{number_format($return_amount, 2)}}" />
+                                                                    </div>
+
+                                                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                                                        <label class="sf-label" title="Paid Amount">Paid</label>
+                                                                        <input readonly type="text" class="form-control" value="{{number_format($paid_amt, 2)}}" />
                                                                     </div>
 
                                                                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
