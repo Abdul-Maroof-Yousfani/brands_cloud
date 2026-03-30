@@ -63,7 +63,7 @@ $approved_user=$row->approved_user;
         @endif
         @endif
         <?php // FinanceHelper::displayApproveDeleteRepostButton($m,$row->pv_status,$row->status,$row->pv_no,'pv_no','pv_status','status');?>
-        <a class="btn btn-primary prinn" target="new" href="{{ route('PaymentVoucherCheque',$id)}}"> Print Cheque </a>
+        <!-- <a class="btn btn-primary prinn" target="new" href="{{ route('PaymentVoucherCheque',$id)}}"> Print Cheque </a> -->
         <?php echo CommonHelper::displayPrintButtonInView('printBankPaymentVoucherDetail','','1');?>
     </div>
     <div style="line-height:5px;">&nbsp;</div>
