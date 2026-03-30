@@ -50,7 +50,7 @@ if($accType == 'client'){
                                             <input type="file"  name="jvexcel" id="jvexcel" style="resize:none;" class="form-control requiredField">
 
                                             <p style="margin-top: 10px; font-size: 14px;">Please download the sample Excel file to see the required format:</p>
-                                            <a href="{{ url('/public/format.xlsx') }}" class="btn btn-primary" download>Download Sample Excel File</a>
+                                            <a href="{{ asset('format.xlsx') }}"  class="btn btn-primary" download>Download Sample Excel File</a>
 
                                         </div>
 
