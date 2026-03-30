@@ -117,15 +117,26 @@ foreach($departments as $key => $y){
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label class="sf-label">Narration</label>
+                                                <span style="font-size:17px !important; color:#F00 !important;"><strong>*</strong></span>
+                                                <textarea name="description_1" style="resize:none;" class="form-control requiredField" id="desc_1_1000"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                         <div class="table-responsive">
 
                                             <table id="buildyourform" class="userlittab table table-bordered sf-table-list">
                                                 <thead>
 
                                                 <tr>
-                                                    <th class="text-center" style="width:350px;">Description <span class="rflabelsteric"><strong>*</strong></span></th>
-                                                    <th class="text-center hide" style="width:150px;">Cost Center</th>
                                                     <th class="text-center hidden-print"><a href="#" onclick="showDetailModelOneParamerter('fdc/createAccountFormAjax')" class="">Account Head</a> </th>
+                                                    <th class="text-center hide" style="width:150px;">Cost Center</th>
+                                                    <th class="text-center" style="width:350px;">Description <span class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center" style="width:150px;">Debit <span class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center" style="width:150px;">Credit <span class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center" style="width:150px;">Action</th>
@@ -135,9 +146,14 @@ foreach($departments as $key => $y){
                                                 <?php for($j = 1 ; $j <= 2 ; $j++){?>
                                                 <input type="hidden" name="rvsDataSection_1[]" class="form-control" id="rvsDataSection_1" value="<?php echo $j?>" />
                                                 <tr class="AutoNo">
-                                                    <td class="">
-                                                        <textarea class="form-control" name="desc[]" id="desc_1_{{$j}}"/></textarea>
-                                                    </td>
+                                                        <td>
+                                                            <select style="width: 100%" class="form-control requiredField select2" name="account_id[]" id="account_id{{$j}}" onchange="AppendBrand('<?php echo $j?>');Datavalidate(this)">
+                                                                <option value="0,0">Select Account</option>
+                                                                @foreach(CommonHelper::get_all_account_operat() as $key => $y)
+                                                                    <option value="{{ $y->id.','.$y->type.','.$y->code}}">{{ $y->code .' ---- '. $y->name}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </td>
                                                     <td class="hide">
                                                         <select class="form-control select2" name="sub_department_id[]" id="">
                                                             <option value="">Select Department</option>
@@ -153,14 +169,9 @@ foreach($departments as $key => $y){
                                                                 @endforeach
                                                             </select>
                                                         </td>
-                                                        <td>
-                                                            <select style="width: 100%" class="form-control requiredField select2" name="account_id[]" id="account_id{{$j}}" onchange="AppendBrand('<?php echo $j?>');Datavalidate(this)">
-                                                                <option value="0,0">Select Account</option>
-                                                                @foreach(CommonHelper::get_all_account_operat() as $key => $y)
-                                                                    <option value="{{ $y->id.','.$y->type.','.$y->code}}">{{ $y->code .' ---- '. $y->name}}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </td>
+                                                    <td class="">
+                                                        <textarea class="form-control" name="desc[]" id="desc_1_{{$j}}"/></textarea>
+                                                    </td>
                                                     <td>
                                                         <input onfocus="mainDisable('c_amount_1_<?php echo $j ?>','d_amount_1_<?php echo $j ?>');" placeholder="Debit" class="form-control d_amount_1 requiredField" maxlength="15" min="0" type="text" name="d_amount[]" id="d_amount_1_{{$j}}" onkeyup="sum('1')" value="" required="required"/>
                                                     </td>
@@ -210,15 +221,6 @@ foreach($departments as $key => $y){
                                 </div>
 
 
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                            <label class="sf-label">Description</label>
-                                            <span style="font-size:17px !important; color:#F00 !important;"><strong>*</strong></span>
-                                            <textarea  name="description_1" style="resize:none;" class="form-control requiredField" id="desc_1_1000"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -245,8 +247,8 @@ foreach($departments as $key => $y){
             $('.select2').select2();
             $('.number_format').number(true,2);
         });
-        $("#desc_1_1").on("keyup", function() {
-            $("#desc_1_1000").val($(this).val());
+        $(document).on("keyup", "#desc_1_1000", function() {
+            $('textarea[name="desc[]"]').val($(this).val());
         })
         function AppendBrand(Row)
         {
@@ -285,16 +287,16 @@ foreach($departments as $key => $y){
             x++;
 
             $('#addMorePvsDetailRows_1').append("<tr class='AutoNo' id='tr"+x+"' >"+
-                    "<td class=''>"+
-                        '<textarea class="form-control" name="desc[]" id="desc_1_'+x+'"/> </textarea>'+
+                    "<td>"+
+                    "<select style='width: 100%' class='form-control requiredField select2' name='account_id[]' id='account_id"+x+"' onchange='AppendBrand("+x+");Datavalidate(this)'><option value='0,0'>Select Account</option><?php foreach(CommonHelper::get_all_account_operat() as $Fil){?><option value='<?php echo $Fil->id.','.$Fil->type.','.$Fil->code?>'><?php echo $Fil->code.'--'.$Fil->name;?></option><?php }?></select>"+
                     "</td>"+
                     "<td class='hide'>"+
                     "<select class='form-control select2 sub_department_id' name='sub_department_id[]' id='"+x+"'><option value=''>Select Department</option>"+
                     '{!! $sub_department_input !!}'+
                     "</select>"+
                     "</td>"+
-                    "<td>"+
-                    "<select style='width: 100%' class='form-control requiredField select2' name='account_id[]' id='account_id"+x+"' onchange='AppendBrand("+x+");Datavalidate(this)'><option value='0,0'>Select Account</option><?php foreach(CommonHelper::get_all_account_operat() as $Fil){?><option value='<?php echo $Fil->id.','.$Fil->type.','.$Fil->code?>'><?php echo $Fil->code.'--'.$Fil->name;?></option><?php }?></select>"+
+                    "<td class=''>"+
+                        '<textarea class="form-control" name="desc[]" id="desc_1_'+x+'"/> </textarea>'+
                     "</td>"+
                     "<td>"+
                     '<input  placeholder="Debit" class="form-control d_amount_'+x2+' requiredField" onfocus="mainDisable('+$.trim("'c_amount_1_"+x+"','d_amount_1_"+x+"'")+')" maxlength="15" min="0" type="any" name="d_amount[]" id="d_amount_1_'+x+'" onkeyup="sum('+$.trim("'"+x2+"'")+')" value="" required="required"/>'+
