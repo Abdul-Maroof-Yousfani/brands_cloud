@@ -35,10 +35,10 @@ onclick="checkUncheck('1chk<?php echo $counter ?>','1row<?php echo $counter ?>')
         <?php if($view == true):?>
         <a onclick="showDetailModelOneParamerter('fdc/viewJournalVoucherDetail','<?php echo $row1->id;?>','View Journal Voucher Detail','<?php echo $m?>','')" class="btn btn-xs btn-success">View</a>
         <?php endif;?>
-        <?php if($edit == true):?>
+        <?php if($edit == true && $row1->jv_status != 2):?>
         <a href="<?php echo  URL::to('/finance/editJv/'.$row1->id.'?m='.$m); ?>" type="button" class="btn btn-primary btn-xs BtnHide<?php echo $row1->jv_no?>">Edit</a>
         <?php endif;?>
-        <?php if($delete):?>
+        <?php if($delete && $row1->jv_status != 2):?>
         <input class="btn btn-xs btn-danger BtnHide<?php echo $row1->jv_no?>" type="button"
                onclick="DeleteJvActivity('<?php echo $row1->id;?>','<?php echo $row1->jv_no?>','<?php echo $row1->jv_date?>','<?php echo CommonHelper::GetAmount('new_jv_data',$row1->id)?>')"
                value="Delete" />

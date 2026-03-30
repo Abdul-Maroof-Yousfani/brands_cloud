@@ -364,7 +364,8 @@ $AccYearTo = $AccYearDate->accyearto;
             $('#data').html('<tr><td colspan="14"><div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div></td><tr>');
 
             $.ajax({
-                url: '/fdc/getJvsDateAndAccontWise',
+                // url: '/fdc/getJvsDateAndAccontWise',
+                url: "{{ route('getJvsDateAndAccontWise') }}",
                 type: 'Get',
                 data: { amount:amount,FromDate: FromDate,ToDate:ToDate,VoucherStatus:VoucherStatus,AccountId:AccountId,m:m,jv_no:jv_no,username:username },
 
