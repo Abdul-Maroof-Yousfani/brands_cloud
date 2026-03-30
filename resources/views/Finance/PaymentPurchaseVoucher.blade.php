@@ -145,7 +145,7 @@ $return_amount = $return ? ($return->total_net_amount + $return->summary_withhol
 
                                                                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                                                                         <label class="sf-label">Remaining Amount<span class="rflabelsteric"><strong>*</strong></span></label>
-                                                                        <input type="text" class="form-control requiredField amount" onkeyup="sumed();CheckAmount('<?= $purchase_voucher->id; ?>');sum(1)" name="amount{{$purchase_voucher->id}}" id="amount{{$purchase_voucher->id}}" value="{{$remainamount}}" />
+                                                                        <input type="text" class="form-control requiredField amount" onkeyup="sumed();CheckAmount('<?= $purchase_voucher->id; ?>');sum(1)" name="amount{{$purchase_voucher->id}}" id="amount{{$purchase_voucher->id}}" value="{{round($remainamount)}}" />
                                                                         <input type="hidden" id="existAmount{{$purchase_voucher->id}}" value="{{$remainamount}}" />
                                                                     </div>
                                                                 </div>
