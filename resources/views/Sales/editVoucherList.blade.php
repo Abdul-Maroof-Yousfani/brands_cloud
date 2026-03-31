@@ -39,29 +39,19 @@ use App\Helpers\ReuseableCode;
 
                         @php
                             $selected_principal_groups = explode(',', $NewRvs->principal_group_id);
-                            $selected_brands = explode(',', $NewRvs->brand_id);
                         @endphp
                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                             <label>Principal Group :</label>
                             <span class="rflabelsteric"><strong>*</strong></span>
                             <select style="width:100% !important;" autofocus name="principal_group_id[]" id="principal_group"
-                                class="form-control select2" onchange="get_brand_by_principal_group(this)" multiple>
+                                class="form-control select2" multiple>
                                 @foreach(App\Helpers\CommonHelper::get_all_principal_groups() as $principal) 
                                     <option {{ in_array($principal->id, $selected_principal_groups) ? 'selected' : '' }} value="{{ $principal->id }}">{{ $principal->products_principal_group }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                                <label for="pwd">Brands</label>
-                                <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
-                                    @foreach (CommonHelper::get_all_brand() as $brand)
-                                        <option {{ in_array($brand->id, $selected_brands) ? 'selected' : '' }}
-                                            value="{{ $brand->id }}">{{ $brand->name }}</option>
-                                    @endforeach
-                                </select>
 
-                            </div>
 
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                 <label for="pwd">Territory</label>
@@ -450,22 +440,7 @@ use App\Helpers\ReuseableCode;
         }
 
 
-function get_brand_by_principal_group(element) {
-    var principal_group_id = $(element).val();
-    $.ajax({
-        // url: '/purchase/get_brand_by_principal_group',
-          url: "{{ route('get_brand_by_principal_group') }}",
-        type: 'Get',
-        data: { principal_group_id: principal_group_id },
-        success: function(response) {
-            $('#brand_id').empty().select2({
-                data: response
-            });
-            $('#brand_id').select2('open');
 
-        }
-    });
-}
 
     </script>
 @endsection
