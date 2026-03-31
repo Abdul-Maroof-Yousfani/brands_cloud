@@ -2,6 +2,30 @@
 use App\Helpers\SalesHelper;
 use App\Helpers\CommonHelper;
 use App\Helpers\ReuseableCode;
+
+$first_invoice_id = reset($val);
+$so_data_raw = DB::connection('mysql2')->table('sales_tax_invoice')
+    ->join('sales_order', 'sales_tax_invoice.so_id', '=', 'sales_order.id')
+    ->where('sales_tax_invoice.id', $first_invoice_id)
+    ->select('sales_order.principal_group_id', 'sales_order.principal_group_ids', 'sales_order.id as so_id')
+    ->first();
+
+$selected_principal_groups = [];
+$selected_brands = [];
+if ($so_data_raw) {
+    if ($so_data_raw->principal_group_ids) {
+        $selected_principal_groups = explode(',', $so_data_raw->principal_group_ids);
+    } elseif ($so_data_raw->principal_group_id) {
+        $selected_principal_groups = [$so_data_raw->principal_group_id];
+    }
+    
+    $selected_brands = DB::connection('mysql2')->table('sales_order_data')
+        ->where('master_id', $so_data_raw->so_id)
+        ->whereNotNull('brand_id')
+        ->distinct()
+        ->pluck('brand_id')
+        ->toArray();
+}
 ?>
 
 @extends('layouts.default')
@@ -79,7 +103,7 @@ use App\Helpers\ReuseableCode;
                                                                 class="form-control  select2" onchange="get_brand_by_principal_group(this)">
 
                                                                 @foreach(App\Helpers\CommonHelper::get_all_principal_groups() as $principal) 
-                                                                    <option value="{{ $principal->id }}">{{ $principal->products_principal_group }}</option>
+                                                                    <option value="{{ $principal->id }}" {{ in_array($principal->id, $selected_principal_groups) ? 'selected' : '' }}>{{ $principal->products_principal_group }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -89,7 +113,7 @@ use App\Helpers\ReuseableCode;
                                                             <span class="rflabelsteric"></span>
                                                              <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
                                                                  @foreach (CommonHelper::get_all_brand() as $brand)
-                                                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                                                    <option value="{{ $brand->id }}" {{ in_array($brand->id, $selected_brands) ? 'selected' : '' }}>{{ $brand->name }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
