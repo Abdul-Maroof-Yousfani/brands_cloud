@@ -219,10 +219,12 @@ if ($so_data_raw) {
                     <th class="text-center">Invoice Amount</th>
                     <th class="text-center">Return Amount</th>
                     <th class="text-center">Previous Received Amount</th>
-                    <th class="text-center">Received Amount</th>
-                    <th class="text-center">Tax%</th>
-                    <th class="text-center">Tax Amount</th>
-                    <th class="text-center">Discount Amount</th>
+                       <th class="text-center">Remaining Amount</th>
+                    <th class="text-center">Receive Amount</th>
+                    <th class="text-center hide">Tax%</th>
+                    <th class="text-center hide ">Tax Amount</th>
+                    <th class="text-center hide">Discount Amount</th>
+                 
                     <th class="text-center">Net Amount</th>
 
                 </tr>
@@ -275,6 +277,11 @@ if ($so_data_raw) {
                         <td class="text-center">{{ number_format($received_amount, 2) }}</td>
 
 
+
+                         <td><input readonly class="form-control remaining_amount" type="text"
+                                value="{{ $invoice_amount - $received_amount - $return_amount }}"
+                                id="remaining_amount{{ $counter }}"></td>
+
                         <td><input class="form-control receive_amount"data-invoice-amount="{{ $invoice_amount }}"
                                 data-received-amount="{{ $received_amount }}" data-return-amount="{{ $return_amount }}"
                                 onkeyup="calc('{{ $invoice_amount }}','{{ $received_amount }}','{{ $counter }}','{{ $return_amount }}',1)"
@@ -282,7 +289,7 @@ if ($so_data_raw) {
                                 type="text" name="receive_amount[]" id="receive_amount{{ $counter }}"
                                 value="{{ $invoice_amount - $received_amount - $return_amount }}"></td>
 
-                        <td><select
+                        <td class="hide"><select
                                 onchange="calc('{{ $invoice_amount }}','{{ $received_amount }}','{{ $counter }}','{{ $return_amount }}',0)"
                                 id="percent{{ $counter }}" class="form-control tex_p" name="percent[]">
                                 <option value="0">Select</option>
@@ -293,17 +300,19 @@ if ($so_data_raw) {
                         </td>
 
 
-                        <td><input
+                        <td class="hide"><input
                                 onkeyup="calc('{{ $invoice_amount }}','{{ $received_amount }}','{{ $counter }}','{{ $return_amount }}',1)"
                                 onblur="calc('{{ $invoice_amount }}','{{ $received_amount }}','{{ $counter }}','{{ $return_amount }}',1)"
                                 class="form-control tax" type="text" value="" name="tax_amount[]"
                                 id="tax_amount{{ $counter }}"></td>
 
-                        <td><input
+                        <td class="hide"><input
                                 onkeyup="calc('{{ $invoice_amount }}','{{ $received_amount }}','{{ $counter }}','{{ $return_amount }}',1)"
                                 onblur="calc('{{ $invoice_amount }}','{{ $received_amount }}','{{ $counter }}','{{ $return_amount }}',1)"
                                 class="form-control discount" type="text" value="" name="discount[]"
                                 id="discount_amount{{ $counter }}"></td>
+
+                       
 
                         <td><input class="form-control net_amount comma_seprated" type="text"
                                 value="{{ $invoice_amount - $received_amount - $return_amount }}" name="net_amount[]"
@@ -326,10 +335,13 @@ if ($so_data_raw) {
                 <input type="hidden" name="ref_bill_no" value="{{ $gi }}" />
                 <input type="hidden" name="buyers_id" value="{{ $invoice_detail->buyers_id }}" />
                 <tr class="heading" style="background-color: darkgrey">
-                    <td class="text-center" colspan="8">Total</td>
-                    <td><input readonly type="text" id="tax_total" class="form-control comma_seprated" /></td>
+                    <td class="text-center" colspan="5">Total</td>
+                    <!-- <td><input readonly type="text" id="tax_total" class="form-control comma_seprated" /></td> -->
 
-                    <td><input readonly type="text" id="discount_total" class="form-control comma_seprated" /></td>
+                    <!-- <td><input readonly type="text" id="discount_total" class="form-control comma_seprated" /></td> -->
+                     <td></td>
+                     <td></td>
+                     <td></td>
                     <td id=""><input type="text" id="net_total" class="form-control comma_seprated" /> </td>
                 </tr>
 
