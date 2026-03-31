@@ -77,7 +77,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <th class="text-center col-sm-1">Order Date</th>
                                                     <th class="text-center">Customer</th>
                                                     <th style="width: 80px;" class="text-center">Amount</th>
-                                                    <th  style="width: 75px;"class="text-center">SI Status</th>
+                                                    <th  style="width: 75px;"class="text-center">Payment Status</th>
                                                     <th class="text-center">Status</th>
 
                                                     <th style="width: 60px;" class="text-center">Action</th>
@@ -109,13 +109,13 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                         endif;
                                                         
                                                         if ($diffrence == $main_amount):
-                                                            $status = 'Open';
+                                                            $status = 'Pending';
                                                             $open++;
                                                         elseif ($main_amount != '' && $diffrence != 0):
-                                                            $status = 'partial';
+                                                            $status = 'Partial';
                                                             $parttial++;
                                                         elseif ($diffrence == 0):
-                                                            $status = 'Complete';
+                                                            $status = 'Clear';
                                                             $complete++;
                                                         endif;
                                                         
@@ -237,7 +237,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     </tr>
                                                     <tr>
                                                         <td colspan="8"></td>
-                                                        <td colspan="1" style="font-size: 13px;"><strong>Open</strong>
+                                                        <td colspan="1" style="font-size: 13px;"><strong>Pending</strong>
                                                         </td>
                                                         <td style="font-size: 13px;"><strong><?php echo $open; ?></strong>
                                                         </td>
@@ -253,7 +253,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <tr>
                                                         <td colspan="8"></td>
                                                         <td colspan="1" style="font-size: 13px;">
-                                                            <strong>Complete</strong>
+                                                            <strong>Clear</strong>
                                                         </td>
                                                         <td style="font-size: 13px;"><strong><?php echo $complete; ?></strong>
                                                         </td>
