@@ -3108,6 +3108,127 @@ public function importData(Request $request)
 	}
 
 
+	public function createadvancepaymentsupplier()
+	{
+		$chequed = db::connection('mysql2')->table('cheque')->where([
+			['status', 1],
+			['approved', 1],
+		])
+			->whereIn('issued', [0, 2])
+			->get();
+		return view('Finance.createadvancepaymentsupplier', compact('chequed'));
+
+		}
+
+
+	public function viewadvancepaymentsupplier(Request $request)
+	{
+		if ($request->ajax()) {
+
+			$query = AdvancePayment::with('child')->where('status', 1)->whereNotNull('supplier_id');
+
+			if ($request->amount_issued_status) {
+				$query->where('amount_issued_status', $request->amount_issued_status);
+			}
+			if ($request->supplier_id) {
+				$query->where('supplier_id', $request->supplier_id);
+			}
+
+			$payments = $query->where('parent_id','=',null)->get();
+
+			return view('Finance.viewadvancepaymentsupplierajax', compact('payments'));
+		}
+		return view('Finance.viewadvancepaymentsupplier');
+
+	}
+
+	public function insertadvancepaymentsupplier(Request $request)
+	{
+		// dd($request->cheque);
+		$rules = [
+			'supplier_id' => 'required',
+			'amount' => 'required|numeric',
+			'description' => 'required|string',
+			'adv_date' => 'required',
+			'pay_mode' => 'required',
+		];
+
+		if ($request->pay_mode == 1) {
+			$rules['bank'] = 'required';
+			$rules['cheque'] = 'required';
+			$rules['cheque_date'] = 'required';
+		} else if ($request->pay_mode == 2) {
+			$rules['account_recieve_id'] = 'required';
+		}
+
+		$validated = $request->validate($rules);
+
+		// dd();
+		$last = AdvancePayment::orderBy('id', 'desc')->first();
+		$nextId = $last ? $last->id + 1 : 1;
+		$paymentNo = 'ADV' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+
+		$advance = new AdvancePayment();
+		$advance->payment_no = $paymentNo;
+		$advance->supplier_id = $validated['supplier_id'];
+		$advance->amount = $validated['amount'];
+		$advance->payment_type = $validated['pay_mode'];
+		$advance->account_recieve_id = $validated['account_recieve_id'] ?? 0;
+		$advance->bank_id = $validated['bank'] ?? null;
+		;
+		$advance->cheque_no = isset($request->cheque) ? implode(',', $request->cheque) : null;
+		$advance->cheque_date = $validated['cheque_date'] ?? null;
+		;
+		$advance->adv_date = $validated['adv_date'];
+		$advance->description = $validated['description'];
+		$advance->user_name = Auth::user()->name;
+		$advance->save();
+
+		$common['particulars'] = $advance->description;
+		$common['opening_bal'] = '0';
+		$common['voucher_no'] = $paymentNo;
+		$common['voucher_type'] = 33;
+		$common['v_date'] = $advance->adv_date;
+		$common['amount'] = $advance->amount;
+		$common['date'] = $advance->adv_date;
+		$common['time'] = date("H:i:s");
+		$common['master_id'] = $advance->id;
+		$common['username'] = Auth::user()->name;
+		$sup_acc_id = CommonHelper::get_supplier_acc_id($request->supplier_id);
+		$data1 = array_merge($common, ['acc_id' => $sup_acc_id,'acc_code' => FinanceHelper::getAccountCodeByAccId($sup_acc_id), 'debit_credit' => 1]);
+		if ($request->pay_mode == 1) {
+			$data2 = array_merge($common, ['acc_id' => $advance->bank_id,'acc_code' => FinanceHelper::getAccountCodeByAccId($advance->bank_id), 'debit_credit' => 0]);
+		} else {
+			$data2 = array_merge($common, ['acc_id' => $advance->account_recieve_id,'acc_code' => FinanceHelper::getAccountCodeByAccId($advance->account_recieve_id), 'debit_credit' => 0]);
+		}
+
+		DB::connection('mysql2')->table('transactions')->insert($data1);
+		DB::connection('mysql2')->table('transactions')->insert($data2);
+
+
+		if (!empty($request->cheque)) {
+			foreach ($request->cheque as $chequeId) {
+				DB::connection('mysql2')->table('cheque')
+					->where('id', $chequeId)
+					->update([
+						'issue_against_parent_id' => $advance->id,
+						'issue_against_child_id' => 0,
+						'supplier_id' => $request->supplier_id,
+						'issue_against_code' => $paymentNo,
+						'issue_against_date' => $request->adv_date,
+						'issued' => 1,
+					]);
+			}
+		}
+
+
+
+
+
+		return redirect()->back()->with('success', 'Advance payment saved successfully.');
+	}
+
+
 		public function insertadvancepayment(Request $request)
 	{
 		// dd($request->all());

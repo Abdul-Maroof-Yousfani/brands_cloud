@@ -1633,6 +1633,16 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         endif;
     }
 
+
+    
+public static function get_supplier()
+{
+    $customer = new Supplier();
+    $customer = $customer->SetConnection('mysql2');
+    return $customer = $customer->where('status', 1)->get();
+
+}
+
     public static function get_account_code($id)
     {
         if ($id != 0):

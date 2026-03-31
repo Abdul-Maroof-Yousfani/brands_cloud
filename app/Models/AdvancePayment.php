@@ -9,4 +9,9 @@ class AdvancePayment extends Model
      protected $table = 'advance_payments';
      protected $connection = 'mysql2';
      protected $guarded = [];
+
+       public function child()
+     {
+          return $this->hasMany(AdvancePayment::class, 'parent_id', 'id');
+     }
 }
