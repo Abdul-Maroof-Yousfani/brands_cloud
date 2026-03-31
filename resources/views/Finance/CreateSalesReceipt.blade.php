@@ -61,7 +61,7 @@ use App\Helpers\ReuseableCode;
                     
 
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                        <label for="pwd">Dr Account</label>
+                        <label for="pwd">Head Account</label>
                         <select name="acc_id" id="acc_id" class="form-control select2">
                             <option value="">Select</option>
                             @foreach (CommonHelper::get_all_account() as $row)
@@ -75,9 +75,9 @@ use App\Helpers\ReuseableCode;
                                                      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                                             <label>Principal Group :</label>
                                                             <span class="rflabelsteric"><strong>*</strong></span>
-                                                            <select style="width:100% !important;" autofocus name="principal_group_id" id="principal_group"
+                                                            <select style="width:100% !important;" autofocus name="principal_group_id[]" id="principal_group" multiple
                                                                 class="form-control  select2" onchange="get_brand_by_principal_group(this)">
-                                                                <option value="">Select Category</option>
+
                                                                 @foreach(App\Helpers\CommonHelper::get_all_principal_groups() as $principal) 
                                                                     <option value="{{ $principal->id }}">{{ $principal->products_principal_group }}</option>
                                                                 @endforeach
@@ -87,8 +87,7 @@ use App\Helpers\ReuseableCode;
                                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                                             <label>Brand :</label>
                                                             <span class="rflabelsteric"></span>
-                                                             <select name="brand_id" id="brand_id" class="form-control select2">
-                                                                <option value="">Select Brand</option>
+                                                             <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
                                                                  @foreach (CommonHelper::get_all_brand() as $brand)
                                                                     <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                                                                 @endforeach

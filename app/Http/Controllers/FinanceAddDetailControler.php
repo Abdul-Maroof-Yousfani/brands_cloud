@@ -2785,8 +2785,8 @@ class FinanceAddDetailControler extends Controller
 				endif;
 
 			$territory_id = $request->territory_id;
-			$brand_id = $request->brand_id;
-			$principal_group_id = $request->principal_group_id;
+			$brand_id = is_array($request->brand_id) ? implode(',', $request->brand_id) : $request->brand_id;
+			$principal_group_id = is_array($request->principal_group_id) ? implode(',', $request->principal_group_id) : $request->principal_group_id;
 			$data=array
 			(
 				'rv_no'=>$rv_no,
