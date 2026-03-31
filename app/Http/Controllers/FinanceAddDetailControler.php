@@ -2422,6 +2422,8 @@ class FinanceAddDetailControler extends Controller
 			$data1['date'] 			= date('Y-m-d');
 			$data1['status'] 		= 1;
 			$data1['sales']			= Input::get('sales');
+			$data1['brand_id'] = is_array(Input::get('brand_id')) ? implode(',', Input::get('brand_id')) : Input::get('brand_id');
+			$data1['principal_group_id'] = is_array(Input::get('principal_group_id')) ? implode(',', Input::get('principal_group_id')) : Input::get('principal_group_id');
 			//$data1['currency_id']=		Input::get('curren');
 			//$data1['exchange_rate']=		Input::get('exchange_rate');
 			//$data1['foreign_currency']=		CommonHelper::check_str_replace(Input::get('exchange_amunt'));
@@ -3283,7 +3285,8 @@ try {
         'bank'          => $bank,
         'pay_mode'      => $pay_mode,
 		'territory_id' => $request->territory_id,
-		'brand_id' => $request->brand_id
+		'brand_id'     => is_array($request->brand_id) ? implode(',', $request->brand_id) : $request->brand_id,
+		'principal_group_id' => is_array($request->principal_group_id) ? implode(',', $request->principal_group_id) : $request->principal_group_id
     ];
 
     DB::connection('mysql2')

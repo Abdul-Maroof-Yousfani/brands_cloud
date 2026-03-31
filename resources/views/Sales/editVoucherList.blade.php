@@ -37,24 +37,26 @@ use App\Helpers\ReuseableCode;
                             </div>
 
 
+                        @php
+                            $selected_principal_groups = explode(',', $NewRvs->principal_group_id);
+                            $selected_brands = explode(',', $NewRvs->brand_id);
+                        @endphp
                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                             <label>Principal Group :</label>
                             <span class="rflabelsteric"><strong>*</strong></span>
-                            <select style="width:100% !important;" autofocus name="principal_group_id" id="principal_group"
-                                class="form-control  select2" onchange="get_brand_by_principal_group(this)">
-                                <option value="">Select Principal Group</option>
+                            <select style="width:100% !important;" autofocus name="principal_group_id[]" id="principal_group"
+                                class="form-control select2" onchange="get_brand_by_principal_group(this)" multiple>
                                 @foreach(App\Helpers\CommonHelper::get_all_principal_groups() as $principal) 
-                                    <option {{ $principal->id == $NewRvs->principal_group_id ? 'selected' : '' }} value="{{ $principal->id }}">{{ $principal->products_principal_group }}</option>
+                                    <option {{ in_array($principal->id, $selected_principal_groups) ? 'selected' : '' }} value="{{ $principal->id }}">{{ $principal->products_principal_group }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                 <label for="pwd">Brands</label>
-                                <select name="brand_id" id="brand_id" class="form-control select2">
-                                    <option value="">Select Brand</option>
+                                <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
                                     @foreach (CommonHelper::get_all_brand() as $brand)
-                                        <option {{ $brand->id == $NewRvs->brand_id ? 'selected' : '' }}
+                                        <option {{ in_array($brand->id, $selected_brands) ? 'selected' : '' }}
                                             value="{{ $brand->id }}">{{ $brand->name }}</option>
                                     @endforeach
                                 </select>

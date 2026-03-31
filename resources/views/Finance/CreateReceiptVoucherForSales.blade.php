@@ -8,6 +8,30 @@ if ($accType == 'client') {
 }
 use App\Helpers\SalesHelper;
 use App\Helpers\CommonHelper;
+
+$first_invoice_id = reset($val);
+$so_data_raw = DB::connection('mysql2')->table('sales_tax_invoice')
+    ->join('sales_order', 'sales_tax_invoice.so_id', '=', 'sales_order.id')
+    ->where('sales_tax_invoice.id', $first_invoice_id)
+    ->select('sales_order.principal_group_id', 'sales_order.principal_group_ids', 'sales_order.id as so_id')
+    ->first();
+
+$selected_principal_groups = [];
+$selected_brands = [];
+if ($so_data_raw) {
+    if ($so_data_raw->principal_group_ids) {
+        $selected_principal_groups = explode(',', $so_data_raw->principal_group_ids);
+    } elseif ($so_data_raw->principal_group_id) {
+        $selected_principal_groups = [$so_data_raw->principal_group_id];
+    }
+    
+    $selected_brands = DB::connection('mysql2')->table('sales_order_data')
+        ->where('master_id', $so_data_raw->so_id)
+        ->whereNotNull('brand_id')
+        ->distinct()
+        ->pluck('brand_id')
+        ->toArray();
+}
 ?>
 @extends('layouts.default')
 
@@ -157,6 +181,26 @@ use App\Helpers\CommonHelper;
                                                                         id="cheque_date_1" value="<?php echo date('Y-m-d'); ?>" />
                                                                 </div>
 
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 15px;">
+                                                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                                        <label class="sf-label">Principal Group</label>
+                                                                        <select name="principal_group_id[]" id="principal_group" class="form-control select2" multiple onchange="get_brand_by_principal_group(this)">
+                                                                            @foreach (CommonHelper::get_all_principal_groups() as $group)
+                                                                                <option value="{{ $group->id }}" {{ in_array($group->id, $selected_principal_groups) ? 'selected' : '' }}>{{ $group->products_principal_group }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                                        <label class="sf-label">Brand</label>
+                                                                        <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
+                                                                            @foreach (CommonHelper::get_all_brand() as $brand)
+                                                                                <option value="{{ $brand->id }}" {{ in_array($brand->id, $selected_brands) ? 'selected' : '' }}>{{ $brand->name }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -526,6 +570,21 @@ use App\Helpers\CommonHelper;
                 $('#d_amount_1_1').val(sum_amount);
                 $('#c_amount_1_2').val(sum_amount);
                 sum(1);
+            }
+
+            function get_brand_by_principal_group(element) {
+                var principal_group_id = $(element).val();
+                $.ajax({
+                    url: "{{ route('get_brand_by_principal_group') }}",
+                    type: 'Get',
+                    data: { principal_group_id: principal_group_id },
+                    success: function(response) {
+                        $('#brand_id').empty().select2({
+                            data: response
+                        });
+                        $('#brand_id').select2('open');
+                    }
+                });
             }
         </script>
         <script src="{{ URL::asset('assets/js/select2/js_tabindex.js') }}"></script>
