@@ -419,7 +419,11 @@ function calc(invoice_amount, previous_amount, counter, return_amount, type) {
     if (isNaN(previous_amount)) previous_amount = 0;
 
     var actual_amount = invoice_amount - previous_amount - return_amount;
-    var receive_amount = parseFloat($('#receive_amount' + counter).val());
+    // var receive_amount = parseFloat($('#receive_amount' + counter).val());
+
+var receive_amount = parseFloat($('#receive_amount' + counter).val()) || 0;
+receive_amount = Math.round(receive_amount);
+
     if (isNaN(receive_amount)) receive_amount = 0;
 
     if (receive_amount > actual_amount) {
