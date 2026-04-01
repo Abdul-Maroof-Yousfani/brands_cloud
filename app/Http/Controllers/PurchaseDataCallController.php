@@ -4156,4 +4156,81 @@ public function get_stock_location_wise(Request $request)
 
         return view('Purchase.AjaxPages.getPurchaseReportDashboardAjax', compact('purchase_data'));
     }
+
+    public function getPurchaseJournalAjax(Request $request) {
+        $m = $request->m;
+        CommonHelper::companyDatabaseConnection($m);
+
+        $query = DB::Connection('mysql2')->table('new_purchase_voucher as m')
+            ->join('new_purchase_voucher_data as d', 'm.id', '=', 'd.master_id')
+            ->join('supplier as s', 'm.supplier', '=', 's.id')
+            ->leftJoin('subitem as i', 'd.sub_item', '=', 'i.id')
+            ->leftJoin('brands as b', 'i.brand_id', '=', 'b.id')
+            ->where('m.status', 1);
+
+        // Handle Duration
+        if ($request->filled('duration')) {
+            $duration = $request->duration;
+            $today = date('Y-m-d');
+            if ($duration == 'today') {
+                $query->whereDate('m.pv_date', $today);
+            } elseif ($duration == 'last_30_days') {
+                $query->whereDate('m.pv_date', '>=', date('Y-m-d', strtotime('-30 days')));
+            } elseif ($duration == 'last_6_months') {
+                $query->whereDate('m.pv_date', '>=', date('Y-m-d', strtotime('-6 months')));
+            } elseif ($duration == 'this_year') {
+                $query->whereYear('m.pv_date', date('Y'));
+            } elseif ($duration == 'custom') {
+                if ($request->filled('from_date')) $query->whereDate('m.pv_date', '>=', $request->from_date);
+                if ($request->filled('to_date')) $query->whereDate('m.pv_date', '<=', $request->to_date);
+            }
+        }
+
+        if ($request->filled('principals')) {
+            $query->whereIn('m.supplier', $request->principals);
+        }
+
+        if ($request->filled('product_type')) {
+            $query->where('i.product_type_id', $request->product_type);
+        }
+
+        if ($request->filled('item_ids')) {
+            $query->whereIn('d.sub_item', $request->item_ids);
+        }
+
+        if ($request->filled('brand_ids')) {
+            $query->whereIn('i.brand_id', $request->brand_ids);
+        }
+
+        if ($request->filled('types')) {
+            $query->whereIn('i.type', $request->types);
+        }
+
+        if ($request->filled('warehouse_ids')) {
+            $query->whereIn('m.warehouse', $request->warehouse_ids);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('s.name', 'like', "%$search%")
+                  ->orWhere('m.pv_no', 'like', "%$search%")
+                  ->orWhere('m.slip_no', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('m.pv_status', $request->status);
+        }
+
+        $purchase_data = $query->select(
+            'm.pv_no', 'm.pv_date', 'm.pv_status', 'm.slip_no as vendor_invoice', 'm.description as notes',
+            's.name as supplier_name', 'i.product_name', 'i.packing', 'i.pack_size', 'b.name as brand_name',
+            'd.qty', 'd.rate', 'd.amount', 'd.discount_amount', 'd.tax_amount', 'd.net_amount'
+        )->orderBy('m.pv_date', 'desc')->paginate(25);
+
+        CommonHelper::reconnectMasterDatabase();
+
+        return view('Purchase.AjaxPages.getPurchaseJournalAjax', compact('purchase_data'))->render();
+    }
 }
