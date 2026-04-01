@@ -4283,4 +4283,64 @@ public function get_stock_location_wise(Request $request)
 
         return view('Purchase.AjaxPages.getPurchaseReturnReportAjax', compact('purchase_data'))->render();
     }
+
+    public function getPurchasePriceHistoryAjax(Request $request) {
+        $m = $request->m;
+        CommonHelper::companyDatabaseConnection($m);
+
+        $query = DB::Connection('mysql2')->table('new_purchase_voucher as m')
+            ->join('new_purchase_voucher_data as d', 'm.id', '=', 'd.master_id')
+            ->join('supplier as s', 'm.supplier', '=', 's.id')
+            ->leftJoin('subitem as i', 'd.sub_item', '=', 'i.id')
+            ->leftJoin('brands as b', 'i.brand_id', '=', 'b.id')
+            ->where('m.status', 1);
+
+        if ($request->filled('item_ids')) {
+            $query->whereIn('d.sub_item', $request->item_ids);
+        }
+
+        if ($request->filled('principals')) {
+            $query->whereIn('m.supplier', $request->principals);
+        }
+
+        if ($request->filled('branch_ids')) {
+            $query->whereIn('m.sub_department_id', $request->branch_ids);
+        }
+
+        if ($request->filled('brand_ids')) {
+            $query->whereIn('i.brand_id', $request->brand_ids);
+        }
+
+        if ($request->filled('warehouse_ids')) {
+            $query->whereIn('m.warehouse', $request->warehouse_ids);
+        }
+
+        if ($request->filled('duration')) {
+            $duration = $request->duration;
+            if ($duration == 'today') $query->whereDate('m.pv_date', date('Y-m-d'));
+            elseif ($duration == 'last_30_days') $query->whereDate('m.pv_date', '>=', date('Y-m-d', strtotime('-30 days')));
+            elseif ($duration == 'custom') {
+                if ($request->filled('from_date')) $query->whereDate('m.pv_date', '>=', $request->from_date);
+                if ($request->filled('to_date')) $query->whereDate('m.pv_date', '<=', $request->to_date);
+            }
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('i.product_name', 'like', "%$search%")
+                  ->orWhere('s.name', 'like', "%$search%")
+                  ->orWhere('m.pv_no', 'like', "%$search%");
+            });
+        }
+
+        $purchase_data = $query->select(
+            'm.pv_no', 'm.pv_date', 's.name as supplier_name', 'i.product_name',
+            'd.qty', 'd.rate', 'd.net_amount', 'b.name as brand_name'
+        )->orderBy('i.product_name', 'asc')->orderBy('m.pv_date', 'desc')->paginate(25);
+
+        CommonHelper::reconnectMasterDatabase();
+
+        return view('Purchase.AjaxPages.getPurchasePriceHistoryAjax', compact('purchase_data'))->render();
+    }
 }

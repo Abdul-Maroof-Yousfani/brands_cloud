@@ -160,6 +160,27 @@ class PurchaseController extends Controller
         return view('Purchase.purchaseReturnReport', compact('Principals'));
     }
 
+    public function purchasePriceHistoryReport(Request $request) {
+        $m = $request->m;
+        CommonHelper::companyDatabaseConnection($m);
+
+        $Stores = DB::Connection('mysql2')->table('customers')->where('status', 1)->get();
+        $Employees = DB::Connection('mysql2')->table('employee')->where('status', 1)->get();
+        $Branches = DB::Connection('mysql2')->table('branch')->where('status', 1)->get();
+        $Items = DB::Connection('mysql2')->table('subitem')->where('status', 1)->orderBy('product_name')->get();
+        $Brands = DB::Connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
+        $Types = DB::Connection('mysql2')->table('type')->where('status', 1)->get();
+        $Warehouses = DB::Connection('mysql2')->table('warehouse')->where('status', 1)->orderBy('name')->get();
+       
+        $Principals = DB::Connection('mysql2')->table('supplier')->where('status', 1)->get();
+
+        CommonHelper::reconnectMasterDatabase();
+
+       
+
+        return view('Purchase.purchasePriceHistoryReport', compact('Stores', 'Employees', 'Branches', 'Items', 'Brands', 'Types', 'Warehouses', 'Principals'));
+    }
+
     public function purchaseReportDashboard(){
         $Items = DB::connection('mysql2')->table('subitem')->where('status', 1)->orderBy('product_name')->get();
         $Brands = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
