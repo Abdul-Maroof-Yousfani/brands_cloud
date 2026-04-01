@@ -1002,6 +1002,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
     Route::get('/addOpeningAgainstVendorForm', 'PurchaseController@addOpeningAgainstVendorForm');
     Route::get('/purchaseJournal', 'PurchaseController@purchaseJournal');
     Route::get('/purchaseReportDashboard', 'PurchaseController@purchaseReportDashboard');
+    Route::get('/purchaseReturnReport', 'PurchaseController@purchaseReturnReport');
 });
 
 
@@ -1146,6 +1147,7 @@ Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/vendor_balance_ajax_data', 'PurchaseDataCallController@vendor_balance_ajax_data');
     Route::get('/getPurchaseReportDashboardAjax', 'PurchaseDataCallController@getPurchaseReportDashboardAjax')->name('getPurchaseReportDashboardAjax');
     Route::get('/getPurchaseJournalAjax', 'PurchaseDataCallController@getPurchaseJournalAjax')->name('getPurchaseJournalAjax');
+    Route::get('/getPurchaseReturnReportAjax', 'PurchaseDataCallController@getPurchaseReturnReportAjax')->name('getPurchaseReturnReportAjax');
 
     Route::get('/getDetailReportAjax', 'PurchaseDataCallController@getDetailReportAjax');
 
