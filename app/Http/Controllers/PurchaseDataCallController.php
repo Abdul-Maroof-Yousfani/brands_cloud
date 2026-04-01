@@ -4343,4 +4343,66 @@ public function get_stock_location_wise(Request $request)
 
         return view('Purchase.AjaxPages.getPurchasePriceHistoryAjax', compact('purchase_data'))->render();
     }
+
+    public function getPendingPurchasePaymentAjax(Request $request) {
+        $m = $request->m;
+        CommonHelper::companyDatabaseConnection($m);
+
+        $total_amount_sql = '(SELECT SUM(net_amount) FROM new_purchase_voucher_data WHERE master_id = m.id AND staus=1)';
+        $paid_amount_sql = '(SELECT SUM(amount) FROM new_purchase_voucher_payment WHERE new_purchase_voucher_id = m.id AND status=1)';
+
+        $query = DB::Connection('mysql2')->table('new_purchase_voucher as m')
+            ->join('supplier as s', 'm.supplier', '=', 's.id')
+            ->where('m.status', 1);
+
+        // Subqueries for totals
+        $query->select(
+            'm.id', 'm.pv_no', 'm.pv_date', 's.name as supplier_name',
+            DB::raw($total_amount_sql . ' as total_amount'),
+            DB::raw($paid_amount_sql . ' as paid_amount')
+        );
+
+        // Filters
+        if ($request->filled('duration')) {
+            $duration = $request->duration;
+            if ($duration == 'today') $query->whereDate('m.pv_date', date('Y-m-d'));
+            elseif ($duration == 'last_30_days') $query->whereDate('m.pv_date', '>=', date('Y-m-d', strtotime('-30 days')));
+            elseif ($duration == 'this_month') $query->whereMonth('m.pv_date', date('m'))->whereYear('m.pv_date', date('Y'));
+            elseif ($duration == 'custom') {
+                if ($request->filled('from_date')) $query->whereDate('m.pv_date', '>=', $request->from_date);
+                if ($request->filled('to_date')) $query->whereDate('m.pv_date', '<=', $request->to_date);
+            }
+        }
+
+        if ($request->filled('principal')) {
+            $query->where('m.supplier', $request->principal);
+        }
+
+        if ($request->filled('status')) {
+            $status = $request->status;
+            if ($status == 'unpaid') {
+                $query->whereRaw("COALESCE($paid_amount_sql, 0) <= 0");
+            } elseif ($status == 'partial') {
+                $query->whereRaw("COALESCE($paid_amount_sql, 0) > 0 AND COALESCE($paid_amount_sql, 0) < $total_amount_sql");
+            } elseif ($status == 'paid') {
+                $query->whereRaw("COALESCE($paid_amount_sql, 0) >= $total_amount_sql AND COALESCE($total_amount_sql, 0) > 0");
+            } elseif ($status == 'pending') {
+                $query->whereRaw("COALESCE($paid_amount_sql, 0) < $total_amount_sql");
+            }
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('s.name', 'like', "%$search%")
+                  ->orWhere('m.pv_no', 'like', "%$search%");
+            });
+        }
+
+        $purchase_data = $query->orderBy('m.pv_date', 'desc')->paginate(25);
+
+        CommonHelper::reconnectMasterDatabase();
+
+        return view('Purchase.AjaxPages.getPendingPurchasePaymentAjax', compact('purchase_data'))->render();
+    }
 }
