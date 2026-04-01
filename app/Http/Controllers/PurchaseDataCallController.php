@@ -4093,4 +4093,67 @@ public function get_stock_location_wise(Request $request)
 
 
 
+    public function getPurchaseReportDashboardAjax(Request $request) {
+        $m = $request->m;
+        CommonHelper::companyDatabaseConnection($m);
+
+        $query = DB::table('new_purchase_voucher_data as d')
+            ->join('new_purchase_voucher as m', 'm.id', '=', 'd.master_id')
+            ->join('supplier as s', 's.id', '=', 'm.supplier')
+            ->join('subitem as i', 'i.id', '=', 'd.sub_item')
+            ->leftJoin('brands as b', 'b.id', '=', 'i.brand_id')
+            ->where('d.additional_exp', 0) 
+            ->where('m.status', 1);
+
+        if ($request->duration) {
+            $today = date('Y-m-d');
+            if ($request->duration == 'today') {
+                $query->whereDate('m.pv_date', $today);
+            } elseif ($request->duration == 'last_30_days') {
+                $query->whereBetween('m.pv_date', [date('Y-m-d', strtotime('-30 days')), $today]);
+            } elseif ($request->duration == 'last_6_months') {
+                $query->whereBetween('m.pv_date', [date('Y-m-d', strtotime('-6 months')), $today]);
+            } elseif ($request->duration == 'custom' && $request->from_date && $request->to_date) {
+                $query->whereBetween('m.pv_date', [$request->from_date, $request->to_date]);
+            }
+        }
+
+        if ($request->branch && $request->branch != 'all') {
+            $query->where('m.branch_id', $request->branch);
+        }
+
+        if ($request->item_ids && is_array($request->item_ids)) {
+            $query->whereIn('d.sub_item', $request->item_ids);
+        }
+
+        if ($request->brand_ids && is_array($request->brand_ids)) {
+            $query->whereIn('i.brand_id', $request->brand_ids);
+        }
+        
+        if ($request->types && is_array($request->types)) {
+            $query->whereIn('i.type', $request->types); 
+        }
+
+        if ($request->status) {
+            $query->where('m.pv_status', $request->status);
+        }
+
+        if ($request->search) {
+            $search = '%' . $request->search . '%';
+            $query->where(function($q) use ($search) {
+                $q->where('s.name', 'like', $search)
+                  ->orWhere('m.pv_no', 'like', $search)
+                  ->orWhere('m.slip_no', 'like', $search);
+            });
+        }
+
+        $purchase_data = $query->select(
+            'm.pv_no', 'm.pv_date', 'm.pv_status', 's.name as supplier_name',
+            'i.product_name', 'b.name as brand_name', 'd.qty', 'd.rate', 'd.net_amount'
+        )->orderBy('m.pv_date', 'desc')->paginate(25);
+
+        CommonHelper::reconnectMasterDatabase();
+
+        return view('Purchase.AjaxPages.getPurchaseReportDashboardAjax', compact('purchase_data'));
+    }
 }

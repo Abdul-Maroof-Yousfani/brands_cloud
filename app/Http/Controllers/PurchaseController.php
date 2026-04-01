@@ -136,6 +136,15 @@ class PurchaseController extends Controller
         return view('Purchase.purchaseInvoiceReportPage');
     }
 
+    public function purchaseReportDashboard(){
+        $Items = DB::connection('mysql2')->table('subitem')->where('status', 1)->orderBy('product_name')->get();
+        $Brands = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
+        $Warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->orderBy('name')->get();
+        $Types = DB::connection('mysql2')->table('type')->where('status', 1)->get();
+        $Branches = DB::connection('mysql2')->table('branch')->get();
+        return view('Purchase.purchaseReportDashboard', compact('Items', 'Brands', 'Warehouses', 'Types', 'Branches'));
+    }
+
     public function aqmsStockReportPage(){
 
         return view('Purchase.aqmsStockReportPage');
