@@ -189,6 +189,15 @@ class PurchaseController extends Controller
         return view('Purchase.pendingPurchasePaymentReport', compact('Principals'));
     }
 
+    public function purchaseCreditNoteReport(Request $request) {
+        $m = $request->m;
+        CommonHelper::companyDatabaseConnection($m);
+        $Principals = DB::Connection('mysql2')->table('supplier')->where('status', 1)->get();
+        $Branches = DB::Connection('mysql2')->table('branch')->where('status', 1)->get();
+        CommonHelper::reconnectMasterDatabase();
+        return view('Purchase.purchaseCreditNoteReport', compact('Principals', 'Branches'));
+    }
+
     public function purchaseReportDashboard(){
         $Items = DB::connection('mysql2')->table('subitem')->where('status', 1)->orderBy('product_name')->get();
         $Brands = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();

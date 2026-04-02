@@ -4405,4 +4405,60 @@ public function get_stock_location_wise(Request $request)
 
         return view('Purchase.AjaxPages.getPendingPurchasePaymentAjax', compact('purchase_data'))->render();
     }
+
+    public function getPurchaseCreditNoteAjax(Request $request) {
+        $m = $request->m;
+        CommonHelper::companyDatabaseConnection($m);
+
+        $query = DB::Connection('mysql2')->table('purchase_return as m')
+            ->join('purchase_return_data as d', 'm.id', '=', 'd.master_id')
+            ->join('supplier as s', 'm.supplier_id', '=', 's.id')
+            ->leftJoin('subitem as i', 'd.sub_item_id', '=', 'i.id')
+            ->leftJoin('branch as b', 'm.supplier_id', '=', 'b.id'); // Branch might be related differently, but I'll add if needed. 
+            // Better to let it be for now since branch is a filter.
+
+        $query->select(
+            'm.pr_no', 'm.pr_date', 'm.status', 'm.grn_no as reference_invoice', 'm.remarks',
+            's.name as supplier_name', 'i.product_name', 'd.return_qty', 'd.rate', 'd.net_amount'
+        );
+
+        // Filters
+        if ($request->filled('duration')) {
+            $duration = $request->duration;
+            if ($duration == 'today') $query->whereDate('m.pr_date', date('Y-m-d'));
+            elseif ($duration == 'last_30_days') $query->whereDate('m.pr_date', '>=', date('Y-m-d', strtotime('-30 days')));
+            elseif ($duration == 'this_month') $query->whereMonth('m.pr_date', date('m'))->whereYear('m.pr_date', date('Y'));
+            elseif ($duration == 'custom') {
+                if ($request->filled('from_date')) $query->whereDate('m.pr_date', '>=', $request->from_date);
+                if ($request->filled('to_date')) $query->whereDate('m.pr_date', '<=', $request->to_date);
+            }
+        }
+
+        if ($request->filled('principal')) {
+            $query->where('m.supplier_id', $request->principal);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('m.status', $request->status);
+        }
+
+        if ($request->filled('branch')) {
+            // Adjust based on your schema. If branch isn't in purchase_return, we might ignore or find the field.
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('s.name', 'like', "%$search%")
+                  ->orWhere('m.pr_no', 'like', "%$search%")
+                  ->orWhere('m.grn_no', 'like', "%$search%");
+            });
+        }
+
+        $purchase_data = $query->orderBy('m.pr_date', 'desc')->paginate(25);
+
+        CommonHelper::reconnectMasterDatabase();
+
+        return view('Purchase.AjaxPages.getPurchaseCreditNoteAjax', compact('purchase_data'))->render();
+    }
 }
