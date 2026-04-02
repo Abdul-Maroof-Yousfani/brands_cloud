@@ -4461,4 +4461,51 @@ public function get_stock_location_wise(Request $request)
 
         return view('Purchase.AjaxPages.getPurchaseCreditNoteAjax', compact('purchase_data'))->render();
     }
+
+    public function getPurchaseDebitNoteAjax(Request $request) {
+        $m = $request->m;
+        $fromDate = $request->from_date;
+        $to = $request->to_date;
+        $duration = $request->duration;
+        $principalId = $request->principal;
+        $status = $request->status;
+
+        CommonHelper::companyDatabaseConnection($m);
+
+        if ($duration == 'today') {
+            $fromDate = date('Y-m-d'); $to = date('Y-m-d');
+        } elseif ($duration == 'this_month') {
+            $fromDate = date('Y-m-01'); $to = date('Y-m-t');
+        } elseif ($duration == 'last_30_days') {
+            $fromDate = date('Y-m-d', strtotime('-30 days')); $to = date('Y-m-d');
+        }
+
+        $query = DB::connection('mysql2')->table('purchase_return as pr')
+            ->join('purchase_return_data as prd', 'pr.id', '=', 'prd.master_id')
+            ->join('supplier as s', 'pr.supplier_id', '=', 's.id')
+            ->join('subitem as si', 'prd.sub_item_id', '=', 'si.id')
+            ->where('pr.status', '!=', 0)
+            ->select(
+                'pr.pr_no', 'pr.pr_date', 'pr.grn_no', 'pr.status',
+                's.name as supplier_name', 
+                'si.product_name as item_details',
+                'prd.return_qty', 'prd.rate', 'prd.net_amount'
+            );
+
+        if ($fromDate && $to) {
+            $query->whereBetween('pr.pr_date', [$fromDate, $to]);
+        }
+        if ($principalId) {
+            $query->where('pr.supplier_id', $principalId);
+        }
+        if ($status != "") {
+            $query->where('pr.status', $status);
+        }
+
+        $debitNotes = $query->orderBy('pr.pr_date', 'desc')->paginate(20);
+
+        CommonHelper::reconnectMasterDatabase();
+        return view('Purchase.AjaxPages.get_purchase_debit_note_ajax', compact('debitNotes', 'm'))->render();
+    }
 }
+
