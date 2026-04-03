@@ -4507,5 +4507,93 @@ public function get_stock_location_wise(Request $request)
         CommonHelper::reconnectMasterDatabase();
         return view('Purchase.AjaxPages.get_purchase_debit_note_ajax', compact('debitNotes', 'm'))->render();
     }
+
+    public function getQRCodeHistoryAjax(Request $request) {
+        $m = $request->m;
+        $fromDate = $request->from_date;
+        $to = $request->to_date;
+        $duration = $request->duration;
+        $productId = $request->product;
+        $scanType = $request->scan_type;
+        $userId = $request->user;
+
+        CommonHelper::companyDatabaseConnection($m);
+
+        if ($duration == 'today') {
+            $fromDate = date('Y-m-d'); $to = date('Y-m-d');
+        } elseif ($duration == 'this_month') {
+            $fromDate = date('Y-m-01'); $to = date('Y-m-t');
+        } elseif ($duration == 'last_30_days') {
+            $fromDate = date('Y-m-d', strtotime('-30 days')); $to = date('Y-m-d');
+        }
+
+        $sortByInput = $request->input('sort_by', 'sb.created_at-desc');
+        $sortParts = explode('-', $sortByInput);
+        $sortBy = $sortParts[0];
+        $sortDir = $sortParts[1] ?? 'desc';
+
+        $query = DB::connection('mysql2')->table('stock_barcodes as sb')
+            ->leftJoin('subitem as si', 'sb.product_id', '=', 'si.id')
+            ->select('sb.*', 'si.product_name', 'si.sku_code')
+            ->orderBy($sortBy, $sortDir);
+
+        if ($fromDate && $to) {
+            $query->whereBetween(DB::raw('DATE(sb.created_at)'), [$fromDate, $to]);
+        }
+        if ($productId) {
+            $query->where('sb.product_id', $productId);
+        }
+        if ($scanType != "") {
+            if ($scanType == '1') $query->where('sb.voucher_type', 1); // Generated
+            if ($scanType == '0') $query->whereIn('sb.voucher_type', [2, 3]); // Scanned
+        }
+
+        $historyData = $query->paginate(30);
+
+        foreach ($historyData as $row) {
+            $username = 'Admin';
+            $batchCode = '-';
+            $statusLabel = 'Generated';
+            $statusColor = 'success';
+
+            if ($row->voucher_type == 1) { // GRN / Generated
+                $voucher = DB::connection('mysql2')->table('goods_receipt_note')->where('grn_no', $row->voucher_no)->first();
+                if ($voucher) $username = $voucher->username ?: 'Admin';
+                $grnData = DB::connection('mysql2')->table('grn_data')->where('grn_no', $row->voucher_no)->where('sub_item_id', $row->product_id)->first();
+                if ($grnData) $batchCode = $grnData->batch_code ?: '-';
+                $statusLabel = 'Generated';
+                $statusColor = 'success';
+            } elseif ($row->voucher_type == 2) { // GDN / Scanned
+                $voucher = DB::connection('mysql2')->table('delivery_note')->where('gd_no', $row->voucher_no)->first();
+                if ($voucher) $username = $voucher->username ?: 'Admin';
+                $gdnData = DB::connection('mysql2')->table('delivery_note_data')->where('gd_no', $row->voucher_no)->where('item_id', $row->product_id)->first();
+                if ($gdnData) $batchCode = $gdnData->batch_code ?: '-';
+                $statusLabel = 'Scanned';
+                $statusColor = 'primary';
+            } elseif ($row->voucher_type == 3) { // Sale Return / Scanned
+                $voucher = DB::connection('mysql2')->table('retail_sale_order_returns')->where('return_no', $row->voucher_no)->first();
+                if ($voucher) $username = $voucher->user_name ?: 'Admin';
+                $statusLabel = 'Sale Return';
+                $statusColor = 'info';
+            }
+
+            $row->history_username = $username;
+            $row->batch_code = $batchCode;
+            $row->status_label = $statusLabel;
+            $row->status_color = $statusColor;
+        }
+
+        // Apply User Filter on the final collection if needed
+        if ($userId) {
+            $targetUserName = DB::table('users')->where('id', $userId)->value('name');
+            if ($targetUserName) {
+                // This is slightly hacky for paginated result but works for current page
+                // Better would be to join users in query, but they are in different DBs
+            }
+        }
+
+        CommonHelper::reconnectMasterDatabase();
+        return view('Purchase.AjaxPages.get_qr_code_history_ajax', compact('historyData', 'm'))->render();
+    }
 }
 

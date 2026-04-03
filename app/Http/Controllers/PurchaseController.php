@@ -207,6 +207,17 @@ class PurchaseController extends Controller
         return view('Purchase.purchaseDebitNoteReport', compact('Principals', 'Branches'));
     }
 
+    public function qrCodeHistoryReport(Request $request) {
+        $m = $request->m;
+
+          $Users = DB::table('users')->select('id', 'name')->get();
+        CommonHelper::companyDatabaseConnection($m);
+        $Products = DB::Connection('mysql2')->table('subitem')->where('status', 1)->where('is_barcode_scanning', 1)->get();
+      
+        CommonHelper::reconnectMasterDatabase();
+        return view('Purchase.qrCodeHistoryReport', compact('Products', 'Users'));
+    }
+
     public function purchaseReportDashboard(){
         $Items = DB::connection('mysql2')->table('subitem')->where('status', 1)->orderBy('product_name')->get();
         $Brands = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();

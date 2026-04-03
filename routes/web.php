@@ -1007,6 +1007,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
     Route::get('/pendingPurchasePaymentReport', 'PurchaseController@pendingPurchasePaymentReport');
     Route::get('/purchaseCreditNoteReport', 'PurchaseController@purchaseCreditNoteReport');
     Route::get('/purchaseDebitNoteReport', 'PurchaseController@purchaseDebitNoteReport');
+    Route::get('/qrCodeHistoryReport', 'PurchaseController@qrCodeHistoryReport');
 });
 
 
@@ -1132,6 +1133,7 @@ Route::group(['prefix' => 'pad', 'middleware' => 'mysql2', 'before' => 'csrf'], 
 Route::get('/set_user_db_id', 'PurchaseDataCallController@set_user_db_id');
 Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {
     Route::get('/getPurchaseDebitNoteAjax', 'PurchaseDataCallController@getPurchaseDebitNoteAjax')->name('getPurchaseDebitNoteAjax');
+    Route::get('/getQRCodeHistoryAjax', 'PurchaseDataCallController@getQRCodeHistoryAjax')->name('getQRCodeHistoryAjax');
 
     Route::get('/get_stock_location_wise', 'PurchaseDataCallController@get_stock_location_wise');
     Route::get('/getDupicate', 'PurchaseDataCallController@getDupicate');
