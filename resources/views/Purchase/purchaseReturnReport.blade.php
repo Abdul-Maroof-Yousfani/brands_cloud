@@ -187,6 +187,7 @@
                             <thead>
                                 <tr>
                                     <th>Return Invoice #</th>
+                                    <th>Doc Ref #</th>
                                     <th>Supplier</th>
                                     <th>Date</th>
                                     <th>Item Details</th>

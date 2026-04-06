@@ -4241,7 +4241,8 @@ public function get_stock_location_wise(Request $request)
         $query = DB::Connection('mysql2')->table('purchase_return as m')
             ->join('purchase_return_data as d', 'm.id', '=', 'd.master_id')
             ->join('supplier as s', 'm.supplier_id', '=', 's.id')
-            ->leftJoin('subitem as i', 'd.sub_item_id', '=', 'i.id');
+            ->leftJoin('subitem as i', 'd.sub_item_id', '=', 'i.id')
+            ->leftJoin('new_purchase_voucher as pv', 'pv.grn_no', '=', 'm.grn_no');
 
         // Filters
         if ($request->filled('duration')) {
@@ -4276,7 +4277,8 @@ public function get_stock_location_wise(Request $request)
 
         $purchase_data = $query->select(
             'm.pr_no', 'm.pr_date', 'm.status', 's.name as supplier_name',
-            'i.product_name', 'd.return_qty', 'd.rate', 'd.net_amount'
+            'i.product_name', 'd.return_qty', 'd.rate', 'd.net_amount',
+            'm.type', 'm.grn_no', 'pv.pv_no'
         )->orderBy('m.pr_date', 'desc')->paginate(25);
 
         CommonHelper::reconnectMasterDatabase();

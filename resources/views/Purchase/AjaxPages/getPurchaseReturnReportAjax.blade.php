@@ -2,6 +2,7 @@
     <thead>
         <tr>
             <th>Return Invoice #</th>
+            <th>Doc Ref #</th>
             <th>Supplier</th>
             <th>Date</th>
             <th>Item Details</th>
@@ -23,6 +24,7 @@
             @endphp
             <tr>
                 <td style="font-weight: 600;">{{ $row->pr_no }}</td>
+                <td style="font-weight: 600;">{{ $row->type == 2 && !empty($row->pv_no) ? $row->pv_no : $row->grn_no }}</td>
                 <td style="text-align: left; padding-left: 15px;">{{ $row->supplier_name }}</td>
                 <td>{{ date('d-m-Y', strtotime($row->pr_date)) }}</td>
                 <td style="text-align: left; padding-left: 15px;">{{ $row->product_name }}</td>
@@ -46,7 +48,7 @@
     @if($purchase_data->count() > 0)
     <tfoot>
         <tr style="background-color: #f8f9fa; font-weight: 700;">
-            <td colspan="4" class="text-right p-3">Page Grand Total:</td>
+            <td colspan="5" class="text-right p-3">Page Grand Total:</td>
             <td class="text-center p-3">{{ number_format($totQty, 0) }}</td>
             <td class="p-3"></td>
             <td class="text-center p-3" style="color: #d32f2f;">{{ number_format($totNet, 2) }}</td>
