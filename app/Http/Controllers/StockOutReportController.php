@@ -110,13 +110,15 @@ $query = DB::connection('mysql2')->table('stock as s')
         'b.name as brand',
         'w.id as warehouse_id',
         'w.name as warehouse_name',
+        's.voucher_type',
+        's.voucher_no',
         DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
         DB::raw('SUM(CASE WHEN s.voucher_type IN (2,5,3,9) THEN s.qty ELSE 0 END) AS out_stock'),
         DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
     )
     ->where('s.status', 1)
     ->whereBetween('s.created_date', [$from_date, $to_date])
-    ->groupBy('si.id','w.id');
+    ->groupBy('si.id', 'w.id', 's.voucher_type', 's.voucher_no');
 
 
     if (!empty($warehouse_ids)) {
@@ -143,14 +145,28 @@ $query = DB::connection('mysql2')->table('stock as s')
         $query->whereIn('si.brand_id', $brand_ids);
     }
 
-    // ✅ Group only by product and warehouse (not transit_stock)
-    $rawStock = $query->groupBy('si.id', 'w.id')->get();
+    $rawStock = $query->get();
 
     $stocks = [];
     $warehouseMap = [];
 
+    $voucherTypes = [
+        1 => 'Purchase (GRN) / Opening',
+        2 => 'Sale',
+        3 => 'Damage / Adjustment (-)',
+        4 => 'Sales Return',
+        5 => 'Purchase Return',
+        6 => 'Adjustment (+)',
+        9 => 'Transfer Out',
+        10 => 'Opening Stock',
+        11 => 'Transfer In'
+    ];
+
     foreach ($rawStock as $stock) {
-        $key = $stock->product_id;
+        $source = $voucherTypes[$stock->voucher_type] ?? 'Unknown';
+        $ref_no = $stock->voucher_no;
+
+        $key = $stock->product_id . '_' . $stock->voucher_type . '_' . $stock->voucher_no;
 
         if (!isset($stocks[$key])) {
             $stocks[$key] = [
@@ -160,7 +176,9 @@ $query = DB::connection('mysql2')->table('stock as s')
                 'item_type' => $stock->item_type,
                 'brand' => $stock->brand,
                 'packing' => $stock->packing,
-                'transit_stock' => $stock->transit_stock
+                'transit_stock' => $stock->transit_stock,
+                'source' => $source,
+                'ref_no' => $ref_no
             ];
         }
 

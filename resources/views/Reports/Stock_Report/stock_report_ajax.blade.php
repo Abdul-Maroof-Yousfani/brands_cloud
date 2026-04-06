@@ -35,6 +35,8 @@
                         <th>SKU Code</th>
                         <th>Item Name</th>
                         <th>Barcode</th>
+                        <th>Source</th>
+                        <th>Reference No</th>
                         <th>Item Type</th>
                         <th>Brand</th>
                         <th>Packing</th>
@@ -61,6 +63,8 @@
                             <td>{{ $row['sku_code'] }}</td>
                             <td>{{ $row['product_name'] }}</td>
                             <td>{{ $row['barcode'] }}</td>
+                            <td>{{ $row['source'] }}</td>
+                            <td>{{ $row['ref_no'] }}</td>
                             <td>{{ $row['item_type'] != 1 ? 'Commercial' : 'Non-Commercial' }}</td>
                             <td>{{ $row['brand'] ?? 'N/A' }}</td>
                             <td>{{ $row['packing'] }}</td>
@@ -84,7 +88,7 @@
                 {{-- Footer Total Row --}}
                 <tfoot>
                     <tr class="totals-row">
-                        <td colspan="7" class="text-end">Total</td>
+                        <td colspan="9" class="text-end">Total</td>
                         <td>{{ number_format($transitTotal) }}</td> 
 
                         @foreach($warehouses as $id => $wName)
