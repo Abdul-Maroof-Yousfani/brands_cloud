@@ -22,7 +22,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12 text-center">
-                <h3>Stock Report</h3>
+                <h3>Stock In Report</h3>
                 <h5>{{ date('d-M-Y', strtotime($from_date)) }} to {{ date('d-M-Y', strtotime($to_date)) }}</h5>
             </div>
         </div>
