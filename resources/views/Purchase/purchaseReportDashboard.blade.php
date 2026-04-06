@@ -310,6 +310,7 @@
                             <th>Supplier</th>
                             <th>Invoice No</th>
                             <th>Date</th>
+                            <th>Brand</th>
                             <th>Item Details</th>
                             <th>Quantity</th>
                             <th>Rate</th>

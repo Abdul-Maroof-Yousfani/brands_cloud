@@ -4,6 +4,8 @@
             <th>Supplier</th>
             <th>Invoice No</th>
             <th>Date</th>
+            <th>Brand</th>
+            
             <th>Item Details</th>
             <th>Quantity</th>
             <th>Rate</th>
@@ -19,7 +21,8 @@
                 <td style="text-align: left; padding-left: 30px;">{{ $row->supplier_name }}</td>
                 <td><strong>{{ $row->pv_no }}</strong></td>
                 <td>{{ date('d M Y', strtotime($row->pv_date)) }}</td>
-                <td>{{ $row->product_name }} <br><small class="text-muted">{{ $row->brand_name }}</small></td>
+                <td>{{ $row->brand_name }}</td>
+                <td>{{ $row->product_name }}</td>
                 <td>{{ number_format($row->qty, 2) }}</td>
                 <td>{{ number_format($row->rate, 2) }}</td>
                 <td class="total-highlight">{{ number_format($row->net_amount, 2) }}</td>
@@ -46,9 +49,8 @@
 
         @if($purchase_data->count() > 0)
             <tr style="background-color: #fefefe; border-top: 2px solid #edeff2;">
-                <td colspan="6" class="text-right" style="padding-right: 50px;"><strong>Page total:</strong></td>
+                <td colspan="7" class="text-right" style="padding-right: 50px;"><strong>Page Total:</strong></td>
                 <td class="total-highlight" style="font-size: 16px; color: #d32f2f;">{{ number_format($grandTotal, 2) }}</td>
-                <td></td>
             </tr>
         @endif
     </tbody>
