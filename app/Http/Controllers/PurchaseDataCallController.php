@@ -4557,29 +4557,31 @@ public function get_stock_location_wise(Request $request)
             $batchCode = '-';
             $statusLabel = 'Generated';
             $statusColor = 'success';
+            $voucher_id = 0;
 
             if ($row->voucher_type == 1) { // GRN / Generated
                 $voucher = DB::connection('mysql2')->table('goods_receipt_note')->where('grn_no', $row->voucher_no)->first();
-                if ($voucher) $username = $voucher->username ?: 'Admin';
+                if ($voucher) { $username = $voucher->username ?: 'Admin'; $voucher_id = $voucher->id; }
                 $grnData = DB::connection('mysql2')->table('grn_data')->where('grn_no', $row->voucher_no)->where('sub_item_id', $row->product_id)->first();
                 if ($grnData) $batchCode = $grnData->batch_code ?: '-';
                 $statusLabel = 'Generated';
                 $statusColor = 'success';
             } elseif ($row->voucher_type == 2) { // GDN / Scanned
                 $voucher = DB::connection('mysql2')->table('delivery_note')->where('gd_no', $row->voucher_no)->first();
-                if ($voucher) $username = $voucher->username ?: 'Admin';
+                if ($voucher) { $username = $voucher->username ?: 'Admin'; $voucher_id = $voucher->id; }
                 $gdnData = DB::connection('mysql2')->table('delivery_note_data')->where('gd_no', $row->voucher_no)->where('item_id', $row->product_id)->first();
                 if ($gdnData) $batchCode = $gdnData->batch_code ?: '-';
                 $statusLabel = 'Scanned';
                 $statusColor = 'primary';
             } elseif ($row->voucher_type == 3) { // Sale Return / Scanned
                 $voucher = DB::connection('mysql2')->table('retail_sale_order_returns')->where('return_no', $row->voucher_no)->first();
-                if ($voucher) $username = $voucher->user_name ?: 'Admin';
+                if ($voucher) { $username = $voucher->user_name ?: 'Admin'; $voucher_id = $voucher->id; }
                 $statusLabel = 'Sale Return';
                 $statusColor = 'info';
             }
 
             $row->history_username = $username;
+            $row->voucher_id = $voucher_id;
             $row->batch_code = $batchCode;
             $row->status_label = $statusLabel;
             $row->status_color = $statusColor;

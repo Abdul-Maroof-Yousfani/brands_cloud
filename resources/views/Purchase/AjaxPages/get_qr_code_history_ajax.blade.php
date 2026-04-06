@@ -35,7 +35,23 @@
                         </span>
                     </td>
                     <td class="text-center">
-                        <span class="font-weight-bold" style="color: #34495e;">{{ $row->voucher_no }}</span>
+                        @php
+                            $clickAction = '';
+                            if ($row->voucher_type == 1) {
+                                // GRN view expects grn_no as ?id=, not the DB id
+                                $clickAction = "showDetailModelOneParamerter('pdc/viewGoodsReceiptNoteDetail', '{$row->voucher_no}', 'View GRN', '{$m}')";
+                            } elseif ($row->voucher_type == 2) {
+                                $clickAction = "showDetailModelOneParamerter('sales/viewDeliveryNoteDetail/{$row->voucher_id}', '', 'View GDN', '{$m}')";
+                            } elseif ($row->voucher_type == 3) {
+                                $clickAction = "showDetailModelOneParamerter('sales/viewCreditNoteDetail', '{$row->voucher_id}', 'View Sale Return', '{$m}')";
+                            }
+                        @endphp
+                        
+                        @if($row->voucher_id > 0)
+                            <a href="javascript:void(0)" onclick="{!! $clickAction !!}" class="font-weight-bold" style="color: #3498db; text-decoration: underline;">{{ $row->voucher_no }}</a>
+                        @else
+                            <span class="font-weight-bold" style="color: #34495e;">{{ $row->voucher_no }}</span>
+                        @endif
                         <div style="font-size: 10px; color: #95a5a6; text-transform: uppercase;">Type: {{ $row->voucher_type == 1 ? 'GRN' : ($row->voucher_type == 2 ? 'GDN' : 'Sale Return') }}</div>
                     </td>
                     <td class="text-center">
