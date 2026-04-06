@@ -72,6 +72,7 @@ class SalesReturnReportController extends Controller
 
         if($request->ajax()) {
             $so = $request->so;
+            $customer_id = $request->customer_id;
             $from = $request->from;
             $to = $request->to;
             $sales_order = null;
@@ -81,18 +82,23 @@ class SalesReturnReportController extends Controller
             $so_id = $sales_order ? $sales_order->id : "~";
             $sales_report_data = DB::connection("mysql2")->table("credit_note_data")
                 ->join("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
+                ->join("customers", "customers.id", "=", "credit_note.buyer_id")
                 ->join("subitem", "subitem.id", "=", "credit_note_data.item")
                 ->join("category", "category.id", "=", "subitem.main_ic_id")
                 ->join("brands", "subitem.brand_id", "=","brands.id")
                 ->when($so, function ($q) use ($so_id) {
                     $q->where("credit_note.so_id", "like", "%{$so_id}%");
                 })
+                ->when($customer_id, function ($q) use ($customer_id) {
+                    $q->where("credit_note.buyer_id", $customer_id);
+                })
                 // ->when(isset($request->from) && isset($request->to), function($query) use ($request) {
                 //     $query->whereBetween("credit_note_data.date", [$request->from, $request->to]);
                 // })
                 // ->whereBetween("credit_note_data.date", [$request->from, $request->to])
-                ->groupBy("subitem.product_barcode")
+                ->groupBy("subitem.product_barcode", "customers.name")
                 ->select(
+                    "customers.name as customer_name",
                     "category.main_ic",
                     "credit_note.sales_tax",
                     "credit_note.sales_tax_further",
@@ -112,6 +118,7 @@ class SalesReturnReportController extends Controller
             return view('Reports.Sales_Return.sales_return_ajax', compact("sales_report_data"));
         }
 
-        return view("Reports.Sales_Return.sales_return_report");
+        $customers = DB::connection("mysql2")->table("customers")->where('status', 1)->orderBy('name')->get();
+        return view("Reports.Sales_Return.sales_return_report", compact("customers"));
     }
 }

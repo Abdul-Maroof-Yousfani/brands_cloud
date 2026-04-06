@@ -1,5 +1,6 @@
 @foreach($sales_report_data as $data)
     <tr>
+        <td class="text-center">{{ $data->customer_name }}</td>
         <td class="text-center">{{ $data->product_name }}</td>
         <td>{{ $data->name }}</td>
         <td>{{ $data->main_ic ?? "N/A" }}</td>

@@ -32,35 +32,46 @@ use App\Helpers\SaleHelper;
                 <?php endif;?>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="control-label">From Date</label>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="from" class="form-control" id="from" value="2025-10-28">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">To Date</label>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="to" class="form-control" id="to" value="2025-10-28">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">S.O No</label>
-                        <div class="input-group">
-                            <input type="text" name="to" class="form-control" id="so">
+                            <input type="date" name="from" class="form-control" id="from" value="{{ date('Y-m-d') }}">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group" style="margin-top: 25px;">
-                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;margin-left: 20px;">
+                    <div class="form-group">
+                        <label class="control-label">To Date</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="date" name="to" class="form-control" id="to" value="{{ date('Y-m-d') }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">S.O No</label>
+                        <div class="input-group">
+                            <input type="text" name="so" class="form-control" id="so">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Select Customer</label>
+                        <select name="customer_id" id="customer_id" class="form-control select2">
+                            <option value="">All Customers</option>
+                            @foreach($customers as $customer)
+                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12 text-right">
+                    <div class="form-group">
+                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;">
                             <i class="fa fa-refresh"></i> Generate
                         </button>
                     </div>
@@ -76,6 +87,7 @@ use App\Helpers\SaleHelper;
                                     <table  class="table table-bordered table-striped table-condensed tableMargin">
                                         <thead>
                                         <tr>
+                                            <th class="text-center" style="width:150px;">Customer Name</th>
                                             <th class="text-center" style="width:150px;">Item Description</th>
                                             <th class="text-center" style="width:150px;" >Brand</th>
                                             <th class="text-center" style="width:150px;">Category</th>
@@ -124,7 +136,8 @@ use App\Helpers\SaleHelper;
         data: {
             from: $("#from").val(),
             to: $("#to").val(),
-            so: $('#so').val()
+            so: $('#so').val(),
+            customer_id: $('#customer_id').val()
         },
         beforeSend: function() {
             $('#data').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
