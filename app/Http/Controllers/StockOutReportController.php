@@ -169,11 +169,14 @@ $query = DB::connection('mysql2')->table('stock as s')
         $warehouseMap[$stock->warehouse_id] = $stock->warehouse_name;
     }
 
+    $stock_type = 'Stock Out Report';
+
     return view('Reports.Stock_Report.stock_report_ajax', [
         'stocks' => $stocks,
         'from_date' => $from_date,
         'to_date' => $to_date,
-        'warehouses' => $warehouseMap
+        'warehouses' => $warehouseMap,
+        'stock_type' => $stock_type
     ]);
 }
 
