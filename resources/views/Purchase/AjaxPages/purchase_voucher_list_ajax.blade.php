@@ -25,6 +25,24 @@ $delete=ReuseableCode::check_rights(38);
     $t_amount= DB::Connection('mysql2')->table('transactions')->where('voucher_no',$row->pv_no)
             ->where('acc_id',97)
             ->where('debit_credit',1)->sum('amount');
+    
+    $paid_amount = DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('new_purchase_voucher_id', $row->id)->where('status', 1)->sum('amount');
+    $invoice_amount = $net_amount - $row->sales_tax_amount;
+    
+    if($invoice_amount <= 0) {
+        $p_status = 'N/A';
+        $p_label = 'default';
+    } elseif($paid_amount >= $invoice_amount) {
+        $p_status = 'Clear';
+        $p_label = 'success';
+    } elseif($paid_amount > 0) {
+        $p_status = 'Partial';
+        $p_label = 'info';
+    } else {
+        $p_status = 'Pending';
+        $p_label = 'danger';
+    }
+
     $total+=$net_amount; $total_t_amount+=$t_amount;?>
 
     <tr @if($t_amount!=$net_amount) @elseif($net_amount!=$net_amount_grn) style="background-color: cornflowerblue" @endif id="{{$row->id}}">
@@ -37,6 +55,7 @@ $delete=ReuseableCode::check_rights(38);
         <td class="text-center">{{$row['slip_no']}}</td>
         <td class="text-center"><?php  echo CommonHelper::changeDateFormat($row->bill_date);?></td>
         <td id="app{{ $row->id }}" class="text-center text-danger">@if($row->pv_status==1) Pending @elseif($row->pv_status==3) 1st Approve  @else Approved @endif </td>
+        <td class="text-center"><span class="label label-{{ $p_label }}">{{ $p_status }}</span></td>
         <td class="text-center">{{CommonHelper::get_supplier_name($row->supplier)}}</td>
 
         <td class="text-right">{{number_format($net_amount - $row->sales_tax_amount,2)}}</td>
