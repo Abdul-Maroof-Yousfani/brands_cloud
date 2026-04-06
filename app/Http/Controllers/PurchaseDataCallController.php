@@ -4338,7 +4338,7 @@ public function get_stock_location_wise(Request $request)
 
         $purchase_data = $query->select(
             'm.pv_no', 'm.pv_date', 's.name as supplier_name', 'i.product_name',
-            'd.qty', 'd.rate', 'd.net_amount', 'b.name as brand_name'
+            'd.qty', 'd.rate', 'd.amount', 'd.discount_amount', 'd.tax_rate', 'd.tax_amount', 'd.net_amount', 'b.name as brand_name'
         )->orderBy('i.product_name', 'asc')->orderBy('m.pv_date', 'desc')->paginate(25);
 
         CommonHelper::reconnectMasterDatabase();

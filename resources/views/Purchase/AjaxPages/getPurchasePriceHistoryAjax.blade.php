@@ -7,8 +7,12 @@
             <th>Date</th>
             <th>Quantity</th>
             <th>Rate (Purchase Price)</th>
+            <th>Amount</th>
+            <th>Discount</th>
+            <th>Tax %</th>
+            <th>Tax Amt</th>
+            <th>Net Total</th>
             <th>Trend</th>
-            <th>Total</th>
         </tr>
     </thead>
     <tbody id="phBody">
@@ -19,7 +23,7 @@
         @forelse($purchase_data as $row)
             @if($currentItem != $row->product_name)
                 <tr class="item-group-header">
-                    <td colspan="8">{{ $row->product_name }} @if($row->brand_name) - ({{ $row->brand_name }}) @endif</td>
+                    <td colspan="12">{{ $row->product_name }} @if($row->brand_name) - ({{ $row->brand_name }}) @endif</td>
                 </tr>
                 @php 
                     $currentItem = $row->product_name; 
@@ -50,12 +54,17 @@
                 <td>{{ date('d-m-Y', strtotime($row->pv_date)) }}</td>
                 <td>{{ number_format($row->qty, 0) }}</td>
                 <td style="font-weight: 700;">{{ number_format($row->rate, 2) }}</td>
-                <td>{!! $trendHtml !!}</td>
+                <td>{{ number_format($row->amount, 2) }}</td>
+                <td>{{ number_format($row->discount_amount, 2) }}</td>
+                <td>{{ number_format($row->tax_rate, 2) }}%</td>
+                <td>{{ number_format($row->tax_amount, 2) }}</td>
                 <td style="font-weight: 600;">{{ number_format($row->net_amount, 2) }}</td>
+                <td>{!! $trendHtml !!}</td>
+
             </tr>
         @empty
             <tr>
-                <td colspan="8" class="text-center p-5 text-muted">No price history found for the selected criteria.</td>
+                <td colspan="12" class="text-center p-5 text-muted">No price history found for the selected criteria.</td>
             </tr>
         @endforelse
     </tbody>
