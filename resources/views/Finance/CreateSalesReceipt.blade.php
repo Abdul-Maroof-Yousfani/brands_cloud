@@ -10,13 +10,25 @@ $so_data_raw = DB::connection('mysql2')->table('sales_tax_invoice')
     ->select('sales_order.principal_group_id', 'sales_order.principal_group_ids', 'sales_order.id as so_id')
     ->first();
 
+ 
+
 $selected_principal_groups = [];
-    if ($so_data_raw->principal_group_ids) {
+$selected_brands = [];
+if ($so_data_raw) {
+    // principal_group_ids null ho tw kuch select nahi hoga
+    if (!empty($so_data_raw->principal_group_ids)) {
         $selected_principal_groups = explode(',', $so_data_raw->principal_group_ids);
-    } elseif ($so_data_raw->principal_group_id) {
+    } elseif (!empty($so_data_raw->principal_group_id)) {
         $selected_principal_groups = [$so_data_raw->principal_group_id];
     }
 
+    $selected_brands = DB::connection('mysql2')->table('sales_order_data')
+        ->where('master_id', $so_data_raw->so_id)
+        ->whereNotNull('brand_id')
+        ->distinct()
+        ->pluck('brand_id')
+        ->toArray();
+}
 ?>
 
 @extends('layouts.default')
