@@ -24,8 +24,7 @@
             <thead>
                 <tr>
                     <th>S.No</th>
-                    <th>Principle</th>
-                    <th>Brand</th>
+                    <th>Supplier</th>
                     <th>Warehouse</th>
                     <th>Region</th>
                     <th>PO #</th>
@@ -49,9 +48,8 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ \App\Helpers\CommonHelper::get_supplier_name($purchase->supplier_id) }}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td>{{ $purchase->warehouse_name }}</td>
+                            <td>{{ $purchase->region_name }}</td>
                             <td>{{ $purchase->po_no }}</td>
                             <td>{{ \Carbon\Carbon::parse($purchase->pr_date)->format("d-M-Y") }}</td>
                             <td>{{ $purchase->po_amount }}</td>

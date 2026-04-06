@@ -22,6 +22,8 @@ class PurchaseTraceabilityReportController extends Controller
 
     /* ===== Goods Receipt Note ===== */
     ->join('goods_receipt_note as grn', 'grn.po_no', '=', 'pr.purchase_request_no')
+    ->leftJoin('warehouse as wh', 'wh.id', '=', 'grn.warehouse_id')
+    ->leftJoin('territories as t', 't.id', '=', 'wh.territory_id')
 
     /* ===== GRN Data (aggregated) ===== */
     ->join(DB::raw('(SELECT master_id, SUM(purchase_recived_qty) as grn_qty, SUM(amount) as grn_amount 
@@ -47,6 +49,8 @@ class PurchaseTraceabilityReportController extends Controller
         "pr.purchase_request_date as pr_date",
         "grn.grn_no",
         'grn.grn_date',
+        'wh.name as warehouse_name',
+        't.name as region_name',
         DB::raw('SUM(prd.pr_qty) as po_qty'),
         DB::raw('SUM(prd.pr_amount) as po_amount'),
         DB::raw('SUM(grnd.grn_qty) as grn_qty'),

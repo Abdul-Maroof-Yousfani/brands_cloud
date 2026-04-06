@@ -38,9 +38,14 @@ if (isset($_GET['item_id'])) {
                                 <h3 class="panel-title pull-left">Purchase Traceability Report</h3>
                                 <div class="pull-right">
                                     <button type="button"
-                                        onclick="exportBtn('BA_Closing_Stock_Report_Clone_{{ date('Y-m-d') }}')"
+                                        onclick="exportBtn('Purchase_Traceability_Report_{{ date('Y-m-d') }}')"
                                         class="btn btn-success btn-sm">
                                         <i class="fa fa-file-excel-o"></i> Export Excel
+                                    </button>
+                                    <button type="button" 
+                                        onclick="exportPDF('Purchase_Traceability_Report_{{ date('Y-m-d') }}')"
+                                        class="btn btn-danger btn-sm" style="margin-left: 5px;">
+                                        <i class="fa fa-file-pdf-o"></i> Export PDF
                                     </button>
                                 </div>
                             </div>
@@ -91,7 +96,7 @@ if (isset($_GET['item_id'])) {
     <!-- </div> -->
 
     <script src="{{ URL::asset('assets/custom/js/exportToExcelXlsx.js') }}"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -180,6 +185,19 @@ if (isset($_GET['item_id'])) {
 
         function exportBtn(title) {
             exportExcel(title);
+        }
+
+        function exportPDF(filename) {
+            var element = document.getElementById('exportTable');
+            var opt = {
+                margin:       10,
+                filename:     filename + '.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a3', orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(element).save();
         }
     </script>
 
