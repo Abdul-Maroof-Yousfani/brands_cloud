@@ -121,13 +121,14 @@ $bindings = $transitSub->getBindings(); // bindings
             'w.name as warehouse_name',
             's.voucher_type',
             's.voucher_no',
+            's.opening',
             DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
             DB::raw('SUM(CASE WHEN s.voucher_type IN (2,5,3,9) THEN s.qty ELSE 0 END) AS out_stock'),
             DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
         )
         ->where('s.status', 1)
         ->whereBetween('s.created_date', [$from_date, $to_date])
-        ->groupBy('si.id', 'w.id', 's.voucher_type', 's.voucher_no');
+        ->groupBy('si.id', 'w.id', 's.voucher_type', 's.voucher_no', 's.opening');
 
 
     if (!empty($warehouse_ids)) {
@@ -160,7 +161,7 @@ $bindings = $transitSub->getBindings(); // bindings
     $warehouseMap = [];
 
     $voucherTypes = [
-        1 => 'Purchase (GRN) / Opening',
+        1 => 'Purchase (GRN)',
         2 => 'Sale',
         3 => 'Damage / Adjustment (-)',
         4 => 'Sales Return',
@@ -175,7 +176,12 @@ $bindings = $transitSub->getBindings(); // bindings
         $source = $voucherTypes[$stock->voucher_type] ?? 'Unknown';
         $ref_no = $stock->voucher_no;
 
-        $key = $stock->product_id . '_' . $stock->voucher_type . '_' . $stock->voucher_no;
+        if ($stock->voucher_type == 1 && $stock->opening == 1) {
+            $source = 'Opening';
+            $ref_no = '--';
+        }
+
+        $key = $stock->product_id . '_' . $stock->voucher_type . '_' . $stock->voucher_no . '_' . $stock->opening;
 
         if (!isset($stocks[$key])) {
             $stocks[$key] = [
