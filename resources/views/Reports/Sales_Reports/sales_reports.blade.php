@@ -22,7 +22,7 @@ use App\Helpers\SaleHelper;
 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="well_N">
         <div class="dp_sdw">
-            <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Sale Report</h1>
+            <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Sales Summary Report</h1>
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
                 <?php echo CommonHelper::displayPrintButtonInBlade('printDemandVoucherList','','1');?>
                 <?php if(true):?>
@@ -80,14 +80,14 @@ use App\Helpers\SaleHelper;
                                             <th class="text-center" style="width:150px;" >Article No. / SKU</th>
                                             <th class="text-center" style="width:150px;" >Group</th>
                                             <th class="text-center" style="width:150px;">Barcode</th>
-                                            <th class="text-center" style="width:150px;">CTN</th>
+                                            <!-- <th class="text-center" style="width:150px;">CTN</th> -->
                                             <th class="text-center" style="width:150px;">PCS</th>
                                             <th class="text-center" style="width:150px;">Gross Amount</th>
                                             <th class="text-center" style="width:150px;">Discount</th>
                                             <th class="text-center" style="width:150px;">Tax</th>
                                             <th class="text-center" style="width:150px;">Net Amount</th>
-                                            <th class="text-center" style="width:150px;">COGS</th>
-                                            <th class="text-center" style="width:150px;">COGS VAL</th>
+                                            <!-- <th class="text-center" style="width:150px;">COGS</th>
+                                            <th class="text-center" style="width:150px;">COGS VAL</th> -->
                                         </tr>
                                         </thead>
                                         <tbody id="tbody">
