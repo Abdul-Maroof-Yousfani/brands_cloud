@@ -2,7 +2,7 @@
     <thead>
         <tr>
             <th>Bill #</th>
-            <th>Invoice # (Custom)</th>
+            <th>Reference #</th>
             <th>Date</th>
             <th>Principle</th>
             <th>Notes</th>
