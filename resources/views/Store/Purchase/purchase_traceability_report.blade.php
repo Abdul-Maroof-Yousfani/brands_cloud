@@ -52,28 +52,73 @@ if (isset($_GET['item_id'])) {
                         </div>
                         <div class="panel-body">
                             <form method="get" id="list_data" class="form-horizontal">
-                                <?php csrf_token(); ?>
+                                <input type="hidden" name="m" value="{{ request()->m }}">
                                 <div class="row">
-
-
-
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Supplier</label>
+                                            <select class="form-control select2" name="suppliers[]" multiple data-placeholder="All Suppliers">
+                                                @foreach($Suppliers as $s)
+                                                    <option value="{{ $s->id }}">{{ $s->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Product</label>
+                                            <select class="form-control" name="product_id" id="product_id">
+                                                <option value="">All Products</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Brands</label>
+                                            <select class="form-control select2" name="brand_ids[]" multiple data-placeholder="All Brands" id="brand_id">
+                                                @foreach($Brands as $b)
+                                                    <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Warehouse</label>
+                                            <select class="form-control select2" name="warehouse_ids[]" multiple data-placeholder="All Warehouses" id="warehouse_id">
+                                                @foreach($Warehouses as $w)
+                                                    <option value="{{ $w->id }}">{{ $w->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="row" style="margin-top: 10px;">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>From Date</label>
+                                            <input type="date" name="from_date" class="form-control" value="{{ date('Y-m-01') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>To Date</label>
+                                            <input type="date" name="to_date" class="form-control" value="{{ date('Y-m-d') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group" style="margin-top: 25px;">
+                                            <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="width: 100%;">
+                                                <i class="fa fa-refresh"></i> Generate
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-
-
-
-
                         <div class="col-md-3">
-                            <div class="form-group" style="margin-top: 25px;">
-                                <button type="button" onclick="get_ajax_data()" class="btn btn-primary"
-                                    style="margin-top: 11px;margin-left: 20px;">
-                                    <i class="fa fa-refresh"></i> Generate
-                                </button>
-
-                            </div>
                         </div>
                     </div>
-                    </form>
                 </div>
             </div>
         </div>

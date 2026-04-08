@@ -27,6 +27,7 @@
                     <th>Supplier</th>
                     <th>Warehouse</th>
                     <th>Region</th>
+                    <th>Product Name</th>
                     <th>PO #</th>
                     <th>PO Date</th>
                     <th>PO Amount</th>
@@ -50,18 +51,19 @@
                             <td>{{ \App\Helpers\CommonHelper::get_supplier_name($purchase->supplier_id) }}</td>
                             <td>{{ $purchase->warehouse_name }}</td>
                             <td>{{ $purchase->region_name }}</td>
+                            <td>{{ $purchase->product_name }}</td>
                             <td>{{ $purchase->po_no }}</td>
                             <td>{{ \Carbon\Carbon::parse($purchase->pr_date)->format("d-M-Y") }}</td>
-                            <td>{{ $purchase->po_amount }}</td>
+                            <td>{{ number_format($purchase->po_amount, 2) }}</td>
                             <td>{{ (float)$purchase->po_qty + 0 }}</td>
                             <td>{{ $purchase->grn_no }}</td>
-                            <td>{{ \Carbon\Carbon::parse($purchase->grn_date)->format("d-M-Y") }}</td>
-                            <td>{{ $purchase->grn_amount }}</td>
+                            <td>{{ !empty($purchase->grn_date) ? \Carbon\Carbon::parse($purchase->grn_date)->format("d-M-Y") : '' }}</td>
+                            <td>{{ number_format($purchase->grn_amount, 2) }}</td>
                             <td>{{ (float)$purchase->grn_qty + 0 }}</td>
                             <td>{{ $purchase->pi_no }}</td>
-                            <td>{{ \Carbon\Carbon::parse($purchase->pi_date)->format("d-M-Y") }}</td>
-                            <td>{{ $purchase->invoice_amount }}</td>
-                            <td>{{ (float)$purchase->pv_qty + 0 }}</td>
+                            <td>{{ !empty($purchase->pi_date) ? \Carbon\Carbon::parse($purchase->pi_date)->format("d-M-Y") : '' }}</td>
+                            <td>{{ number_format($purchase->invoice_amount, 2) }}</td>
+                            <td>{{ (float)$purchase->invoice_qty + 0 }}</td>
                         </tr>
                 @endforeach
             </tbody>
