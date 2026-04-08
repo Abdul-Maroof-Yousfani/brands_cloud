@@ -69,6 +69,14 @@ class SalesReturnReportController extends Controller
         return view("Reports.Sales_Return.ba_sales_return_report");
     }
     public function show(Request $request) {
+        $category_id = $request->category_id;
+        $sub_category_id = $request->sub_category_id;
+        $principal_group_id = $request->principal_group_id;
+        $brand_id = $request->brand_id;
+        $group_id = $request->group_id;
+        $classification_id = $request->classification_id;
+        $type_id = $request->type_id;
+        $trend_id = $request->trend_id;
 
         if($request->ajax()) {
             $so = $request->so;
@@ -92,10 +100,33 @@ class SalesReturnReportController extends Controller
                 ->when($customer_id, function ($q) use ($customer_id) {
                     $q->where("credit_note.buyer_id", $customer_id);
                 })
-                // ->when(isset($request->from) && isset($request->to), function($query) use ($request) {
-                //     $query->whereBetween("credit_note_data.date", [$request->from, $request->to]);
-                // })
-                // ->whereBetween("credit_note_data.date", [$request->from, $request->to])
+                ->when($from && $to, function ($q) use ($from, $to) {
+                    $q->whereBetween("credit_note_data.date", [$from, $to]);
+                })
+                ->when($category_id, function ($q) use ($category_id) {
+                    $q->where("subitem.main_ic_id", $category_id);
+                })
+                ->when($sub_category_id, function ($q) use ($sub_category_id) {
+                    $q->where("subitem.sub_category_id", $sub_category_id);
+                })
+                ->when($principal_group_id, function ($q) use ($principal_group_id) {
+                    $q->where("subitem.principal_group_id", $principal_group_id);
+                })
+                ->when($brand_id, function ($q) use ($brand_id) {
+                    $q->where("subitem.brand_id", $brand_id);
+                })
+                ->when($group_id, function ($q) use ($group_id) {
+                    $q->where("subitem.group_id", $group_id);
+                })
+                ->when($classification_id, function ($q) use ($classification_id) {
+                    $q->where("subitem.product_classification_id", $classification_id);
+                })
+                ->when($type_id, function ($q) use ($type_id) {
+                    $q->where("subitem.product_type_id", $type_id);
+                })
+                ->when($trend_id, function ($q) use ($trend_id) {
+                    $q->where("subitem.product_trend_id", $trend_id);
+                })
                 ->groupBy("subitem.product_barcode", "customers.name")
                 ->select(
                     "customers.name as customer_name",
@@ -118,7 +149,19 @@ class SalesReturnReportController extends Controller
             return view('Reports.Sales_Return.sales_return_ajax', compact("sales_report_data"));
         }
 
+        $categories = DB::connection('mysql2')->table('category')->where('status', 1)->get();
+        $sub_categories = DB::connection('mysql2')->table('sub_category')->where('status', 1)->get();
+        $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
+        $principal_groups = DB::connection('mysql2')->table('products_principal_group')->where('status', 1)->get();
+        $groups = DB::connection('mysql2')->table('company_groups')->where('status', 1)->get();
+        $classifications = DB::connection('mysql2')->table('product_classifications')->where('status', 1)->get();
+        $types = DB::connection('mysql2')->table('product_type')->where('status', 1)->get();
+        $trends = DB::connection('mysql2')->table('product_trends')->where('status', 1)->get();
         $customers = DB::connection("mysql2")->table("customers")->where('status', 1)->orderBy('name')->get();
-        return view("Reports.Sales_Return.sales_return_report", compact("customers"));
+
+        return view("Reports.Sales_Return.sales_return_report", compact(
+            'customers', 'categories', 'sub_categories', 'brands', 'principal_groups', 
+            'groups', 'classifications', 'types', 'trends'
+        ));
     }
 }
