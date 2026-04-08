@@ -55,6 +55,7 @@ class PurchaseTraceabilityReportController extends Controller
                     't.name as region_name',
                     'i.product_name',
                     'prd.purchase_request_qty as po_qty',
+                    'prd.amount as po_amount',
                     'grn.grn_no',
                     'grn.grn_date',
                     'grnd.purchase_recived_qty as grn_qty',
