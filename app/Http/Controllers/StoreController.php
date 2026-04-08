@@ -648,7 +648,7 @@ public function closingReportView(Request $request)
                         ->where('status', 1)
                         ->get(['id', 'name']);
                 } else {
-                    $warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->get();
+                    $warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->where('is_virtual', 0)->get();
                     $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
                     $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
                     $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
