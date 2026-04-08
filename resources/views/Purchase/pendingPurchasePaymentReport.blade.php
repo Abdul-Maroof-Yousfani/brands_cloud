@@ -163,7 +163,7 @@
                             <div class="form-group">
                                 <label class="payment-label">Payment Status</label>
                                 <select class="form-control select2" name="status">
-                                    <option value="pending">Pending (All Outstanding)</option>
+                                    <option  value="pending">All Payment</option>
                                     <option value="unpaid">Unpaid Only</option>
                                     <option value="partial">Partial Only</option>
                                     <option value="paid">Fully Paid</option>
