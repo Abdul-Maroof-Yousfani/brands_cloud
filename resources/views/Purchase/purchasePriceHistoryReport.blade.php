@@ -126,9 +126,9 @@
                     <div class="row">
                         <!-- Left filters -->
                         <div class="col-md-6">
-                            <div class="form-group"><label class="price-label">Stores</label>
-                                <select class="form-control select2" name="store_ids[]" multiple data-placeholder="All Stores">
-                                    @foreach($Stores as $s) <option value="{{$s->id}}">{{$s->name}}</option> @endforeach
+                            <div class="form-group"><label class="price-label">Supplier</label>
+                                <select class="form-control select2" name="principals[]" multiple data-placeholder="All Suppliers">
+                                    @foreach($Suppliers as $s) <option value="{{$s->id}}">{{$s->name}}</option> @endforeach
                                 </select>
                             </div>
                             <div class="form-group"><label class="price-label">Employee</label>
@@ -159,8 +159,10 @@
                         <div class="col-md-6">
                             <div class="form-group"><label class="price-label">Product Type</label>
                                 <select class="form-control select2" name="product_type">
-                                    <option value="1">Product</option>
-                                    <option value="2">Raw Material</option>
+                                    <option value="">All Product Types</option>
+                                    @foreach($ProductTypes as $pt)
+                                        <option value="{{ $pt->product_type_id }}">{{ $pt->type }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-group"><label class="price-label">Item</label>
@@ -174,18 +176,14 @@
                                 </select>
                             </div>
                             <div class="row">
-                                <div class="col-md-6"><div class="form-group"><label class="price-label">Type</label>
-                                    <select class="form-control select2" name="types[]" multiple data-placeholder="All Types">
-                                        @foreach($Types as $t) <option value="{{$t->type_id}}">{{$t->name}}</option> @endforeach
-                                    </select>
-                                </div></div>
-                                <div class="col-md-6"><div class="form-group"><label class="price-label">Warehouse</label>
-                                    <select class="form-control select2" name="warehouse_ids[]" multiple data-placeholder="All Warehouses">
-                                        @foreach($Warehouses as $w) <option value="{{$w->id}}">{{$w->name}}</option> @endforeach
-                                    </select>
-                                </div></div>
+                                <div class="col-md-12">
+                                    <div class="form-group"><label class="price-label">Warehouse</label>
+                                        <select class="form-control select2" name="warehouse_ids[]" multiple data-placeholder="All Warehouses">
+                                            @foreach($Warehouses as $w) <option value="{{$w->id}}">{{$w->name}}</option> @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                          
                         </div>
                     </div>
                 </form>

@@ -4301,6 +4301,10 @@ public function get_stock_location_wise(Request $request)
             ->leftJoin('brands as b', 'i.brand_id', '=', 'b.id')
             ->where('m.status', 1);
 
+        if ($request->filled('product_type')) {
+            $query->where('i.product_type_id', $request->product_type);
+        }
+
         if ($request->filled('item_ids')) {
             $query->whereIn('d.sub_item', $request->item_ids);
         }

@@ -165,7 +165,6 @@ class PurchaseController extends Controller
         $m = $request->m;
         CommonHelper::companyDatabaseConnection($m);
 
-        $Stores = DB::Connection('mysql2')->table('customers')->where('status', 1)->get();
         $Employees = DB::Connection('mysql2')->table('employee')->where('status', 1)->get();
         $Branches = DB::Connection('mysql2')->table('branch')->where('status', 1)->get();
         $Items = DB::Connection('mysql2')->table('subitem')->where('status', 1)->orderBy('product_name')->get();
@@ -173,13 +172,12 @@ class PurchaseController extends Controller
         $Types = DB::Connection('mysql2')->table('type')->where('status', 1)->get();
         $Warehouses = DB::Connection('mysql2')->table('warehouse')->where('status', 1)->orderBy('name')->get();
        
-        $Principals = DB::Connection('mysql2')->table('supplier')->where('status', 1)->get();
+        $Suppliers = DB::Connection('mysql2')->table('supplier')->where('status', 1)->get();
+        $ProductTypes = DB::Connection('mysql2')->table('product_type')->where('status', 1)->get();
 
         CommonHelper::reconnectMasterDatabase();
 
-       
-
-        return view('Purchase.purchasePriceHistoryReport', compact('Stores', 'Employees', 'Branches', 'Items', 'Brands', 'Types', 'Warehouses', 'Principals'));
+        return view('Purchase.purchasePriceHistoryReport', compact('Employees', 'Branches', 'Items', 'Brands', 'Types', 'Warehouses', 'Suppliers', 'ProductTypes'));
     }
 
     public function pendingPurchasePaymentReport(Request $request) {
