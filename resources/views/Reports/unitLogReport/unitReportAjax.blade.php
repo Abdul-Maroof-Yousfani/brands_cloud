@@ -87,6 +87,10 @@
                         } else if(str_contains(strtolower($unit_activity->voucher_no), 'grn') || $unit_activity->voucher_no == '') {
                             $trans_type = "GRN";
                             $is_received = true;
+                        } else if(str_contains(strtolower($unit_activity->voucher_no), 'tr')) {
+                            // approve_transfer erroneously saves IN transfers as voucher_type 1
+                            $trans_type = "Stock Transfer (In)";
+                            $is_received = true;
                         } else {
                             $trans_type = "GRN / Opening";
                             $is_received = true;
