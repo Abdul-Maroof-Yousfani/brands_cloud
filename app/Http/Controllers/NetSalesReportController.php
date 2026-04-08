@@ -112,7 +112,7 @@ class NetSalesReportController extends Controller
                                 $q->where("subitem.sub_category_id", $sub_category_id);
                             })
                             ->when($principal_group_id, function ($q) use ($principal_group_id) {
-                                $q->where("subitem.products_principal_group_id", $principal_group_id);
+                                $q->where("subitem.principal_group_id", $principal_group_id);
                             })
                             ->when($group_id, function ($q) use ($group_id) {
                                 $q->where("subitem.group_id", $group_id);
@@ -256,7 +256,7 @@ class NetSalesReportController extends Controller
                                 $q->where("subitem.sub_category_id", $sub_category_id);
                             })
                             ->when($principal_group_id, function ($q) use ($principal_group_id) {
-                                $q->where("subitem.products_principal_group_id", $principal_group_id);
+                                $q->where("subitem.principal_group_id", $principal_group_id);
                             })
                             ->when($group_id, function ($q) use ($group_id) {
                                 $q->where("subitem.group_id", $group_id);
