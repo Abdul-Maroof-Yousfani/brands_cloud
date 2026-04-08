@@ -618,6 +618,7 @@ public function closingReportView(Request $request)
                     $warehouses = DB::connection('mysql2')->table('warehouse')
                         ->whereIn('id', $warehouseList)
                         ->where('status', 1)
+                        ->where('is_virtual', 0)
                         ->get();
 
                     $subitem_ids = DB::connection('mysql2')->table('stock')
