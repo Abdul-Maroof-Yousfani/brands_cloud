@@ -4544,7 +4544,7 @@ public function get_stock_location_wise(Request $request)
 
         $query = DB::connection('mysql2')->table('stock_barcodes as sb')
             ->leftJoin('subitem as si', 'sb.product_id', '=', 'si.id')
-            ->select('sb.*', 'si.product_name', 'si.sku_code')
+            ->select('sb.*', 'si.product_name', 'si.sku_code', 'si.product_barcode')
             ->orderBy($sortBy, $sortDir);
 
         if ($fromDate && $to) {

@@ -4,7 +4,8 @@
             <th class="text-center" width="40">#</th>
             <th width="200">Product Name</th>
             <th width="150" class="text-center">QR Code</th>
-            <th width="120" class="text-center">Batch/Lot No</th>
+            <th width="120" class="text-center">Product SKU Code</th>
+            <th width="120" class="text-center">Product Barcode</th>
             <th width="130" class="text-center">Scan Type</th>
             <th width="150" class="text-center">Reference</th>
             <th width="160" class="text-center">Date & Time</th>
@@ -42,7 +43,8 @@
                             <small onclick="{!! $clickAction !!}" class="text-muted" style="cursor: pointer;" title="Show QR Detail"><i class="fa fa-qrcode"></i> View</small>
                         </div>
                     </td>
-                    <td class="text-center font-weight-bold" style="color: #4b6584;">{{ $row->batch_code }}</td>
+                    <td class="text-center font-weight-bold" style="color: #4b6584;">{{ $row->sku_code }}</td>
+                    <td class="text-center font-weight-bold" style="color: #4b6584;">{{ $row->product_barcode }}</td>
                     <td class="text-center">
                         <span class="qr-badge status-{{ strtolower(str_replace([' ', '(', ')'], ['','',''], $row->status_label)) }}">
                             {{ $row->status_label }}
