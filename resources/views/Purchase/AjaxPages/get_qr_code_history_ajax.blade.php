@@ -16,26 +16,9 @@
         @if(count($historyData) > 0)
             @php $i = ($historyData->currentPage() - 1) * $historyData->perPage() + 1; @endphp
             @foreach($historyData as $row)
-                <tr>
-                    <td class="text-center text-muted font-weight-bold">{{ $i++ }}</td>
-                    <td>
-                        <div class="font-weight-bold text-dark">{{ $row->product_name }}</div>
-                        <small class="text-muted text-uppercase tracking-tighter" style="font-size: 10px;">SKU: {{ $row->sku_code ?: 'N/A' }}</small>
-                    </td>
-                    <td class="text-center">
-                        <span class="qr-code-text">{{ $row->barcode }}</span>
-                        <div class="mt-1">
-                            <small class="text-muted" style="cursor: pointer;" title="Show QR Detail"><i class="fa fa-qrcode"></i> View</small>
-                        </div>
-                    </td>
-                    <td class="text-center font-weight-bold" style="color: #4b6584;">{{ $row->batch_code }}</td>
-                    <td class="text-center">
-                        <span class="qr-badge status-{{ strtolower(str_replace([' ', '(', ')'], ['','',''], $row->status_label)) }}">
-                            {{ $row->status_label }}
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        @php
+
+
+  @php
                             $clickAction = '';
                             if ($row->voucher_type == 1) {
                                 // GRN view expects grn_no as ?id=, not the DB id
@@ -46,6 +29,27 @@
                                 $clickAction = "showDetailModelOneParamerter('sales/viewCreditNoteDetail', '{$row->voucher_id}', 'View Sale Return', '{$m}')";
                             }
                         @endphp
+
+                <tr>
+                    <td class="text-center text-muted font-weight-bold">{{ $i++ }}</td>
+                    <td>
+                        <div class="font-weight-bold text-dark">{{ $row->product_name }}</div>
+                        <small class="text-muted text-uppercase tracking-tighter" style="font-size: 10px;">SKU: {{ $row->sku_code ?: 'N/A' }}</small>
+                    </td>
+                    <td class="text-center">
+                        <span class="qr-code-text">{{ $row->barcode }}</span>
+                        <div class="mt-1">
+                            <small onclick="{!! $clickAction !!}" class="text-muted" style="cursor: pointer;" title="Show QR Detail"><i class="fa fa-qrcode"></i> View</small>
+                        </div>
+                    </td>
+                    <td class="text-center font-weight-bold" style="color: #4b6584;">{{ $row->batch_code }}</td>
+                    <td class="text-center">
+                        <span class="qr-badge status-{{ strtolower(str_replace([' ', '(', ')'], ['','',''], $row->status_label)) }}">
+                            {{ $row->status_label }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                      
                         
                         @if($row->voucher_id > 0)
                             <a href="javascript:void(0)" onclick="{!! $clickAction !!}" class="font-weight-bold" style="color: #3498db; text-decoration: underline;">{{ $row->voucher_no }}</a>
