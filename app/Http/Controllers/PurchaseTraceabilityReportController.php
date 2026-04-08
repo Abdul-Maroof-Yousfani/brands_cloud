@@ -55,7 +55,6 @@ class PurchaseTraceabilityReportController extends Controller
                     't.name as region_name',
                     'i.product_name',
                     'prd.purchase_request_qty as po_qty',
-                    'prd.amount as po_amount',
                     'grn.grn_no',
                     'grn.grn_date',
                     'grnd.purchase_recived_qty as grn_qty',
@@ -63,7 +62,7 @@ class PurchaseTraceabilityReportController extends Controller
                     'pv.pv_no as pi_no',
                     'pv.pv_date as pi_date',
                     'pvd.qty as invoice_qty',
-                    'pvd.amount as invoice_amount'
+                    'pvd.net_amount as invoice_amount'
                 )
                 ->orderBy('pr.purchase_request_date', 'DESC')
                 ->get();

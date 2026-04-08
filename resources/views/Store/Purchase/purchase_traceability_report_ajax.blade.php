@@ -30,7 +30,6 @@
                     <th>Product Name</th>
                     <th>PO #</th>
                     <th>PO Date</th>
-                    <th>PO Amount</th>
                     <th>PO Quantity</th>
                     <th>GRN #</th>
                     <th>GRN Date</th>
@@ -54,7 +53,6 @@
                             <td>{{ $purchase->product_name }}</td>
                             <td>{{ $purchase->po_no }}</td>
                             <td>{{ \Carbon\Carbon::parse($purchase->pr_date)->format("d-M-Y") }}</td>
-                            <td>{{ number_format($purchase->po_amount, 2) }}</td>
                             <td>{{ (float)$purchase->po_qty + 0 }}</td>
                             <td>{{ $purchase->grn_no }}</td>
                             <td>{{ !empty($purchase->grn_date) ? \Carbon\Carbon::parse($purchase->grn_date)->format("d-M-Y") : '' }}</td>
