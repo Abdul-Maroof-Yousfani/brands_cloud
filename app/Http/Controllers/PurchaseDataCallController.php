@@ -4134,6 +4134,10 @@ public function get_stock_location_wise(Request $request)
             $query->whereIn('i.type', $request->types); 
         }
 
+        if ($request->product_type) {
+            $query->where('i.product_type_id', $request->product_type);
+        }
+
         if ($request->status) {
             $query->where('m.pv_status', $request->status);
         }

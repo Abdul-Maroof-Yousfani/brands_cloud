@@ -225,7 +225,8 @@ class PurchaseController extends Controller
         $Warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->orderBy('name')->get();
         $Types = DB::connection('mysql2')->table('type')->where('status', 1)->get();
         $Branches = DB::connection('mysql2')->table('branch')->get();
-        return view('Purchase.purchaseReportDashboard', compact('Items', 'Brands', 'Warehouses', 'Types', 'Branches'));
+        $ProductTypes = DB::connection('mysql2')->table('product_type')->where('status', 1)->get();
+        return view('Purchase.purchaseReportDashboard', compact('Items', 'Brands', 'Warehouses', 'Types', 'Branches', 'ProductTypes'));
     }
 
     public function aqmsStockReportPage(){

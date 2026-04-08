@@ -262,12 +262,15 @@
                     
                     <div class="row">
                         <div class="col-md-12 form-group-custom">
-                            <label class="label-style">Type</label>
-                            <select class="form-control select2" name="types[]" multiple id="types" data-placeholder="Select Type">
-                                @foreach($Types as $type)
-                                    <option value="{{ $type->type_id }}">{{ $type->name }}</option>
+                        <div class="col-md-12 form-group-custom">
+                            <label class="label-style">Product Type</label>
+                            <select class="form-control select2" name="product_type" id="product_type" data-placeholder="Select Product Type">
+                                <option value="">All Product Types</option>
+                                @foreach($ProductTypes as $pt)
+                                    <option value="{{ $pt->product_type_id }}">{{ $pt->type }}</option>
                                 @endforeach
                             </select>
+                        </div>
                         </div>
                         <div class="col-md-12 form-group-custom">
                             <label class="label-style">Warehouse</label>
