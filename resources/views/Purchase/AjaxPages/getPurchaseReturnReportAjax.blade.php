@@ -28,7 +28,7 @@
                 <td style="text-align: left; padding-left: 15px;">{{ $row->supplier_name }}</td>
                 <td>{{ date('d-m-Y', strtotime($row->pr_date)) }}</td>
                 <td style="text-align: left; padding-left: 15px;">{{ $row->product_name }}</td>
-                <td style="font-weight: 600;">{{ number_format($row->return_qty, 0) }}</td>
+                <td style="font-weight: 600;">{{ (float)$row->return_qty + 0 }}</td>
                 <td>{{ number_format($row->rate, 2) }}</td>
                 <td style="font-weight: 600; color: #d32f2f;">{{ number_format($row->net_amount, 2) }}</td>
                 <td>
@@ -49,7 +49,7 @@
     <tfoot>
         <tr style="background-color: #f8f9fa; font-weight: 700;">
             <td colspan="5" class="text-right p-3">Page Grand Total:</td>
-            <td class="text-center p-3">{{ number_format($totQty, 0) }}</td>
+            <td class="text-center p-3">{{ (float)$totQty + 0 }}</td>
             <td class="p-3"></td>
             <td class="text-center p-3" style="color: #d32f2f;">{{ number_format($totNet, 2) }}</td>
             <td class="p-3"></td>

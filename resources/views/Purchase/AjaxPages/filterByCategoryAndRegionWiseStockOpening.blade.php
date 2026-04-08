@@ -57,7 +57,7 @@ $category_id=$sub_item_data[5];
     <td><?php    $rgion_data= CommonHelper::get_rgion_name_by_id($row->region_id);
         echo  $rgion_data->region_name;
         ?></td>
-    <td><?php echo $row->qty ?></td>
+    <td><?php echo (float)$row->qty + 0 ?></td>
     <th class="text-center" ><?php echo number_format($row->amount,2) ;
         $total_amount+=$row->amount;
         ?></th>

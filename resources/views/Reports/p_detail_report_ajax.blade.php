@@ -40,7 +40,7 @@ foreach($supplier as $val){
             <td class="text-center">{{$grn_data->grn_no }}</td>
             <td class="text-center" style="width: 15%">{{$grn_data->supplier_invoice_no }}</td>
             <td class="text-center">{{$grn_data->packunit }}</td>
-            <td class="text-center">{{$grn_data->purchase_recived_qty }}</td>
+            <td class="text-center">{{ (float)$grn_data->purchase_recived_qty + 0 }}</td>
 
         </tr>
     @endforeach

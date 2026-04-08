@@ -27,7 +27,7 @@
                 <td style="font-style: italic;">{{ $row->reference_invoice }}</td>
                 <td>{{ date('d-m-Y', strtotime($row->pr_date)) }}</td>
                 <td style="text-align: left; max-width: 250px;">{{ $row->product_name }}</td>
-                <td style="font-weight: 600;">{{ number_format($row->return_qty, 2) }}</td>
+                <td style="font-weight: 600;">{{ (float)$row->return_qty + 0 }}</td>
                 <td>{{ number_format($row->rate, 2) }}</td>
                 <td style="font-weight: 700; color: #2c3e50;">{{ number_format($row->net_amount, 2) }}</td>
                 <td>{!! $statusHtml !!}</td>

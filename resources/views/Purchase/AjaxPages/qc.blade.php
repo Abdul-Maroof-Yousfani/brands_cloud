@@ -192,7 +192,7 @@ $grnqty=        $checkifbarcodescanningproduct->sum('purchase_recived_qty');
                                  <td>{{ $count++ }}</td>
                                  <td>{{ CommonHelper::get_product_name($row->sub_item_id) }}</td>
                                  <td>{{ CommonHelper::get_uom($row->sub_item_id) }}</td>
-                                 <td>{{ number_format($row->purchase_recived_qty,2) }}</td>
+                                 <td>{{ (float)$row->purchase_recived_qty + 0 }}</td>
 {{--                                 <td>Barcode Scanned {{$scannedqrcode->where('product_id',$row->sub_item_id)->count()}}</td>--}}
                                  <td><input onkeyup="check_qty('{{ $row->purchase_recived_qty }}','{{ $count }}')" onblur="{{ $row->purchase_recived_qty }}" class="form-control requiredField" readonly type="number" name="reject_qty[]" id="reject_qty{{ $count }}" step="0.001" value="{{ 0 }}"></td>
                                  <td><textarea readonly class="form-control" name="remarks[]" id="remarks{{ $count }}"></textarea></td>

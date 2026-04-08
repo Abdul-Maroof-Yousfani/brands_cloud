@@ -23,9 +23,9 @@ $Supplier = CommonHelper::get_single_row('supplier','id',$Supp[0]->supplier_id);
     <td><?php echo $Supplier->name;?></td>
     <td><?php echo $Item->sub_ic?></td>
     <td><?php if($PoStatus !=3):echo $Warehouse->name;endif;?></td>
-    <td><?php echo number_format($dataFil->purchase_approve_qty,2)?></td>
-    <td><?php echo number_format($dataFil->purchase_recived_qty,2)?></td>
-    <td><?php echo number_format($dataFil->purchase_approve_qty-$dataFil->purchase_recived_qty,2)?></td>
+    <td><?php echo (float)$dataFil->purchase_approve_qty + 0 ?></td>
+    <td><?php echo (float)$dataFil->purchase_recived_qty + 0 ?></td>
+    <td><?php echo (float)($dataFil->purchase_approve_qty-$dataFil->purchase_recived_qty) + 0 ?></td>
 
 </tr>
 <?php endforeach;?>

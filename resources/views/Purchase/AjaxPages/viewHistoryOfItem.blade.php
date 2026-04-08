@@ -31,7 +31,7 @@ use App\Helpers\CommonHelper;
         <td class="text-center">{{strtoupper($row->grn_no)}}</td>
         <td class="text-center">{{commonHelper::changeDateFormat($row->grn_date)}}</td>
         <td class="text-center">{{commonHelper::get_supplier_name($row->supplier_id)}}</td>
-        <td class="text-center">{{number_format($qty,2)}}</td>
+        <td class="text-center">{{ (float)$qty + 0 }}</td>
         <td class="text-center">{{number_format($rate)}}</td>
         <td class="text-center">{{number_format($amount,2)}}</td>
        

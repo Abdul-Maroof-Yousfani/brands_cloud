@@ -108,7 +108,7 @@ foreach ($demandDetail as $row) {
                                 <td> <?php echo $row1->job_order;?></td>
 
 
-                                <td class="text-center"><?php echo number_format($row1->qty,2);?></td>
+                                <td class="text-center"><?php echo (float)$row1->qty + 0;?></td>
 
 
                             </tr>

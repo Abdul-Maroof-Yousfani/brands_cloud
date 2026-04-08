@@ -53,15 +53,15 @@
                             <td>{{ $purchase->po_no }}</td>
                             <td>{{ \Carbon\Carbon::parse($purchase->pr_date)->format("d-M-Y") }}</td>
                             <td>{{ $purchase->po_amount }}</td>
-                            <td>{{ $purchase->po_qty }}</td>
+                            <td>{{ (float)$purchase->po_qty + 0 }}</td>
                             <td>{{ $purchase->grn_no }}</td>
                             <td>{{ \Carbon\Carbon::parse($purchase->grn_date)->format("d-M-Y") }}</td>
                             <td>{{ $purchase->grn_amount }}</td>
-                            <td>{{ $purchase->grn_qty }}</td>
+                            <td>{{ (float)$purchase->grn_qty + 0 }}</td>
                             <td>{{ $purchase->pi_no }}</td>
                             <td>{{ \Carbon\Carbon::parse($purchase->pi_date)->format("d-M-Y") }}</td>
                             <td>{{ $purchase->invoice_amount }}</td>
-                            <td>{{ $purchase->pv_qty }}</td>
+                            <td>{{ (float)$purchase->pv_qty + 0 }}</td>
                         </tr>
                 @endforeach
             </tbody>

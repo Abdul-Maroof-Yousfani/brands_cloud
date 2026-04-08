@@ -98,10 +98,10 @@ use App\Helpers\SalesHelper;?>
                             <td class="text-center"><?php echo $row1->product_barcode;?></td>
                             <!-- <td class="text-center">{{ $row1->description }}</td> -->
                             <td class="text-center text-uppercase">{{ $row1->demand_no }}</td>
-                            <td class="text-center">{{ $row1->qty }}</td>
+                            <td class="text-center">{{ (float)$row1->qty + 0 }}</td>
                             @foreach ($vendor as $row)
                             <?php $amount=ReuseableCode::get_quotation_amount_supp_wise($row1->id,$row->vendor_id); ?>
-                            <td class="text-center"> {{ number_format($amount / $row1->qty,2) }} </td>
+                            <td class="text-center"> {{ number_format($amount / ((float)$row1->qty + 0),2) }} </td>
                             @endforeach
                          </tr>
                         <?php

@@ -158,10 +158,10 @@ foreach ($MasterData as $row) {
                                     <?php echo CommonHelper::getCompanyDatabaseTableValueById($m,'warehouse','name',$row1->warehouse_id);?>
 
                                 </td>
-                                <td class="text-center"><?php echo number_format($row1->recived_qty,2);?></td>
+                                <td class="text-center"><?php echo (float)$row1->recived_qty + 0;?></td>
                                 <td style="display: none"  class="text-center"><?php echo number_format($row1->rate,2);?></td>
                                 <td style="display: none"  class="text-center"><?php echo number_format($row1->amount,2);?></td>
-                                <td class="text-center"><?php echo number_format($row1->return_qty,2);?></td>
+                                <td class="text-center"><?php echo (float)$row1->return_qty + 0;?></td>
 
                             </tr>
                             <?php

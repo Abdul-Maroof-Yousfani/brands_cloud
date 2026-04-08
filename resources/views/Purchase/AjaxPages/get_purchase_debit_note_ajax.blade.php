@@ -71,7 +71,7 @@ use App\Helpers\CommonHelper;
                 <td>{{ strtoupper($dn->grn_no) ?: 'N/A' }}</td>
                 <td>{{ \App\Helpers\CommonHelper::changeDateFormat($dn->pr_date) }}</td>
                 <td>{{ $dn->item_details }}</td>
-                <td>{{ number_format($dn->return_qty, 2) }}</td>
+                <td>{{ (float)$dn->return_qty + 0 }}</td>
                 <td>{{ number_format($dn->rate, 2) }}</td>
                 <td class="debit-amount-highlight">{{ number_format($dn->net_amount, 2) }}</td>
                 <td>

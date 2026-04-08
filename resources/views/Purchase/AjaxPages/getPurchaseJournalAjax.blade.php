@@ -51,7 +51,7 @@
                 <td>{{ $ctn }}</td>
                 <td>{{ $pcs }}</td>
                 <td>{{ $row->packing }}</td>
-                <td style="font-weight: 600;">{{ number_format($row->qty, 0) }}</td>
+                <td style="font-weight: 600;">{{ (float)$row->qty + 0 }}</td>
                 <td>{{ number_format($row->rate, 2) }}</td>
                 <td>{{ number_format($row->amount, 2) }}</td>
                 <td>{{ number_format($disc_percent, 1) }}%</td>
@@ -70,7 +70,7 @@
     <tfoot>
         <tr style="background-color: #f1f4f7; font-weight: 700;">
             <td colspan="9" class="text-right">Page Total:</td>
-            <td class="text-center">{{ number_format($purchase_data->sum('qty'), 0) }}</td>
+            <td class="text-center">{{ (float)$purchase_data->sum('qty') + 0 }}</td>
             <td></td>
             <td class="text-center">{{ number_format($totalGross, 2) }}</td>
             <td></td>

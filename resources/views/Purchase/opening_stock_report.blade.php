@@ -73,7 +73,7 @@ $m = $_GET['m'];
         <td><?php    $rgion_data= CommonHelper::get_rgion_name_by_id($row->region_id);
               echo  $rgion_data->region_name;
             ?></td>
-        <td><?php echo $row->qty ?></td>
+        <td><?php echo (float)$row->qty + 0 ?></td>
         <th class="text-center" ><?php echo number_format($row->amount,2) ;
             $total_amount+=$row->amount;
             $total_qty+=$row->qty;
@@ -82,7 +82,7 @@ $m = $_GET['m'];
     <?php endif; endforeach ?>
     <tr style="background-color: darkgrey">
         <td colspan="3">Total</td>
-        <td style="font-size: large;font-weight: bolder" colspan="1">{{number_format($total_qty,2)}}</td>
+        <td style="font-size: large;font-weight: bolder" colspan="1">{{ (float)$total_qty + 0 }}</td>
         <td style="font-size: large;font-weight: bolder" colspan="1">{{number_format($total_amount,2)}}</td>
     </tr>
     </tbody>

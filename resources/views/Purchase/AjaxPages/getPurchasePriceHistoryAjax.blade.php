@@ -52,7 +52,7 @@
                 <td>{{ $row->product_name }}</td>
                 <td>{{ $row->pv_no }}</td>
                 <td>{{ date('d-m-Y', strtotime($row->pv_date)) }}</td>
-                <td>{{ number_format($row->qty, 0) }}</td>
+                <td>{{ (float)$row->qty + 0 }}</td>
                 <td style="font-weight: 700;">{{ number_format($row->rate, 2) }}</td>
                 <td>{{ number_format($row->amount, 2) }}</td>
                 <td>{{ number_format($row->discount_amount, 2) }}</td>

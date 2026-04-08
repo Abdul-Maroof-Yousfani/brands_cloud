@@ -212,7 +212,7 @@ $grn_status = $row->grn_status;
 
                                         </td>
                                         <td class="text-center"><?php echo $row1->batch_code?></td>
-                                        <td  class="text-center"><?php echo  number_format($row1->purchase_recived_qty,2)?></td>
+                                        <td  class="text-center"><?php echo  (float)$row1->purchase_recived_qty + 0?></td>
                                         <td  class="text-center"><?php echo  number_format($row1->rate,2)?></td>
                                         <td  class="text-center"><?php echo  number_format($row1->amount,2)?></td>
                                         <td class="text-center">
@@ -234,7 +234,7 @@ $grn_status = $row->grn_status;
                                     </tbody>
                                     <tr class="text-center" style="background-color: darkgrey">
                                         <td colspan="2">Total</td>
-                                        <td style="font-size: larger;font-weight: bold"><?php echo  number_format($total_import_qty,2) ?></td>
+                                        <td style="font-size: larger;font-weight: bold"><?php echo  (float)$total_import_qty + 0 ?></td>
                                         <td></td>
                                         <td style="font-size: larger;font-weight: bold"><?php echo  number_format($total_import_amount,2) ?></td>
                                         <td></td>
@@ -328,14 +328,14 @@ $grn_status = $row->grn_status;
                                     <?php endif;?>
                                         </td>
                                         <td class="text-center"><?php echo $row1->batch_code?></td>
-                                        <td class="text-center"><?php echo number_format($row1->purchase_approved_qty,2);?></td>
-                                        <td  class="text-center"><?php echo  number_format($row1->purchase_recived_qty,2)?></td>
+                                        <td class="text-center"><?php echo (float)$row1->purchase_approved_qty + 0;?></td>
+                                        <td  class="text-center"><?php echo  (float)$row1->purchase_recived_qty + 0?></td>
                                         <td  class="text-center ShowHideRate" style="display: none;"><?php echo  number_format($row1->rate,2)?></td>
                                         <td  class="text-center ShowHideAmount" style="display: none;"><?php echo  number_format($row1->amount,2)?></td>
                                         <td  class="text-center ShowHideDiscountPercent" style="display: none;"><?php echo  number_format($row1->discount_percent,2)?></td>
                                         <td  class="text-center ShowHideDiscountAmount" style="display: none;"><?php echo  number_format($row1->discount_amount,2)?></td>
                                         <td  class="text-center ShowHideNetAmount" style="display: none;"><?php echo  number_format($row1->net_amount,2)?></td>
-                                        <td @if($row->type==0) @if($row1->purchase_recived_qty > $row1->purchase_approved_qty)style="background-color: yellow"@endif @endif class="text-center"><?php echo number_format($row1->bal_reciable,2);?></td>
+                                        <td @if($row->type==0) @if($row1->purchase_recived_qty > $row1->purchase_approved_qty)style="background-color: yellow"@endif @endif class="text-center"><?php echo (float)$row1->bal_reciable + 0;?></td>
                                         <td class="text-center">
                                             <?php $Warehouse =  CommonHelper::get_single_row('warehouse','id',$row1->warehouse_id);
                                             echo $Warehouse->name;

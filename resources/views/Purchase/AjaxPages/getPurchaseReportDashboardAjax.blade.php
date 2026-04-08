@@ -23,7 +23,7 @@
                 <td>{{ date('d M Y', strtotime($row->pv_date)) }}</td>
                 <td>{{ $row->brand_name }}</td>
                 <td>{{ $row->product_name }}</td>
-                <td>{{ number_format($row->qty, 2) }}</td>
+                <td>{{ (float)$row->qty + 0 }}</td>
                 <td>{{ number_format($row->rate, 2) }}</td>
                 <td class="total-highlight">{{ number_format($row->net_amount, 2) }}</td>
                 <td>
