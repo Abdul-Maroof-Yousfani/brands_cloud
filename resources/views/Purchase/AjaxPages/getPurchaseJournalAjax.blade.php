@@ -7,10 +7,10 @@
             <th>Principle</th>
             <th>Notes</th>
             <th>Item Name</th>
-            <th>Ctn</th>
-            <th>Pcs</th>
+            <!-- <th>Ctn</th> -->
+            <th>Qty</th>
             <th>Packing</th>
-            <th>Total Pcs</th>
+            <th>Total Qty</th>
             <th>Unit Price</th>
             <th>Gross Amount</th>
             <th>Disc %</th>
@@ -48,8 +48,8 @@
                 <td style="text-align: left; padding: 10px;">{{ $row->supplier_name }}</td>
                 <td><small>{{ $row->notes }}</small></td>
                 <td style="text-align: left; padding: 10px;">{{ $row->product_name }}</td>
-                <td>{{ $ctn }}</td>
-                <td>{{ $pcs }}</td>
+                <!-- <td>{{ $ctn }}</td> -->
+                <td>{{ (float)$row->qty + 0 }}</td>
                 <td>{{ $row->packing }}</td>
                 <td style="font-weight: 600;">{{ (float)$row->qty + 0 }}</td>
                 <td>{{ number_format($row->rate, 2) }}</td>
@@ -69,7 +69,7 @@
     @if($purchase_data->count() > 0)
     <tfoot>
         <tr style="background-color: #f1f4f7; font-weight: 700;">
-            <td colspan="9" class="text-right">Page Total:</td>
+            <td colspan="8" class="text-right">Page Total:</td>
             <td class="text-center">{{ (float)$purchase_data->sum('qty') + 0 }}</td>
             <td></td>
             <td class="text-center">{{ number_format($totalGross, 2) }}</td>

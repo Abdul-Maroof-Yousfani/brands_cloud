@@ -146,10 +146,11 @@ class PurchaseController extends Controller
         $Types = DB::Connection('mysql2')->table('type')->where('status', 1)->get();
         $Warehouses = DB::Connection('mysql2')->table('warehouse')->where('status', 1)->orderBy('name')->get();
         $Principals = DB::Connection('mysql2')->table('supplier')->where('status', 1)->get();
+        $ProductTypes = DB::Connection('mysql2')->table('product_type')->where('status', 1)->get();
 
         CommonHelper::reconnectMasterDatabase();
 
-        return view('Purchase.purchaseJournal', compact('Branches', 'Items', 'Brands', 'Types', 'Warehouses', 'Principals'));
+        return view('Purchase.purchaseJournal', compact('Branches', 'Items', 'Brands', 'Types', 'Warehouses', 'Principals', 'ProductTypes'));
     }
 
     public function purchaseReturnReport(Request $request) {

@@ -203,8 +203,9 @@
                                             <label class="journal-label">Product Type</label>
                                             <select class="form-control select2" name="product_type">
                                                 <option value="">All Product Types</option>
-                                                <option value="1">Product</option>
-                                                <option value="2">Raw Material</option>
+                                                @foreach($ProductTypes as $pt)
+                                                    <option value="{{ $pt->product_type_id }}">{{ $pt->type }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -228,7 +229,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <!-- <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="journal-label">Type</label>
                                             <select class="form-control select2" name="types[]" multiple data-placeholder="All Types Selected">
@@ -237,7 +238,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="journal-label">Warehouse</label>
