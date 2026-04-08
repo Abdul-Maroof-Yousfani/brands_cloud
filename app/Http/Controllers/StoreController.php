@@ -702,6 +702,7 @@ public function closingReportView(Request $request)
                     DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
                 )
                 ->where('s.status', 1)
+                ->where('w.is_virtual', 0)
                 ->where("s.voucher_type", "!=", "9")
                 ->whereBetween('s.created_date', [$from_date, $to_date])
                 ->groupBy('si.id','w.id');
@@ -799,6 +800,7 @@ public function closingReportView(Request $request)
                 $warehouses = DB::connection('mysql2')->table('warehouse')
                     ->whereIn('id', $warehouseList)
                     ->where('status', 1)
+                    ->where('is_virtual', 0)
                     ->get();
 
                 $subitem_ids = DB::connection('mysql2')->table('stock')
@@ -827,7 +829,7 @@ public function closingReportView(Request $request)
                     ->where('status', 1)
                     ->get(['id', 'name']);
             } else {
-                $warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->get();
+                $warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->where('is_virtual', 0)->get();
                 $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
                 $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
                 $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
@@ -882,10 +884,11 @@ public function closingReportView(Request $request)
                 DB::raw('SUM(CASE WHEN s.voucher_type IN (2,5,3,9) THEN s.qty ELSE 0 END) AS out_stock'),
                 DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
             )
-            ->where('s.status', 1)
-            ->where("s.voucher_type", "!=", "9")
-            ->whereBetween('s.created_date', [$from_date, $to_date])
-            ->groupBy('si.id','w.id');
+                ->where('s.status', 1)
+                ->where('w.is_virtual', 0)
+                ->where("s.voucher_type", "!=", "9")
+                ->whereBetween('s.created_date', [$from_date, $to_date])
+                ->groupBy('si.id','w.id');
 
 
             if (!empty($warehouse_ids)) {
@@ -995,6 +998,7 @@ public function getWarehousesByTerritory(Request $request)
         ->table('warehouse')
         ->whereIn('id', $warehouse_ids)
         ->where('status', 1)
+        ->where('is_virtual', 0)
         ->get(['id', 'name']);
 
     return response()->json($warehouses);
