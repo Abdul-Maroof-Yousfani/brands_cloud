@@ -78,7 +78,7 @@ use App\Helpers\SaleHelper;
                         <b>(xlsx)</b></button>
                     <?php endif;?>
                 </div>
-                <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Sales Detail Report With COGS</h1>
+                <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Sales Detail Report</h1>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
@@ -186,10 +186,10 @@ use App\Helpers\SaleHelper;
                                                 <th class="text-center" style="width:150px;">SKU Code</th>
                                                 <th class="text-center" style="width:150px;">Product</th>
                                                 <th class="text-center" style="width:150px;">Brand</th>
-                                                @if($cogs)
+                                                <!-- @if($cogs)
                                                     <th class="text-center" style="width:150px;">COGS Amount</th>
                                                     <th class="text-center" style="width:150px;">Total COGS</th>
-                                                @endif
+                                                @endif -->
                                                 <th class="text-center" style="width:150px;">Sale Quantity</th>
                                                 <th class="text-center" style="width:150px;">Gross Amount</th>
                                                 <th class="text-center" style="width:150px;">Discount</th>
