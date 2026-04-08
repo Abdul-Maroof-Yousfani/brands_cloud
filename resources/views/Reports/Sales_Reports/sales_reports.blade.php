@@ -31,36 +31,130 @@ use App\Helpers\SaleHelper;
                 <?php endif;?>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="control-label">From Date</label>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="from" class="form-control" id="from" value="2025-10-28">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">To Date</label>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="to" class="form-control" id="to" value="2025-10-28">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">S.O No</label>
-                        <div class="input-group">
-                            <input type="text" name="to" class="form-control" id="so">
+                            <input type="date" name="from" class="form-control" id="from" value="{{ date('Y-m-d', strtotime('-30 days')) }}">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">To Date</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="date" name="to" class="form-control" id="to" value="{{ date('Y-m-d') }}">
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">S.O No</label>
+                        <div class="input-group">
+                            <input type="text" name="so" class="form-control" id="so" placeholder="Search SO #">
+                        </div>
+                    </div>
+                </div> -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Category</label>
+                        <select name="category_id" id="category_id" class="form-control select2">
+                            <option value="">Select Category</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->main_ic }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Sub Category</label>
+                        <select name="sub_category_id" id="sub_category_id" class="form-control select2">
+                            <option value="">Select Sub Category</option>
+                            @foreach($sub_categories as $scat)
+                                <option value="{{ $scat->id }}">{{ $scat->sub_category_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Principal Group</label>
+                        <select name="principal_group_id" id="principal_group_id" class="form-control select2">
+                            <option value="">Select Principal Group</option>
+                            @foreach($principal_groups as $pg)
+                                <option value="{{ $pg->id }}">{{ $pg->products_principal_group }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Brand</label>
+                        <select name="brand_id" id="brand_id" class="form-control select2">
+                            <option value="">Select Brand</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Group</label>
+                        <select name="group_id" id="group_id" class="form-control select2">
+                            <option value="">Select Group</option>
+                            @foreach($groups as $g)
+                                <option value="{{ $g->id }}">{{ $g->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Product Classification</label>
+                        <select name="classification_id" id="classification_id" class="form-control select2">
+                            <option value="">Select Classification</option>
+                            @foreach($classifications as $cl)
+                                <option value="{{ $cl->id }}">{{ $cl->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Product Type</label>
+                        <select name="type_id" id="type_id" class="form-control select2">
+                            <option value="">Select Product Type</option>
+                            @foreach($types as $t)
+                                <option value="{{ $t->product_type_id }}">{{ $t->type }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Product Trend</label>
+                        <select name="trend_id" id="trend_id" class="form-control select2">
+                            <option value="">Select Product Trend</option>
+                            @foreach($trends as $tr)
+                                <option value="{{ $tr->id }}">{{ $tr->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 text-right">
                     <div class="form-group" style="margin-top: 25px;">
-                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;margin-left: 20px;">
-                            <i class="fa fa-refresh"></i> Generate
+                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary btn-block">
+                            <i class="fa fa-refresh"></i> Generate Report
                         </button>
                     </div>
                 </div>
@@ -130,9 +224,18 @@ use App\Helpers\SaleHelper;
         url: window.location.href,  // sends to the same page
         method: "GET",             // or "GET", "DELETE", etc.
         data: {
+            m: '{{ request()->m }}',
             from: $("#from").val(),
             to: $("#to").val(),
-            so: $('#so').val()
+            so: $('#so').val(),
+            category_id: $('#category_id').val(),
+            sub_category_id: $('#sub_category_id').val(),
+            brand_id: $('#brand_id').val(),
+            principal_group_id: $('#principal_group_id').val(),
+            group_id: $('#group_id').val(),
+            classification_id: $('#classification_id').val(),
+            type_id: $('#type_id').val(),
+            trend_id: $('#trend_id').val()
         },
         beforeSend: function() {
             $('#data').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
