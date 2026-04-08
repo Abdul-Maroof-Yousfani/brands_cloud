@@ -1446,6 +1446,7 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get("BASaleReturn", "SalesReturnReportController@show_ba");
     Route::get("/stock_report_view", "StockReportController@show")->name("stock_report.view");
     Route::get("/sale_return_journal_report", "SaleReturnJournalReportController@show")->name("sale_return.view");
+    Route::get("/sale_return_journal_report_v2", "SaleReturnJournalV2ReportController@show")->name("sale_return_v2.view");
     Route::get("/custom_sales_tax_report", "CustomSalesTaxReportController@show")->name('sales_tax_report.view');
     Route::get("/store_brand_tertiary_summary", "StoresBrandTertialSummaryController@show")->name('stores_brand_tertiary_summary.view');
     Route::get("/inventory_sheet", "InventorySheetController@show")->name('inventory_sheet.view');
@@ -1454,6 +1455,7 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get("/recovery_report_view", "RecoveryReportController@show")->name("recovery_report.view");
     Route::get("/stock_in_report", "StockInReportController@index")->name("stock_in.view");
     Route::get("/stock_out_report", "StockOutReportController@index")->name("stock_out.view");
+    Route::get("/stock_transfer_report", "StockTransferReportController@show")->name("stock_transfer_report.view");
 
 
 
