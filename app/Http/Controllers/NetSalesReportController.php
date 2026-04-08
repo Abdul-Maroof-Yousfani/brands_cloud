@@ -15,6 +15,15 @@ class NetSalesReportController extends Controller
         $customer_id = $request->customer_id;
         $region_id = $request->region_id;
         $warehouse_id = $request->warehouse_id;
+        
+        $category_id = $request->category_id;
+        $sub_category_id = $request->sub_category_id;
+        $principal_group_id = $request->principal_group_id;
+        $group_id = $request->group_id;
+        $classification_id = $request->classification_id;
+        $type_id = $request->type_id;
+        $trend_id = $request->trend_id;
+
         $cogs = true;
 
         if($request->ajax()) {
@@ -94,6 +103,28 @@ class NetSalesReportController extends Controller
                             })
                             ->when($warehouse_id, function ($q) use ($warehouse_id) {
                                 $q->where("sales_tax_invoice_data.warehouse_id", $warehouse_id);
+                            })
+                            
+                            ->when($category_id, function ($q) use ($category_id) {
+                                $q->where("subitem.main_ic_id", $category_id);
+                            })
+                            ->when($sub_category_id, function ($q) use ($sub_category_id) {
+                                $q->where("subitem.sub_category_id", $sub_category_id);
+                            })
+                            ->when($principal_group_id, function ($q) use ($principal_group_id) {
+                                $q->where("subitem.products_principal_group_id", $principal_group_id);
+                            })
+                            ->when($group_id, function ($q) use ($group_id) {
+                                $q->where("subitem.group_id", $group_id);
+                            })
+                            ->when($classification_id, function ($q) use ($classification_id) {
+                                $q->where("subitem.product_classification_id", $classification_id);
+                            })
+                            ->when($type_id, function ($q) use ($type_id) {
+                                $q->where("subitem.product_type_id", $type_id);
+                            })
+                            ->when($trend_id, function ($q) use ($trend_id) {
+                                $q->where("subitem.product_trend_id", $trend_id);
                             })
 
                             ->groupBy(
@@ -107,7 +138,16 @@ class NetSalesReportController extends Controller
             return view("Reports.net_sales_report.custom_sales_tax_report_ajax", compact("net_sales_reports", 'cogs'));
         }
 
-        return view("Reports.net_sales_report.custom_sales_tax_report", compact("cogs"));
+        $categories = DB::connection('mysql2')->table('category')->where('status', 1)->get();
+        $sub_categories = DB::connection('mysql2')->table('sub_category')->where('status', 1)->get();
+        $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
+        $principal_groups = DB::connection('mysql2')->table('products_principal_group')->where('status', 1)->get();
+        $groups = DB::connection('mysql2')->table('company_groups')->where('status', 1)->get();
+        $classifications = DB::connection('mysql2')->table('product_classifications')->where('status', 1)->get();
+        $types = DB::connection('mysql2')->table('product_type')->where('status', 1)->get();
+        $trends = DB::connection('mysql2')->table('product_trends')->where('status', 1)->get();
+
+        return view("Reports.net_sales_report.custom_sales_tax_report", compact('cogs', 'categories', 'sub_categories', 'brands', 'principal_groups', 'groups', 'classifications', 'types', 'trends'));
     }
 
 
@@ -119,6 +159,15 @@ class NetSalesReportController extends Controller
         $customer_id = $request->customer_id;
         $region_id = $request->region_id;
         $warehouse_id = $request->warehouse_id;
+
+        $category_id = $request->category_id;
+        $sub_category_id = $request->sub_category_id;
+        $principal_group_id = $request->principal_group_id;
+        $group_id = $request->group_id;
+        $classification_id = $request->classification_id;
+        $type_id = $request->type_id;
+        $trend_id = $request->trend_id;
+
         $cogs = true;
 
         if($request->ajax()) {
@@ -200,6 +249,28 @@ class NetSalesReportController extends Controller
                                 $q->where("sales_tax_invoice_data.warehouse_id", $warehouse_id);
                             })
 
+                            ->when($category_id, function ($q) use ($category_id) {
+                                $q->where("subitem.main_ic_id", $category_id);
+                            })
+                            ->when($sub_category_id, function ($q) use ($sub_category_id) {
+                                $q->where("subitem.sub_category_id", $sub_category_id);
+                            })
+                            ->when($principal_group_id, function ($q) use ($principal_group_id) {
+                                $q->where("subitem.products_principal_group_id", $principal_group_id);
+                            })
+                            ->when($group_id, function ($q) use ($group_id) {
+                                $q->where("subitem.group_id", $group_id);
+                            })
+                            ->when($classification_id, function ($q) use ($classification_id) {
+                                $q->where("subitem.product_classification_id", $classification_id);
+                            })
+                            ->when($type_id, function ($q) use ($type_id) {
+                                $q->where("subitem.product_type_id", $type_id);
+                            })
+                            ->when($trend_id, function ($q) use ($trend_id) {
+                                $q->where("subitem.product_trend_id", $trend_id);
+                            })
+
                             ->groupBy(
                                 "subitem.id",
                                 "sales_tax_invoice.buyers_id",
@@ -211,7 +282,16 @@ class NetSalesReportController extends Controller
             return view("Reports.net_sales_report.custom_sales_tax_report_ajax_1", compact("net_sales_reports", 'cogs'));
         }
 
-        return view("Reports.net_sales_report.custom_sales_tax_report_1", compact("cogs"));
+        $categories = DB::connection('mysql2')->table('category')->where('status', 1)->get();
+        $sub_categories = DB::connection('mysql2')->table('sub_category')->where('status', 1)->get();
+        $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
+        $principal_groups = DB::connection('mysql2')->table('products_principal_group')->where('status', 1)->get();
+        $groups = DB::connection('mysql2')->table('company_groups')->where('status', 1)->get();
+        $classifications = DB::connection('mysql2')->table('product_classifications')->where('status', 1)->get();
+        $types = DB::connection('mysql2')->table('product_type')->where('status', 1)->get();
+        $trends = DB::connection('mysql2')->table('product_trends')->where('status', 1)->get();
+
+        return view("Reports.net_sales_report.custom_sales_tax_report_1", compact('cogs', 'categories', 'sub_categories', 'brands', 'principal_groups', 'groups', 'classifications', 'types', 'trends'));
     }
 
     
