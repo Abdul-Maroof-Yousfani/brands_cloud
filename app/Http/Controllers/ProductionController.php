@@ -1410,7 +1410,7 @@ class ProductionController extends Controller
             $transaction->voucher_no = $ppc_no;
             $transaction->master_id = $id;
             $transaction->v_date = date('Y-m-d');
-            $acc_id = 97;
+            $acc_id = config('accounts.inventory.finished_goods.id');
 
             $transaction->acc_id = $acc_id;
           //  $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($acc_id) ??1;
@@ -1517,7 +1517,7 @@ class ProductionController extends Controller
             $transaction->voucher_no = $ppc_no;
             $transaction->master_id = $request->production_plan_issuence_id;
             $transaction->v_date = date('Y-m-d');
-            $acc_id = 97;
+            $acc_id = config('accounts.inventory.finished_goods.id');
 
             $transaction->acc_id = $acc_id;
             $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($acc_id);
@@ -1825,9 +1825,9 @@ class ProductionController extends Controller
 
             $acc_code = '';
             if ($request->session()->get('run_company') == 1) :
-                $acc_code = '1-2-1-2';
+                $acc_code = config('accounts.inventory.wip.code');
             elseif ($request->session()->get('run_company') == 3) :
-                $acc_code = '1-2-16-3';
+                $acc_code = config('accounts.production.foh.code');
             endif;
 
 
@@ -1854,7 +1854,7 @@ class ProductionController extends Controller
             // labour amount
 
 
-            $acc_code = '1-2-16-2';
+            $acc_code = config('accounts.production.labour.code');
             $transaction = new Transactions();
             $transaction = $transaction->SetConnection('mysql2');
             $transaction->voucher_no = $voucher_no;
@@ -1877,8 +1877,8 @@ class ProductionController extends Controller
             $transaction->voucher_no = $voucher_no;
             $transaction->master_id = 0;
             $transaction->v_date = date('Y-m-d');
-            $transaction->acc_id = ReuseableCode::get_acc_id_by_code('1-2-15-5');
-            $transaction->acc_code = '1-2-15-5';
+            $transaction->acc_id = ReuseableCode::get_acc_id_by_code(config('accounts.production.labour_cr.code'));
+            $transaction->acc_code = config('accounts.production.labour_cr.code');
             $transaction->particulars = 'Cost';
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
@@ -1901,8 +1901,7 @@ class ProductionController extends Controller
             $transaction->voucher_no = $voucher_no;
             $transaction->master_id = 0;
             $transaction->v_date = date('Y-m-d');
-            $transaction->acc_id = ReuseableCode::get_acc_id_by_code('1-2-15-3');
-            $transaction->acc_code = '1-2-15-3';
+            $transaction->acc_code = config('accounts.production.die_mould_cr.code');
             $transaction->particulars = 'Cost';
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
@@ -1919,8 +1918,8 @@ class ProductionController extends Controller
             $transaction->voucher_no = $voucher_no;
             $transaction->master_id = 0;
             $transaction->v_date = date('Y-m-d');
-            $transaction->acc_id = ReuseableCode::get_acc_id_by_code('1-2-15-2');
-            $transaction->acc_code = '1-2-15-2';
+            $transaction->acc_id = ReuseableCode::get_acc_id_by_code(config('accounts.production.machine_cr.code'));
+            $transaction->acc_code = config('accounts.production.machine_cr.code');
             $transaction->particulars = 'Cost';
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
@@ -1938,8 +1937,8 @@ class ProductionController extends Controller
             $transaction->voucher_no = $voucher_no;
             $transaction->master_id = 0;
             $transaction->v_date = date('Y-m-d');
-            $transaction->acc_id = ReuseableCode::get_acc_id_by_code('1-2-15-4');
-            $transaction->acc_code = '1-2-15-4';
+            $transaction->acc_id = ReuseableCode::get_acc_id_by_code(config('accounts.production.foh_cr.code'));
+            $transaction->acc_code = config('accounts.production.foh_cr.code');
             $transaction->particulars = 'Cost';
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
@@ -2171,8 +2170,8 @@ class ProductionController extends Controller
             $transaction->voucher_no = $voucher_no;
             $transaction->master_id = 0;
             $transaction->v_date = date('Y-m-d');
-            $transaction->acc_id = 97;
-            $transaction->acc_code = '1-2-1-1';
+            $transaction->acc_id = config('accounts.inventory.finished_goods.id');
+            $transaction->acc_code = config('accounts.inventory.finished_goods.code');
             $transaction->particulars = 'Cost';
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
@@ -2188,8 +2187,8 @@ class ProductionController extends Controller
             $transaction->voucher_no = $voucher_no;
             $transaction->master_id = 0;
             $transaction->v_date = date('Y-m-d');
-            $transaction->acc_id = 842;
-            $transaction->acc_code = '1-2-16-3';
+            $transaction->acc_id = config('accounts.production.foh.id');
+            $transaction->acc_code = config('accounts.production.foh.code');
             $transaction->particulars = 'Factory Overhead';
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
@@ -2206,8 +2205,8 @@ class ProductionController extends Controller
             $transaction->voucher_no = $voucher_no;
             $transaction->master_id = 0;
             $transaction->v_date = date('Y-m-d');
-            $transaction->acc_id = 841;
-            $transaction->acc_code = '1-2-16-2';
+            $transaction->acc_id = config('accounts.production.labour.id');
+            $transaction->acc_code = config('accounts.production.labour.code');
             $transaction->particulars = 'Labour';
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
@@ -2224,8 +2223,8 @@ class ProductionController extends Controller
             $transaction->voucher_no = $voucher_no;
             $transaction->master_id = 0;
             $transaction->v_date = date('Y-m-d');
-            $transaction->acc_id = 840;
-            $transaction->acc_code = '1-2-16-1';
+            $transaction->acc_id = config('accounts.production.material.id');
+            $transaction->acc_code = config('accounts.production.material.code');
             $transaction->particulars = 'Material';
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;

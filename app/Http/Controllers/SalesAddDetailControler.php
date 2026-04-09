@@ -3900,8 +3900,8 @@ private function getAccountIds()
                     $transaction->master_id = $id;
                     $transaction->voucher_no = $request->input('credit_not_no');
                     $transaction->v_date = $request->input('credit_date');
-                    $transaction->acc_id = 1053;
-                    $transaction->acc_code = '7-1';
+                    $transaction->acc_id = config('accounts.sales.cogs.id');
+                    $transaction->acc_code = config('accounts.sales.cogs.code');
                     $transaction->cost_center = $request->input('credit_not_no');
                     $transaction->particulars = 'Sales Return: ' . $request->input('credit_not_no') . ' - SO: ' . ($sale_order->so_no ?? '');
                     $transaction->opening_bal = 0;
@@ -3920,8 +3920,8 @@ private function getAccountIds()
                     $transaction->master_id = $id;
                     $transaction->voucher_no = $request->input('credit_not_no');
                     $transaction->v_date = $request->input('credit_date');
-                    $transaction->acc_id = 1101;
-                    $transaction->acc_code = '1-2-1';
+                    $transaction->acc_id = config('accounts.inventory.main.id');
+                    $transaction->acc_code = config('accounts.inventory.main.code');
                     $transaction->cost_center = $request->input('credit_not_no');
                     $transaction->particulars = 'Sales Return: ' . $request->input('credit_not_no') . ' - SO: ' . ($sale_order->so_no ?? '');
                     $transaction->opening_bal = 0;
@@ -4000,8 +4000,8 @@ private function getAccountIds()
                     $transaction->master_id = $id;
                     $transaction->voucher_no = $cr_no;
                     $transaction->v_date = $cr_date;
-                    $transaction->acc_id = 1051;
-                    $transaction->acc_code = '5-8';
+                    $transaction->acc_id = config('accounts.sales.output_adjustment.id');
+                    $transaction->acc_code = config('accounts.sales.output_adjustment.code');
                     $transaction->particulars = 'Sales Return Output Adjustment: ' . $cr_no;
                     $transaction->opening_bal = 0;
                     $transaction->debit_credit = 1; // Debit for Tax Adjustment
@@ -4023,8 +4023,8 @@ private function getAccountIds()
                     $transaction->master_id = $id;
                     $transaction->voucher_no = $cr_no;
                     $transaction->v_date = $cr_date;
-                    $transaction->acc_id = 1778;
-                    $transaction->acc_code = '2-371';
+                    $transaction->acc_id = config('accounts.sales.gst_payable.id');
+                    $transaction->acc_code = config('accounts.sales.gst_payable.code');
                     $transaction->particulars = 'Sales Return Output GST - Payable Adjustment: ' . $cr_no;
                     $transaction->opening_bal = 0;
                     $transaction->debit_credit = 1; // Debit for Tax Adjustment
@@ -4064,8 +4064,8 @@ private function getAccountIds()
                     $transaction->master_id = $id;
                     $transaction->voucher_no = $cr_no;
                     $transaction->v_date = $cr_date;
-                    $transaction->acc_id = 1777;
-                    $transaction->acc_code = '1-57-2';
+                    $transaction->acc_id = config('accounts.sales.advance_tax_receivable.id');
+                    $transaction->acc_code = config('accounts.sales.advance_tax_receivable.code');
                     $transaction->particulars = 'Sales Return Advance Tax Receivable: ' . $cr_no;
                     $transaction->opening_bal = 0;
                     $transaction->debit_credit = 0; // Credit for Accounts Receivable
@@ -4085,8 +4085,8 @@ private function getAccountIds()
                     $transaction->master_id = $id;
                     $transaction->voucher_no = $cr_no;
                     $transaction->v_date = $cr_date;
-                    $transaction->acc_id = 1101;
-                    $transaction->acc_code = '1-2-1';
+                    $transaction->acc_id = config('accounts.inventory.main.id');
+                    $transaction->acc_code = config('accounts.inventory.main.code');
                     $transaction->particulars = 'Sales Return Inventory: ' . $cr_no;
                     $transaction->opening_bal = 0;
                     $transaction->debit_credit = 1; // Debit for Inventory
@@ -6411,8 +6411,8 @@ private function getAccountIds()
             $transaction = $transaction->SetConnection('mysql2');
             $transaction->voucher_no = $pos_no;
             $transaction->v_date = $request->pos_datee;
-            $transaction->acc_id = 97;
-            $transaction->acc_code = FinanceHelper::getAccountCodeByAccId(97);
+            $transaction->acc_id = config('accounts.inventory.finished_goods.id');
+            $transaction->acc_code = config('accounts.inventory.finished_goods.code');
             $transaction->particulars = $request->description;
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;

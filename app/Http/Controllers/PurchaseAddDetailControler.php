@@ -3369,8 +3369,8 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction=$transaction->SetConnection('mysql2');
                 $transaction->voucher_no=$PurchaseReturnNo;
                 $transaction->v_date=$PurchaseReturnDate;
-                $transaction->acc_id=1101;
-                $transaction->acc_code='1-2-1';
+                $transaction->acc_id = config('accounts.inventory.main.id');
+                $transaction->acc_code = config('accounts.inventory.main.code');
                 $transaction->particulars=$Remarks;
                 $transaction->opening_bal=0;
                 $transaction->debit_credit=0;
@@ -3386,8 +3386,8 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction=$transaction->SetConnection('mysql2');
                 $transaction->voucher_no=$PurchaseReturnNo;
                 $transaction->v_date=$PurchaseReturnDate;
-                $transaction->acc_id=1708;
-                $transaction->acc_code='2-36-1';
+                $transaction->acc_id = config('accounts.purchase.grn_clearing.id');
+                $transaction->acc_code = config('accounts.purchase.grn_clearing.code');
                 $transaction->particulars=$Remarks;
                 $transaction->opening_bal=0;
                 $transaction->debit_credit=1;
@@ -3405,8 +3405,8 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction=$transaction->SetConnection('mysql2');
                 $transaction->voucher_no=$PurchaseReturnNo;
                 $transaction->v_date=$PurchaseReturnDate;
-                $transaction->acc_id=1708;
-                $transaction->acc_code='2-36-1';
+                $transaction->acc_id = config('accounts.purchase.grn_clearing.id');
+                $transaction->acc_code = config('accounts.purchase.grn_clearing.code');
                 $transaction->particulars=$Remarks;
                 $transaction->opening_bal=0;
                 $transaction->debit_credit=0;
@@ -3424,8 +3424,8 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction=$transaction->SetConnection('mysql2');
                 $transaction->voucher_no=$PurchaseReturnNo;
                 $transaction->v_date=$PurchaseReturnDate;
-                $transaction->acc_id=1709;
-                $transaction->acc_code='1-5';
+                $transaction->acc_id = config('accounts.purchase.input_gst.id');
+                $transaction->acc_code = config('accounts.purchase.input_gst.code');
                 $transaction->particulars=$Remarks;
                 $transaction->opening_bal=0;
                 $transaction->debit_credit=0;
@@ -3489,8 +3489,8 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                 $transaction->v_date=$PurchaseReturnDate;
                 // $transaction->acc_id=ReuseableCode::invoice_tax_acc_id($po_data->sales_tax);
                 // $transaction->acc_code=ReuseableCode::invoice_tax_acc_id($po_data->sales_tax);
-                 $transaction->acc_id=1710;
-                 $transaction->acc_code='2-36-2';
+                 $transaction->acc_id = config('accounts.purchase.wht.id');
+                 $transaction->acc_code = config('accounts.purchase.wht.code');
                 $transaction->particulars=$Remarks;
                 $transaction->opening_bal=0;
                 $transaction->debit_credit=1;
@@ -4357,5 +4357,159 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
         }
 
         return Redirect::to('purchase/viewPurchaseVoucherListThroughWithoutGrn?pageType=viewlist&&parentCode=82&&m=1#SFR');
+    }
+
+    public function addStockInDetail(Request $request)
+    {
+        DB::Connection('mysql2')->beginTransaction();
+        try {
+            $m = $request->m;
+            CommonHelper::companyDatabaseConnection($m);
+            $uniq = \App\Helpers\PurchaseHelper::get_unique_no_stock_in(date('y'), date('m'));
+            $master = [
+                'si_no' => $uniq,
+                'si_date' => $request->si_date,
+                'description' => $request->description,
+                'status' => 1,
+                'date' => date('Y-m-d'),
+                'username' => Auth::user()->name,
+                'user_id' => Auth::user()->id,
+            ];
+            $master_id = DB::Connection('mysql2')->table('stock_in')->insertGetId($master);
+
+            $TotAmount = 0;
+            foreach ($request->item_id as $key => $row) {
+                $sod_id = $request->stock_out_data_id[$key] ?? 0;
+                $qty_received = $request->qty[$key];
+                $warehouse_to = $request->main_warehouse_to; // default
+
+                if ($sod_id) {
+                    $sod_record = DB::connection('mysql2')->table('stock_out_data')->where('id', $sod_id)->first();
+                    if ($sod_record) {
+                        $new_total_received = $sod_record->received_qty + $qty_received;
+                        $si_status = ($new_total_received >= $sod_record->qty) ? 1 : 0;
+                        
+                        DB::connection('mysql2')->table('stock_out_data')
+                            ->where('id', $sod_id)
+                            ->update([
+                                'received_qty' => $new_total_received,
+                                'si_status' => $si_status
+                            ]);
+                        
+                        $warehouse_to = $sod_record->warehouse_to;
+                    }
+                }
+
+                $data2 = [
+                    'master_id' => $master_id,
+                    'stock_out_data_id' => $sod_id,
+                    'si_no' => $uniq,
+                    'warehouse_from' => $request->warehouse_from[$key] ?? 0,
+                    'stock_out_no' => $request->stock_out_no[$key] ?? "",
+                    'item_id' => $row,
+                    'warehouse_to' => $warehouse_to,
+                    'batch_code' => $request->batch_code[$key] ?? "",
+                    'qty' => $qty_received,
+                    'rate' => $request->rate[$key] ?? 0,
+                    'amount' => $request->amount[$key] ?? 0,
+                    'status' => 1,
+                    'desc' => $request->des ? $request->des[$key] : "",
+                ];
+                $master_data_id = DB::connection('mysql2')->table('stock_in_data')->insertGetId($data2);
+
+                $stock = [
+                    'main_id' => $master_id,
+                    'master_id' => $master_data_id,
+                    'voucher_no' => $uniq,
+                    'voucher_date' => $request->si_date,
+                    'voucher_type' => 1, // Stock In / Adjustment Add
+                    'sub_item_id' => $row,
+                    'qty' => $qty_received,
+                    'rate' => $request->rate[$key] ?? 0,
+                    'amount' => $request->amount[$key] ?? 0,
+                    'warehouse_id' => $warehouse_to,
+                    'batch_code' => $request->batch_code[$key] ?? "",
+                    'status' => 1,
+                    'username' => Auth::user()->name,
+                    'created_date' => date('Y-m-d'),
+                ];
+                DB::connection('mysql2')->table('stock')->insert($stock);
+                $TotAmount += ($request->amount[$key] ?? 0);
+            }
+
+            DB::Connection('mysql2')->commit();
+            Session::flash('dataInsert', 'Stock In Successfully Saved.');
+            return Redirect::to('store/stock_in_form?pageType=view&&parentCode=95&&m=' . $m);
+
+        } catch (\Exception $e) {
+            DB::Connection('mysql2')->rollBack();
+            dd($e->getMessage());
+        }
+    }
+
+    public function addStockOutDetail(Request $request)
+    {
+        DB::Connection('mysql2')->beginTransaction();
+        try {
+            $m = $request->m;
+            CommonHelper::companyDatabaseConnection($m);
+            $uniq = \App\Helpers\PurchaseHelper::get_unique_no_stock_out(date('y'), date('m'));
+            $master = [
+                'so_no' => $uniq,
+                'so_date' => $request->so_date,
+                'description' => $request->description,
+                'status' => 1,
+                'date' => date('Y-m-d'),
+                'username' => Auth::user()->name,
+                'user_id' => Auth::user()->id,
+            ];
+            $master_id = DB::Connection('mysql2')->table('stock_out')->insertGetId($master);
+
+            $TotAmount = 0;
+            foreach ($request->item_id as $key => $row) {
+                $data2 = [
+                    'master_id' => $master_id,
+                    'so_no' => $uniq,
+                    'item_id' => $row,
+                    'warehouse_from' => $request->main_warehouse_from,
+                    'warehouse_to' => $request->main_warehouse_to,
+                    'batch_code' => $request->batch_code[$key] ?? "",
+                    'qty' => $request->qty[$key],
+                    'rate' => $request->rate[$key] ?? 0,
+                    'amount' => $request->amount[$key] ?? 0,
+                    'status' => 1,
+                    'si_status' => 0,
+                    'desc' => $request->des ? $request->des[$key] : "",
+                ];
+                $master_data_id = DB::Connection('mysql2')->table('stock_out_data')->insertGetId($data2);
+
+                $stock = [
+                    'main_id' => $master_id,
+                    'master_id' => $master_data_id,
+                    'voucher_no' => $uniq,
+                    'voucher_date' => $request->so_date,
+                    'voucher_type' => 8, // Stock Out / Adjustment Remove
+                    'sub_item_id' => $row,
+                    'qty' => $request->qty[$key],
+                    'rate' => $request->rate[$key] ?? 0,
+                    'amount' => $request->amount[$key] ?? 0,
+                    'warehouse_id' => $request->main_warehouse_from,
+                    'batch_code' => $request->batch_code[$key] ?? "",
+                    'status' => 1,
+                    'username' => Auth::user()->name,
+                    'created_date' => date('Y-m-d'),
+                ];
+                DB::Connection('mysql2')->table('stock')->insert($stock);
+                $TotAmount += ($request->amount[$key] ?? 0);
+            }
+
+            DB::Connection('mysql2')->commit();
+            Session::flash('dataInsert', 'Stock Out Successfully Saved.');
+            return Redirect::to('store/stock_out_form?pageType=view&&parentCode=95&&m=' . $m);
+
+        } catch (\Exception $e) {
+            DB::Connection('mysql2')->rollBack();
+            dd($e->getMessage());
+        }
     }
 }

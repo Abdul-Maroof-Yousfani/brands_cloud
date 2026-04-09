@@ -2513,8 +2513,8 @@ class PaymentVoucherDetails extends Controller
 
             $trans1 = new Transactions();
             $trans1 = $trans1->SetConnection('mysql2');
-            $trans1->acc_id = 806;
-            $trans1->acc_code = '1-2-11';
+            $trans1->acc_id = config('accounts.finance.bank.id');
+            $trans1->acc_code = config('accounts.finance.bank.code');
             $trans1->master_id = 0;
             $trans1->particulars = $data->description;
             $trans1->opening_bal = 0;

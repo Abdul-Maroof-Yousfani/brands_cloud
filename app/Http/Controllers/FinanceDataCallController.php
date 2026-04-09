@@ -912,8 +912,8 @@ class FinanceDataCallController extends Controller
                     'master_id'=>$id,
                     // 'acc_id'=>$row1->acc_id,
                     // 'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
-                        'acc_id'=>1101,
-                    'acc_code'=>'1-2-1',
+                        'acc_id' => config('accounts.inventory.main.id'),
+                    'acc_code' => config('accounts.inventory.main.code'),
                     'cost_center'=>$row1->sub_item_id,
                     'particulars'=>$desc,
                     'opening_bal'=>0,
@@ -934,8 +934,8 @@ class FinanceDataCallController extends Controller
                     'master_id'=>$id,
                     // 'acc_id'=>$row1->acc_id,
                     // 'acc_code'=>FinanceHelper::getAccountCodeByAccId($row1->acc_id),
-                        'acc_id'=>1709,
-                    'acc_code'=>'1-5',
+                        'acc_id' => config('accounts.purchase.input_gst.id'),
+                    'acc_code' => config('accounts.purchase.input_gst.code'),
                     'cost_center'=>$row1->sub_item_id,
                     'particulars'=>$desc,
                     'opening_bal'=>0,
@@ -1011,7 +1011,7 @@ class FinanceDataCallController extends Controller
                 $transaction->v_date=$pv_date;
                 // $transaction->acc_id=$sales_tax_acc_id;
                 // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($sales_tax_acc_id);
-                 $transaction->acc_id=1710;
+                 $transaction->acc_id = config('accounts.purchase.wht.id');
                      $transaction->acc_code='2-36-2';
                 $transaction->particulars= $desc;
                 $transaction->opening_bal=0;
@@ -1127,8 +1127,8 @@ class FinanceDataCallController extends Controller
                     $transaction->v_date=$purchase_date;
                     // $transaction->acc_id=$value->sub_item;
                     // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($value->sub_item);
-                     $transaction->acc_id=1708;
-                     $transaction->acc_code='2-36-1';
+                     $transaction->acc_id = config('accounts.purchase.grn_clearing.id');
+                     $transaction->acc_code = config('accounts.purchase.grn_clearing.code');
                 
                     $transaction->particulars= $desc;
                     $transaction->opening_bal=0;
@@ -1148,8 +1148,8 @@ class FinanceDataCallController extends Controller
                     $transaction->v_date=$purchase_date;
                     // $transaction->acc_id=$value->sub_item;
                     // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($value->sub_item);
-                     $transaction->acc_id=1709;
-                     $transaction->acc_code='1-5';
+                     $transaction->acc_id = config('accounts.purchase.input_gst.id');
+                     $transaction->acc_code = config('accounts.purchase.input_gst.code');
                 
                     $transaction->particulars= $desc;
                     $transaction->opening_bal=0;
@@ -1193,8 +1193,8 @@ class FinanceDataCallController extends Controller
                     // $transaction->acc_id=$sales_tax_acc_id;
                     // $transaction->acc_code=FinanceHelper::getAccountCodeByAccId($sales_tax_acc_id);
 
-                     $transaction->acc_id=1710;
-                     $transaction->acc_code='2-36-2';
+                     $transaction->acc_id = config('accounts.purchase.wht.id');
+                      $transaction->acc_code = config('accounts.purchase.wht.code');
                 
                     $transaction->particulars= $desc;
                     $transaction->opening_bal=0;
@@ -6579,6 +6579,36 @@ function vendor_summery(Request $request)
         $GetType = $request->GetType;
         $m = $request->m;
         return view('Finance.AjaxPages.trial_balance_other_format',compact('from','to','m','GetType'));
+    }
+
+    public function get_pending_stock_outputs(Request $request)
+    {
+        $warehouse_to = $request->warehouse_to;
+        $brand_id = $request->brand_id;
+        $m = $request->m;
+        CommonHelper::companyDatabaseConnection($m);
+        
+        $query = DB::Connection('mysql2')->table('stock_out_data as sod')
+            ->join('stock_out as so', 'so.id', '=', 'sod.master_id')
+            ->join('subitem as si', 'si.id', '=', 'sod.item_id')
+            ->join('warehouse as wf', 'wf.id', '=', 'sod.warehouse_from')
+            ->join('warehouse as wt', 'wt.id', '=', 'sod.warehouse_to')
+            ->select('sod.*', 'so.so_date', 'so.description as master_desc', 'si.product_name', 'si.sku_code', 'si.product_barcode', 'wf.name as from_warehouse_name', 'wt.name as to_warehouse_name', 'sod.qty as total_qty', 'sod.received_qty as prev_received_qty', DB::raw('(sod.qty - sod.received_qty) as pending_qty'))
+            ->where('sod.si_status', 0) // Not yet fully received
+            ->whereRaw('sod.qty > sod.received_qty')
+            ->where('sod.status', 1);
+
+        if ($warehouse_to != "") {
+            $query->where('sod.warehouse_to', $warehouse_to);
+        }
+
+        if ($brand_id != "") {
+            $query->where('si.brand_id', $brand_id);
+        }
+            
+        $data = $query->get();
+            
+        return response()->json($data);
     }
 }
 
