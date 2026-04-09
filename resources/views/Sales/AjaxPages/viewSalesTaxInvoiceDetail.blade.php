@@ -40,7 +40,7 @@ foreach ($sales_tax_invoice_data as $item) {
     $amount = ($gross_amount - $discount_amount + $tax_amount);
 
     $total_before_tax += $gross_amount;
-    $total_tax += $tax_amount;
+    $total_tax += $item->tax_amount;
     $total_after_tax += $amount;
     $total_tax_amount += $tax_amount;
     $total_qty += $item->qty;
@@ -365,7 +365,8 @@ input.form-control.form-control2{margin:0!important;}
                                                 <td style="text-align: center !important;">{{ number_format($percentage_amount, 2) }}% </td>
                                                 <td style="text-align: center !important;">{{ number_format($discount_amount, 2) }}</td>
                                                 <td style="text-align: center !important;">{{ number_format($tax, 2) }}%</td>
-                                                <td style="text-align: center !important;">{{ number_format($tax_amount, 2) }}</td>
+                                                <td style="text-align: center !important;">{{ number_format($row->tax_amount, 2) }}</td>
+                                                <!-- <td style="text-align: center !important;">{{ number_format($tax_amount, 2) }}</td> -->
                                                 <td style="text-align: center !important;">{{ number_format($amount, 2) }}</td>
                                             </tr>
                                             <tr>
