@@ -57,32 +57,34 @@ use App\Helpers\CommonHelper;
                                                 <textarea type="text" name="description" id="description" class="form-control requiredField"></textarea>
                                             </div>
                                         </div>
+                                        <!-- Filters removed as per user request -->
                                         <div class="row">
-                                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                                <label for="">Warehouse To (Receiving)</label>
-                                                <select onchange="get_pending_requests()" name="main_warehouse_to"
-                                                    id="main_warehouse_to" class="form-control requiredField select2">
-                                                    <option value="">Select Warehouse</option>
-                                                    <?php foreach(CommonHelper::get_all_warehouse() as $Fil):?> 
-                                                        @if($Fil->is_virtual == 0)
-                                                            <option value="<?php echo $Fil->id; ?>"><?php echo $Fil->name; ?></option> 
-                                                        @endif
-                                                    <?php endforeach;?>
-                                                </select>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                <div id="PendingSelectionArea" style="display: none; margin-bottom: 20px;">
+                                                    <div class="panel panel-info">
+                                                        <div class="panel-heading">
+                                                            <h3 class="panel-title">Available Pending Shipments (Select to Receive)</h3>
+                                                        </div>
+                                                        <div class="panel-body" style="max-height: 250px; overflow-y: auto;">
+                                                            <table class="table table-condensed table-hover">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="width: 40px;"><input type="checkbox" id="selectAllPending" onclick="toggleAllPending(this)"></th>
+                                                                        <th>Stock Out Document</th>
+                                                                        <th>Warehouse From</th>
+                                                                        <th>Warehouse To</th>
+                                                                        <th class="text-center">Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="PendingList">
+                                                                    <!-- Populated via AJAX -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                                <label for="">Brands (Filter)</label>
-                                                <select onchange="select_brand()" name="brands" id="brands"
-                                                    class="form-control select2">
-                                                    <option value="">All Brands</option>
-                                                    <?php foreach(CommonHelper::get_all_brand() as $brand):?> <option value="<?php echo $brand->id; ?>">
-                                                        <?php echo $brand->name; ?></option> <?php endforeach;?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <br>
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                 <div class="table-responsive" style="height: 400px; overflow-y: auto;">
@@ -137,25 +139,87 @@ use App\Helpers\CommonHelper;
         let allItems = @json(CommonHelper::get_all_subitem_get());
 
         function get_pending_requests() {
-            var wh_to = $('#main_warehouse_to').val();
-            // Load all if no warehouse selected, otherwise filter
+            var wh_to = ''; // Removed filter
+            var brand_id = ''; // Removed filter
+            
             $.ajax({
                 url: "{{ url('fdc/get_pending_stock_outputs') }}",
                 type: 'GET',
-                data: { warehouse_to: wh_to, m: "{{ $m }}" },
+                data: { warehouse_to: wh_to, brand_id: brand_id, m: "{{ $m }}" },
                 success: function(data) {
+                    $('#PendingList').empty();
                     $('#AppendHtml').empty();
                     row_count = 0;
+                    
                     if (data.length > 0) {
+                        $('#PendingSelectionArea').show();
+                        
+                        // Group by Stock Out No
+                        let grouped = {};
                         data.forEach(function(item) {
-                            add_pending_row(item);
+                            if (!grouped[item.so_no]) {
+                                grouped[item.so_no] = {
+                                    so_no: item.so_no,
+                                    from_warehouse_name: item.from_warehouse_name,
+                                    to_warehouse_name: item.to_warehouse_name,
+                                    items_count: 0,
+                                    items: []
+                                };
+                            }
+                            grouped[item.so_no].items.push(item);
+                            grouped[item.so_no].items_count++;
+                        });
+
+                        Object.values(grouped).forEach(function(doc) {
+                            add_document_to_pending_list(doc);
                         });
                     } else {
-                        // Add one empty row if no pending
+                        $('#PendingSelectionArea').hide();
                         AddMoreRows();
                     }
                 }
             });
+        }
+
+        function add_document_to_pending_list(doc) {
+            var html = '<tr>' +
+                '<td><input type="checkbox" class="pending-check" data-json=\'' + JSON.stringify(doc).replace(/'/g, "&apos;") + '\' onclick="toggleDocumentSelection(this)"></td>' +
+                '<td><strong>' + doc.so_no + '</strong> (' + doc.items_count + ' items)</td>' +
+                '<td>' + doc.from_warehouse_name + '</td>' +
+                '<td>' + doc.to_warehouse_name + '</td>' +
+                '<td class="text-center">--</td>' +
+                '</tr>';
+            $('#PendingList').append(html);
+        }
+
+        function toggleDocumentSelection(checkbox) {
+            var doc = JSON.parse(checkbox.getAttribute('data-json').replace(/&apos;/g, "'"));
+            if (checkbox.checked) {
+                doc.items.forEach(function(item) {
+                    // Check if item already exists in table to prevent duplicates
+                    if ($('input[name="stock_out_data_id[]"][value="' + item.id + '"]').length == 0) {
+                        add_pending_row(item);
+                    }
+                });
+            } else {
+                doc.items.forEach(function(item) {
+                    remove_row_by_data_id(item.id);
+                });
+            }
+        }
+
+        function toggleAllPending(master) {
+            $('.pending-check').each(function() {
+                if (this.checked != master.checked) {
+                    this.checked = master.checked;
+                    toggleDocumentSelection(this);
+                }
+            });
+        }
+
+        function remove_row_by_data_id(data_id) {
+            $('input[name="stock_out_data_id[]"][value="' + data_id + '"]').closest('tr').remove();
+            $('#span').text($(".AutoNo").length);
         }
 
         function add_pending_row(data) {
@@ -191,19 +255,7 @@ use App\Helpers\CommonHelper;
         }
 
         function select_brand() {
-            const brand_id = $("#brands").val();
-            const $items = $(".items");
-
-            $items.find("option[data-brand]").each(function() {
-                const $opt = $(this);
-                const optBrand = $opt.data("brand");
-                const shouldHide = brand_id && optBrand != brand_id;
-                $opt.prop("disabled", shouldHide).prop("hidden", shouldHide);
-            });
-
-            $items.each(function() {
-                $(this).select2('destroy').select2();
-            });
+            get_pending_requests();
         }
 
         const itemMap = new Map(allItems.map(item => [item.id, item]));
