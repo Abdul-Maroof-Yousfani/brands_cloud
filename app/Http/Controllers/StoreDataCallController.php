@@ -97,6 +97,50 @@ class StoreDataCallController extends Controller
     public function viewIssuanceDetail(){
         return view('Store.AjaxPages.viewIssuanceDetail');
     }
+
+    public function viewQtyAdjustmentDetail(Request $request){
+        $m = $request->m;
+        $id = $request->id;
+
+        CommonHelper::companyDatabaseConnection($m);
+
+        $master = DB::connection('mysql2')->table('qty_adjustment as qa')
+            ->leftJoin('warehouse as w', 'qa.warehouse_id', '=', 'w.id')
+            ->select('qa.*', 'w.name as warehouse_name')
+            ->where('qa.id', $id)
+            ->first();
+
+        $details = DB::connection('mysql2')->table('qty_adjustment_data as qad')
+            ->leftJoin('subitem as s', 'qad.item_id', '=', 's.id')
+            ->select('qad.*', 's.product_name', 's.sku_code')
+            ->where('qad.master_id', $id)
+            ->get();
+
+        CommonHelper::reconnectMasterDatabase();
+
+        return view('Store.AjaxPages.viewQtyAdjustmentDetail', compact('master', 'details', 'm'));
+    }
+
+    public function filterQtyAdjustmentList(Request $request) {
+        $fromDate = $request->fromDate;
+        $toDate = $request->toDate;
+        $m = $request->m;
+        
+        CommonHelper::companyDatabaseConnection($m);
+        
+        $query = DB::connection('mysql2')->table('qty_adjustment as qa')
+            ->leftJoin('warehouse as w', 'qa.warehouse_id', '=', 'w.id')
+            ->select('qa.*', 'w.warehouse_name')
+            ->whereBetween('qa.adj_date', [$fromDate, $toDate])
+            ->where('qa.status', 1);
+
+        $results = $query->orderBy('qa.adj_date', 'desc')->get();
+        
+        CommonHelper::reconnectMasterDatabase();
+        
+        return view('Store.AjaxPages.filterQtyAdjustmentList', compact('results', 'm'));
+    }
+
     public function get_work_order_data(){
         return view('Store.AjaxPages.get_work_order_data');
     }

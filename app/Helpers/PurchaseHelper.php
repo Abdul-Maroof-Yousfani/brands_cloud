@@ -385,5 +385,14 @@ class PurchaseHelper
         $str = sprintf("%'03d", $str);
         return 'so' . $year . $month . $str;
     }
+
+    public static function get_unique_no_qty_adj($year, $month)
+    {
+        $str = DB::Connection('mysql2')->selectOne("select max(convert(substr(`adj_no`,7,length(substr(`adj_no`,3))-3),signed integer)) reg
+        from `qty_adjustment` where substr(`adj_no`,3,2) = " . $year . " and substr(`adj_no`,5,2) = " . $month . "")->reg;
+        $str = $str + 1;
+        $str = sprintf("%'03d", $str);
+        return 'qa' . $year . $month . $str;
+    }
 }
 ?>

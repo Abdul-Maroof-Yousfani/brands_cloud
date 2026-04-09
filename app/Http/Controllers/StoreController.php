@@ -90,6 +90,16 @@ class StoreController extends Controller
         return view('Store.stock_out_list');
     }
 
+    public function qty_adjustment_form()
+    {
+        return view('Store.qty_adjustment_form');
+    }
+
+    public function qty_adjustment_list()
+    {
+        return view('Store.qty_adjustment_list');
+    }
+
     public  function itemWiseOpening(){
         $OpeningItemWise = DB::Connection('mysql2')->table('stock')->where('opening',1)->where('status',1)->where('voucher_type',1)->where('amount','>',0)->where('warehouse_id','!=',0)->get();
         return view('Store.itemWiseOpening',compact('OpeningItemWise'));

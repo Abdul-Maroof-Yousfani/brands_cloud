@@ -1458,6 +1458,8 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get("/recovery_report_view", "RecoveryReportController@show")->name("recovery_report.view");
     Route::get("/stock_in_report", "StockInReportController@index")->name("stock_in.view");
     Route::get("/stock_out_report", "StockOutReportController@index")->name("stock_out.view");
+    Route::get('/qty_adjustment_form', 'StoreController@qty_adjustment_form');
+    Route::get('/qty_adjustment_list', 'StoreController@qty_adjustment_list');
     Route::get("/stock_transfer_report", "StockTransferReportController@show")->name("stock_transfer_report.view");
 
 
@@ -1591,6 +1593,7 @@ Route::group(['prefix' => 'stad', 'middleware' => 'mysql2', 'before' => 'csrf'],
 
     Route::post('/createStoreChallanReturnDetailForm', 'StoreDataCallController@createStoreChallanReturnDetailForm');
     Route::post('/addStoreChallanReturnDetail', 'StoreAddDetailControler@addStoreChallanReturnDetail');
+    Route::post('/addQtyAdjustmentDetail', 'StoreAddDetailControler@addQtyAdjustmentDetail');
     Route::post('/editStoreChallanReturnDetail', 'StoreEditDetailControler@editStoreChallanReturnDetail');
 
     Route::get('/Email_Sent', 'StoreAddDetailControler@Email_Sent');
@@ -1603,6 +1606,9 @@ Route::group(['prefix' => 'stad', 'middleware' => 'mysql2', 'before' => 'csrf'],
 
 Route::group(['prefix' => 'stdc', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {
     Route::get('/filterDemandVoucherList', 'StoreDataCallController@filterDemandVoucherList');
+    Route::get('/viewIssuanceDetail', 'StoreDataCallController@viewIssuanceDetail');
+    Route::get('/filterQtyAdjustmentList', 'StoreDataCallController@filterQtyAdjustmentList');
+    Route::get('/viewQtyAdjustmentDetail', 'StoreDataCallController@viewQtyAdjustmentDetail');
     Route::get('/get_work_order_data', 'StoreDataCallController@get_work_order_data');
     Route::get('/approve_transfer', 'StoreDataCallController@approve_transfer');
     Route::get('/approveIssuance', 'StoreDataCallController@approveIssuance');

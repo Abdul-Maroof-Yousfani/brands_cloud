@@ -1622,5 +1622,66 @@ public function updateDirectPurchaseOrder(Request $request)
         return Redirect::to('store/issuanceList');
     }
 
+    public function addQtyAdjustmentDetail(Request $request)
+    {
+        DB::Connection('mysql2')->beginTransaction();
+        try {
+            $m = $request->m;
+            $adj_no = $request->adj_no;
+            $adj_date = $request->adj_date;
+            $warehouse_id = $request->warehouse_id;
+            $description = $request->description;
+
+            $master_id = DB::Connection('mysql2')->table('qty_adjustment')->insertGetId([
+                'adj_no' => $adj_no,
+                'adj_date' => $adj_date,
+                'warehouse_id' => $warehouse_id,
+                'description' => $description,
+                'username' => Auth::user()->name,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            $item_id = $request->item_id;
+            $old_qty = $request->old_qty;
+            $actual_qty = $request->actual_qty;
+            $diff_qty = $request->diff_qty;
+
+            foreach ($item_id as $key => $val) {
+                if (!empty($val) && (float)$diff_qty[$key] != 0) {
+                    DB::Connection('mysql2')->table('qty_adjustment_data')->insert([
+                        'master_id' => $master_id,
+                        'item_id' => $val,
+                        'old_qty' => $old_qty[$key],
+                        'actual_qty' => $actual_qty[$key],
+                        'diff_qty' => $diff_qty[$key],
+                    ]);
+
+                    $v_type = ($diff_qty[$key] > 0) ? 1 : 2;
+                    
+                    DB::Connection('mysql2')->table('stock')->insert([
+                        'main_id' => $master_id,
+                        'voucher_no' => $adj_no,
+                        'voucher_date' => $adj_date,
+                        'voucher_type' => $v_type,
+                        'sub_item_id' => $val,
+                        'qty' => abs($diff_qty[$key]),
+                        'amount' => 0,
+                        'warehouse_id' => $warehouse_id,
+                        'status' => 1,
+                        'created_date' => date('Y-m-d'),
+                        'username' => Auth::user()->name,
+                        'description' => 'Qty Adjustment: ' . $description
+                    ]);
+                }
+            }
+
+            DB::Connection('mysql2')->commit();
+            return Redirect::to('store/qty_adjustment_list?m=' . $m)->with('dataInsert', 'Quantity Adjustment Saved Successfully');
+        } catch (\Exception $e) {
+            DB::Connection('mysql2')->rollBack();
+            dd($e->getMessage());
+        }
+    }
 }
 
