@@ -258,9 +258,10 @@ class StoreController extends Controller
        $category= DB::Connection('mysql2')->table('stock as a')
         ->join('subitem as b','a.sub_item_id','=','b.id')
        ->join('category as c','c.id','=','b.main_ic_id')
-
+       ->join('warehouse as w', 'w.id', '=', 'a.warehouse_id')
         ->select('c.id','c.main_ic')
            ->where('a.status',1)
+           ->where('w.is_virtual', 0)
            ->groupBy('c.id')
 
        ->get();
@@ -2470,11 +2471,13 @@ public function add_opening_import_post(Request $request)
         $data=DB::Connection('mysql2')->table('stock as a')
             ->join('subitem as b','a.sub_item_id','=','b.id')
             ->join("brands", "brands.id", "=", "b.brand_id")
+            ->join("warehouse as w", "a.warehouse_id", "=", "w.id")
             ->when(isset($brand_id), function($query) use ($brand_id) {
                 $query->where("brands.id", $brand_id);
             })
             ->where('a.status',1)
-            ->where('amount','>',0)
+            ->where('w.is_virtual', 0)
+            ->where('a.amount','>',0)
             ->whereBetween("a.created_date", [$from, $to])
             ->select('a.*','b.sub_ic', 'b.product_name')
             ->groupby('a.sub_item_id')
@@ -2485,10 +2488,12 @@ public function add_opening_import_post(Request $request)
         $data=DB::Connection('mysql2')->table('stock as a')
             ->join('subitem as b','a.sub_item_id','=','b.id')
             ->join("brands", "brands.id", "=", "b.brand_id")
+            ->join("warehouse as w", "a.warehouse_id", "=", "w.id")
             ->when(isset($brand_id), function($query) use ($brand_id) {
                 $query->where("brands.id", $brand_id);
             })
             ->where('a.status',1)
+            ->where('w.is_virtual', 0)
             ->where('a.sub_item_id',$ItemId)
             ->whereBetween("a.created_date", [$from, $to])
             ->select('a.*','b.sub_ic', 'b.product_name')

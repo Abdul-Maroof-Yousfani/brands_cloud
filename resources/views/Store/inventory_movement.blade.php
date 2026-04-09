@@ -63,7 +63,7 @@ $export=ReuseableCode::check_rights(243);
                 <label for="">Items</label>
                 <select name="ItemId" id="ItemId" class="form-control">
                     <option value="all">ALL</option>
-                    <?php foreach(App\Helpers\CommonHelper::get_all_subitems() as $subitem):?>
+                    <?php foreach(App\Helpers\CommonHelper::get_items_with_movements() as $subitem):?>
                         <option value="<?php echo $subitem->id?>"><?php echo $subitem->product_name?></option>
                     <?php endforeach;?>
                 </select>

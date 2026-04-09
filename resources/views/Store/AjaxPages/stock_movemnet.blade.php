@@ -25,6 +25,8 @@ use App\Helpers\CommonHelper;
     <th class="text-center">IN Amount</th>
     <th class="text-center">OUT QTY</th>
     <th class="text-center">OUT Amount</th>
+    <th class="text-center">Variance QTY</th>
+    <th class="text-center">Adj. QTY</th>
     <th class="text-center">Open DN</th>
     <th class="text-center">Open Return</th>
     <th class="text-center">IN Stock QTY</th>
@@ -44,6 +46,8 @@ use App\Helpers\CommonHelper;
         $total_incomplete_dn=0;
         $total_incomplete_return=0;
         $total_purchase_side=0;
+        $total_variance_qty=0;
+        $total_adj_qty=0;
         @endphp
         <?php
         $cr_no=[];
@@ -95,6 +99,16 @@ use App\Helpers\CommonHelper;
         $out_qty=$out_data[0];
         $out_amount=$out_data[1];
 
+        // Variance: Transfer IN (4) - Transfer OUT (5)
+        $tr_in_data=ReuseableCode::get_stock_type_wise($from,$to,$row->sub_item_id,'4');
+        $tr_out_data=ReuseableCode::get_stock_type_wise($from,$to,$row->sub_item_id,'5');
+        $variance_qty = $tr_in_data[0] - $tr_out_data[0];
+
+        // Adjustment: (Return (10) + Make (11)) - (Cons (8) + Issue (9))
+        $adj_in_data=ReuseableCode::get_stock_type_wise($from,$to,$row->sub_item_id,'10,11');
+        $adj_out_data=ReuseableCode::get_stock_type_wise($from,$to,$row->sub_item_id,'8,9');
+        $adj_qty = $adj_in_data[0] - $adj_out_data[0];
+
         $remianig_amount=0;
         $remianig_qty=0;
         $remianig_qty=$open_qty+$in_qty-$out_qty;
@@ -111,6 +125,8 @@ use App\Helpers\CommonHelper;
             <td><small>{{number_format($in_amount,2)}}</small></td>
             <td><small>{{number_format($out_qty,2)}}</small></td>
             <td><small>{{number_format($out_amount,2)}}</small></td>
+            <td><small>{{number_format($variance_qty,2)}}</small>@php $total_variance_qty+=$variance_qty; @endphp</td>
+            <td><small>{{number_format($adj_qty,2)}}</small>@php $total_adj_qty+=$adj_qty @endphp</td>
 
             <?php
 
@@ -229,6 +245,8 @@ use App\Helpers\CommonHelper;
 
             <td colspan="1">{{number_format($tot_out_qty,2)}}</td>
             <td colspan="1">{{number_format($tot_out_amount,2)}}</td>
+            <td colspan="1">{{number_format($total_variance_qty,2)}}</td>
+            <td colspan="1">{{number_format($total_adj_qty,2)}}</td>
             <td colspan="1">{{number_format($total_incomplete_dn,2)}}</td>
             <td colspan="1">{{number_format($total_purchase_side,2)}}</td>
 

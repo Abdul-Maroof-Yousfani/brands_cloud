@@ -6071,6 +6071,13 @@ public static function get_customer_acc_id($id)
         return '-';
     }
 
+    public static function get_items_with_movements() {
+        return DB::connection('mysql2')->select('select a.id,a.product_name from subitem a
+                                          INNER JOIN stock b ON b.sub_item_id = a.id
+                                          WHERE a.status = 1
+                                          GROUP BY b.sub_item_id');
+    }
+
 }
 
 

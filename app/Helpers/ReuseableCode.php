@@ -847,8 +847,9 @@ $data = [
         $to =date('Y-m-d', strtotime('-1 day', strtotime($from)));
         if ($from == $accyearfrom):
 
-            $in=  DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty  from stock
-        where status=1 and voucher_type=1 and opening=1 and sub_item_id="'.$item_id.'"');
+            $in=  DB::Connection('mysql2')->selectOne('select sum(a.amount)amount,sum(a.qty)qty from stock as a
+        inner join warehouse as w on a.warehouse_id = w.id
+        where a.status=1 and a.voucher_type=1 and a.opening=1 and a.sub_item_id="'.$item_id.'" and w.is_virtual = 0');
             $data[0]=$in->qty;
             $data[1]=$in->amount;
 
@@ -857,14 +858,16 @@ $data = [
 
 
 
-        $in=  DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty  from stock
-        where status=1 and voucher_type in (1,4,6) and sub_item_id="'.$item_id.'" and voucher_date between "'.$accyearfrom.'" and "'.$to.'"');
+        $in=  DB::Connection('mysql2')->selectOne('select sum(a.amount)amount,sum(a.qty)qty from stock as a
+        inner join warehouse as w on a.warehouse_id = w.id
+        where a.status=1 and a.voucher_type in (1,4,6) and a.sub_item_id="'.$item_id.'" and a.voucher_date between "'.$accyearfrom.'" and "'.$to.'" and w.is_virtual = 0');
 
         $purchase_amount=$in->amount;
         $purchase_qty=$in->qty;
 
-        $out=  DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty  from stock
-        where status=1 and voucher_type in (5,2,3) and sub_item_id="'.$item_id.'" and voucher_date between "'.$accyearfrom.'" and "'.$to.'"');
+        $out=  DB::Connection('mysql2')->selectOne('select sum(a.amount)amount,sum(a.qty)qty from stock as a
+        inner join warehouse as w on a.warehouse_id = w.id
+        where a.status=1 and a.voucher_type in (5,2,3) and a.sub_item_id="'.$item_id.'" and a.voucher_date between "'.$accyearfrom.'" and "'.$to.'" and w.is_virtual = 0');
 
         $sales_qty=$out->qty;
         $sales_amount=$out->amount;
@@ -918,8 +921,9 @@ $data = [
 
     public static function get_stock_type_wise($from,$to,$item_id,$type)
     {
-        $in=  DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty  from stock
-        where status=1 and voucher_type in ('.$type.') and sub_item_id="'.$item_id.'" and voucher_date between "'.$from.'" and "'.$to.'" and opening=0');
+        $in=  DB::Connection('mysql2')->selectOne('select sum(a.amount)amount,sum(a.qty)qty from stock as a
+        inner join warehouse as w on a.warehouse_id = w.id
+        where a.status=1 and a.voucher_type in ('.$type.') and a.sub_item_id="'.$item_id.'" and a.voucher_date between "'.$from.'" and "'.$to.'" and a.opening=0 and w.is_virtual = 0');
 
         $data[0]=$in->qty;
         $data[1]=$in->amount;
