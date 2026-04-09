@@ -88,6 +88,12 @@ class StoreDataCallController extends Controller
     public function viewStockTransferDetail(){
         return view('Store.AjaxPages.viewStockTransferDetail');
     }
+    public function viewStockOutDetail(){
+        return view('Store.AjaxPages.viewStockOutDetail');
+    }
+    public function viewStockInDetail(){
+        return view('Store.AjaxPages.viewStockInDetail');
+    }
     public function viewIssuanceDetail(){
         return view('Store.AjaxPages.viewIssuanceDetail');
     }

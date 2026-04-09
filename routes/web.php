@@ -780,6 +780,7 @@ Route::group(['prefix' => 'fdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/getSummaryLedgerDetail', 'FinanceDataCallController@getSummaryLedgerDetail');
     Route::get('/getTrialBalanceDataAjax', 'FinanceDataCallController@getTrialBalanceDataAjax');
     Route::get('/deleteNewPv', 'FinanceDataCallController@deleteNewPv');
+    Route::get('/get_pending_stock_outputs', 'FinanceDataCallController@get_pending_stock_outputs');
 });
 //End Finance
 
@@ -1120,6 +1121,8 @@ Route::group(['prefix' => 'pad', 'middleware' => 'mysql2', 'before' => 'csrf'], 
 
     Route::post('/editPurchaseRequestVoucherDetail', 'PurchaseEditDetailControler@editPurchaseRequestVoucherDetail');
     Route::post('/addStockTransfer', 'PurchaseAddDetailControler@addStockTransfer');
+    Route::post('/addStockInDetail', 'PurchaseAddDetailControler@addStockInDetail');
+    Route::post('/addStockOutDetail', 'PurchaseAddDetailControler@addStockOutDetail');
     Route::post('/updateStockTransfer', 'PurchaseAddDetailControler@updateStockTransfer');
     Route::post('/updatePurchaseReturnDetail', 'PurchaseAddDetailControler@updatePurchaseReturnDetail');
 
@@ -1539,9 +1542,13 @@ Route::get('/ajax/get-brands-by-warehouse', 'StoreController@getBrandsByWarehous
     Route::get('/getCheckPurchasingDataAjax', 'StoreController@getCheckPurchasingDataAjax');
     Route::get('/stock_transfer_form', 'StoreController@stock_transfer_form');
     Route::get('/stock_transfer_list', 'StoreController@stock_transfer_list');
+    Route::get('/stock_in_list', 'StoreController@stock_in_list');
+    Route::get('/stock_out_list', 'StoreController@stock_out_list');
     Route::get('/editStockTransferForm/{id}/{TrNo}', 'StoreController@editStockTransferForm');
     Route::get('/itemWiseOpening', 'StoreController@itemWiseOpening');
     Route::get('/itemWiseOpeningSingle', 'StoreController@itemWiseOpeningSingle');
+    Route::get('/stock_in_form', 'StoreController@stock_in_form');
+    Route::get('/stock_out_form', 'StoreController@stock_out_form');
     Route::get('/inventory_movement', 'StoreController@inventory_movement');
     Route::get('/inventory_movement_test', 'StoreController@inventory_movement_test');
     Route::get('/inventory_movement_fi', 'StoreController@inventory_movement_fi');
@@ -1627,6 +1634,8 @@ Route::group(['prefix' => 'stdc', 'middleware' => 'mysql2', 'before' => 'csrf'],
     Route::get('/filterViewDateWiseStockInventoryReport', 'StoreDataCallController@filterViewDateWiseStockInventoryReport');
     Route::get('/viewStockInventorySummaryDetail', 'StoreDataCallController@viewStockInventorySummaryDetail');
     Route::get('/viewStockTransferDetail', 'StoreDataCallController@viewStockTransferDetail');
+    Route::get('/viewStockOutDetail', 'StoreDataCallController@viewStockOutDetail');
+    Route::get('/viewStockInDetail', 'StoreDataCallController@viewStockInDetail');
     Route::get('/getBuyerWiseOpeningData', 'StoreDataCallController@getBuyerWiseOpeningData');
     Route::get('/getVendorWiseOpeningData', 'StoreDataCallController@getVendorWiseOpeningData');
     Route::get('/UpdateBuyerOpening', 'StoreDataCallController@UpdateBuyerOpening');

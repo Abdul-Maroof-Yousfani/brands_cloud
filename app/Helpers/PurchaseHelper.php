@@ -368,5 +368,22 @@ class PurchaseHelper
 
     }
 
+    public static function get_unique_no_stock_in($year, $month)
+    {
+        $str = DB::Connection('mysql2')->selectOne("select max(convert(substr(`si_no`,7,length(substr(`si_no`,3))-3),signed integer)) reg
+        from `stock_in` where substr(`si_no`,3,2) = " . $year . " and substr(`si_no`,5,2) = " . $month . "")->reg;
+        $str = $str + 1;
+        $str = sprintf("%'03d", $str);
+        return 'si' . $year . $month . $str;
+    }
+
+    public static function get_unique_no_stock_out($year, $month)
+    {
+        $str = DB::Connection('mysql2')->selectOne("select max(convert(substr(`so_no`,7,length(substr(`so_no`,3))-3),signed integer)) reg
+        from `stock_out` where substr(`so_no`,3,2) = " . $year . " and substr(`so_no`,5,2) = " . $month . "")->reg;
+        $str = $str + 1;
+        $str = sprintf("%'03d", $str);
+        return 'so' . $year . $month . $str;
+    }
 }
 ?>

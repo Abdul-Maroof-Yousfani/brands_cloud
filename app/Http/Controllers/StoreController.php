@@ -72,6 +72,24 @@ class StoreController extends Controller
         return view('Store.stock_transfer_list');
     }
 
+    public  function stock_in_form(){
+        return view('Store.stock_in_form');
+    }
+
+    public  function stock_out_form(){
+        return view('Store.stock_out_form');
+    }
+
+    public function stock_in_list()
+    {
+        return view('Store.stock_in_list');
+    }
+
+    public function stock_out_list()
+    {
+        return view('Store.stock_out_list');
+    }
+
     public  function itemWiseOpening(){
         $OpeningItemWise = DB::Connection('mysql2')->table('stock')->where('opening',1)->where('status',1)->where('voucher_type',1)->where('amount','>',0)->where('warehouse_id','!=',0)->get();
         return view('Store.itemWiseOpening',compact('OpeningItemWise'));
