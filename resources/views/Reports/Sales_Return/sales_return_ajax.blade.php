@@ -6,6 +6,7 @@
         <td>{{ $data->main_ic ?? "N/A" }}</td>
         <td>{{ $data->main_ic ?? "N/A"}}</td>
         <td class="text-center">{{ $data->voucher_no }}</td>
+        <td class="text-center">{{ $data->sku_code }}</td>
         <td class="text-center">{{ $data->product_barcode }}</td>
         <!-- <td class="text-center">{{ $data->qty }}</td> -->
         <td class="text-center">{{ $data->qty }}</td>

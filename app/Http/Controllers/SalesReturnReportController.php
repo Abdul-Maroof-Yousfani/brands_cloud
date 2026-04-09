@@ -68,6 +68,7 @@ class SalesReturnReportController extends Controller
 
         return view("Reports.Sales_Return.ba_sales_return_report");
     }
+    
     public function show(Request $request) {
         $category_id = $request->category_id;
         $sub_category_id = $request->sub_category_id;
@@ -137,6 +138,7 @@ class SalesReturnReportController extends Controller
                     "credit_note_data.voucher_no", 
                     "subitem.product_name", 
                     "subitem.product_barcode", 
+                    "subitem.sku_code", 
                     'subitem.purchase_price AS cogs',
                     DB::raw("SUM(credit_note_data.qty) as qty"), 
                     DB::raw("SUM(credit_note_data.amount) as amount"),

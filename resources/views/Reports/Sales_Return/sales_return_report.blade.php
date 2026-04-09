@@ -167,7 +167,8 @@ use App\Helpers\SaleHelper;
                                             <th class="text-center" style="width:150px;" >Brand</th>
                                             <th class="text-center" style="width:150px;">Category</th>
                                             <th class="text-center" style="width:150px;">Sub Category</th>
-                                            <th class="text-center" style="width:150px;" >Article No. / SKU</th>
+                                            <th class="text-center" style="width:150px;" >Article No</th>
+                                            <th class="text-center" style="width:150px;" >SKU</th>
                                             <th class="text-center" style="width:150px;">Barcode</th>
                                             <!-- <th class="text-center" style="width:150px;">CTN</th> -->
                                             <th class="text-center" style="width:150px;">PCS</th>
