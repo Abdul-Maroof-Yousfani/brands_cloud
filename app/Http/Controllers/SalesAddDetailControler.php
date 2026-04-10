@@ -3279,7 +3279,7 @@ public function approveDeliveryNote(Request $request)
         $sales_tax_invoice->buyers_id = $request->buyers_id;
         $sales_tax_invoice->description = $request->description ?? null;
         $sales_tax_invoice->wh_tax = $request->pst_amount ?? 0;
-        $sales_tax_invoice->adv_tax = $request->adv_tax ?? 0;
+        $sales_tax_invoice->adv_tax = $request->adv_tax_amount ?? 0;
         $sales_tax_invoice->total = $request->total_amount_after_sale_tax ?? 0;
         $sales_tax_invoice->sales_tax = CommonHelper::check_str_replace($request->sales_tax ?? '0');
         $sales_tax_invoice->sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further ?? '0');
@@ -3381,13 +3381,30 @@ public function approveDeliveryNote(Request $request)
             'particulars' => $request->description ?? 'Sales Revenue - ' . $gi_no,
             'opening_bal' => 0,
             'debit_credit' => 0,
-            'amount' => ($request->total_amount_after_sale_tax + $request->pst_amount- $request->total_sales_tax),
+            'amount' => ($request->total_amount_after_sale_tax + $request->pst_amount - $request->adv_tax_amount - $request->total_sales_tax),
             'username' => Auth::user()->name ?? 'system',
             'status' => 100,
             'voucher_type' => 6,
             // 'created_at' => now(),
             // 'updated_at' => now()
         ]);
+
+        // Advance Tax Payable Entry
+        if (!empty($request->adv_tax_amount) && $request->adv_tax_amount > 0) {
+            DB::connection('mysql2')->table('transactions')->insert([
+                'voucher_no' => $gi_no,
+                'v_date' => $request->gi_date,
+                'acc_id' => $accounts['adv_tax_payable'],
+                'acc_code' => $accounts['adv_tax_payable_code'],
+                'particulars' => $request->description ?? 'Advance Tax Payable - ' . $gi_no,
+                'opening_bal' => 0,
+                'debit_credit' => 0,
+                'amount' => $request->adv_tax_amount,
+                'username' => Auth::user()->name ?? 'system',
+                'status' => 100,
+                'voucher_type' => 6,
+            ]);
+        }
         
         // Sales Tax Payable Entry
         if (!empty($request->total_sales_tax) && $request->total_sales_tax > 0) {
@@ -3509,7 +3526,8 @@ private function getAccountIds()
         'sales_revenue_code' => '5-2',
         'Output_GST_Payable' => '1778',
         'Output_GST_Payable_code' => '2-371',
-       
+        'adv_tax_payable' => '836',
+        'adv_tax_payable_code' => '2-6',
     ];
 }
     function updateSalesTaxInvoice(Request $request)

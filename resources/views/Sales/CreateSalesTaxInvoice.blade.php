@@ -1739,7 +1739,7 @@ label {
             let adv_tax_amount = (ADV_Tax / 100) * totalAmount;
             let pst_amount = parseFloat($('#pst_amount').val()) || 0;
 
-            let finalNet = totalAmount - pst_amount; // Do not add WH tax and ADV tax to the final net amount here, but subtract PST.
+            let finalNet = (totalAmount - pst_amount) + adv_tax_amount; 
             
             $('#wh_tax_amount').val(wh_tax_amount.toFixed(2));
             $('#adv_tax_amount').val(adv_tax_amount.toFixed(2));

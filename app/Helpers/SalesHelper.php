@@ -329,7 +329,7 @@ public static function get_all_unregistered_employees()
     {
 
 
-        $data =    DB::Connection('mysql2')->selectOne('select (sum(b.amount)+a.sales_tax+a.sales_tax_further)total,sum(b.qty)qty,sum(b.amount)amount
+        $data =    DB::Connection('mysql2')->selectOne('select (sum(b.amount)+a.sales_tax+a.sales_tax_further+a.adv_tax)total,sum(b.qty)qty,sum(b.amount)amount
         from sales_tax_invoice a
         inner join
         sales_tax_invoice_data b
