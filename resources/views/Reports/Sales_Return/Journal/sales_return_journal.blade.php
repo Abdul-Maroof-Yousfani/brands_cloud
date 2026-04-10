@@ -37,7 +37,7 @@ use App\Helpers\SaleHelper;
                         <label class="control-label">From Date</label>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="from" class="form-control" id="from" value="2025-10-28">
+                            <input type="date" name="from" class="form-control" id="from" value="">
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@ use App\Helpers\SaleHelper;
                         <label class="control-label">To Date</label>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="to" class="form-control" id="to" value="2025-10-28">
+                            <input type="date" name="to" class="form-control" id="to" value="">
                         </div>
                     </div>
                 </div>
@@ -78,6 +78,7 @@ use App\Helpers\SaleHelper;
                                         <tr>
                                             <th class="text-center" style="width:150px;">S. No</th>
                                             <th class="text-center" style="width:150px;" >Bill No</th>
+                                            <th class="text-center" style="width:150px;">Ref Document</th>
                                             <th class="text-center" style="width:150px;">Customer</th>
                                             <th class="text-center" style="width:150px;">Item Name</th>
                                             <th class="text-center" style="width:150px;" >Brand</th>

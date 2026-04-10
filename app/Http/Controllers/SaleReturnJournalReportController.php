@@ -18,12 +18,13 @@ class SaleReturnJournalReportController extends Controller
                 // $sales_order = Sales_Order::select("id")->where("so_no", $so)->first();
             // }
             // $so_id = $sales_order ? $sales_order->id : "~";
-            $sales_report_data = DB::connection('mysql2')->table("subitem")
+            $query = DB::connection('mysql2')->table("subitem")
                                                                 ->join("credit_note_data", "credit_note_data.item", "=", "subitem.id")
                                                                 ->join("credit_note", "credit_note.id", "=", "credit_note_data.master_id")
                                                                 ->join("customers", "customers.id", "credit_note.buyer_id")
                                                                 ->join("brands", "subitem.brand_id", "=","brands.id")
                                                                 ->join("sales_order_data", "sales_order_data.id", "=", "credit_note_data.so_data_id")
+                                                                ->join("sales_order", "sales_order.id", "=", "sales_order_data.master_id")
                                                                 ->select(
                                                                     DB::raw("SUM(sales_order_data.discount_percent_1) AS discount_percent_1"),
                                                                     DB::raw("SUM(sales_order_data.discount_amount_1) AS discount_amount"),
@@ -39,11 +40,25 @@ class SaleReturnJournalReportController extends Controller
                                                                     "subitem.id",
                                                                     "subitem.group_id",
                                                                     "subitem.hs_code AS hs_code", 
-                                                                    "brands.name AS brand_name",
-                                                                )
-                                                                ->groupBy(
+                                                                    "credit_note_data.voucher_no as ref_no",
+                                                                     "brands.name AS brand_name",
+                                                                );
+
+            if (!empty($from) && !empty($to)) {
+                $query->whereBetween('credit_note.cr_date', [$from, $to]);
+            }
+
+            if (!empty($so)) {
+                $query->where('sales_order.so_no', 'like', '%' . $so . '%');
+            }
+
+            $sales_report_data = $query->groupBy(
+                                                                    "credit_note.cr_no",
+                                                                    "credit_note_data.voucher_no",
+                                                                    "customers.name",
                                                                     "subitem.id",
                                                                     "subitem.product_name",
+                                                                    "subitem.group_id",
                                                                     "subitem.packing",
                                                                     "subitem.sale_price",
                                                                     "subitem.hs_code",
@@ -91,6 +106,8 @@ class SaleReturnJournalReportController extends Controller
             //     ->get();
 
        
+
+
             return view('Reports.Sales_Return.Journal.sales_return_ajax', compact("sales_report_data"));
         }
 

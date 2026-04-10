@@ -2,10 +2,11 @@
     <tr>
         <td>{{ $loop->iteration }}</td>
         <td>{{ $data->cr_no }}</td>
+        <td>{{ strtoupper($data->ref_no) }}</td>
         <td>{{ $data->customer_name }}</td>
         <td>{{ $data->product_name }}</td>
         <td>{{ $data->brand_name }}</td>
-        <td>{{ App\Helpers\CommonHelper::get_company_group_by($data->group_id) }}</td>
+        <td>{{ App\Helpers\CommonHelper::get_group_by($data->group_id) }}</td>
         <td>{{ $data->hs_code }}</td>
         <td>{{ $data->qty }}</td>
         <td>{{ $data->qty }}</td>

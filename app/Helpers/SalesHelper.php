@@ -463,7 +463,7 @@ public static function get_all_unregistered_employees()
         from `credit_note` where substr(`cr_no`,3,2) = " . $year . " and substr(`cr_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $purchaseRequestNo = 'cr' . $year . $month . $str;
+        return  $purchaseRequestNo = 'SR' . $year . $month . $str;
     }
 
     public static function get_data_from_invoice($id, $type)
