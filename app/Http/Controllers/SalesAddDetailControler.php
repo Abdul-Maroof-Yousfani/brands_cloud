@@ -3353,22 +3353,20 @@ public function approveDeliveryNote(Request $request)
             // 'updated_at' => now()
         ]);
         
-        // Advance Tax Receivable Entry
+        // Advance Tax Entry (from SO)
         if (!empty($request->pst_amount) && $request->pst_amount > 0) {
             DB::connection('mysql2')->table('transactions')->insert([
                 'voucher_no' => $gi_no,
                 'v_date' => $request->gi_date,
-                'acc_id' => $accounts['advance_tax_receivable'],
-                'acc_code' => $accounts['advance_tax_receivable_code'],
-                'particulars' => $request->description ?? 'Advance Tax - ' . $gi_no,
+                'acc_id' => $accounts['adv_tax_payable'],
+                'acc_code' => $accounts['adv_tax_payable_code'],
+                'particulars' => $request->description ?? 'Advance Tax (SO) - ' . $gi_no,
                 'opening_bal' => 0,
-                'debit_credit' => 1,
+                'debit_credit' => 0,
                 'amount' => $request->pst_amount,
                 'username' => Auth::user()->name ?? 'system',
                 'status' => 100,
                 'voucher_type' => 6,
-                // 'created_at' => now(),
-                // 'updated_at' => now()
             ]);
         }
         
@@ -3381,7 +3379,7 @@ public function approveDeliveryNote(Request $request)
             'particulars' => $request->description ?? 'Sales Revenue - ' . $gi_no,
             'opening_bal' => 0,
             'debit_credit' => 0,
-            'amount' => ($request->total_amount_after_sale_tax + $request->pst_amount - $request->adv_tax_amount - $request->total_sales_tax),
+            'amount' => ($request->total_amount_after_sale_tax - $request->pst_amount - $request->adv_tax_amount - $request->total_sales_tax),
             'username' => Auth::user()->name ?? 'system',
             'status' => 100,
             'voucher_type' => 6,

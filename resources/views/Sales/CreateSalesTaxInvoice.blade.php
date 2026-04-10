@@ -1139,7 +1139,7 @@ label {
                                                                 value="" type="text" readonly></li>
                                                     </ul>
                                                     <ul class="sale-l sale-l2">
-                                                        <li>PST</li>
+                                                        <li>Advance Tax Amount</li>
                                                         <li class="text-left"><input name="pst_amount"
                                                                 id="pst_amount"
                                                                 class="form-control form-control2" value="{{ $sales_order->sale_taxes_amount_rate ?? 0 }}" type="text"
@@ -1739,7 +1739,7 @@ label {
             let adv_tax_amount = (ADV_Tax / 100) * totalAmount;
             let pst_amount = parseFloat($('#pst_amount').val()) || 0;
 
-            let finalNet = (totalAmount - pst_amount) + adv_tax_amount; 
+            let finalNet = totalAmount + pst_amount + adv_tax_amount; 
             
             $('#wh_tax_amount').val(wh_tax_amount.toFixed(2));
             $('#adv_tax_amount').val(adv_tax_amount.toFixed(2));

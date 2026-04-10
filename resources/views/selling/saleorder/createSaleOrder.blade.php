@@ -359,7 +359,7 @@
                                                            value="" type="text"  readonly>
                                                 </li>
                                                     <li></li><li></li>
-                                                <li>Sale Tax </li>
+                                                <li>Advance Tax </li>
                                               <li class="text-left">
                                             <!-- <select name="sale_taxes_id" class="form-control" onchange="applySaleTax(this)">
                                                 <option value="">Select</option>
@@ -401,7 +401,7 @@
                                                                              type="text"  readonly></li>
                                             </ul>
                                         
-                                             <ul class="sale-l sale-l2">
+                                            <ul class="sale-l sale-l2">
                                                 <li>Net Amount</li>
                                                 <li class="text-left"><input
                                                             name="total_amount_after_sale_tax"
@@ -410,7 +410,15 @@
                                                             type="text" readonly></li>
                                             </ul>
                                             <ul class="sale-l sale-l2">
-                                                <li>Sale Tax Amount</li>
+                                                <li>Advance Tax Amount</li>
+                                                <li class="text-left"><input
+                                                            name="sale_taxes_amount_rate"
+                                                            id="tax_amount_calculated" style="background: white !important;"
+                                                            class="form-control form-control2" value=""
+                                                            type="text" readonly></li>
+                                            </ul> 
+                                            <ul class="sale-l sale-l2">
+                                                <li>Grand Total</li>
                                                 <li class="text-left"><input
                                                             name="sale_taxes_amount_total"
                                                             id="total_amount_after_sale_tax_apply_persentage" style="background: white !important;"
@@ -419,8 +427,8 @@
                                             </ul> 
                                                 <ul class="hide sale-l sale-l2">
                                          
-                                                <li> sale Tax Amount</li>
-                                                <input type="text" class="form-control" name="sale_taxes_amount_rate" id="tax_amount_calculated" readonly>
+                                                <li> Advance Tax Amount</li>
+                                                <input type="text" class="form-control" name="sale_taxes_amount_rate_hidden" id="tax_amount_calculated_hidden" readonly>
                                             </ul>
                                           </div>
                                     </div>
