@@ -680,6 +680,7 @@ Route::group(['prefix' => 'fdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/trial_balance_other_format', 'FinanceDataCallController@trial_balance_other_format');
 
     Route::get('/receivablSummaryReport', 'FinanceDataCallController@receivablSummaryReport');
+    Route::get('/getCustomersByGroup', 'FinanceDataCallController@getCustomersByGroup');
     Route::get('/employeeSummaryReport', 'FinanceDataCallController@employeeSummaryReport');
 
 

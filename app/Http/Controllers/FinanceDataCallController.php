@@ -6365,8 +6365,22 @@ function vendor_summery(Request $request)
                     ->select('customers.id','customers.name','customers.acc_id','transactions.acc_code')
                     ->join('transactions', 'transactions.acc_id', '=', 'customers.acc_id')
                     ->where('customers.status','=',1)
-                    ->where('transactions.status','=',1)
-                    ->groupBy('transactions.acc_id')
+                    ->where('transactions.status','=',1);
+
+                if($request->customer_id) {
+                    $Client->where('customers.id', $request->customer_id);
+                }
+                if($request->customer_group_id) {
+                    $Client->where('customers.customer_group_id', $request->customer_group_id);
+                }
+                if($request->region_id) {
+                    $Client->where('customers.region_id', $request->region_id);
+                }
+                if($request->territory_id) {
+                    $Client->where('customers.territory_id', $request->territory_id);
+                }
+
+                $Client = $Client->groupBy('transactions.acc_id')
                     ->get();
 
                 return view('Finance.AjaxPages.receivablSummaryReport',compact('Client','from','to','m'));
@@ -6387,6 +6401,16 @@ function vendor_summery(Request $request)
         }
 
 	}
+
+    public function getCustomersByGroup(Request $request) {
+        CommonHelper::companyDatabaseConnection($request->m);
+        $query = DB::connection('mysql2')->table('customers')->where('status', 1);
+        if($request->group_id) {
+            $query->where('customer_group_id', $request->group_id);
+        }
+        $customers = $query->orderBy('name')->get();
+        return response()->json($customers);
+    }
 
 	function employeeSummaryReport(Request $request)
 	{

@@ -31,104 +31,70 @@
                                         <div class="table-responsive">
                                             <table  id="EmpExitInterviewList1" class="table table-bordered sf-table-list">
                                                 <thead>
-                                                    <th colspan="3" class="text-center"><h3 style="text-align: center;"><?php echo CommonHelper::get_company_name(Session::get('run_company'));?></h3></th>
+                                                    <th colspan="7" class="text-center"><h3 style="text-align: center;"><?php echo CommonHelper::get_company_name(Session::get('run_company'));?></h3></th>
                                                 </thead>
                                                 <thead>
-                                                    <th colspan="3" class="text-center">Client Wise Summary Report</th>
+                                                    <th colspan="7" class="text-center">Customer/Store balance summary Report</th>
                                                 </thead>
                                                 <thead>
-                                                <th colspan="3" class="text-right"><p style="float: right;">Printed On: <?php echo date_format(date_create(date('Y-m-d')),'F d, Y')?></p></th>
+                                                <th colspan="7" class="text-right"><p style="float: right;">Printed On: <?php echo date_format(date_create(date('Y-m-d')),'F d, Y')?></p></th>
                                                 </thead>
                                                 <thead>
                                                 <th style="" class="text-center">S.No</th>
-                                                {{--<th class="text-center">Acc-Id</th>--}}
-
-                                                <th class="text-left">CLient Name</th>
-                                                <th class="text-center">Amount</th>
+                                                <th class="text-left">Customer Name</th>
+                                                <th class="text-center">Advance (unadjusted only)</th>
+                                                <th class="text-center">Outstanding (unadjusted Sales invoices)</th>
+                                                <th class="text-center">Recoverable (SI amount - Advance)</th>
+                                                <th class="text-center">Ledger Balance (Amount)</th>
+                                                <th class="text-center">Difference (ledger- recoverable)</th>
                                                 </thead>
                                                 <tbody>
                                                 <?php
                                                 $Counter =1;
-                                                $payable=0;
-                                                $advance=0;
-                                                $total_amount=0;
+                                                $total_advance = 0;
+                                                $total_outstanding = 0;
+                                                $total_recoverable = 0;
+                                                $total_ledger = 0;
+                                                $total_difference = 0;
+
                                                 foreach($Client as $Fil):
+                                                    $ledger_balance = CommonHelper::get_ledger_amount($Fil->acc_code, $m, 1, 0, $from, $to);
+                                                    $advance = CommonHelper::get_unadjusted_advance($Fil->id, $to);
+                                                    $outstanding = CommonHelper::get_unadjusted_outstanding_si($Fil->id, $to);
+                                                    $recoverable = $outstanding - $advance;
+                                                    $difference = $ledger_balance - $recoverable;
 
-                                                $amount=CommonHelper::get_ledger_amount($Fil->acc_code,$m,1,0,$from,$to);
-
-                                                        if ($amount!=0):
-
-                                           //         $customer_ope=    DB::Connection('mysql2')->table('customer_opening_balance')->where('buyer_id',$Fil->id)->sum('balance_amount');
-
+                                                    if ($ledger_balance != 0 || $advance != 0 || $outstanding != 0):
+                                                        $total_advance += $advance;
+                                                        $total_outstanding += $outstanding;
+                                                        $total_recoverable += $recoverable;
+                                                        $total_ledger += $ledger_balance;
+                                                        $total_difference += $difference;
                                                 ?>
 
                                                 <tr>
                                                     <td class="text-center"><?php echo $Counter++;?></td>
-                                                    {{--<td>< ?php echo $Fil->acc_id?></td>--}}
-
-                                                    <td class="text-left "><b style="font-size: large;font-weight: bolder"> <a class="linkRem" target="_blank" href="<?php echo URL('finance/viewLedgerReport?AccId='.$Fil->acc_id.'&&FromDate='.$from.'&&ToDate='.$to.'&&m='.$m)?>">
+                                                    <td class="text-left"><b style="font-size: large;font-weight: bolder"> <a class="linkRem" target="_blank" href="<?php echo URL('finance/viewLedgerReport?AccId='.$Fil->acc_id.'&&FromDate='.$from.'&&ToDate='.$to.'&&m='.$m)?>">
                                                                 <?php echo $Fil->name?></a>
                                                     </td>
-                                                    <td class="text-right">
-                                                        <?php   $amount=CommonHelper::get_ledger_amount($Fil->acc_code,$m,1,0,$from,$to);
-                                                            $amountt=$amount;
-                                                        if ($amount<0):
-                                                            $total_amount+=$amount;
-                                                            $amount=$amount*-1;
-                                                            $advance+=$amount;
-                                                            $amount=number_format($amount,2);
-                                                            $amount='('.$amount.')';
-
-
-                                                        else:
-                                                            $payable+=$amount;
-                                                            $total_amount+=$amount;
-                                                            $amount=number_format($amount,2);
-                                                        endif;
-                                                        echo $amount;
-                                                        ?>
-                                                    </td>
-
-
-
+                                                    <td class="text-right">{{ number_format($advance, 2) }}</td>
+                                                    <td class="text-right">{{ number_format($outstanding, 2) }}</td>
+                                                    <td class="text-right">{{ number_format($recoverable, 2) }}</td>
+                                                    <td class="text-right">{{ number_format($ledger_balance, 2) }}</td>
+                                                    <td class="text-right">{{ number_format($difference, 2) }}</td>
                                                 </tr>
                                                 <?php endif; ?>
-                                                <?php
-
-                                                ?>
-
                                                 <?php endforeach;?>
-                                                <tr style="background-color: darkgray">
-                                                    <td class="text-center" style="font-weight: bold;font-size: large" colspan="2">Total</td>
-                                                    <td class="text-right" style="font-weight: bold;font-size: large" colspan="1">{{number_format($total_amount,2)}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="3"><h4>Receivable : {{number_format($payable,2)}}</h4></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="3"><h4>Advance : {{number_format($advance,2)}}</h4></td>
-                                                </tr>
-                                                <?php $total_payables=$payable-$advance;
-                                                if ($total_payables<0):
-                                                    $total_payables=$total_payables*-1;
-                                                endif;
-                                                ?>
-
-                                                <tr>
-                                                    <td colspan="3"><h4>Total Receivable : {{number_format($total_payables,2)}}</h4></td>
+                                                <tr style="background-color: darkgray; font-weight: bold;">
+                                                    <td class="text-center" colspan="2">Total</td>
+                                                    <td class="text-right">{{number_format($total_advance, 2)}}</td>
+                                                    <td class="text-right">{{number_format($total_outstanding, 2)}}</td>
+                                                    <td class="text-right">{{number_format($total_recoverable, 2)}}</td>
+                                                    <td class="text-right">{{number_format($total_ledger, 2)}}</td>
+                                                    <td class="text-right">{{number_format($total_difference, 2)}}</td>
                                                 </tr>
                                                 </tbody>
                                             </table>
-
-
-                                            <h4>Receivable : {{number_format($payable,2)}}</h4>
-                                            <h4>Advance : {{number_format($advance,2)}}</h4>
-                                            <?php $total_payables=$payable-$advance;
-                                            if ($total_payables<0):
-                                                $total_payables=$total_payables*-1;
-                                            endif;
-                                            ?>
-                                            <h4>Total Receivable : {{number_format($total_payables,2)}}</h4>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12"></div>

@@ -1856,17 +1856,15 @@ class FinanceController extends Controller
 
 	function receivableSummaryReport()
 	{
-//		$Supplier = new Supplier();
-//		$Supplier=$Supplier->SetConnection('mysql2');
-//		$Supplier=$Supplier
-//			->select('supplier.id','supplier.name','supplier.acc_id','transactions.acc_code')
-//			->join('transactions', 'transactions.acc_id', '=', 'supplier.acc_id')
-//			->where('supplier.status','=',1)
-//			->where('transactions.status','=',1)
-//			->groupBy('transactions.acc_id')
-//			->get();
-//		$m = $_GET['m'];
-		return view('Finance.receivableSummaryReport');
+		CommonHelper::companyDatabaseConnection($_GET['m']);
+		$customer_groups = DB::connection('mysql2')->table('customer_group')->where('status', 1)->orderBy('customer_group')->get();
+		$regions = DB::connection('mysql2')->table('region')->where('status', 1)->orderBy('region_name')->get();
+		$territories = DB::connection('mysql2')->table('territories')->where('status', 1)->orderBy('name')->get();
+		$customers = DB::connection('mysql2')->table('customers')->where('status', 1)->orderBy('name')->get();
+		CommonHelper::reconnectMasterDatabase();
+		
+	
+		return view('Finance.receivableSummaryReport', compact('customer_groups', 'regions', 'territories', 'customers'));
 	}
 
 	function employeeSummaryReport()

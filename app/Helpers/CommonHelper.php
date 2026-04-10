@@ -141,10 +141,46 @@ public static function get_ba_location($ba_id) {
                     ->first();
     return $location ? $location->location_name : "N/A";
 }
-public static function get_group_by($group_id) {
-    $group = DB::connection("mysql2")->table("company_groups")->find($group_id);
-    return $group->name;
-}
+    public static function get_group_by($group_id) {
+        $group = DB::connection("mysql2")->table("company_groups")->find($group_id);
+        return $group->name;
+    }
+
+    public static function get_unadjusted_advance($customer_id, $toDate) {
+        $total_rv = DB::connection('mysql2')->table('new_rv_data')
+            ->join('new_rvs', 'new_rv_data.master_id', '=', 'new_rvs.id')
+            ->where('new_rvs.buyer_id', $customer_id)
+            ->where('new_rvs.rv_date', '<=', $toDate)
+            ->where('new_rvs.status', 1)
+            ->sum('new_rv_data.amount');
+            
+        $adjusted_rv = DB::connection('mysql2')->table('received_paymet')
+            ->join('new_rvs', 'received_paymet.receipt_id', '=', 'new_rvs.id')
+            ->where('new_rvs.buyer_id', $customer_id)
+            ->where('new_rvs.rv_date', '<=', $toDate)
+            ->where('received_paymet.status', 1)
+            ->sum('received_paymet.received_amount');
+            
+        return $total_rv - $adjusted_rv;
+    }
+
+    public static function get_unadjusted_outstanding_si($customer_id, $toDate) {
+        $total_si = DB::connection('mysql2')->table('sales_tax_invoice')
+            ->where('buyers_id', $customer_id)
+            ->where('gi_date', '<=', $toDate)
+            ->where('status', 1)
+            ->sum('total');
+            
+        $adjusted_si = DB::connection('mysql2')->table('received_paymet')
+            ->join('sales_tax_invoice', 'received_paymet.sales_tax_invoice_id', '=', 'sales_tax_invoice.id')
+            ->where('sales_tax_invoice.buyers_id', $customer_id)
+            ->where('sales_tax_invoice.gi_date', '<=', $toDate)
+            ->where('received_paymet.status', 1)
+            ->sum('received_paymet.received_amount');
+            
+        return $total_si - $adjusted_si;
+    }
+
    public static function get_product_names_by_brand_id($brand_id) {
         $products = Subitem::select("id", "product_name")->where("brand_id", $brand_id)->get();
         return $products;
