@@ -2110,7 +2110,7 @@ Route::group(['prefix' => 'sdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/getDataClientWise', 'SalesDataCallController@getDataClientWise');
     Route::get('/getRecieptDataClientWise', 'SalesDataCallController@getRecieptDataClientWise');
     Route::get('/getRecieptDataClientWise/create', 'SalesDataCallController@getRecieptDataClientWiseCreate');
-    Route::get('/getOutstandingReportAjax', 'SalesDataCallController@getOutstandingReportAjax');
+    Route::get('/getOutstandingReportAjax', 'SalesDataCallController@getOutstandingReportAjax')->name('getOutstandingReportAjax');
     Route::get('/get_debtor_balance_ajax', 'SalesDataCallController@get_debtor_balance_ajax');
 
 

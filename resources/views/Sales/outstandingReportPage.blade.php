@@ -109,7 +109,8 @@ $AccYearTo = $AccYearDate->accyearto;
             $('#ShowHide').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
 
             $.ajax({
-                url: '/sdc/getOutstandingReportAjax',
+                // url: '/sdc/getOutstandingReportAjax',
+                  url: "{{ route('getOutstandingReportAjax') }}",
                 type: 'Get',
                 data: {ClientId: ClientId,FromDate:FromDate,ToDate:ToDate,m:m},
 
