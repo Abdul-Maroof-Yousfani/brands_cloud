@@ -111,6 +111,11 @@ $m = Input::get('m');
             $total_credit = 0;
             $balance = 0;
             
+            if ($amount >= 0):
+                $total_debit = $amount;
+            else:
+                $total_credit = $amount * -1;
+            endif;
             ?>
             <tr>
                 <td></td>
@@ -333,8 +338,14 @@ $m = Input::get('m');
                 <td class="text-center" colspan="5"><b style="font-size: large;">TOTAL</b></td>
                 <td class="text-right" colspan="1"><b style="font-size: large;"><?php echo number_format($total_debit, 2); ?></b></td>
                 <td class="text-right" colspan="1"><b style="font-size: large;"><?php echo number_format($total_credit, 2); ?></b></td>
-                <td class="text-center" colspan="1"><b
-                        style="font-size: large;"></b></td>
+                <td class="text-right" colspan="1"><b
+                        style="font-size: large;"><?php 
+                        if ($balance >= 0):
+                            echo number_format($balance, 2);
+                        else:
+                            echo '(' . number_format($balance * -1, 2) . ')';
+                        endif; 
+                        ?></b></td>
 
             </tr>
 
