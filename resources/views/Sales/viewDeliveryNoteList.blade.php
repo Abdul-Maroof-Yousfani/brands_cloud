@@ -230,7 +230,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                         $sale_taxes_amount_rate = $saleOrderDetail->sale_taxes_amount_rate ?? 0;
                                                     }
                                                     
-                                                    $final_performa_total = $performa_total_amount - $sale_taxes_amount_rate;
+                                                    $final_performa_total = $performa_total_amount + $sale_taxes_amount_rate;
                                                 ?>                                                <tr @if($status=='Open') style="background-color: #fdc8c8" @elseif($status=='partial') style="background-color: #c9d6ec"  @endif title="{{$row->id}}" id="{{$row->id}}">
                                                     <td style="text-align:center;" class="text-center">{{$counter++}}</td>
                                                     <td class="text-center"><?php echo  strtoupper($row->so_no) ?></td>
