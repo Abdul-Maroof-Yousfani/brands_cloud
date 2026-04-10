@@ -277,13 +277,12 @@ foreach ($delivery_note_data as $sale_order_item) {
                                                     <td style="text-align: center !important;">{{ $discount_amount }}</td>
                                                     <td  style="text-align: center !important;">{{number_format($sale_order_item->tax)}}</td>
                                                     @php 
-                                                        $tax_amount = $sale_order_item->tax;
-                                                        $tax_amount = $tax_amount * $gross_amount / 100;
+                                                        $tax_amount = $sale_order_item->tax_amount;
                                                         $total_tax += $tax_amount;
-                                                        $total_amount += $gross_amount - $discount_amount + $tax_amount;
+                                                        $total_amount += $sale_order_item->amount;
                                                     @endphp
-                                                    <td  style="text-align: center !important;">{{number_format($tax_amount,0)}}</td>
-                                                    <td style="text-align: center !important;">{{number_format($gross_amount - $discount_amount + $tax_amount,0)}}</td>
+                                                    <td  style="text-align: center !important;">{{number_format($tax_amount,2)}}</td>
+                                                    <td style="text-align: center !important;">{{number_format($sale_order_item->amount,2)}}</td>
                                                 </tr>
                                                 @endforeach
                                                 <tr>
