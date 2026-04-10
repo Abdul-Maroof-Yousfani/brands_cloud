@@ -164,7 +164,14 @@ if (isset($_GET['item_id'])) {
 
 
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-2" style="margin-top: 25px;">
+                                        <div class="form-check">
+                                            <input type="checkbox" name="show_virtual" id="show_virtual" value="1" class="form-check-input" {{ request('show_virtual') == '1' ? 'checked' : '' }} onchange="getWarehousesByTerritory()">
+                                            <label for="show_virtual" class="control-label" style="margin-left: 5px; cursor: pointer;">Show Virtual W.H</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-1">
                                         <div class="form-group" style="margin-top: 25px;">
                                             <button type="button" onclick="get_ajax_data()" class="btn btn-primary"
                                                 style="margin-top: 11px;margin-left: 20px;">
@@ -347,12 +354,14 @@ if (isset($_GET['item_id'])) {
     <script>
         function getWarehousesByTerritory() {
             let territory_id = $('#territory_id').val();
+            let show_virtual = $('#show_virtual').is(':checked') ? 1 : 0;
 
             $.ajax({
                 url: '{{ route('ajax.get.warehouses') }}',
                 type: 'GET',
                 data: {
-                    territory_id: territory_id
+                    territory_id: territory_id,
+                    show_virtual: show_virtual
                 },
                 success: function(data) {
                     let $warehouse = $('#warehouse_id');

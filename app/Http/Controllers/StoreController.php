@@ -644,11 +644,14 @@ public function closingReportView(Request $request)
                         ->distinct()
                         ->pluck('warehouse_id');
 
-                    $warehouses = DB::connection('mysql2')->table('warehouse')
+                    $warehouseQuery = DB::connection('mysql2')->table('warehouse')
                         ->whereIn('id', $warehouseList)
-                        ->where('status', 1)
-                        ->where('is_virtual', 0)
-                        ->get();
+                        ->where('status', 1);
+                        
+                    if ($request->show_virtual != '1') {
+                        $warehouseQuery->where('is_virtual', 0);
+                    }
+                    $warehouses = $warehouseQuery->get();
 
                     $subitem_ids = DB::connection('mysql2')->table('stock')
                         ->whereIn('territory', $territory_ids)
@@ -677,7 +680,11 @@ public function closingReportView(Request $request)
                         ->where('status', 1)
                         ->get(['id', 'name']);
                 } else {
-                    $warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->where('is_virtual', 0)->get();
+                    $warehouseQuery = DB::connection('mysql2')->table('warehouse')->where('status', 1);
+                    if ($request->show_virtual != '1') {
+                        $warehouseQuery->where('is_virtual', 0);
+                    }
+                    $warehouses = $warehouseQuery->get();
                     $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
                     $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
                     $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
@@ -731,10 +738,14 @@ public function closingReportView(Request $request)
                     DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
                 )
                 ->where('s.status', 1)
-                ->where('w.is_virtual', 0)
                 ->where("s.voucher_type", "!=", "9")
-                ->whereBetween('s.created_date', [$from_date, $to_date])
-                ->groupBy('si.id','w.id');
+                ->whereBetween('s.created_date', [$from_date, $to_date]);
+
+            if ($request->show_virtual != '1') {
+                $query->where('w.is_virtual', 0);
+            }
+
+            $query->groupBy('si.id','w.id');
 
 
                 if (!empty($warehouse_ids)) {
@@ -826,11 +837,14 @@ public function closingReportView(Request $request)
                     ->distinct()
                     ->pluck('warehouse_id');
 
-                $warehouses = DB::connection('mysql2')->table('warehouse')
+                $warehouseQuery = DB::connection('mysql2')->table('warehouse')
                     ->whereIn('id', $warehouseList)
-                    ->where('status', 1)
-                    ->where('is_virtual', 0)
-                    ->get();
+                    ->where('status', 1);
+                    
+                if ($request->show_virtual != '1') {
+                    $warehouseQuery->where('is_virtual', 0);
+                }
+                $warehouses = $warehouseQuery->get();
 
                 $subitem_ids = DB::connection('mysql2')->table('stock')
                     ->whereIn('territory', $territory_ids)
@@ -858,7 +872,11 @@ public function closingReportView(Request $request)
                     ->where('status', 1)
                     ->get(['id', 'name']);
             } else {
-                $warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->where('is_virtual', 0)->get();
+                $warehouseQuery = DB::connection('mysql2')->table('warehouse')->where('status', 1);
+                if ($request->show_virtual != '1') {
+                    $warehouseQuery->where('is_virtual', 0);
+                }
+                $warehouses = $warehouseQuery->get();
                 $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
                 $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
                 $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
@@ -914,10 +932,14 @@ public function closingReportView(Request $request)
                 DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
             )
                 ->where('s.status', 1)
-                ->where('w.is_virtual', 0)
                 ->where("s.voucher_type", "!=", "9")
-                ->whereBetween('s.created_date', [$from_date, $to_date])
-                ->groupBy('si.id','w.id');
+                ->whereBetween('s.created_date', [$from_date, $to_date]);
+
+            if ($request->show_virtual != '1') {
+                $query->where('w.is_virtual', 0);
+            }
+
+            $query->groupBy('si.id','w.id');
 
 
             if (!empty($warehouse_ids)) {
@@ -1023,12 +1045,16 @@ public function getWarehousesByTerritory(Request $request)
         ->pluck('warehouse_id');
 
     // Get actual warehouse details
-    $warehouses = DB::connection('mysql2')
+    $warehouseQuery = DB::connection('mysql2')
         ->table('warehouse')
         ->whereIn('id', $warehouse_ids)
-        ->where('status', 1)
-        ->where('is_virtual', 0)
-        ->get(['id', 'name']);
+        ->where('status', 1);
+
+    if ($request->show_virtual != '1') {
+        $warehouseQuery->where('is_virtual', 0);
+    }
+
+    $warehouses = $warehouseQuery->get(['id', 'name']);
 
     return response()->json($warehouses);
 }
