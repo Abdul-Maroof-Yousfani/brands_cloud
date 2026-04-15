@@ -70,7 +70,8 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                             $tax_amount = $sale_order_item->tax;
                             $tax_amount = ($tax_amount * $gross_amount) / 100;
                             
-                            $performa_total_amount += ($gross_amount - $discount_amount + $tax_amount);
+                            $performa_total_amount += $sale_order_item->amount;
+                          
                         }
 
                         $sale_taxes_amount_rate = 0;
