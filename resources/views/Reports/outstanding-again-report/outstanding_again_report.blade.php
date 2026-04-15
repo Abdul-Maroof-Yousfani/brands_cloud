@@ -32,25 +32,25 @@ use App\Helpers\SaleHelper;
                 <?php endif;?>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="control-label">From Date</label>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="from" class="form-control" id="from" value="2025-10-28">
+                            <input type="date" name="from" class="form-control" id="from" value="2025-10-01">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="control-label">To Date</label>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="date" name="to" class="form-control" id="to" value="2025-10-28">
+                            <input type="date" name="to" class="form-control" id="to" value="{{ date('Y-m-d') }}">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="control-label">Voucher No</label>
                         <div class="input-group">
@@ -58,9 +58,55 @@ use App\Helpers\SaleHelper;
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Customer</label>
+                        <select name="customer_id" id="customer_id" class="form-control select2">
+                            <option value="">All Customers</option>
+                            @foreach(App\Models\Customer::where('status', 1)->get() as $customer)
+                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Banks (Deposit To)</label>
+                        <select name="internal_bank_id" id="internal_bank_id" class="form-control select2">
+                            <option value="">All Banks</option>
+                            @foreach(CommonHelper::get_all_bank_account() as $bank)
+                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Customer Bank</label>
+                        <select name="customer_bank_id" id="customer_bank_id" class="form-control select2">
+                            <option value="">All Customer Banks</option>
+                            @foreach(DB::connection('mysql2')->table('bank_detail')->get() as $bank)
+                                <option value="{{ $bank->id }}">{{ $bank->bank_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Principle group</label>
+                        <select name="principal_group_id" id="principal_group_id" class="form-control select2">
+                            <option value="">All Groups</option>
+                            @foreach(CommonHelper::get_all_principal_groups() as $group)
+                                <option value="{{ $group->id }}">{{ $group->products_principal_group }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="form-group" style="margin-top: 25px;">
-                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary" style="margin-top: 11px;margin-left: 20px;">
+                        <button type="button" onclick="get_ajax_data()" class="btn btn-primary">
                             <i class="fa fa-refresh"></i> Generate
                         </button>
                     </div>
@@ -80,12 +126,12 @@ use App\Helpers\SaleHelper;
                                             <th>Date</th>
                                             <th>Stores</th>
                                             <th>Memo</th>
-                                            <th>Brands Name</th>
+                                            <th>Principle group</th>
                                             <th>Region</th>
                                             <th>Mode</th>
-                                            <th>Deposit To</th>
+                                            <th>Banks</th>
                                             <th>Cheque No</th>
-                                            <th>Cheque Bank</th>
+                                            <th>Customer Bank</th>
                                             <th>Cheque date</th>
                                             <th>Amount</th>
                                         </tr>
@@ -93,6 +139,12 @@ use App\Helpers\SaleHelper;
                                         <tbody id="tbody">
                                             
                                         </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="11" class="text-right">Total:</th>
+                                                <th id="total_footer" class="text-right">0</th>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                                 <div id="data"></div>
@@ -123,15 +175,29 @@ use App\Helpers\SaleHelper;
         data: {
             from: $("#from").val(),
             to: $("#to").val(),
-            v_no: $('#v_no').val()
+            v_no: $('#v_no').val(),
+            customer_id: $('#customer_id').val(),
+            internal_bank_id: $('#internal_bank_id').val(),
+            customer_bank_id: $('#customer_bank_id').val(),
+            principal_group_id: $('#principal_group_id').val()
         },
         beforeSend: function() {
             $('#data').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
             $("#tbody").html("");
         },
         success: function (response) {
-           $("#tbody").html(response);
-           $('#data').html('');
+            $("#tbody").html(response);
+            $('#data').html('');
+            
+            // Calculate total
+            var total = 0;
+            $('.total_amount').each(function() {
+                var val = $(this).text().replace(/,/g, '');
+                if (!isNaN(parseFloat(val))) {
+                    total += parseFloat(val);
+                }
+            });
+            $('#total_footer').text(total.toLocaleString());
         },
         error: function(xhr) {
             $('#data').html('<div class="alert alert-danger">Error loading data</div>');

@@ -4,8 +4,8 @@
         <td>{{ $data->rv_date }}</td>
         <td>{{ explode("-", $data->description)[0] }}</td>
         <td>{{ $data->description }}</td>
-        <td>{{ $data->brand_id ? \App\Helpers\CommonHelper::get_brand_by_id($data->brand_id) : 'N/A' }}</td>
-        <td>{{ $data->territory_id ? \App\Helpers\CommonHelper::territory_name($data->territory_id) : "N/A" }}</td>
+        <td>{{ \App\Helpers\CommonHelper::get_all_principal_groups_name($data->principal_group_id) }}</td>
+        <td>{{ ($data->territory_id ?? $data->customer_territory) ? \App\Helpers\CommonHelper::territory_name($data->territory_id ?? $data->customer_territory) : "N/A" }}</td>
         <td>
             @if($data->pay_mode == 1)
                 Cheque
@@ -18,10 +18,10 @@
             @endif
         </td>
     
-        <td>Deposit To</td>
+        <td>{{ $data->internal_bank_name ?? 'N/A' }}</td>
         <td>{{ $data->cheque_no }}</td>
-        <td>{{ $data->bank ? \App\Helpers\CommonHelper::get_bank_account_by_id($data->bank)->bank_name : "N/A" }}</td>
+        <td>{{ $data->customer_bank_id ? \App\Helpers\CommonHelper::get_bank_account_by_id($data->customer_bank_id)->bank_name : "N/A" }}</td>
         <td>{{ $data->cheque_date }}</td>
-        <td>{{ number_format($data->amount) }}</td>
+        <td class="total_amount">{{ number_format($data->amount) }}</td>
     </tr>
 @endforeach
