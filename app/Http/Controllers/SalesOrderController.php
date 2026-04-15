@@ -327,26 +327,104 @@ $warehouses = DB::connection('mysql2')
         $username= Subitem::select("username")->groupBy("username")->get();
         return view('selling.saleorder.listSaleOrder', compact('username'));
     }
-    public function getlistSaleOrder(Request $request)
-    {
+    // public function getlistSaleOrder(Request $request)
+    // {
 
-        if ($request->ajax()) {
+    //     if ($request->ajax()) {
             
-            $territory_ids = json_decode(auth()->user()->territory_id); 
+    //         $territory_ids = json_decode(auth()->user()->territory_id); 
 
-            $sale_orders = DB::Connection('mysql2')->table('sales_order')
+    //         $sale_orders = DB::Connection('mysql2')->table('sales_order')
+    //         ->join('customers', 'sales_order.buyers_id', 'customers.id')
+    //         ->join('sales_order_data', 'sales_order_data.master_id', 'sales_order.id')
+    //         ->join('subitem', 'subitem.id', 'sales_order_data.item_id');
+
+    //         $m = Session::get("run_company");
+    //         if($m == 1) {
+    //             $sale_orders = $sale_orders->whereIn('customers.territory_id', $territory_ids);
+    //         } else {
+    //             $territories = (DB::connection("mysql2")->table("territories")->select("id")->get()->pluck("id"))->toArray();
+    //             $sale_orders = $sale_orders->whereIn('customers.territory_id', $territories);
+    //         }
+
+
+    //     $user = Auth::user();
+    //     if ($user && $user->acc_type === 'user') {
+    //         $territory_ids = json_decode($user->territory_id, true);
+    //         if (!is_array($territory_ids)) {
+    //             $territory_ids = [$user->territory_id];
+    //         }
+
+    //         $sale_orders->whereIn('customers.territory_id', $territory_ids);
+    //     }
+
+    //         if ($request->has('search') && $request->search != '') {
+    //             $search = strtolower($request->search); 
+    //             $sale_orders->whereRaw('LOWER(customers.name) LIKE ?', ['%' . $search . '%'])
+    //             ->orWhereRaw('LOWER(sales_order.so_no) LIKE ?', ['%' . $search . '%'])
+    //             ->orWhereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . $search . '%'])
+    //             ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%'. $search .'%'])
+    //             ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%'. $search .'%'])
+    //             ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%'. $search .'%']);
+    //         }
+
+    //         if($request->has('username') && $request->username !='') {
+    //             $username = $request->username;
+    //             $sale_orders->when($username, function ($query, $username) {
+    //                 $query->whereIn('subitem.username', $username);
+    //             });
+    //         }
+    //         if($request->has('date') && $request->date !=''){
+    //             $date = $request->date;
+    //             $sale_orders->when($date, function ($query, $date) {
+    //                 $query->whereDate('sales_order.so_date', '=', $date);
+    //             });
+    //         }
+    //        $sale_orders->where('sales_order.status', 1);
+
+
+    //         // $sale_orders->select('sales_order.*', 'customers.name');
+    //         // ->where('sales_order.status',1)->select('sales_order.*','customers.name');
+    //         // if(!empty($request->to) && !empty($request->from)){
+    //         //     $from = $request->from;
+    //         //     $to = $request->to;
+    //         //     $sale_orders->whereBetween('sales_order.so_date',[$from,$to]);
+
+    //         // }
+    //         if (!empty($request->Filter)) {
+    //             $sale_orders->where('sales_order.so_no', 'Like', '%' . $request->SoNo . '%');
+    //         }
+
+    //          $sale_orders->select('sales_order.*', 'customers.name')
+    //                 ->groupBy('sales_order.id')->orderBy('sales_order.id', 'DESC');
+
+    //         $sale_orders = $sale_orders->get();
+    //         // $sale_orders = $sale_orders->paginate(request('per_page'));
+
+    //         return view('selling.saleorder.listSaleOrderAjax', compact('sale_orders'));
+    //     }
+    // }
+
+
+    public function getlistSaleOrder(Request $request)
+{
+    if ($request->ajax()) {
+        
+        $territory_ids = json_decode(auth()->user()->territory_id); 
+
+        $sale_orders = DB::Connection('mysql2')->table('sales_order')
             ->join('customers', 'sales_order.buyers_id', 'customers.id')
             ->join('sales_order_data', 'sales_order_data.master_id', 'sales_order.id')
-            ->join('subitem', 'subitem.id', 'sales_order_data.item_id');
+            ->join('subitem', 'subitem.id', 'sales_order_data.item_id')
+            ->leftJoin('sales_tax_invoice', 'sales_tax_invoice.so_no', '=', 'sales_order.so_no');
 
-            $m = Session::get("run_company");
-            if($m == 1) {
-                $sale_orders = $sale_orders->whereIn('customers.territory_id', $territory_ids);
-            } else {
-                $territories = (DB::connection("mysql2")->table("territories")->select("id")->get()->pluck("id"))->toArray();
-                $sale_orders = $sale_orders->whereIn('customers.territory_id', $territories);
-            }
-
+        $m = Session::get("run_company");
+        if($m == 1) {
+            $sale_orders = $sale_orders->whereIn('customers.territory_id', $territory_ids);
+        } else {
+            $territories = (DB::connection("mysql2")->table("territories")->select("id")->get()->pluck("id"))->toArray();
+            $sale_orders = $sale_orders->whereIn('customers.territory_id', $territories);
+        }
 
         $user = Auth::user();
         if ($user && $user->acc_type === 'user') {
@@ -354,57 +432,82 @@ $warehouses = DB::connection('mysql2')
             if (!is_array($territory_ids)) {
                 $territory_ids = [$user->territory_id];
             }
-
             $sale_orders->whereIn('customers.territory_id', $territory_ids);
         }
 
-            if ($request->has('search') && $request->search != '') {
-                $search = strtolower($request->search); 
-                $sale_orders->whereRaw('LOWER(customers.name) LIKE ?', ['%' . $search . '%'])
-                ->orWhereRaw('LOWER(sales_order.so_no) LIKE ?', ['%' . $search . '%'])
-                ->orWhereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . $search . '%'])
-                ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%'. $search .'%'])
-                ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%'. $search .'%'])
-                ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%'. $search .'%']);
-            }
-
-            if($request->has('username') && $request->username !='') {
-                $username = $request->username;
-                $sale_orders->when($username, function ($query, $username) {
-                    $query->whereIn('subitem.username', $username);
-                });
-            }
-            if($request->has('date') && $request->date !=''){
-                $date = $request->date;
-                $sale_orders->when($date, function ($query, $date) {
-                    $query->whereDate('sales_order.so_date', '=', $date);
-                });
-            }
-           $sale_orders->where('sales_order.status', 1);
-
-
-            // $sale_orders->select('sales_order.*', 'customers.name');
-            // ->where('sales_order.status',1)->select('sales_order.*','customers.name');
-            // if(!empty($request->to) && !empty($request->from)){
-            //     $from = $request->from;
-            //     $to = $request->to;
-            //     $sale_orders->whereBetween('sales_order.so_date',[$from,$to]);
-
-            // }
-            if (!empty($request->Filter)) {
-                $sale_orders->where('sales_order.so_no', 'Like', '%' . $request->SoNo . '%');
-            }
-
-             $sale_orders->select('sales_order.*', 'customers.name')
-                    ->groupBy('sales_order.id')->orderBy('sales_order.id', 'DESC');
-
-            $sale_orders = $sale_orders->get();
-            // $sale_orders = $sale_orders->paginate(request('per_page'));
-
-            return view('selling.saleorder.listSaleOrderAjax', compact('sale_orders'));
+        // ============ FILTER CONDITIONS ============
+        
+        // Customer filter
+        if($request->has('customer_id') && $request->customer_id != '') {
+            $sale_orders->where('sales_order.buyers_id', $request->customer_id);
         }
-    }
 
+        // SO No filter
+        if($request->has('so_no') && $request->so_no != '') {
+            $sale_orders->where('sales_order.so_no', 'LIKE', '%' . $request->so_no . '%');
+        }
+
+        // SI No / GI No filter — fetched from sales_tax_invoice.gi_no via so_no
+        if($request->has('gi_no') && $request->gi_no != '') {
+            $sale_orders->where('sales_tax_invoice.gi_no', 'LIKE', '%' . $request->gi_no . '%');
+        }
+
+        // Date range filter (from - to)
+        if($request->has('from') && $request->from != '' && $request->has('to') && $request->to != '') {
+            $sale_orders->whereBetween('sales_order.so_date', [$request->from, $request->to]);
+        } elseif($request->has('from') && $request->from != '') {
+            $sale_orders->whereDate('sales_order.so_date', '>=', $request->from);
+        } elseif($request->has('to') && $request->to != '') {
+            $sale_orders->whereDate('sales_order.so_date', '<=', $request->to);
+        }
+
+        // Approval status filter
+        if($request->has('status') && $request->status != '') {
+            $sale_orders->where('sales_order.status', $request->status);
+        } else {
+            $sale_orders->where('sales_order.status', 1); // Default approved
+        }
+
+        // Payment status filter
+        if($request->has('payment_status') && $request->payment_status != '') {
+            $sale_orders->where('sales_order.payment_status', $request->payment_status);
+        }
+
+        // Global search filter (if you have a search input)
+        if ($request->has('search') && $request->search != '') {
+            $search = strtolower($request->search); 
+            $sale_orders->where(function($query) use ($search) {
+                $query->whereRaw('LOWER(customers.name) LIKE ?', ['%' . $search . '%'])
+                    ->orWhereRaw('LOWER(sales_order.so_no) LIKE ?', ['%' . $search . '%'])
+                    ->orWhereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . $search . '%'])
+                    ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%'. $search .'%'])
+                    ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%'. $search .'%'])
+                    ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%'. $search .'%']);
+            });
+        }
+
+        if($request->has('username') && $request->username != '') {
+            $username = $request->username;
+            $sale_orders->whereIn('subitem.username', (array)$username);
+        }
+        
+        if($request->has('date') && $request->date != ''){
+            $sale_orders->whereDate('sales_order.so_date', '=', $request->date);
+        }
+
+        $sale_orders->select(
+                'sales_order.*',
+                'customers.name',
+                DB::raw('MAX(sales_tax_invoice.gi_no) as invoice_no')
+            )
+            ->groupBy('sales_order.id', 'customers.name')
+            ->orderBy('sales_order.id', 'DESC');
+
+        $sale_orders = $sale_orders->get();
+
+        return view('selling.saleorder.listSaleOrderAjax', compact('sale_orders'));
+    }
+}
     /**
      * Show the form for creating a new resource.
      *

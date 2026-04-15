@@ -17,6 +17,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
             <tr>
                  <th style="width:20px !important; text-align:center;" class="text-center sorting_asc">So No</th>
                 <th  style="width: 80px !important;" class="text-center sorting_asc">Order No</th>
+                <th  style="width: 90px !important;" class="text-center sorting_asc">Invoice No</th>
                 <th style="width: 300px !important;"  class="text-center ">Customer Name</th>
                 <th style="width: 150px !important;"  class="text-center ">Sales Person</th>
                 <th style="width: 100px !important;" class="text-center sorting_asc">Creation Date</th>
@@ -36,6 +37,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                      <tr>
                          <td style="width:50px !important; text-align:center;" class="text-center">{{ $counter++ }}</td>
                          <td class="text-center">{{ $sale_order->so_no }}</td>
+                         <td class="text-center">{{ $sale_order->invoice_no ?? '-' }}</td>
                          <td><strong>{{ $sale_order->name }}</strong></td>
                          <td>{{ $sale_order->sales_person }}</td>
                          <!-- <td class="text-center">{{ \Carbon\Carbon::parse($sale_order->so_date)->format('d-M-Y') }}
