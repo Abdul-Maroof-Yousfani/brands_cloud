@@ -40,10 +40,25 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                 <div class="well_N">
                     <div class="dp_sdw">
                         <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                    <span class="subHeadingLabelClass">View Sales Invoice List</span>
-                                </div>
+
+                        
+    <div class="row">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+            <ul class="cus-ul">
+                <li>
+                    <h1>Sale</h1>
+                </li>
+                <li>
+                    <h3><span class="glyphicon glyphicon-chevron-right"></span> &nbsp; View Sales Invoice List</h3>
+                </li>
+            </ul>
+        </div>
+
+
+
+
+                               
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right">
                                     <?php echo CommonHelper::displayPrintButtonInBlade('PrintEmpExitInterviewList', '', '1'); ?>
                                     <?php if($export == true):?>
