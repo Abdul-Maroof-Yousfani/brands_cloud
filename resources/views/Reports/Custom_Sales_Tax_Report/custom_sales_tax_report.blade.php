@@ -176,30 +176,40 @@ use App\Helpers\SaleHelper;
                                         <table class="table table-bordered table-striped table-condensed tableMargin">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-center" style="width:150px;">S. No</th>
-                                                    <th class="text-center" style="width:150px;">Region</th>
-                                                    <th class="text-center" style="width:150px;">State</th>
-                                                    <th class="text-center" style="width:150px;">Warehouse</th>
-                                                    <th class="text-center" style="width:150px;">Buyer Name</th>
-                                                    <th class="text-center" style="width:150px;">Brand Name</th>
-                                                    <th class="text-center" style="width:150px;">Category</th>
-                                                    <th class="text-center" style="width:150px;">Invoice No</th>
-                                                    <th class="text-center" style="width:150px;">Group</th>
-                                                    <th class="text-center" style="width:150px;">HS Code</th>
-                                                    <th class="text-center" style="width:150px;">Doc Date</th>
-                                                    <th class="text-center" style="width:150px;">Retail Value</th>
-                                                    <th class="text-center" style="width:150px;">Total Pcs</th>
-                                                    <th class="text-center" style="width:150px;">Gross Sales</th>
-                                                    <th class="text-center" style="width:150px;">Discount Amount</th>
-                                                    <th class="text-center" style="width:150px;">S.Tax Value</th>
-                                                    <th class="text-center" style="width:150px;">Additional Tax Value</th>
-                                                    <th class="text-center" style="width:150px;">Net Sales</th>
-                                                    {{-- <th class="texssst-center" style="width:150px;">GST</th> --}}
+                                                    <th class="text-center">Region</th>
+                                                    <th class="text-center">State</th>
+                                                    <th class="text-center">Warehouse</th>
+                                                    <th class="text-center">Buyer Name</th>
+                                                    <th class="text-center">Brand Name</th>
+                                                    <th class="text-center">Category</th>
+                                                    <th class="text-center">Invoice No</th>
+                                                    <th class="text-center">Group</th>
+                                                    <th class="text-center">HS Code</th>
+                                                    <th class="text-center">Doc Date</th>
+                                                    <th class="text-center">Retail Value</th>
+                                                    <th class="text-center">Total Pcs</th>
+                                                    <th class="text-center">Gross Sales</th>
+                                                    <th class="text-center">Discount Amount</th>
+                                                    <th class="text-center">S.Tax Value</th>
+                                                    <th class="text-center">Additional Tax Value</th>
+                                                    <th class="text-center">Net Sales</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tbody">
 
                                             </tbody>
+                                            <tfoot>
+                                                <tr style="background-color: #f9f9f9; font-weight: bold;">
+                                                    <td colspan="10" class="text-right">Total:</td>
+                                                    <td id="total_retail">0.00</td>
+                                                    <td id="total_pcs">0.00</td>
+                                                    <td id="total_gross">0.00</td>
+                                                    <td id="total_discount">0.00</td>
+                                                    <td id="total_tax">0.00</td>
+                                                    <td id="total_additional_tax">0.00</td>
+                                                    <td id="total_net">0.00</td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
 
@@ -255,6 +265,31 @@ use App\Helpers\SaleHelper;
                     console.log(response);
                     $("#tbody").html(response);
                     $('#data').html('');
+                    
+                    // Calculate totals
+                    let total_retail = 0;
+                    let total_pcs = 0;
+                    let total_gross = 0;
+                    let total_discount = 0;
+                    let total_tax = 0;
+                    let total_additional_tax = 0;
+                    let total_net = 0;
+
+                    $('.retail_val').each(function() { total_retail += parseFloat($(this).text()) || 0; });
+                    $('.pcs_val').each(function() { total_pcs += parseFloat($(this).text()) || 0; });
+                    $('.gross_val').each(function() { total_gross += parseFloat($(this).text()) || 0; });
+                    $('.discount_val').each(function() { total_discount += parseFloat($(this).text()) || 0; });
+                    $('.tax_val').each(function() { total_tax += parseFloat($(this).text()) || 0; });
+                    $('.additional_tax_val').each(function() { total_additional_tax += parseFloat($(this).text()) || 0; });
+                    $('.net_val').each(function() { total_net += parseFloat($(this).text()) || 0; });
+
+                    $('#total_retail').text(total_retail.toFixed(2));
+                    $('#total_pcs').text(total_pcs.toFixed(2));
+                    $('#total_gross').text(total_gross.toFixed(2));
+                    $('#total_discount').text(total_discount.toFixed(2));
+                    $('#total_tax').text(total_tax.toFixed(2));
+                    $('#total_additional_tax').text(total_additional_tax.toFixed(2));
+                    $('#total_net').text(total_net.toFixed(2));
                 },
                 error: function(xhr) {
                     $('#data').html('<div class="alert alert-danger">Error loading data</div>');
