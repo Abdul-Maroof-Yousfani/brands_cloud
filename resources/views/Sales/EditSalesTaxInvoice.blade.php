@@ -384,9 +384,10 @@ label {
                                                                                 $rate = $row1->rate;
                                                                                 $tax_percent = $row1->tax;
                                                                                 
-                                                                                $gross_amount = $current_qty * $rate;
-                                                                                $tax_amount = ($gross_amount / 100) * $tax_percent;
-                                                                                $item_net_amount = $gross_amount + $tax_amount;
+                                                                                // Fetch saved values from database
+                                                                                $tax_amount = $row1->tax_amount;
+                                                                                $item_net_amount = $row1->amount;
+                                                                                $gross_amount = $item_net_amount - $tax_amount;
                                                                                 
                                                                                 $total_qty += $current_qty;
                                                                                 $total_tax_amount_php += $tax_amount;
@@ -548,7 +549,7 @@ label {
                                                             <li>PST</li>
                                                             <li class="text-left"><input name="pst_amount"
                                                                     id="pst_amount"
-                                                                    class="form-control form-control2" value="{{ $sales_tax_invoice->pst ?? 0 }}" type="text"
+                                                                    class="form-control form-control2" value="{{ $sales_tax_invoice->adv_tax ?? 0 }}" type="text"
                                                                     readonly>
                                                             </li>
                                                         </ul>
@@ -556,7 +557,7 @@ label {
                                                             <li>WH Tax Amount</li>
                                                             <li class="text-left"><input name="wh_tax_amount"
                                                                     id="wh_tax_amount"
-                                                                    class="form-control form-control2" value="" type="text"
+                                                                    class="form-control form-control2" value="{{ $sales_tax_invoice->wh_tax ?? 0 }}" type="text"
                                                                     readonly>
                                                             </li>
                                                         </ul>
@@ -572,7 +573,7 @@ label {
                                                             <li>Net Amount</li>
                                                             <li class="text-left"><input name="total_amount_after_sale_tax"
                                                                     id="total_amount_after_sale_tax"
-                                                                    class="form-control form-control2" value="{{number_format($total, 2, '.', '')}}" type="text"
+                                                                    class="form-control form-control2" value="{{number_format($sales_tax_invoice->total + $sales_tax_invoice->adv_tax, 2, '.', '')}}" type="text"
                                                                     readonly>
                                                             </li>
                                                         </ul>
@@ -659,7 +660,7 @@ label {
         let adv_tax_amount = (ADV_Tax / 100) * totalAmount;
         let pst_amount = parseFloat($('#pst_amount').val()) || 0;
 
-        let finalNet = totalAmount - pst_amount; 
+       let finalNet = Math.round(totalAmount + pst_amount);
         
         $('#wh_tax_amount').val(wh_tax_amount.toFixed(2));
         $('#adv_tax_amount').val(adv_tax_amount.toFixed(2));
