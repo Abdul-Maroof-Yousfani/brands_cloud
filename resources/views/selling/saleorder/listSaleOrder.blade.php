@@ -95,7 +95,7 @@
                                                             <option value="0">Pending</option>
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-1">
+                                                    <div class="col-md-1 hide">
                                                         <label>Payment</label>
                                                         <select name="payment_status" class="form-control">
                                                             <option value="">All</option>
