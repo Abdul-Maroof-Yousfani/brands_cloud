@@ -658,11 +658,8 @@ label {
                                                                                             }
                                                                                         }
                                                                                         $tax_amount = round($tax_amount, 3);
-                                                                                        if ($tax_type_id_val == 1) { // Inclusive
-                                                                                            $net_amount = $taxable_amount;
-                                                                                        } else { // Exclusive
-                                                                                            $net_amount = $taxable_amount + $tax_amount;
-                                                                                        }
+                                                                                        $net_amount = $taxable_amount + $tax_amount;
+                                                                                        $net_amount = round($net_amount, 3);
                                                                                 ?>
                                                                                 <input type="hidden" id="discount_percent{{$id_count}}" value="{{$percentage_amount}}" />
                                                                                 <input type="hidden" id="discount_amount_val{{$id_count}}" value="{{$discount_amount}}" />
@@ -1608,7 +1605,7 @@ label {
             }
 
             tax_amount = parseFloat(tax_amount.toFixed(3));
-            var net_amount = (tax_type_id === 1) ? taxable_amount : (taxable_amount + tax_amount);
+            var net_amount = taxable_amount + tax_amount;
 
             $('#discount_amount_val' + num).val(discount_amount.toFixed(2));
             $('#tax_amount' + num).val(tax_amount.toFixed(2));
