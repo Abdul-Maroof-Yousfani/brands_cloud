@@ -58,7 +58,7 @@ $currentMonthEndDate   = date('Y-m-t');
                                                             <select name="customer_group_id" id="customer_group_id" class="form-control select2" onchange="getCustomersByGroup(this.value)">
                                                                 <option value="">All Groups</option>
                                                                 @foreach($customer_groups as $group)
-                                                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                                                    <option value="{{ $group->id }}">{{ $group->customer_group }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
