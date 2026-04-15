@@ -2760,14 +2760,37 @@ class SalesDataCallController extends Controller
 
     public function getCustomerCreditNoteData(Request $request)
     {
-        $FromDate = $request->from;
-        $ToDate = $request->to;
-        $m = $request->m;
+        $FromDate   = $request->from;
+        $ToDate     = $request->to;
+        $m          = $request->m;
+        $customer_id = $request->customer_id;
+        $cr_no      = $request->cr_no;
+        $si_dn_no   = $request->si_dn_no;
 
-        $credit_note=new CreditNote();
-        $credit_note=$credit_note->SetConnection('mysql2');
-        $credit_note=$credit_note->where('status',1)->whereBetween('cr_date',[$FromDate,$ToDate])->get();
-        return view('Sales.AjaxPages.getCustomerCreditNoteData',compact('credit_note','m'));
+        $credit_note = DB::Connection('mysql2')->table('credit_note as cn')
+            ->leftJoin('credit_note_data as cnd', 'cnd.master_id', '=', 'cn.id')
+            ->where('cn.status', 1)
+            ->when($FromDate && $ToDate, function($q) use ($FromDate, $ToDate) {
+                $q->whereBetween('cn.cr_date', [$FromDate, $ToDate]);
+            })
+            ->when($customer_id, function($q) use ($customer_id) {
+                $q->where('cn.buyer_id', $customer_id);
+            })
+            ->when($cr_no, function($q) use ($cr_no) {
+                $q->whereRaw('LOWER(cn.cr_no) LIKE ?', ['%'.strtolower($cr_no).'%']);
+            })
+            ->when($si_dn_no, function($q) use ($si_dn_no) {
+                $q->whereRaw('LOWER(cnd.voucher_no) LIKE ?', ['%'.strtolower($si_dn_no).'%']);
+            })
+            ->select(
+                'cn.*',
+                DB::raw('MAX(cnd.voucher_no) as si_dn_no')
+            )
+            ->groupBy('cn.id')
+            ->orderBy('cn.id', 'DESC')
+            ->get();
+
+        return view('Sales.AjaxPages.getCustomerCreditNoteData', compact('credit_note', 'm'));
     }
 
     public function getSalesTaxInvoiceReportData(Request $request)
