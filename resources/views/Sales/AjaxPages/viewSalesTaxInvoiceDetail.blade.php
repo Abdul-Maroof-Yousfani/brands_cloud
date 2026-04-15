@@ -37,7 +37,7 @@ foreach ($sales_tax_invoice_data as $item) {
     $tax = $item->tax;
     $tax_amount = ($tax * $gross_amount) / 100;
 
-    $amount = ($gross_amount - $discount_amount + $tax_amount);
+    $amount = round((float)$item->amount, 2);
 
     $total_before_tax += $gross_amount;
     $total_tax += $item->tax_amount;
@@ -350,7 +350,8 @@ input.form-control.form-control2{margin:0!important;}
                                                 $tax = $row->tax;
                                                 $tax_amount = ($tax * $gross_amount) / 100;
 
-                                                $amount = ($gross_amount - $discount_amount + $tax_amount);
+                                                $amount = $row->amount;
+                                               
                                             @endphp
                                             <tr>
                                             <tr>
@@ -367,7 +368,7 @@ input.form-control.form-control2{margin:0!important;}
                                                 <td style="text-align: center !important;">{{ number_format($tax, 2) }}%</td>
                                                 <td style="text-align: center !important;">{{ number_format($row->tax_amount, 2) }}</td>
                                                 <!-- <td style="text-align: center !important;">{{ number_format($tax_amount, 2) }}</td> -->
-                                                <td style="text-align: center !important;">{{ number_format($amount, 2) }}</td>
+                                                <td style="text-align: center !important;">{{number_format( round($amount),0) }}</td>
                                             </tr>
                                             <tr>
                                                 {{-- <td style="text-align: center !important;"> {{ $count++ }} </td> --}}
@@ -504,8 +505,15 @@ input.form-control.form-control2{margin:0!important;}
                         </div>
                         <div class="totlas">
                             <p><strong>Total</strong></p>
-                            <p><strong>{{ number_format((float) $total_amount_after_tax - (float) $sale_order->sale_taxes_amount_rate, 2) }} </strong></p>
-                        </div>
+                           <p>
+                            <strong>
+                            {{ number_format(
+                                round((float)$total_amount_after_tax + (float)$sale_order->sale_taxes_amount_rate, 0),
+                                0
+                            ) }}
+                            </strong>
+                            </p>
+                                                    </div>
                     </div>
                 </div>
             </div>

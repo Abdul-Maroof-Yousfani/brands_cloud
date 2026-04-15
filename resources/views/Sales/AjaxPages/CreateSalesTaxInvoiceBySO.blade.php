@@ -78,7 +78,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                             $sale_taxes_amount_rate = $saleOrderDetail->sale_taxes_amount_rate ?? 0;
                         }
                         
-                        $final_performa_total = $performa_total_amount - $sale_taxes_amount_rate;
+                        $final_performa_total = $performa_total_amount + $sale_taxes_amount_rate;
 
                         $customer=CommonHelper::byers_name($row->buyers_id); ?>
                         <tr title="{{$row->id}}" id="{{$row->id}}">
