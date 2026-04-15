@@ -479,7 +479,7 @@ label {
                                                                                 <th class="text-center hidee">Rate</th>
                                                                                 <th class="text-center hidee">Tax %</th>
                                                                                 <th class="text-center">Tax Amount</th>
-                                                                                <th class="text-center hidee">Amount</th>
+                                                                                <th class="text-center hidee">Gross Amount</th>
                                                                                 <th class="text-center hidee">Net Amount</th>
                                                                             </tr>
                                                                         </thead>
@@ -658,7 +658,11 @@ label {
                                                                                             }
                                                                                         }
                                                                                         $tax_amount = round($tax_amount, 3);
-                                                                                        $net_amount = $taxable_amount + $tax_amount;
+                                                                                        if ($tax_type_id_val == 1) { // Inclusive
+                                                                                            $net_amount = $taxable_amount;
+                                                                                        } else { // Exclusive
+                                                                                            $net_amount = $taxable_amount + $tax_amount;
+                                                                                        }
                                                                                 ?>
                                                                                 <input type="hidden" id="discount_percent{{$id_count}}" value="{{$percentage_amount}}" />
                                                                                 <input type="hidden" id="discount_amount_val{{$id_count}}" value="{{$discount_amount}}" />
@@ -1142,7 +1146,7 @@ label {
                                                         <li>Advance Tax Amount</li>
                                                         <li class="text-left"><input name="pst_amount"
                                                                 id="pst_amount"
-                                                                class="form-control form-control2" value="{{ $sales_order->sale_taxes_amount_rate ?? 0 }}" type="text"
+                                                                class="form-control form-control2" value="{{ round($sales_order->sale_taxes_amount_rate)?? 0 }}" type="text"
                                                                 readonly>
                                                         </li>
                                                     </ul>
@@ -1604,7 +1608,7 @@ label {
             }
 
             tax_amount = parseFloat(tax_amount.toFixed(3));
-            var net_amount = taxable_amount + tax_amount;
+            var net_amount = (tax_type_id === 1) ? taxable_amount : (taxable_amount + tax_amount);
 
             $('#discount_amount_val' + num).val(discount_amount.toFixed(2));
             $('#tax_amount' + num).val(tax_amount.toFixed(2));
@@ -1739,7 +1743,7 @@ label {
             let adv_tax_amount = (ADV_Tax / 100) * totalAmount;
             let pst_amount = parseFloat($('#pst_amount').val()) || 0;
 
-            let finalNet = totalAmount + pst_amount + adv_tax_amount; 
+            let finalNet = totalAmount + pst_amount; 
             
             $('#wh_tax_amount').val(wh_tax_amount.toFixed(2));
             $('#adv_tax_amount').val(adv_tax_amount.toFixed(2));
