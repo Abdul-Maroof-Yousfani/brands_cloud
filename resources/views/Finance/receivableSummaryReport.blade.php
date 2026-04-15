@@ -76,7 +76,7 @@ $currentMonthEndDate   = date('Y-m-t');
                                                             <select name="region_id" id="region_id" class="form-control select2">
                                                                 <option value="">All Regions</option>
                                                                 @foreach($regions as $region)
-                                                                    <option value="{{ $region->id }}">{{ $region->name }}</option>
+                                                                    <option value="{{ $region->id }}">{{ $region->region_name }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
