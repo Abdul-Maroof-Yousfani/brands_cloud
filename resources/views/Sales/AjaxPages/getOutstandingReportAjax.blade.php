@@ -78,7 +78,7 @@ if((!empty($Invoice))):
     <th class="text-center col-sm-1">SI No</th>
     <th class="text-center col-sm-1">SI Date</th>
     <th class="text-center col-sm-1">SO No.</th>
-    <th class="text-center">QTY (sum of all QTY)</th>
+    <th class="text-center">QTY</th>
     <th class="text-center">Due Date</th>
     <th class="text-center">Invoice Amount</th>
     <th class="text-center">Return Amount</th>
