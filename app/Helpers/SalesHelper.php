@@ -708,6 +708,24 @@ public static function get_all_unregistered_employees()
         where rv_id="' . $id . '"');
     }
 
+    public static function get_total_invoice_amount_for_rv($rv_id)
+    {
+        $result = DB::Connection('mysql2')->selectOne('
+            SELECT SUM(inv.invoice_amount) as total
+            FROM brige_table_sales_receipt br
+            INNER JOIN (
+                SELECT a.id,
+                       (SUM(b.amount) + a.sales_tax + a.sales_tax_further) as invoice_amount
+                FROM sales_tax_invoice a
+                INNER JOIN sales_tax_invoice_data b ON a.id = b.master_id AND b.status = 1
+                WHERE a.status = 1
+                GROUP BY a.id
+            ) inv ON br.si_id = inv.id
+            WHERE br.rv_id = "' . $rv_id . '"
+        ');
+        return $result ? ($result->total ?? 0) : 0;
+    }
+
     public static function get_received_amount($id)
     {
         return DB::Connection('mysql2')->selectOne('select sum(received_amount)net_amount

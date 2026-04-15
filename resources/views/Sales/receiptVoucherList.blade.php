@@ -133,7 +133,7 @@ $AccYearTo = $AccYearDate->accyearto;
                                                     
                                                 <td class="text-center">{{ $row1->description }}</td>
                                                 
-                                                <td class="text-center">{{ CommonHelper::get_credit_amount('new_rv_data', $row1->id) }}</td>
+                                                <td class="text-center">{{ number_format(SalesHelper::get_total_invoice_amount_for_rv($row1->id), 2) }}</td>
                                                 <td class="text-center"><?php echo $row1->cheque_no;?></td>
                                                 <td class="text-center hide"><?php echo FinanceHelper::changeDateFormat($row1->cheque_date);?></td>
                                                 <td class="text-center">{{number_format($received_data->net_amount,2)}}</td>
