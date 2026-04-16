@@ -3316,7 +3316,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         $customer = new Customer();
         $customer = $customer->SetConnection('mysql2');
-        return $customer = $customer->where('id', $id)->select('name', 'address', 'cnic_ntn', 'strn', 'acc_id')->first();
+        return $customer = $customer->where('id', $id)->select('name', 'address', 'cnic_ntn', 'strn', 'acc_id', 'territory_id')->first();
 
     }
 
