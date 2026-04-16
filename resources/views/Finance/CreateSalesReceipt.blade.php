@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 use App\Helpers\SalesHelper;
 use App\Helpers\CommonHelper;
 use App\Helpers\ReuseableCode;
@@ -37,9 +37,7 @@ if ($so_data_raw) {
     @include('number_formate')
 
     <div class="row">
-        <div class="col-lg-12">
-            <h2 class="heading" style="text-decoration: underline; margin-bottom: 20px;">Receipt Voucher</h2>
-        </div>
+       
     </div>
 
     @php
@@ -55,6 +53,9 @@ if ($so_data_raw) {
     <div class="panel-body well_N">
         <div class="well">
             <div class="row">
+                 <div class="col-lg-12">
+            <h2 class="heading" style="text-decoration: underline; margin-bottom: 20px;">Receipt Voucher</h2>
+        </div>
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <label for="v_date">Voucher Date</label>
                     <input type="date" value="{{ date('Y-m-d') }}" class="form-control" id="v_date" name="v_date">

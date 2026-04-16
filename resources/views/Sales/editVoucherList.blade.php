@@ -16,9 +16,7 @@ use App\Helpers\ReuseableCode;
     </style>
 
     <div class="row">
-        <div class="col-lg-12">
-            <h2 class="heading" style="text-decoration: underline; margin-bottom: 20px;">Edit Receipt Voucher</h2>
-        </div>
+       
     </div>
 
     @php
@@ -28,6 +26,9 @@ use App\Helpers\ReuseableCode;
     <?php echo Form::open(['url' => 'fad/updateSalesReceipt/' . $id . '?m=' . $_GET['m'] . '', 'id' => 'createSalesOrder', 'class' => 'stop']); ?>
     <div class="panel-body well_N">
         <div class="row">
+             <div class="col-lg-12">
+            <h2 class="heading" style="text-decoration: underline; margin-bottom: 20px;">Edit Receipt Voucher</h2>
+        </div>
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="well">
