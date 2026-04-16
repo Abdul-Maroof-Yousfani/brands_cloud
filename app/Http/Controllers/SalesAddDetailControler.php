@@ -79,7 +79,7 @@ class SalesAddDetailControler extends Controller
     public function import_customer_opening(Request $request)
     {
         $this->validate($request, [
-            'select_file'  => 'required|mimes:xls,xlsx'
+            'select_file' => 'required|mimes:xls,xlsx'
         ]);
 
         //$path = $request->file('select_file')->getRealPath();
@@ -112,17 +112,17 @@ class SalesAddDetailControler extends Controller
                                 }
                             }
                             $insertData = array(
-                                'acc_id'   => $checkCustomerAccount->acc_id,
+                                'acc_id' => $checkCustomerAccount->acc_id,
                                 'acc_code' => $accCode,
-                                'opening_bal'   => 1,
-                                'amount'   => trim($row[5], '-'),
+                                'opening_bal' => 1,
+                                'amount' => trim($row[5], '-'),
                                 'debit_credit' => $debit_credit,
-                                'v_date'  => date("Y-m-d"),
-                                'date'   => date("Y-m-d"),
-                                'time'   => date("H:i:s"),
-                                'action'   => 'create',
-                                'username'   => Auth::user()->name . ' - Upload',
-                                'status'   => 1,
+                                'v_date' => date("Y-m-d"),
+                                'date' => date("Y-m-d"),
+                                'time' => date("H:i:s"),
+                                'action' => 'create',
+                                'username' => Auth::user()->name . ' - Upload',
+                                'status' => 1,
 
                             );
                             if (!empty($checkOpeningBalance)) {
@@ -171,23 +171,25 @@ class SalesAddDetailControler extends Controller
 
         $totalCreditAmount = 0;
 
-        $data1['rv_no']           = $rv_no;
-        $data1['rv_date']       = $rv_date;
+        $data1['rv_no'] = $rv_no;
+        $data1['rv_date'] = $rv_date;
         $data1['so_id'] = $soId;
         if ($receiptType == 1) {
-            $data1['cheque_no']     = $cheque_no;
-            $data1['cheque_date']   = $cheque_date;
+            $data1['cheque_no'] = $cheque_no;
+            $data1['cheque_date'] = $cheque_date;
         }
-        $data1['rv_type']     = $receiptType;
-        $data1['description']   = $main_description;
-        $data1['rv_status']      = 1;
-        $data1['date']             = date('Y-m-d');
-        $data1['status']             = 1;
-        $data1['username']         = Auth::user()->name;
-        $data1['sales']     = 1;
-        $data1['pay_mode']     = 2;
-        $data1['buyer_id']     = $customerId;
-        $data1['buyer_acc_id']     = $customerAccId;
+        $data1['rv_type'] = $receiptType;
+        $data1['bank']    = $request->bank;
+        $data1['acc_id']      = Input::get('account_id_' . $seletedSaleOrderRow[0] . '');
+        $data1['description'] = $main_description;
+        $data1['rv_status'] = 1;
+        $data1['date'] = date('Y-m-d');
+        $data1['status'] = 1;
+        $data1['username'] = Auth::user()->name;
+        $data1['sales'] = 1;
+        $data1['pay_mode'] = 2;
+        $data1['buyer_id'] = $customerId;
+        $data1['buyer_acc_id'] = $customerAccId;
 
         $master_id = DB::Connection('mysql2')->table('new_rvs')->insertGetId($data1);
 
@@ -204,7 +206,7 @@ class SalesAddDetailControler extends Controller
             $data2['debit_credit'] = 1;
             $data2['amount'] = $debit;
             $data2['description'] = $main_description;
-            $data2['status']             = 1;
+            $data2['status'] = 1;
             $data2['rv_status'] = 1;
 
             DB::Connection('mysql2')->table('new_rv_data')->insert($data2);
@@ -218,7 +220,7 @@ class SalesAddDetailControler extends Controller
         $data3['debit_credit'] = 0;
         $data3['amount'] = $totalCreditAmount;
         $data3['description'] = $main_description;
-        $data3['status']             = 1;
+        $data3['status'] = 1;
         $data3['rv_status'] = 1;
 
         DB::Connection('mysql2')->table('new_rv_data')->insert($data3);
@@ -271,45 +273,45 @@ class SalesAddDetailControler extends Controller
         $data1['code'] = $code;
         $data1['name'] = $customer_name;
         $data1['parent_code'] = $account_head;
-        $data1['username']              = Auth::user()->name;
-        $data1['date']               = date("Y-m-d");
-        $data1['time']               = date("H:i:s");
-        $data1['action']               = 'create';
-        $data1['operational']        = $operational;
+        $data1['username'] = Auth::user()->name;
+        $data1['date'] = date("Y-m-d");
+        $data1['time'] = date("H:i:s");
+        $data1['action'] = 'create';
+        $data1['operational'] = $operational;
 
 
         $acc_id = DB::table('accounts')->insertGetId($data1);
 
 
-        $data2['acc_id']             = $acc_id;
-        $data2['name']                = $customer_name;
-        $data2['country']             = $country;
-        $data2['province']            = $state;
-        $data2['city']                = $city;
-        $data2['contact']               = $contact_no;
-        $data2['email']                 = $email;
-        $data2['cnic_ntn']                 = $ntn;
-        $data2['strn']                 = $strn;
+        $data2['acc_id'] = $acc_id;
+        $data2['name'] = $customer_name;
+        $data2['country'] = $country;
+        $data2['province'] = $state;
+        $data2['city'] = $city;
+        $data2['contact'] = $contact_no;
+        $data2['email'] = $email;
+        $data2['cnic_ntn'] = $ntn;
+        $data2['strn'] = $strn;
 
-        $data2['address']                 = $address;
-        $data2['username']            = Auth::user()->name;
-        $data2['date']                = date("Y-m-d");
-        $data2['time']                = date("H:i:s");
-        $data2['action']              = 'create';
-        $data2['customer_type']     = $customer_type;
+        $data2['address'] = $address;
+        $data2['username'] = Auth::user()->name;
+        $data2['date'] = date("Y-m-d");
+        $data2['time'] = date("H:i:s");
+        $data2['action'] = 'create';
+        $data2['customer_type'] = $customer_type;
 
         DB::table('customers')->insert($data2);
 
-        $data3['acc_id'] =    $acc_id;
-        $data3['acc_code'] =    $code;
-        $data3['debit_credit'] =    $o_blnc_trans;
-        $data3['amount']       =     $o_blnc;
-        $data3['opening_bal']       =     1;
-        $data3['username']              = Auth::user()->name;
-        $data3['date']               = date("Y-m-d");
-        $data3['v_date']             = date("Y-m-d");
-        $data3['time']               = date("H:i:s");
-        $data3['action']               = 'create';
+        $data3['acc_id'] = $acc_id;
+        $data3['acc_code'] = $code;
+        $data3['debit_credit'] = $o_blnc_trans;
+        $data3['amount'] = $o_blnc;
+        $data3['opening_bal'] = 1;
+        $data3['username'] = Auth::user()->name;
+        $data3['date'] = date("Y-m-d");
+        $data3['v_date'] = date("Y-m-d");
+        $data3['time'] = date("H:i:s");
+        $data3['action'] = 'create';
         DB::table('transactions')->insert($data3);
 
         CommonHelper::reconnectMasterDatabase();
@@ -342,7 +344,7 @@ class SalesAddDetailControler extends Controller
             'ba_mapping' => 'required_if:customer_type,3',
             'warehouse_to' => 'required_if:customer_type,3',
         ];
-    
+
         $validator = Validator::make($request->all(), $rules, [
             'ba_mapping.required_if' => 'BA Mapping is required for Reseller/Distributor.',
             'warehouse_to.required_if' => 'Warehouse To is required for Reseller/Distributor.',
@@ -354,13 +356,13 @@ class SalesAddDetailControler extends Controller
 
 
         if ($validator->fails()) {
-    return redirect()->back()
-        ->with([
-            "error" => implode('<br>', $validator->errors()->all()),
-            "status" => 404
-        ])
-        ->withInput();
-}
+            return redirect()->back()
+                ->with([
+                    "error" => implode('<br>', $validator->errors()->all()),
+                    "status" => 404
+                ])
+                ->withInput();
+        }
 
         CommonHelper::companyDatabaseConnection($_GET['m']);
 
@@ -418,95 +420,95 @@ class SalesAddDetailControler extends Controller
         $data1['operational'] = 1;
         $acc_id = DB::Connection('mysql2')->table('accounts')->insertGetId($data1);
 
-        $data2['acc_id']             = $acc_id;
-        $data2['name']                = $customer_name;
-        $data2['store_code']   = $customer_code;
-        $data2['customer_code']   = $request->customer_code;
-        $data2['email']                 = $email ?? '';
-        $data2['phone_1']               = $phone_1 ?? 0;
-        $data2['phone_2']               = $phone_2 ?? NULL;
-        $data2['address']                 = $address ?? '';
-        $data2['country']             = $country ?? 0;
-        $data2['province']            = $state ?? 0;
-        $data2['city']                = $city ?? 0;
-        $data2['zip']                 = $request->zip ?? '';
-        $data2['title']                 = $request->title ?? '';
-        $data2['contact_person']               = $contact_person ?? '';
-        $data2['contact_person_email']               = $contact_person_email ?? '';
-        $data2['company_shipping_type']               = $request->company_shipping_type ?? '';
-        $data2['shipping_city']               = $request->shipping_city;
-        $data2['shipping_state']               = $request->shipping_state;
-        $data2['shipping_country']               = $request->shipping_country;
-        $data2['opening_balance']               = $request->opening_balance ?? '';
-        $data2['opening_balance_date']               = $request->opening_balance_date ?? '';
-        $data2['regd_in_income_tax']               = $request->tax_filer ?? '';
-        $data2['cnic_ntn']                 = $ntn ?? '';
-        $data2['strn']                 = $strn ?? '';
-        $data2['strn_term']                 = $request->strn_term ?? '';
-        $data2['display_note_invoice']                 = $request->display_note_invoice ?? 'no';
-        $data2['wh_tax']                 = $request->wh_tax ?? '';
-        $data2['adv_tax']                 = $request->adv_tax ?? 0;
-        $data2['creditDaysLimit']     = Input::get('credit_days') ?? 0;
-        $data2['creditLimit']     = Input::get('credit_amount') ?? 0;
-        $data2['locality']     = Input::get('locality') ?? 0;
-        $data2['store_category']     = Input::get('store_category') ?? 0;
-        $data2['territory_id']     = Input::get('territory_id') ?? 0;
-        $data2['SaleRep']     = Input::get('sale_person') ?? 0;
-        $data2['customer_group_id']     = Input::get('customer_group_id') ?? NULL;
-        $data2['accept_cheque']     = Input::get('accept_cheque') ?? "no";
-        $data2['display_pending_payment_invoice']     = Input::get('display_pending_payment_invoice') ?? 0;
-        
+        $data2['acc_id'] = $acc_id;
+        $data2['name'] = $customer_name;
+        $data2['store_code'] = $customer_code;
+        $data2['customer_code'] = $request->customer_code;
+        $data2['email'] = $email ?? '';
+        $data2['phone_1'] = $phone_1 ?? 0;
+        $data2['phone_2'] = $phone_2 ?? NULL;
+        $data2['address'] = $address ?? '';
+        $data2['country'] = $country ?? 0;
+        $data2['province'] = $state ?? 0;
+        $data2['city'] = $city ?? 0;
+        $data2['zip'] = $request->zip ?? '';
+        $data2['title'] = $request->title ?? '';
+        $data2['contact_person'] = $contact_person ?? '';
+        $data2['contact_person_email'] = $contact_person_email ?? '';
+        $data2['company_shipping_type'] = $request->company_shipping_type ?? '';
+        $data2['shipping_city'] = $request->shipping_city;
+        $data2['shipping_state'] = $request->shipping_state;
+        $data2['shipping_country'] = $request->shipping_country;
+        $data2['opening_balance'] = $request->opening_balance ?? '';
+        $data2['opening_balance_date'] = $request->opening_balance_date ?? '';
+        $data2['regd_in_income_tax'] = $request->tax_filer ?? '';
+        $data2['cnic_ntn'] = $ntn ?? '';
+        $data2['strn'] = $strn ?? '';
+        $data2['strn_term'] = $request->strn_term ?? '';
+        $data2['display_note_invoice'] = $request->display_note_invoice ?? 'no';
+        $data2['wh_tax'] = $request->wh_tax ?? '';
+        $data2['adv_tax'] = $request->adv_tax ?? 0;
+        $data2['creditDaysLimit'] = Input::get('credit_days') ?? 0;
+        $data2['creditLimit'] = Input::get('credit_amount') ?? 0;
+        $data2['locality'] = Input::get('locality') ?? 0;
+        $data2['store_category'] = Input::get('store_category') ?? 0;
+        $data2['territory_id'] = Input::get('territory_id') ?? 0;
+        $data2['SaleRep'] = Input::get('sale_person') ?? 0;
+        $data2['customer_group_id'] = Input::get('customer_group_id') ?? NULL;
+        $data2['accept_cheque'] = Input::get('accept_cheque') ?? "no";
+        $data2['display_pending_payment_invoice'] = Input::get('display_pending_payment_invoice') ?? 0;
 
-        $data2['CustomerType']     = Input::get('customer_type') ?? 1;
+
+        $data2['CustomerType'] = Input::get('customer_type') ?? 1;
         // $data2['status']     = Input::get('status') ?? "Active";
-        $data2['status']     = Input::get("status") ?? 1;
-        $data2['ba_mapping']     = Input::get('ba_mapping') ?? "no";
-        $data2['employee_id']     = Input::get('employee_id') ?? NULL;
-        $data2['special_price_mapped']     = Input::get('special_price_mapped') ?? "no";
-        $data2['warehouse_from']     = implode(",", Input::get('warehouse_from') ?? 0);
-        $data2['warehouse_to']     = Input::get('warehouse_to') ?? NULL;
-        $data2['branch_id']     = Input::get('branch_id') ?? NULL;
+        $data2['status'] = Input::get("status") ?? 1;
+        $data2['ba_mapping'] = Input::get('ba_mapping') ?? "no";
+        $data2['employee_id'] = Input::get('employee_id') ?? NULL;
+        $data2['special_price_mapped'] = Input::get('special_price_mapped') ?? "no";
+        $data2['warehouse_from'] = implode(",", Input::get('warehouse_from') ?? 0);
+        $data2['warehouse_to'] = Input::get('warehouse_to') ?? NULL;
+        $data2['branch_id'] = Input::get('branch_id') ?? NULL;
         // $data2['fax']   		    = $fax ?? '';
 
-        $data2['username']            = Auth::user()->name;
-        $data2['date']                = date("Y-m-d");
-        $data2['time']                = date("H:i:s");
-        $data2['action']              = 'create';
-        $data2['terms_of_payment']     = Input::get('term') ?? 0;
+        $data2['username'] = Auth::user()->name;
+        $data2['date'] = date("Y-m-d");
+        $data2['time'] = date("H:i:s");
+        $data2['action'] = 'create';
+        $data2['terms_of_payment'] = Input::get('term') ?? 0;
         $data2["region_id"] = Input::get("region_id") ?? 0;
         // $data2['discount_percent']     = Input::get('discount_percent') ?? 0;
 
         $CustId = DB::connection('mysql2')->table('customers')->insertGetId($data2);
 
-        $data3['acc_id'] =    $acc_id;
-        $data3['acc_code'] =    $code;
+        $data3['acc_id'] = $acc_id;
+        $data3['acc_code'] = $code;
         $data3['debit_credit'] = 1;
-        $data3['amount']       = $request->opening_balance ?? '0.00'; 
-        $data3['opening_bal']       =     1;
-        $data3['username']              = Auth::user()->name;
-        $data3['date']               = date("Y-m-d");
-        $data3['v_date']             = '2023-07-01';
-        $data3['time']               = date("H:i:s");
-        $data3['action']               = 'create';
+        $data3['amount'] = $request->opening_balance ?? '0.00';
+        $data3['opening_bal'] = 1;
+        $data3['username'] = Auth::user()->name;
+        $data3['date'] = date("Y-m-d");
+        $data3['v_date'] = '2023-07-01';
+        $data3['time'] = date("H:i:s");
+        $data3['action'] = 'create';
         DB::table('transactions')->insert($data3);
 
         $type = "Customer " . $customer_name;
         \App\Helpers\CommonHelper::createNotification(
-            $type . " is created by " . auth()->user()->name, 
+            $type . " is created by " . auth()->user()->name,
             "Customer"
         );
 
         if (Input::get('accept_cheque') == "yes") {
             // bank fields
-            $data4['bank_name']     = Input::get('bank') ?? "-";
-            $data4['username']              = Auth::user()->name;
-            $data4['status']              = 1;
-            $data4['date']               = date("Y-m-d");
-            $data4['acc_id'] =    $acc_id;
-            $data4['account_title']     = Input::get('account_title') ?? '-';
-            $data4['account_no']     = Input::get('account_no') ?? '-';
-            $data4['swift_code']     = Input::get('branch_id') ?? '-';
-            $data4['bank_address']     = "Karachi Pakistan";
+            $data4['bank_name'] = Input::get('bank') ?? "-";
+            $data4['username'] = Auth::user()->name;
+            $data4['status'] = 1;
+            $data4['date'] = date("Y-m-d");
+            $data4['acc_id'] = $acc_id;
+            $data4['account_title'] = Input::get('account_title') ?? '-';
+            $data4['account_no'] = Input::get('account_no') ?? '-';
+            $data4['swift_code'] = Input::get('branch_id') ?? '-';
+            $data4['bank_address'] = "Karachi Pakistan";
             DB::table('bank_detail')->insert($data4);
         }
 
@@ -537,8 +539,8 @@ class SalesAddDetailControler extends Controller
                 "success" => "Customer created successfully",
                 "status" => 200
             ]);
-   
-   
+
+
     }
 
     // public function updateCreditCustomerDetail(){
@@ -628,7 +630,7 @@ class SalesAddDetailControler extends Controller
 
     public function updateCreditCustomerDetail(Request $request)
     {
-      
+
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required',
             'customer_code' => 'required',
@@ -733,10 +735,10 @@ class SalesAddDetailControler extends Controller
                 'special_price_mapped' => $request->input('special_price_mapped', $customer->special_price_mapped),
                 // 'warehouse_from' => $request->input('warehouse_from', $customer->warehouse_from),
                 'warehouse_from' => is_array($request->warehouse_from)
-    ? implode(',', $request->warehouse_from)
-    : ($request->warehouse_from ?? $customer->warehouse_from),
+                    ? implode(',', $request->warehouse_from)
+                    : ($request->warehouse_from ?? $customer->warehouse_from),
 
-                
+
                 'branch_id' => $request->input('branch_id', $customer->branch_id),
                 'warehouse_to' => $request->input('warehouse_to', $customer->warehouse_to),
                 'username' => Auth::user()->name,
@@ -762,7 +764,7 @@ class SalesAddDetailControler extends Controller
             ];
 
             DB::table('transactions')->where('acc_id', $customer->acc_id)->update($data3);
-            $bankDetail =  DB::Connection('mysql2')->table('bank_detail')->where('acc_id', $customer->acc_id)->first();
+            $bankDetail = DB::Connection('mysql2')->table('bank_detail')->where('acc_id', $customer->acc_id)->first();
 
             if ($request->input('accept_cheque') == "yes") {
                 $searchCriteria = [
@@ -784,11 +786,11 @@ class SalesAddDetailControler extends Controller
                 $bankDetail = DB::connection('mysql2')->table('bank_detail')->updateOrInsert($searchCriteria, $dataToUpdateOrCreate);
             }
 
-               $type = "Customer " . $customer->name;
-                \App\Helpers\CommonHelper::createNotification(
-                    $type . " is edited by " . auth()->user()->name,
-                    "Customer"
-                );
+            $type = "Customer " . $customer->name;
+            \App\Helpers\CommonHelper::createNotification(
+                $type . " is edited by " . auth()->user()->name,
+                "Customer"
+            );
             // Reconnect to the master database
             CommonHelper::reconnectMasterDatabase();
 
@@ -816,20 +818,20 @@ class SalesAddDetailControler extends Controller
             $str = DB::selectOne("select max(convert(substr(`inv_no`,4,length(substr(`inv_no`,4))-4),signed integer)) reg from `invoice` where substr(`inv_no`,-4,2) = " . date('m') . " and substr(`inv_no`,-2,2) = " . date('y') . "")->reg;
             $inv_no = 'cre' . ($str + 1) . date('my');
 
-            $data1['inv_no']         = $inv_no;
-            $data1['dc_no']           = $dc_no;
-            $data1['vehicle_no']       = $vehicle_no;
-            $data1['invoiceType']       = '3';
+            $data1['inv_no'] = $inv_no;
+            $data1['dc_no'] = $dc_no;
+            $data1['vehicle_no'] = $vehicle_no;
+            $data1['invoiceType'] = '3';
             $data1['inv_against_discount'] = $invoice_against_discount;
-            $data1['inv_date']         = $invoice_date;
-            $data1['consignee']           = $customer_name_id;
-            $data1['main_description']       = $main_description;
-            $data1['credit_acc_id']       = $credit_acc_id;
-            $data1['date']                   = date("Y-m-d");
-            $data1['time']                   = date("H:i:s");
-            $data1['username']          = Auth::user()->name;
-            $data1['status']            = 1;
-            $data1['inv_status']     = 1;
+            $data1['inv_date'] = $invoice_date;
+            $data1['consignee'] = $customer_name_id;
+            $data1['main_description'] = $main_description;
+            $data1['credit_acc_id'] = $credit_acc_id;
+            $data1['date'] = date("Y-m-d");
+            $data1['time'] = date("H:i:s");
+            $data1['username'] = Auth::user()->name;
+            $data1['status'] = 1;
+            $data1['inv_status'] = 1;
 
             DB::table('invoice')->insert($data1);
             foreach ($creditSaleDataSection as $row2) {
@@ -840,19 +842,19 @@ class SalesAddDetailControler extends Controller
                 $qty = strip_tags(Input::get('qty_' . $row . '_' . $row2 . ''));
                 $amount = strip_tags(Input::get('amount_' . $row . '_' . $row2 . ''));
 
-                $data2['inv_no']         = $inv_no;
-                $data2['inv_date']       = $invoice_date;
-                $data2['category_id']       = $category_id;
-                $data2['sub_item_id']       = $sub_item_id;
-                $data2['description']       = $description;
-                $data2['price']               = $price;
-                $data2['qty']               = $qty;
-                $data2['amount']               = $amount;
-                $data2['date']                   = date("Y-m-d");
-                $data2['time']                   = date("H:i:s");
-                $data2['username']          = Auth::user()->name;
-                $data2['status']            = 1;
-                $data2['inv_status']     = 1;
+                $data2['inv_no'] = $inv_no;
+                $data2['inv_date'] = $invoice_date;
+                $data2['category_id'] = $category_id;
+                $data2['sub_item_id'] = $sub_item_id;
+                $data2['description'] = $description;
+                $data2['price'] = $price;
+                $data2['qty'] = $qty;
+                $data2['amount'] = $amount;
+                $data2['date'] = date("Y-m-d");
+                $data2['time'] = date("H:i:s");
+                $data2['username'] = Auth::user()->name;
+                $data2['status'] = 1;
+                $data2['inv_status'] = 1;
 
                 DB::table('inv_data')->insert($data2);
             }
@@ -881,22 +883,22 @@ class SalesAddDetailControler extends Controller
             $str_inv = DB::selectOne("select max(convert(substr(`inv_no`,4,length(substr(`inv_no`,4))-4),signed integer)) reg from `invoice` where substr(`inv_no`,-4,2) = " . date('m') . " and substr(`inv_no`,-2,2) = " . date('y') . "")->reg;
             $inv_no = 'cas' . ($str_inv + 1) . date('my');
 
-            $data1['inv_no']         = $inv_no;
-            $data1['dc_no']           = $dc_no;
-            $data1['vehicle_no']       = $vehicle_no;
-            $data1['invoiceType']       = '2';
+            $data1['inv_no'] = $inv_no;
+            $data1['dc_no'] = $dc_no;
+            $data1['vehicle_no'] = $vehicle_no;
+            $data1['invoiceType'] = '2';
             $data1['inv_against_discount'] = $invoice_against_discount;
-            $data1['inv_date']         = $invoice_date;
-            $data1['consignee']           = $customer_name_id;
-            $data1['main_description']       = $main_description;
-            $data1['credit_acc_id']       = $credit_acc_id;
-            $data1['debit_acc_id']       = $debit_acc_id;
-            $data1['date']                   = date("Y-m-d");
-            $data1['time']                   = date("H:i:s");
-            $data1['username']          = Auth::user()->name;
-            $data1['approve_username']          = Auth::user()->name;
-            $data1['status']            = 1;
-            $data1['inv_status']     = 2;
+            $data1['inv_date'] = $invoice_date;
+            $data1['consignee'] = $customer_name_id;
+            $data1['main_description'] = $main_description;
+            $data1['credit_acc_id'] = $credit_acc_id;
+            $data1['debit_acc_id'] = $debit_acc_id;
+            $data1['date'] = date("Y-m-d");
+            $data1['time'] = date("H:i:s");
+            $data1['username'] = Auth::user()->name;
+            $data1['approve_username'] = Auth::user()->name;
+            $data1['status'] = 1;
+            $data1['inv_status'] = 2;
 
             $lastId = DB::table('invoice')->insertGetId($data1);
             foreach ($cashSaleDataSection as $row2) {
@@ -908,38 +910,38 @@ class SalesAddDetailControler extends Controller
                 $amount = strip_tags(Input::get('amount_' . $row . '_' . $row2 . ''));
                 $totalAmount += $amount;
 
-                $data2['inv_no']         = $inv_no;
-                $data2['inv_date']       = $invoice_date;
-                $data2['category_id']       = $category_id;
-                $data2['sub_item_id']       = $sub_item_id;
-                $data2['description']       = $description;
-                $data2['price']               = $price;
-                $data2['qty']               = $qty;
-                $data2['amount']               = $amount;
-                $data2['date']                   = date("Y-m-d");
-                $data2['time']                   = date("H:i:s");
-                $data2['username']          = Auth::user()->name;
-                $data2['approve_username']          = Auth::user()->name;
-                $data2['status']            = 1;
-                $data2['inv_status']     = 2;
+                $data2['inv_no'] = $inv_no;
+                $data2['inv_date'] = $invoice_date;
+                $data2['category_id'] = $category_id;
+                $data2['sub_item_id'] = $sub_item_id;
+                $data2['description'] = $description;
+                $data2['price'] = $price;
+                $data2['qty'] = $qty;
+                $data2['amount'] = $amount;
+                $data2['date'] = date("Y-m-d");
+                $data2['time'] = date("H:i:s");
+                $data2['username'] = Auth::user()->name;
+                $data2['approve_username'] = Auth::user()->name;
+                $data2['status'] = 1;
+                $data2['inv_status'] = 2;
 
                 DB::table('inv_data')->insert($data2);
 
-                $data3['inv_no']         = $inv_no;
-                $data3['inv_date']       = $invoice_date;
-                $data3['main_ic_id']       = $category_id;
-                $data3['sub_ic_id']       = $sub_item_id;
+                $data3['inv_no'] = $inv_no;
+                $data3['inv_date'] = $invoice_date;
+                $data3['main_ic_id'] = $category_id;
+                $data3['sub_ic_id'] = $sub_item_id;
                 $data3['customer_id'] = $customer_name_id;
                 $data3['inv_against_discount'] = $invoice_against_discount;
-                $data3['qty']               = $qty;
-                $data3['price']               = $price;
-                $data3['value']               = $amount;
-                $data3['action']               = '5';
-                $data3['date']                   = date("Y-m-d");
-                $data3['time']                   = date("H:i:s");
-                $data3['username']          = Auth::user()->name;
-                $data3['status']            = 1;
-                $data3['company_id']     = $m;
+                $data3['qty'] = $qty;
+                $data3['price'] = $price;
+                $data3['value'] = $amount;
+                $data3['action'] = '5';
+                $data3['date'] = date("Y-m-d");
+                $data3['time'] = date("H:i:s");
+                $data3['username'] = Auth::user()->name;
+                $data3['status'] = 1;
+                $data3['company_id'] = $m;
 
                 DB::table('fara')->insert($data3);
             }
@@ -949,48 +951,48 @@ class SalesAddDetailControler extends Controller
             $str_jv = DB::selectOne("select max(convert(substr(`jv_no`,3,length(substr(`jv_no`,3))-4),signed integer)) reg from `jvs` where substr(`jv_no`,-4,2) = " . date('m') . " and substr(`jv_no`,-2,2) = " . date('y') . "")->reg;
             $jv_no = 'jv' . ($str_jv + 1) . date('my');
 
-            $data_jvs['jv_no']      = $jv_no;
-            $data_jvs['jv_date']   = $invoice_date;
-            $data_jvs['inv_no']      = $inv_no;
-            $data_jvs['inv_date']   = $invoice_date;
+            $data_jvs['jv_no'] = $jv_no;
+            $data_jvs['jv_date'] = $invoice_date;
+            $data_jvs['inv_no'] = $inv_no;
+            $data_jvs['inv_date'] = $invoice_date;
             $data_jvs['slip_no'] = $dc_no;
-            $data_jvs['description']      = '(' . $main_description . ') * ( Invoice No  => ' . $inv_no . ' ) * ( Invoice Date  => ' . $invoice_date . ' ) * ( Slip No => ' . $dc_no . ' )';
+            $data_jvs['description'] = '(' . $main_description . ') * ( Invoice No  => ' . $inv_no . ' ) * ( Invoice Date  => ' . $invoice_date . ' ) * ( Slip No => ' . $dc_no . ' )';
             $data_jvs['jv_status'] = 2;
-            $data_jvs['voucherType']       = 3;
-            $data_jvs['status']       = 1;
-            $data_jvs['username']  = Auth::user()->name;
-            $data_jvs['date']       = date('Y-m-d');
-            $data_jvs['time']       = date('H:i:s');
-            $data_jvs['approve_username']   = Auth::user()->name;
+            $data_jvs['voucherType'] = 3;
+            $data_jvs['status'] = 1;
+            $data_jvs['username'] = Auth::user()->name;
+            $data_jvs['date'] = date('Y-m-d');
+            $data_jvs['time'] = date('H:i:s');
+            $data_jvs['approve_username'] = Auth::user()->name;
 
             DB::table('jvs')->insert($data_jvs);
 
             CommonHelper::reconnectMasterDatabase();
             $congsinee_acc = CommonHelper::getAccountIdByMasterTable($m, $customer_name_id, 'customers');
             CommonHelper::companyDatabaseConnection($_GET['m']);
-            $data_jvdebit['acc_id']         = $congsinee_acc;
-            $data_jvdebit['amount']         = $totalAmount - $calculatedTotalDiscount;
-            $data_jvdebit['debit_credit']  = '1';
-            $data_jvdebit['jv_no']          = $jv_no;
-            $data_jvdebit['jv_date']          = $invoice_date;
+            $data_jvdebit['acc_id'] = $congsinee_acc;
+            $data_jvdebit['amount'] = $totalAmount - $calculatedTotalDiscount;
+            $data_jvdebit['debit_credit'] = '1';
+            $data_jvdebit['jv_no'] = $jv_no;
+            $data_jvdebit['jv_date'] = $invoice_date;
             $data_jvdebit['description'] = '(' . $main_description . ') * ( Invoice No  => ' . $inv_no . ' ) * ( Invoice Date  => ' . $invoice_date . ' ) * ( Slip No => ' . $dc_no . ' )';
-            $data_jvdebit['username']  = Auth::user()->name;
-            $data_jvdebit['date']       = date('Y-m-d');
-            $data_jvdebit['time']       = date('H:i:s');
-            $data_jvdebit['approve_username']   = Auth::user()->name;
+            $data_jvdebit['username'] = Auth::user()->name;
+            $data_jvdebit['date'] = date('Y-m-d');
+            $data_jvdebit['time'] = date('H:i:s');
+            $data_jvdebit['approve_username'] = Auth::user()->name;
             $data_jvdebit['jv_status'] = 2;
 
 
-            $data_jvcredit['acc_id']        = $credit_acc_id;
-            $data_jvcredit['amount']         = $totalAmount - $calculatedTotalDiscount;
-            $data_jvcredit['debit_credit']  = '0';
-            $data_jvcredit['jv_no']          = $jv_no;
-            $data_jvcredit['jv_date']          = $invoice_date;
+            $data_jvcredit['acc_id'] = $credit_acc_id;
+            $data_jvcredit['amount'] = $totalAmount - $calculatedTotalDiscount;
+            $data_jvcredit['debit_credit'] = '0';
+            $data_jvcredit['jv_no'] = $jv_no;
+            $data_jvcredit['jv_date'] = $invoice_date;
             $data_jvcredit['description'] = '(' . $main_description . ') * ( Invoice No  => ' . $inv_no . ' ) * ( Invoice Date  => ' . $invoice_date . ' ) * ( Slip No => ' . $dc_no . ' )';
-            $data_jvcredit['username']  = Auth::user()->name;
-            $data_jvcredit['date']       = date('Y-m-d');
-            $data_jvcredit['time']       = date('H:i:s');
-            $data_jvcredit['approve_username']   = Auth::user()->name;
+            $data_jvcredit['username'] = Auth::user()->name;
+            $data_jvcredit['date'] = date('Y-m-d');
+            $data_jvcredit['time'] = date('H:i:s');
+            $data_jvcredit['approve_username'] = Auth::user()->name;
             $data_jvcredit['jv_status'] = 2;
 
             DB::table('jv_data')->insert($data_jvdebit);
@@ -1022,50 +1024,50 @@ class SalesAddDetailControler extends Controller
             $str_rv = DB::selectOne("select max(convert(substr(`rv_no`,4,length(substr(`rv_no`,4))-4),signed integer)) reg from `rvs` where substr(`rv_no`,-4,2) = " . date('m') . " and substr(`rv_no`,-2,2) = " . date('y') . "")->reg;
             $rv_no = 'crv' . ($str_rv + 1) . date('my');
 
-            $data_rvs['rv_no']      = $rv_no;
-            $data_rvs['rv_date']   = $invoice_date;
-            $data_rvs['inv_no']      = $inv_no;
-            $data_rvs['inv_date']   = $invoice_date;
+            $data_rvs['rv_no'] = $rv_no;
+            $data_rvs['rv_date'] = $invoice_date;
+            $data_rvs['inv_no'] = $inv_no;
+            $data_rvs['inv_date'] = $invoice_date;
             $data_rvs['slip_no'] = $dc_no;
-            $data_rvs['description']      = '(' . $main_description . ') * ( Invoice No  => ' . $inv_no . ' ) * ( Invoice Date  => ' . $invoice_date . ' ) * ( Slip No => ' . $dc_no . ' )';
+            $data_rvs['description'] = '(' . $main_description . ') * ( Invoice No  => ' . $inv_no . ' ) * ( Invoice Date  => ' . $invoice_date . ' ) * ( Slip No => ' . $dc_no . ' )';
             $data_rvs['rv_status'] = 2;
-            $data_rvs['voucherType']       = 3;
-            $data_rvs['sale_receipt_type']       = 1;
-            $data_rvs['status']       = 1;
-            $data_rvs['username']  = Auth::user()->name;
-            $data_rvs['date']       = date('Y-m-d');
-            $data_rvs['time']       = date('H:i:s');
-            $data_rvs['approve_username']   = Auth::user()->name;
+            $data_rvs['voucherType'] = 3;
+            $data_rvs['sale_receipt_type'] = 1;
+            $data_rvs['status'] = 1;
+            $data_rvs['username'] = Auth::user()->name;
+            $data_rvs['date'] = date('Y-m-d');
+            $data_rvs['time'] = date('H:i:s');
+            $data_rvs['approve_username'] = Auth::user()->name;
 
             DB::table('rvs')->insert($data_rvs);
 
-            $data_rvdebit['acc_id']         = $congsinee_acc;
-            $data_rvdebit['amount']         = $totalAmount - $calculatedTotalDiscount;
-            $data_rvdebit['debit_credit']  = '0';
-            $data_rvdebit['rv_no']          = $rv_no;
+            $data_rvdebit['acc_id'] = $congsinee_acc;
+            $data_rvdebit['amount'] = $totalAmount - $calculatedTotalDiscount;
+            $data_rvdebit['debit_credit'] = '0';
+            $data_rvdebit['rv_no'] = $rv_no;
             $data_rvdebit['description'] = '(' . $main_description . ') * ( Invoice No  => ' . $inv_no . ' ) * ( Invoice Date  => ' . $invoice_date . ' ) * ( Slip No => ' . $dc_no . ' )';
-            $data_rvdebit['rv_date']      = $invoice_date;
+            $data_rvdebit['rv_date'] = $invoice_date;
             $data_rvdebit['rv_status'] = 2;
-            $data_rvdebit['status']       = 1;
-            $data_rvdebit['username']  = Auth::user()->name;
-            $data_rvdebit['date']       = date('Y-m-d');
-            $data_rvdebit['time']       = date('H:i:s');
-            $data_rvdebit['approve_username']   = Auth::user()->name;
+            $data_rvdebit['status'] = 1;
+            $data_rvdebit['username'] = Auth::user()->name;
+            $data_rvdebit['date'] = date('Y-m-d');
+            $data_rvdebit['time'] = date('H:i:s');
+            $data_rvdebit['approve_username'] = Auth::user()->name;
 
             DB::table('rv_data')->insert($data_rvdebit);
 
-            $data_rvcredit['acc_id']        = $debit_acc_id;
-            $data_rvcredit['amount']        = $totalAmount - $calculatedTotalDiscount;
+            $data_rvcredit['acc_id'] = $debit_acc_id;
+            $data_rvcredit['amount'] = $totalAmount - $calculatedTotalDiscount;
             $data_rvcredit['debit_credit'] = '1';
-            $data_rvcredit['rv_no']          = $rv_no;
-            $data_rvcredit['rv_date']      = $invoice_date;
+            $data_rvcredit['rv_no'] = $rv_no;
+            $data_rvcredit['rv_date'] = $invoice_date;
             $data_rvcredit['description'] = '(' . $main_description . ') * ( Invoice No  => ' . $inv_no . ' ) * ( Invoice Date  => ' . $invoice_date . ' ) * ( Slip No => ' . $dc_no . ' )';
             $data_rvcredit['rv_status'] = 2;
-            $data_rvcredit['status']       = 1;
-            $data_rvcredit['username']  = Auth::user()->name;
-            $data_rvcredit['date']       = date('Y-m-d');
-            $data_rvcredit['time']       = date('H:i:s');
-            $data_rvcredit['approve_username']   = Auth::user()->name;
+            $data_rvcredit['status'] = 1;
+            $data_rvcredit['username'] = Auth::user()->name;
+            $data_rvcredit['date'] = date('Y-m-d');
+            $data_rvcredit['time'] = date('H:i:s');
+            $data_rvcredit['approve_username'] = Auth::user()->name;
 
             DB::table('rv_data')->insert($data_rvcredit);
 
@@ -1129,12 +1131,14 @@ class SalesAddDetailControler extends Controller
             $sales_order->order_date = $request->order_date;
             $sales_order->other_refrence = $request->other_refrence ?? '';
             $sales_order->desptch_through = $request->desptch_through ?? '';
-            $sales_order->destination = $request->destination;;
+            $sales_order->destination = $request->destination;
+            ;
             $sales_order->terms_of_delivery = $request->terms_of_delivery ?? '';
             $sales_order->due_date = $request->due_date ?? '';
             $sales_order->status = 1;
             $sales_order->username = Auth::user()->name;
-            $sales_order->amount_in_words = $request->rupeess;;
+            $sales_order->amount_in_words = $request->rupeess;
+            ;
             $sales_order->date = date('Y-m-d');
             $sales_order->buyers_id = $byers_id;
             $sales_order->description = $request->description;
@@ -1246,7 +1250,8 @@ class SalesAddDetailControler extends Controller
             $sales_order['other_refrence'] = $request->other_refrence;
             $sales_order['desptch_through'] = $request->desptch_through;
             $sales_order['destination'] = $request->destination;
-            $sales_order['terms_of_delivery'] = $request->terms_of_delivery;;
+            $sales_order['terms_of_delivery'] = $request->terms_of_delivery;
+            ;
             $sales_order['due_date'] = $request->due_date;
             $sales_order['status'] = 1;
             $sales_order['username'] = Auth::user()->name;
@@ -1299,11 +1304,11 @@ class SalesAddDetailControler extends Controller
         return Redirect::to('sales/viewSalesOrderList?pageType=&&parentCode=&&m=' . $_GET['m'] . '#SFR');
     }
 
-     function addeDeliveryNote(Request $request)
+    function addeDeliveryNote(Request $request)
     {
         //    ReuseableCode::get_stock(17295,1,700,0);die;
-        
-      
+
+
 
         DB::Connection('mysql2')->beginTransaction();
         try {
@@ -1324,8 +1329,10 @@ class SalesAddDetailControler extends Controller
             $delivery_note->so_no = $request->so_no;
             $delivery_note->so_date = $request->so_date;
             $delivery_note->other_refrence = $request->other_refrence;
-            $delivery_note->order_no = $request->order_no ?? '';;
-            $delivery_note->order_date = $request->order_date;;
+            $delivery_note->order_no = $request->order_no ?? '';
+            ;
+            $delivery_note->order_date = $request->order_date;
+            ;
             $delivery_note->despacth_document_no = $request->despacth_document_no;
             $delivery_note->despacth_document_date = $request->despacth_document_date;
             $delivery_note->despacth_through = $request->despacth_through ?? '';
@@ -1400,7 +1407,7 @@ class SalesAddDetailControler extends Controller
                 $delivery_note_data->username = Auth::user()->name;
                 $delivery_note_data->save();
                 $master_data_id = $delivery_note_data->id;
-                $type =  CommonHelper::get_item_type($request->input('item_id' . $i));
+                $type = CommonHelper::get_item_type($request->input('item_id' . $i));
 
                 $average_cost = ReuseableCode::average_cost_sales($request->input('item_id' . $i), $request->input('warehouse' . $i), $request->input('batch_code' . $i));
 
@@ -1411,20 +1418,20 @@ class SalesAddDetailControler extends Controller
                 // echo "<br>";
                 // echo $request->input('warehouse' . $i);
                 // exit;
-              
+
                 $item_name = CommonHelper::get_product_name($request->input('item_id' . $i));
                 $item_qty = $request->input('qty' . $i);
-                 $qty = ReuseableCode::get_stock($request->input('item_id' . $i), $request->input('warehouse' . $i));
+                $qty = ReuseableCode::get_stock($request->input('item_id' . $i), $request->input('warehouse' . $i));
                 //  $qty = ReuseableCode::get_stock_new($request->input('item_id' . $i), $request->input('warehouse' . $i));
-                 $qty = (float) $qty;
+                $qty = (float) $qty;
                 // $qty = number_format($qty, 2);
-                
-               
 
 
-                if ($qty < (float)$send_qty):
-                    
-                    $qty =  $qty < 0 ? 0 : $qty;
+
+
+                if ($qty < (float) $send_qty):
+
+                    $qty = $qty < 0 ? 0 : $qty;
                     $delivery_note_dataa = new DeliveryNoteData();
 
                     $delivery_note_dataa = $delivery_note_data->SetConnection('mysql2');
@@ -1440,20 +1447,20 @@ class SalesAddDetailControler extends Controller
 
                     $error_messages[] = "Insufficient stock for {$item_name}. Requested quantity: {$item_qty}, but only {$qty} available.";
 
-                //
+                    //
 
 
 
 
-                //                foreach ($delivery_note_dataa as $row):
-                //                    echo $row->item_id.' =>'.CommonHelper::get_item_name($request->input('item_id' . $i))
-                //                        .'=>'.$row->qty.'</br>';
-                //                    $total_qty+=$row->qty;
-                //                    endforeach;
+                    //                foreach ($delivery_note_dataa as $row):
+                    //                    echo $row->item_id.' =>'.CommonHelper::get_item_name($request->input('item_id' . $i))
+                    //                        .'=>'.$row->qty.'</br>';
+                    //                    $total_qty+=$row->qty;
+                    //                    endforeach;
 
 
 
-                //  echo  'Stock Not Available For =>'.CommonHelper::get_item_name($request->input('item_id' . $i)).' =>'.$total_qty.' =>'.number_format($qty,2).' =>item_id';
+                    //  echo  'Stock Not Available For =>'.CommonHelper::get_item_name($request->input('item_id' . $i)).' =>'.$total_qty.' =>'.number_format($qty,2).' =>item_id';
 
                 endif;
 
@@ -1531,24 +1538,24 @@ class SalesAddDetailControler extends Controller
         return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
     }
 
-//     public function approveDeliveryNote(Request $request)
+    //     public function approveDeliveryNote(Request $request)
 //     {
 
-//         try {
+    //         try {
 //             $delivery_note = DeliveryNote::find($request->m);
 //             $getSo = Sales_Order::find($delivery_note->master_id);
 //             $getDeliveryNoteDetail = DeliveryNoteData::where('master_id', $delivery_note->id)->get();
 //             foreach ($getDeliveryNoteDetail as $key => $value) {
 
-// $purchase_price = DB::connection("mysql2")->table("subitem")
+    // $purchase_price = DB::connection("mysql2")->table("subitem")
 //                                         ->select("id", "purchase_price")
 //                                         ->where("id",$value->item_id)
 //                                         ->first();
 
 
-//                 $average_cost = ReuseableCode::average_cost_sales($value->item_id, $value->warehouse, $value->batch_code);
+    //                 $average_cost = ReuseableCode::average_cost_sales($value->item_id, $value->warehouse, $value->batch_code);
 
-//                 $stock = array(
+    //                 $stock = array(
 //                     'main_id' => $delivery_note->id,   //  delivery note id
 //                     'master_id' => $value->master_id, // delievry note data id
 //                     'voucher_no' => $delivery_note->gd_no,      //DN gd_no
@@ -1574,9 +1581,9 @@ class SalesAddDetailControler extends Controller
 
 
 
-                
 
-//                 $data4=array
+
+    //                 $data4=array
 //                 (
 //                     'master_id'=>$value->master_id,
 //                     'acc_id'=>1053,
@@ -1596,7 +1603,7 @@ class SalesAddDetailControler extends Controller
 //                 );
 //                 DB::Connection('mysql2')->table('transactions')->insertGetId($data4);
 
-//                 $data5=array
+    //                 $data5=array
 //                 (
 //                     'master_id'=>$value->master_id,
 //                     'acc_id'=>1101,
@@ -1620,12 +1627,12 @@ class SalesAddDetailControler extends Controller
 
 
 
-//                 $customer = DB::connection("mysql2")->table("customers")
+    //                 $customer = DB::connection("mysql2")->table("customers")
 //                                         ->select("id", "CustomerType")
 //                                         ->where("id", $delivery_note->buyers_id)
 //                                         ->first();
-             
-//                 // Customer is distributes/reseller
+
+    //                 // Customer is distributes/reseller
 //                 if($customer->CustomerType == 3 && isset($value->warehouse_to_id)) {
 //                     $virtualWarehouseStock = array(
 //                         'main_id' => $delivery_note->id,   //  delivery note id
@@ -1654,7 +1661,7 @@ class SalesAddDetailControler extends Controller
 //                 }
 
 
-//                 if (isset($value->warehouse_to_id)) {
+    //                 if (isset($value->warehouse_to_id)) {
 //                     $virtualWarehouseStock = array(
 //                         'main_id' => $delivery_note->id,   //  delivery note id
 //                         'master_id' => $value->master_id, // delievry note data id
@@ -1685,7 +1692,7 @@ class SalesAddDetailControler extends Controller
 //             $delivery_note->status = 1;
 //             $delivery_note->save();
 
-//             $getSo->dn_approve = 1;
+    //             $getSo->dn_approve = 1;
 //             $getSo->save();
 //             DB::Connection('mysql2')->commit();
 //         } catch (Exception $ex) {
@@ -1696,99 +1703,60 @@ class SalesAddDetailControler extends Controller
 
 
 
-public function approveDeliveryNote(Request $request)
-{
-    // Start transaction on mysql2 connection
-    DB::connection('mysql2')->beginTransaction();
-    
-    try {
-        $delivery_note = DeliveryNote::find($request->m);
-        
-        if (!$delivery_note) {
-            throw new Exception("Delivery note not found");
-        }
-        
-        $getSo = Sales_Order::find($delivery_note->master_id);
-        if (!$getSo) {
-            throw new Exception("Sales order not found");
-        }
-        
-        $getDeliveryNoteDetail = DeliveryNoteData::where('master_id', $delivery_note->id)->get();
-        
-        if ($getDeliveryNoteDetail->isEmpty()) {
-            throw new Exception("No delivery note details found");
-        }
-        
-        // Initialize total amount for transactions
-        $totalTransactionAmount = 0;
-        
-        foreach ($getDeliveryNoteDetail as $key => $value) {
-            // Get purchase price
-            $purchase_price = DB::connection("mysql2")
-                ->table("subitem")
-                ->select("id", "purchase_price")
-                ->where("id", $value->item_id)
-                ->first();
-                
-            if (!$purchase_price) {
-                throw new Exception("Purchase price not found for item: " . $value->item_id);
+    public function approveDeliveryNote(Request $request)
+    {
+        // Start transaction on mysql2 connection
+        DB::connection('mysql2')->beginTransaction();
+
+        try {
+            $delivery_note = DeliveryNote::find($request->m);
+
+            if (!$delivery_note) {
+                throw new Exception("Delivery note not found");
             }
 
-            // Get average cost
-            $average_cost = ReuseableCode::average_cost_sales(
-                $value->item_id, 
-                $value->warehouse, 
-                $value->batch_code
-            );
-
-            // Insert stock record (यह per item रहेगा क्योंकि stock हर item के लिए अलग track होता है)
-            $stock = array(
-                'main_id' => $delivery_note->id,
-                'master_id' => $value->master_id,
-                'voucher_no' => $delivery_note->gd_no,
-                'voucher_date' => $delivery_note->gd_date,
-                'supplier_id' => 0,
-                'customer_id' => $delivery_note->buyers_id,
-                'voucher_type' => 5,
-                'rate' => $value->rate,
-                'sub_item_id' => $value->item_id,
-                'batch_code' => $value->batch_code ?? "",
-                'qty' => $value->qty,
-                'discount_percent' => 0,
-                'discount_amount' => 0,
-                'amount' => $value->qty * $average_cost,
-                'status' => 1,
-                'warehouse_id' => $value->warehouse_id,
-                'username' => Auth::user()->username,
-                'created_date' => date('Y-m-d'),
-                'opening' => 0,
-                'so_data_id' => $value->so_data_id
-            );
-            
-            if (!DB::connection('mysql2')->table('stock')->insert($stock)) {
-                throw new Exception("Failed to insert stock record");
+            $getSo = Sales_Order::find($delivery_note->master_id);
+            if (!$getSo) {
+                throw new Exception("Sales order not found");
             }
 
-            // Add to total transaction amount
-            $totalTransactionAmount += $purchase_price->purchase_price * $value->qty;
+            $getDeliveryNoteDetail = DeliveryNoteData::where('master_id', $delivery_note->id)->get();
 
-            // Get customer details
-            $customer = DB::connection("mysql2")
-                ->table("customers")
-                ->select("id", "CustomerType")
-                ->where("id", $delivery_note->buyers_id)
-                ->first();
+            if ($getDeliveryNoteDetail->isEmpty()) {
+                throw new Exception("No delivery note details found");
+            }
 
-            // Customer is distributor/reseller
-            if ($customer && $customer->CustomerType == 3 && isset($value->warehouse_to_id)) {
-                $virtualWarehouseStock = array(
+            // Initialize total amount for transactions
+            $totalTransactionAmount = 0;
+
+            foreach ($getDeliveryNoteDetail as $key => $value) {
+                // Get purchase price
+                $purchase_price = DB::connection("mysql2")
+                    ->table("subitem")
+                    ->select("id", "purchase_price")
+                    ->where("id", $value->item_id)
+                    ->first();
+
+                if (!$purchase_price) {
+                    throw new Exception("Purchase price not found for item: " . $value->item_id);
+                }
+
+                // Get average cost
+                $average_cost = ReuseableCode::average_cost_sales(
+                    $value->item_id,
+                    $value->warehouse,
+                    $value->batch_code
+                );
+
+                // Insert stock record (यह per item रहेगा क्योंकि stock हर item के लिए अलग track होता है)
+                $stock = array(
                     'main_id' => $delivery_note->id,
                     'master_id' => $value->master_id,
                     'voucher_no' => $delivery_note->gd_no,
                     'voucher_date' => $delivery_note->gd_date,
                     'supplier_id' => 0,
                     'customer_id' => $delivery_note->buyers_id,
-                    'voucher_type' => 9,
+                    'voucher_type' => 5,
                     'rate' => $value->rate,
                     'sub_item_id' => $value->item_id,
                     'batch_code' => $value->batch_code ?? "",
@@ -1797,132 +1765,171 @@ public function approveDeliveryNote(Request $request)
                     'discount_amount' => 0,
                     'amount' => $value->qty * $average_cost,
                     'status' => 1,
-                    'warehouse_id' => $value->warehouse_to_id,
-                    'warehouse_id_to' => $value->warehouse_to_id,
+                    'warehouse_id' => $value->warehouse_id,
                     'username' => Auth::user()->username,
                     'created_date' => date('Y-m-d'),
                     'opening' => 0,
                     'so_data_id' => $value->so_data_id
                 );
-                
-                if (!DB::connection('mysql2')->table('ba_stock')->insert($virtualWarehouseStock)) {
-                    throw new Exception("Failed to insert ba_stock record");
+
+                if (!DB::connection('mysql2')->table('stock')->insert($stock)) {
+                    throw new Exception("Failed to insert stock record");
+                }
+
+                // Add to total transaction amount
+                $totalTransactionAmount += $purchase_price->purchase_price * $value->qty;
+
+                // Get customer details
+                $customer = DB::connection("mysql2")
+                    ->table("customers")
+                    ->select("id", "CustomerType")
+                    ->where("id", $delivery_note->buyers_id)
+                    ->first();
+
+                // Customer is distributor/reseller
+                if ($customer && $customer->CustomerType == 3 && isset($value->warehouse_to_id)) {
+                    $virtualWarehouseStock = array(
+                        'main_id' => $delivery_note->id,
+                        'master_id' => $value->master_id,
+                        'voucher_no' => $delivery_note->gd_no,
+                        'voucher_date' => $delivery_note->gd_date,
+                        'supplier_id' => 0,
+                        'customer_id' => $delivery_note->buyers_id,
+                        'voucher_type' => 9,
+                        'rate' => $value->rate,
+                        'sub_item_id' => $value->item_id,
+                        'batch_code' => $value->batch_code ?? "",
+                        'qty' => $value->qty,
+                        'discount_percent' => 0,
+                        'discount_amount' => 0,
+                        'amount' => $value->qty * $average_cost,
+                        'status' => 1,
+                        'warehouse_id' => $value->warehouse_to_id,
+                        'warehouse_id_to' => $value->warehouse_to_id,
+                        'username' => Auth::user()->username,
+                        'created_date' => date('Y-m-d'),
+                        'opening' => 0,
+                        'so_data_id' => $value->so_data_id
+                    );
+
+                    if (!DB::connection('mysql2')->table('ba_stock')->insert($virtualWarehouseStock)) {
+                        throw new Exception("Failed to insert ba_stock record");
+                    }
+                }
+
+                // Virtual warehouse stock
+                if (isset($value->warehouse_to_id)) {
+                    $virtualWarehouseStock = array(
+                        'main_id' => $delivery_note->id,
+                        'master_id' => $value->master_id,
+                        'voucher_no' => $delivery_note->gd_no,
+                        'voucher_date' => $delivery_note->gd_date,
+                        'supplier_id' => 0,
+                        'customer_id' => $delivery_note->buyers_id,
+                        'voucher_type' => 1,
+                        'rate' => $value->rate,
+                        'sub_item_id' => $value->item_id,
+                        'batch_code' => $value->batch_code ?? "",
+                        'qty' => $value->qty,
+                        'discount_percent' => 0,
+                        'discount_amount' => 0,
+                        'amount' => $value->qty * $average_cost,
+                        'status' => 1,
+                        'warehouse_id' => $value->warehouse_to_id,
+                        'warehouse_id_to' => $value->warehouse_to_id,
+                        'username' => Auth::user()->username,
+                        'created_date' => date('Y-m-d'),
+                        'opening' => 0,
+                        'so_data_id' => $value->so_data_id
+                    );
+
+                    if (!DB::connection('mysql2')->table('stock')->insert($virtualWarehouseStock)) {
+                        throw new Exception("Failed to insert virtual stock record");
+                    }
                 }
             }
 
-            // Virtual warehouse stock
-            if (isset($value->warehouse_to_id)) {
-                $virtualWarehouseStock = array(
-                    'main_id' => $delivery_note->id,
-                    'master_id' => $value->master_id,
+
+            if ($totalTransactionAmount > 0) {
+                // Transaction entry 1 (Debit) 
+                $data4 = array(
+                    'master_id' => $delivery_note->id,  // delivery note id as master
+                    'acc_id' => 1053,
+                    'acc_code' => '7-1',
+                    'cost_center' => $delivery_note->gd_no,
+                    'particulars' => 'DN: ' . $delivery_note->gd_no . ' - SO: ' . $getSo->so_no,
+                    'opening_bal' => 0,
+                    'debit_credit' => 1, // Debit
+                    'amount' => $totalTransactionAmount,
                     'voucher_no' => $delivery_note->gd_no,
-                    'voucher_date' => $delivery_note->gd_date,
-                    'supplier_id' => 0,
-                    'customer_id' => $delivery_note->buyers_id,
-                    'voucher_type' => 1,
-                    'rate' => $value->rate,
-                    'sub_item_id' => $value->item_id,
-                    'batch_code' => $value->batch_code ?? "",
-                    'qty' => $value->qty,
-                    'discount_percent' => 0,
-                    'discount_amount' => 0,
-                    'amount' => $value->qty * $average_cost,
-                    'status' => 1,
-                    'warehouse_id' => $value->warehouse_to_id,
-                    'warehouse_id_to' => $value->warehouse_to_id,
-                    'username' => Auth::user()->username,
-                    'created_date' => date('Y-m-d'),
-                    'opening' => 0,
-                    'so_data_id' => $value->so_data_id
+                    'voucher_type' => 13,
+                    'v_date' => $delivery_note->gd_date,
+                    'date' => date('Y-m-d'),
+                    'action' => 'insert',
+                    'username' => Auth::user()->name,
+                    'status' => 1
                 );
-                
-                if (!DB::connection('mysql2')->table('stock')->insert($virtualWarehouseStock)) {
-                    throw new Exception("Failed to insert virtual stock record");
+
+                if (!DB::connection('mysql2')->table('transactions')->insertGetId($data4)) {
+                    throw new Exception("Failed to insert debit transaction");
+                }
+
+                // Transaction entry 2 (Credit) 
+                $data5 = array(
+                    'master_id' => $delivery_note->id,  // delivery note id as master
+                    'acc_id' => 1101,
+                    'acc_code' => '1-2-1',
+                    'cost_center' => $delivery_note->gd_no,
+                    'particulars' => 'DN: ' . $delivery_note->gd_no . ' - SO: ' . $getSo->so_no,
+                    'opening_bal' => 0,
+                    'debit_credit' => 0, // Credit
+                    'amount' => $totalTransactionAmount,
+                    'voucher_no' => $delivery_note->gd_no,
+                    'voucher_type' => 13,
+                    'v_date' => $delivery_note->gd_date,
+                    'date' => date('Y-m-d'),
+                    'action' => 'insert',
+                    'username' => Auth::user()->name,
+                    'status' => 1
+                );
+
+                if (!DB::connection('mysql2')->table('transactions')->insertGetId($data5)) {
+                    throw new Exception("Failed to insert credit transaction");
                 }
             }
-        }
 
-        
-        if ($totalTransactionAmount > 0) {
-            // Transaction entry 1 (Debit) 
-            $data4 = array(
-                'master_id' => $delivery_note->id,  // delivery note id as master
-                'acc_id' => 1053,
-                'acc_code' => '7-1',
-                'cost_center' => $delivery_note->gd_no,
-                'particulars' => 'DN: ' . $delivery_note->gd_no . ' - SO: ' . $getSo->so_no,
-                'opening_bal' => 0,
-                'debit_credit' => 1, // Debit
-                'amount' => $totalTransactionAmount,
-                'voucher_no' => $delivery_note->gd_no,
-                'voucher_type' => 13,
-                'v_date' => $delivery_note->gd_date,
-                'date' => date('Y-m-d'),
-                'action' => 'insert',
-                'username' => Auth::user()->name,
-                'status' => 1
-            );
-            
-            if (!DB::connection('mysql2')->table('transactions')->insertGetId($data4)) {
-                throw new Exception("Failed to insert debit transaction");
+            // Update delivery note status
+            $delivery_note->status = 1;
+            if (!$delivery_note->save()) {
+                throw new Exception("Failed to update delivery note");
             }
 
-            // Transaction entry 2 (Credit) 
-            $data5 = array(
-                'master_id' => $delivery_note->id,  // delivery note id as master
-                'acc_id' => 1101,
-                'acc_code' => '1-2-1',
-                'cost_center' => $delivery_note->gd_no,
-                'particulars' => 'DN: ' . $delivery_note->gd_no . ' - SO: ' . $getSo->so_no,
-                'opening_bal' => 0,
-                'debit_credit' => 0, // Credit
-                'amount' => $totalTransactionAmount,
-                'voucher_no' => $delivery_note->gd_no,
-                'voucher_type' => 13,
-                'v_date' => $delivery_note->gd_date,
-                'date' => date('Y-m-d'),
-                'action' => 'insert',
-                'username' => Auth::user()->name,
-                'status' => 1
-            );
-            
-            if (!DB::connection('mysql2')->table('transactions')->insertGetId($data5)) {
-                throw new Exception("Failed to insert credit transaction");
+            // Update sales order
+            $getSo->dn_approve = 1;
+            if (!$getSo->save()) {
+                throw new Exception("Failed to update sales order");
             }
+
+            // Commit transaction if everything is successful
+            DB::connection('mysql2')->commit();
+
+            return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') .
+                '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
+                ->with('success', 'Delivery note approved successfully. Total amount: ' . $totalTransactionAmount);
+
+        } catch (Exception $ex) {
+            // Rollback transaction on error
+            DB::connection('mysql2')->rollBack();
+
+            // Log the error for debugging
+            Log::error('Delivery Note Approval Failed: ' . $ex->getMessage());
+
+            // Return with error message
+            return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') .
+                '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
+                ->with('error', 'Failed to approve delivery note: ' . $ex->getMessage());
         }
-
-        // Update delivery note status
-        $delivery_note->status = 1;
-        if (!$delivery_note->save()) {
-            throw new Exception("Failed to update delivery note");
-        }
-
-        // Update sales order
-        $getSo->dn_approve = 1;
-        if (!$getSo->save()) {
-            throw new Exception("Failed to update sales order");
-        }
-
-        // Commit transaction if everything is successful
-        DB::connection('mysql2')->commit();
-
-        return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') . 
-            '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
-            ->with('success', 'Delivery note approved successfully. Total amount: ' . $totalTransactionAmount);
-
-    } catch (Exception $ex) {
-        // Rollback transaction on error
-        DB::connection('mysql2')->rollBack();
-        
-        // Log the error for debugging
-        Log::error('Delivery Note Approval Failed: ' . $ex->getMessage());
-        
-        // Return with error message
-        return Redirect::to('sales/viewDeliveryNoteList?pageType=' . Input::get('pageType') . 
-            '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
-            ->with('error', 'Failed to approve delivery note: ' . $ex->getMessage());
     }
-}
     function addeDeliveryChallan(Request $request)
     {
         //    echo "<pre>";
@@ -1950,8 +1957,10 @@ public function approveDeliveryNote(Request $request)
             $delivery_note->so_no = $request->so_no;
             $delivery_note->so_date = $request->so_date;
             $delivery_note->other_refrence = $request->other_refrence;
-            $delivery_note->order_no = $request->order_no ?? '';;
-            $delivery_note->order_date = $request->order_date;;
+            $delivery_note->order_no = $request->order_no ?? '';
+            ;
+            $delivery_note->order_date = $request->order_date;
+            ;
             $delivery_note->despacth_document_no = $request->despacth_document_no;
             $delivery_note->despacth_document_date = $request->despacth_document_date;
             $delivery_note->despacth_through = $request->despacth_through ?? '';
@@ -2025,7 +2034,7 @@ public function approveDeliveryNote(Request $request)
                 $delivery_note_data->username = Auth::user()->name;
                 $delivery_note_data->save();
                 $master_data_id = $delivery_note_data->id;
-                $type =  CommonHelper::get_item_type($request->input('item_id' . $i));
+                $type = CommonHelper::get_item_type($request->input('item_id' . $i));
 
 
 
@@ -2129,7 +2138,7 @@ public function approveDeliveryNote(Request $request)
 
     function dn_insert($id, $gd_no)
     {
-        $data =   DB::Connection('mysql2')->select(
+        $data = DB::Connection('mysql2')->select(
             'select sum(a.amount) as amount, a.voucher_no,a.voucher_date,d.acc_id,a.description from stock as a
                 inner join
                 subitem as c
@@ -2159,7 +2168,8 @@ public function approveDeliveryNote(Request $request)
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
             $transaction->amount = $row->amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 7;
             $transaction->save();
@@ -2178,13 +2188,14 @@ public function approveDeliveryNote(Request $request)
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
             $transaction->amount = $total_amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 7;
             $transaction->save();
         endif;
 
-        $data =  DB::Connection('mysql2')->table('delivery_note as a')
+        $data = DB::Connection('mysql2')->table('delivery_note as a')
             ->join('delivery_note_data as b', 'a.id', '=', 'b.master_id')
             ->join('subitem as c', 'c.id', '=', 'b.item_id')
             ->join('category as d', 'd.id', '=', 'c.main_ic_id')
@@ -2207,7 +2218,8 @@ public function approveDeliveryNote(Request $request)
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
             $transaction->amount = $row->amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 7;
             $transaction->save();
@@ -2226,7 +2238,8 @@ public function approveDeliveryNote(Request $request)
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
             $transaction->amount = $total_amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 7;
             $transaction->save();
@@ -2284,8 +2297,10 @@ public function approveDeliveryNote(Request $request)
             $sales_tax_invoice->despacth_document_no = $request->despacth_document_no;
             $sales_tax_invoice->despacth_document_date = $request->despacth_document_date;
             $sales_tax_invoice->despacth_through = $request->despacth_through;
-            $sales_tax_invoice->destination = $request->destination;;
-            $sales_tax_invoice->terms_of_delivery = $request->terms_of_delivery;;
+            $sales_tax_invoice->destination = $request->destination;
+            ;
+            $sales_tax_invoice->terms_of_delivery = $request->terms_of_delivery;
+            ;
             $sales_tax_invoice->due_date = $request->due_date ?? '';
             $sales_tax_invoice->status = 1;
             $sales_tax_invoice->username = Auth::user()->name;
@@ -2296,7 +2311,7 @@ public function approveDeliveryNote(Request $request)
             $sales_tax_invoice->description = $request->description;
 
             //    $sales_tax_data = SalesHelper::get_sales_tax_by_sales_order_id($request->sales_order_id);
-            $sales_tax_invoice->sales_tax =  CommonHelper::check_str_replace($request->sales_tax);
+            $sales_tax_invoice->sales_tax = CommonHelper::check_str_replace($request->sales_tax);
             $sales_tax_invoice->sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further);
             $sales_tax_invoice->acc_id = $request->acc_id;
             $sales_tax_invoice->currency = $request->curren;
@@ -2312,11 +2327,11 @@ public function approveDeliveryNote(Request $request)
                 $sales_tax_invoice_data = new SalesTaxInvoiceData();
                 $sales_tax_invoice_data = $sales_tax_invoice_data->SetConnection('mysql2');
                 $sales_tax_invoice_data->master_id = $id;
-                $sales_tax_invoice_data->groupby =  1;
+                $sales_tax_invoice_data->groupby = 1;
                 $sales_tax_invoice_data->gi_no = $gi_no;
                 $sales_tax_invoice_data->item_id = $request->sub_ic_des[$key];
                 $sales_tax_invoice_data->description = '';
-                $qty =  $request->actual_qty[$key];
+                $qty = $request->actual_qty[$key];
                 $rate = $request->rate[$key];
                 $amount = $request->amount[$key];
                 $sales_tax_invoice_data->qty = $qty;
@@ -2354,7 +2369,8 @@ public function approveDeliveryNote(Request $request)
                 $transaction->opening_bal = 0;
                 $transaction->debit_credit = 0;
                 $transaction->amount = $revenue->amount;
-                $transaction->username = Auth::user()->name;;
+                $transaction->username = Auth::user()->name;
+                ;
                 $transaction->status = 100;
                 $transaction->voucher_type = 6;
                 $transaction->save();
@@ -2404,7 +2420,8 @@ public function approveDeliveryNote(Request $request)
                 $transaction->opening_bal = 0;
                 $transaction->debit_credit = 0;
                 $transaction->amount = $sales_tax_further;
-                $transaction->username = Auth::user()->name;;
+                $transaction->username = Auth::user()->name;
+                ;
                 $transaction->status = 100;
                 $transaction->voucher_type = 6;
                 $transaction->save();
@@ -2433,7 +2450,8 @@ public function approveDeliveryNote(Request $request)
                     $transaction->opening_bal = 0;
                     $transaction->debit_credit = 0;
                     $transaction->amount = Input::get('expense_amount')[$Counta];
-                    $transaction->username = Auth::user()->name;;
+                    $transaction->username = Auth::user()->name;
+                    ;
                     $transaction->status = 100;
                     $transaction->voucher_type = 6;
                     $transaction->save();
@@ -2442,7 +2460,8 @@ public function approveDeliveryNote(Request $request)
                 }
             }
 
-            $customer_acc_id = SalesHelper::get_customer_acc_id($byers_id);;
+            $customer_acc_id = SalesHelper::get_customer_acc_id($byers_id);
+            ;
 
             $transaction = new Transactions();
             $transaction = $transaction->SetConnection('mysql2');
@@ -2454,7 +2473,8 @@ public function approveDeliveryNote(Request $request)
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
             $transaction->amount = $total_amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 100;
             $transaction->voucher_type = 6;
             $transaction->save();
@@ -2517,8 +2537,10 @@ public function approveDeliveryNote(Request $request)
             $sales_tax_invoice->despacth_document_no = $request->despacth_document_no;
             $sales_tax_invoice->despacth_document_date = $request->despacth_document_date;
             $sales_tax_invoice->despacth_through = $request->despacth_through;
-            $sales_tax_invoice->destination = $request->destination;;
-            $sales_tax_invoice->terms_of_delivery = $request->terms_of_delivery;;
+            $sales_tax_invoice->destination = $request->destination;
+            ;
+            $sales_tax_invoice->terms_of_delivery = $request->terms_of_delivery;
+            ;
             $sales_tax_invoice->due_date = $request->due_date;
             $sales_tax_invoice->status = 1;
             $sales_tax_invoice->username = Auth::user()->name;
@@ -2529,7 +2551,7 @@ public function approveDeliveryNote(Request $request)
             $sales_tax_invoice->description = $request->description;
 
             //    $sales_tax_data = SalesHelper::get_sales_tax_by_sales_order_id($request->sales_order_id);
-            $sales_tax_invoice->sales_tax =  CommonHelper::check_str_replace($request->sales_tax);
+            $sales_tax_invoice->sales_tax = CommonHelper::check_str_replace($request->sales_tax);
             $sales_tax_invoice->sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further);
             $sales_tax_invoice->acc_id = $request->acc_id;
             $sales_tax_invoice->currency = $request->curren;
@@ -2549,11 +2571,11 @@ public function approveDeliveryNote(Request $request)
                 $sales_tax_invoice_data = new SalesTaxInvoiceData();
                 $sales_tax_invoice_data = $sales_tax_invoice_data->SetConnection('mysql2');
                 $sales_tax_invoice_data->master_id = $id;
-                $sales_tax_invoice_data->groupby =  1;
+                $sales_tax_invoice_data->groupby = 1;
                 $sales_tax_invoice_data->gi_no = $gi_no;
                 $sales_tax_invoice_data->item_id = $request->sub_ic_des[$key];
                 $sales_tax_invoice_data->description = $request->uom_id[$key] ?? '0';
-                $qty =  $request->actual_qty[$key];
+                $qty = $request->actual_qty[$key];
                 $rate = $request->rate[$key];
                 $amount = $request->amount[$key];
                 $sales_tax_invoice_data->qty = $qty;
@@ -2595,7 +2617,8 @@ public function approveDeliveryNote(Request $request)
                 $transaction->opening_bal = 0;
                 $transaction->debit_credit = 0;
                 $transaction->amount = $revenue->amount;
-                $transaction->username = Auth::user()->name;;
+                $transaction->username = Auth::user()->name;
+                ;
                 $transaction->status = 100;
                 $transaction->voucher_type = 6;
                 $transaction->save();
@@ -2645,7 +2668,8 @@ public function approveDeliveryNote(Request $request)
                 $transaction->opening_bal = 0;
                 $transaction->debit_credit = 0;
                 $transaction->amount = $sales_tax_further;
-                $transaction->username = Auth::user()->name;;
+                $transaction->username = Auth::user()->name;
+                ;
                 $transaction->status = 100;
                 $transaction->voucher_type = 6;
                 $transaction->save();
@@ -2674,7 +2698,8 @@ public function approveDeliveryNote(Request $request)
                     $transaction->opening_bal = 0;
                     $transaction->debit_credit = 0;
                     $transaction->amount = Input::get('expense_amount')[$Counta];
-                    $transaction->username = Auth::user()->name;;
+                    $transaction->username = Auth::user()->name;
+                    ;
                     $transaction->status = 100;
                     $transaction->voucher_type = 6;
                     $transaction->save();
@@ -2683,7 +2708,8 @@ public function approveDeliveryNote(Request $request)
                 }
             }
 
-            $customer_acc_id = SalesHelper::get_customer_acc_id($byers_id);;
+            $customer_acc_id = SalesHelper::get_customer_acc_id($byers_id);
+            ;
 
             $transaction = new Transactions();
             $transaction = $transaction->SetConnection('mysql2');
@@ -2695,7 +2721,8 @@ public function approveDeliveryNote(Request $request)
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
             $transaction->amount = $total_amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 100;
             $transaction->voucher_type = 6;
             $transaction->save();
@@ -2732,27 +2759,27 @@ public function approveDeliveryNote(Request $request)
     // function addeSalesTaxInvoice(Request $request)
     // {
     //     $SavePrintVal = Input::get('SavePrintVal');
-        
-      
-        
+
+
+
     //     $update_id = explode(',', $request->input('dn_ids'));
-        
-        
+
+
     //     $count = $request->count;
     //     DB::Connection('mysql2')->beginTransaction();
     //     try {
     //         // dd($request->all());
-            
+
     //         // $delivery_note= new DeliveryNote();
     //         //  $delivery_note=$delivery_note->SetConnection('mysql2');
     //         //  $delivery_note=$delivery_note->find($request->delivery_note_id);
     //         //   $delivery_note->sales_tax_invoice=1;
     //         //   $delivery_note->save();
-            
-            
+
+
     //         //  echo $request->model_terms_of_payment ;// SalesHelper::get_sales_tax_by_sales_order_id($request->sales_order_id);
     //         //  exit();
-            
+
     //         $customer = Customer::find($request->buyers_id);
     //         // Add validation for customer and account
     //         if (!$customer || (!$customer->acc_id && $customer->acc_id != 0)) {
@@ -2760,7 +2787,7 @@ public function approveDeliveryNote(Request $request)
     //             return back()->with('error', 'Customer account not found or not configured properly');
     //         }
     //         // dd( $customer);
-            
+
     //         $sales_tax_invoice = new SalesTaxInvoice();
     //         $sales_tax_invoice = $sales_tax_invoice->SetConnection('mysql2');
 
@@ -3075,7 +3102,7 @@ public function approveDeliveryNote(Request $request)
     //         $transaction->status = 100;
     //         $transaction->voucher_type = 6;
     //         $transaction->save();
-            
+
     //         //Sales Revenue
 
     //         $transaction = new Transactions();
@@ -3225,309 +3252,310 @@ public function approveDeliveryNote(Request $request)
 
 
 
-   function addeSalesTaxInvoice(Request $request)
-{
-    $SavePrintVal = Input::get('SavePrintVal');
-    
-    try {
-        // Begin Transaction
-        DB::connection('mysql2')->beginTransaction();
-        
-        // Validate Customer
-        $customer = Customer::on('mysql2')->find($request->buyers_id);
-        if (!$customer || (!$customer->acc_id && $customer->acc_id != 0)) {
-            DB::connection('mysql2')->rollBack();
-            return back()->with('error', 'Customer account not found or not configured properly')->withInput();
-        }
-        
-        // Parse Delivery Note IDs
-        $update_id = !empty($request->input('dn_ids')) ? explode(',', $request->input('dn_ids')) : [];
-        if (empty($update_id)) {
-            DB::connection('mysql2')->rollBack();
-            return back()->with('error', 'No delivery notes selected')->withInput();
-        }
-        
-        // Generate Invoice Number
-        $gi_no = SalesHelper::get_unique_no_sales_tax_invoice(date('y'), date('m'));
+    function addeSalesTaxInvoice(Request $request)
+    {
+        $SavePrintVal = Input::get('SavePrintVal');
 
-       
-        
-        // Create Main Invoice
-        $sales_tax_invoice = new SalesTaxInvoice();
-        $sales_tax_invoice->setConnection('mysql2');
-        $sales_tax_invoice->gi_no = $gi_no;
-        $sales_tax_invoice->gi_date = $request->gi_date;
-        $sales_tax_invoice->gd_no = $request->despacth_document_no ?? '';
-        $sales_tax_invoice->gd_date = $request->despacth_document_date ?? null;
-        $sales_tax_invoice->so_no = $request->so_no;
-        $sales_tax_invoice->so_date = $request->so_date;
-        $sales_tax_invoice->so_id = $request->sales_order_id;
-        $sales_tax_invoice->model_terms_of_payment = $request->terms_of_delivery ?? 0;
-        $sales_tax_invoice->order_date = $request->order_date ?? null;
-        $sales_tax_invoice->other_refrence = $request->other_refrence ?? null;
-        $sales_tax_invoice->despacth_document_no = $request->despacth_document_no ?? null;
-        $sales_tax_invoice->despacth_document_date = $request->despacth_document_date ?? null;
-        $sales_tax_invoice->despacth_through = $request->despacth_through ?? '';
-        $sales_tax_invoice->destination = $request->destination ?? '';
-        $sales_tax_invoice->terms_of_delivery = $request->terms_of_delivery ?? '';
-        $sales_tax_invoice->due_date = $request->due_date ?? null;
-        $sales_tax_invoice->status = 1;
-        $sales_tax_invoice->username = Auth::user()->name ?? 'system';
-        $sales_tax_invoice->amount_in_words = $request->amount_in_words ?? null;
-        $sales_tax_invoice->order_no = $request->order_no ?? '';
-        $sales_tax_invoice->date = date('Y-m-d');
-        $sales_tax_invoice->buyers_id = $request->buyers_id;
-        $sales_tax_invoice->description = $request->description ?? null;
-        $sales_tax_invoice->wh_tax = $request->pst_amount ?? 0;
-        $sales_tax_invoice->adv_tax = $request->adv_tax_amount ?? 0;
-        $sales_tax_invoice->total = $request->total_amount_after_sale_tax ?? 0;
-        $sales_tax_invoice->sales_tax = CommonHelper::check_str_replace($request->sales_tax ?? '0');
-        $sales_tax_invoice->sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further ?? '0');
-        $sales_tax_invoice->acc_id = $customer->acc_id ?? 0;
-        $sales_tax_invoice->save();
-        
-        $id = $sales_tax_invoice->id;
-        $count = $request->count ?? 0;
-        
-        // Create Invoice Items (Batch Insert for Performance)
-        $itemsData = [];
-        $total_amount = 0;
-        
-        for ($i = 1; $i <= $count; $i++) {
-            $amount = (float)CommonHelper::check_str_replace($request->input('net_amount' . $i, 0));
-            $tax_amount = (float)CommonHelper::check_str_replace($request->input('tax_amount' . $i, 0));
-            
-            $itemsData[] = [
-                'master_id' => $id,
-                'so_id' => $request->sales_order_id,
-                'dn_data_ids' => $request->input('dn_ids'),
-                'so_data_id' => $request->input('so_data_id' . $i),
-                'groupby' => $request->input('groupby' . $i, ''),
-                'description' => $request->description ?? '',
-                'gi_no' => $gi_no,
-                'so_no' => $request->so_no,
-                'gd_no' => $request->despacth_document_no ?? '',
-                'item_id' => $request->input('item_id' . $i),
-                'ordered_qty' => (float)CommonHelper::check_str_replace($request->input('ordered_qty' . $i, 0)),
-                'dn_qty' => (float)CommonHelper::check_str_replace($request->input('dn_qty' . $i, 0)),
-                'qty' => (float)CommonHelper::check_str_replace($request->input('qty' . $i, 0)),
-                'rate' => (float)CommonHelper::check_str_replace($request->input('rate' . $i, 0)),
-                'tax' => (float)$request->input('tax' . $i, 0),
-                'tax_amount' => $tax_amount,
-                'amount' => $amount,
-                'warehouse_id' => $request->input('warehouse_id' . $i, 0),
-                'bundles_id' => $request->input('bundles_id' . $i, 0),
-                'status' => 1,
-                'date' => date('Y-m-d'),
-                'username' => Auth::user()->name ?? 'system',
-                // 'created_at' => now(),
-                // 'updated_at' => now()
-            ];
-            
-            $total_amount += $amount;
-        }
-        
-        if (!empty($itemsData)) {
-            DB::connection('mysql2')->table('sales_tax_invoice_data')->insert($itemsData);
-        }
-        
-       
-        $accounts = $this->getAccountIds();
+        try {
+            // Begin Transaction
+            DB::connection('mysql2')->beginTransaction();
 
-                    $customer_acc_id = SalesHelper::get_customer_acc_id($request->buyers_id);;
-        
-        // Customer Debit Entry
-        DB::connection('mysql2')->table('transactions')->insert([
-            'voucher_no' => $gi_no,
-            'v_date' => $request->gi_date,
-            'acc_id' =>  $customer->acc_id,
-            'acc_code' => FinanceHelper::getAccountCodeByAccId($customer_acc_id),
-            'particulars' => $request->description ?? 'Sales Tax Invoice ' . $gi_no,
-            'opening_bal' => 0,
-            'debit_credit' => 1,
-            'amount' => ($request->total_amount_after_sale_tax),
-            'username' => Auth::user()->name ?? 'system',
-            'status' => 100,
-            'voucher_type' => 6,
-            // 'created_at' => now(),
-            // 'updated_at' => now()
-        ]);
-        
-        // Advance Tax Entry (from SO)
-        if (!empty($request->pst_amount) && $request->pst_amount > 0) {
-            DB::connection('mysql2')->table('transactions')->insert([
-                'voucher_no' => $gi_no,
-                'v_date' => $request->gi_date,
-                'acc_id' => $accounts['adv_tax_payable'],
-                'acc_code' => $accounts['adv_tax_payable_code'],
-                'particulars' => $request->description ?? 'Advance Tax (SO) - ' . $gi_no,
-                'opening_bal' => 0,
-                'debit_credit' => 0,
-                'amount' => $request->pst_amount,
-                'username' => Auth::user()->name ?? 'system',
-                'status' => 100,
-                'voucher_type' => 6,
-            ]);
-        }
-        
-        // Sales Revenue Entry
-        DB::connection('mysql2')->table('transactions')->insert([
-            'voucher_no' => $gi_no,
-            'v_date' => $request->gi_date,
-            'acc_id' => $accounts['sales_revenue'],
-            'acc_code' => $accounts['sales_revenue_code'],
-            'particulars' => $request->description ?? 'Sales Revenue - ' . $gi_no,
-            'opening_bal' => 0,
-            'debit_credit' => 0,
-            'amount' => ($request->total_amount_after_sale_tax - $request->pst_amount - $request->adv_tax_amount - $request->total_sales_tax),
-            'username' => Auth::user()->name ?? 'system',
-            'status' => 100,
-            'voucher_type' => 6,
-            // 'created_at' => now(),
-            // 'updated_at' => now()
-        ]);
+            // Validate Customer
+            $customer = Customer::on('mysql2')->find($request->buyers_id);
+            if (!$customer || (!$customer->acc_id && $customer->acc_id != 0)) {
+                DB::connection('mysql2')->rollBack();
+                return back()->with('error', 'Customer account not found or not configured properly')->withInput();
+            }
 
-        // Advance Tax Payable Entry
-        if (!empty($request->adv_tax_amount) && $request->adv_tax_amount > 0) {
-            DB::connection('mysql2')->table('transactions')->insert([
-                'voucher_no' => $gi_no,
-                'v_date' => $request->gi_date,
-                'acc_id' => $accounts['adv_tax_payable'],
-                'acc_code' => $accounts['adv_tax_payable_code'],
-                'particulars' => $request->description ?? 'Advance Tax Payable - ' . $gi_no,
-                'opening_bal' => 0,
-                'debit_credit' => 0,
-                'amount' => $request->adv_tax_amount,
-                'username' => Auth::user()->name ?? 'system',
-                'status' => 100,
-                'voucher_type' => 6,
-            ]);
-        }
-        
-        // Sales Tax Payable Entry
-        if (!empty($request->total_sales_tax) && $request->total_sales_tax > 0) {
-            DB::connection('mysql2')->table('transactions')->insert([
-                'voucher_no' => $gi_no,
-                'v_date' => $request->gi_date,
-                'acc_id' => $accounts['Output_GST_Payable'],
-                'acc_code' => $accounts['Output_GST_Payable_code'],
-                'particulars' => $request->description ?? 'Sales Tax Payable - ' . $gi_no,
-                'opening_bal' => 0,
-                'debit_credit' => 0,
-                'amount' => $request->total_sales_tax,
-                'username' => Auth::user()->name ?? 'system',
-                'status' => 100,
-                'voucher_type' => 6,
-                // 'created_at' => now(),
-                // 'updated_at' => now()
-            ]);
-        }
-    
-        
-        // Update Delivery Notes
-        DB::connection('mysql2')->table('delivery_note')
-            ->whereIn('id', $update_id)
-            ->update([
-                'sales_tax_invoice_id' => $id,
-                'sales_tax_invoice' => 1,
-                // 'updated_at' => now()
-            ]);
-        
-        // Process Receipts (Fixed SQL Injection)
-        if (!empty($request->sales_order_id)) {
-            $getPaidRvsList = DB::connection('mysql2')
-                ->table('new_rvs as a')
-                ->join('new_rv_data as b', 'b.rv_no', '=', 'a.rv_no')
-                ->where('a.ref_bill_no', '')
-                ->where('a.so_id', $request->sales_order_id)
-                ->where('b.debit_credit', 0)
-                ->select('a.id', 'a.rv_no', 'a.rv_date', 'a.buyer_id', DB::raw('SUM(b.amount) as totalAmount'))
-                ->groupBy('a.id', 'a.rv_no', 'a.rv_date', 'a.buyer_id')
-                ->get();
-            
-            foreach ($getPaidRvsList as $row) {
-                $bridgeId = DB::connection('mysql2')->table('brige_table_sales_receipt')->insertGetId([
-                    'si_id' => $id,
+            // Parse Delivery Note IDs
+            $update_id = !empty($request->input('dn_ids')) ? explode(',', $request->input('dn_ids')) : [];
+            if (empty($update_id)) {
+                DB::connection('mysql2')->rollBack();
+                return back()->with('error', 'No delivery notes selected')->withInput();
+            }
+
+            // Generate Invoice Number
+            $gi_no = SalesHelper::get_unique_no_sales_tax_invoice(date('y'), date('m'));
+
+
+
+            // Create Main Invoice
+            $sales_tax_invoice = new SalesTaxInvoice();
+            $sales_tax_invoice->setConnection('mysql2');
+            $sales_tax_invoice->gi_no = $gi_no;
+            $sales_tax_invoice->gi_date = $request->gi_date;
+            $sales_tax_invoice->gd_no = $request->despacth_document_no ?? '';
+            $sales_tax_invoice->gd_date = $request->despacth_document_date ?? null;
+            $sales_tax_invoice->so_no = $request->so_no;
+            $sales_tax_invoice->so_date = $request->so_date;
+            $sales_tax_invoice->so_id = $request->sales_order_id;
+            $sales_tax_invoice->model_terms_of_payment = $request->terms_of_delivery ?? 0;
+            $sales_tax_invoice->order_date = $request->order_date ?? null;
+            $sales_tax_invoice->other_refrence = $request->other_refrence ?? null;
+            $sales_tax_invoice->despacth_document_no = $request->despacth_document_no ?? null;
+            $sales_tax_invoice->despacth_document_date = $request->despacth_document_date ?? null;
+            $sales_tax_invoice->despacth_through = $request->despacth_through ?? '';
+            $sales_tax_invoice->destination = $request->destination ?? '';
+            $sales_tax_invoice->terms_of_delivery = $request->terms_of_delivery ?? '';
+            $sales_tax_invoice->due_date = $request->due_date ?? null;
+            $sales_tax_invoice->status = 1;
+            $sales_tax_invoice->username = Auth::user()->name ?? 'system';
+            $sales_tax_invoice->amount_in_words = $request->amount_in_words ?? null;
+            $sales_tax_invoice->order_no = $request->order_no ?? '';
+            $sales_tax_invoice->date = date('Y-m-d');
+            $sales_tax_invoice->buyers_id = $request->buyers_id;
+            $sales_tax_invoice->description = $request->description ?? null;
+            $sales_tax_invoice->wh_tax = $request->pst_amount ?? 0;
+            $sales_tax_invoice->adv_tax = $request->adv_tax_amount ?? 0;
+            $sales_tax_invoice->total = $request->total_amount_after_sale_tax ?? 0;
+            $sales_tax_invoice->sales_tax = CommonHelper::check_str_replace($request->sales_tax ?? '0');
+            $sales_tax_invoice->sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further ?? '0');
+            $sales_tax_invoice->acc_id = $customer->acc_id ?? 0;
+            $sales_tax_invoice->save();
+
+            $id = $sales_tax_invoice->id;
+            $count = $request->count ?? 0;
+
+            // Create Invoice Items (Batch Insert for Performance)
+            $itemsData = [];
+            $total_amount = 0;
+
+            for ($i = 1; $i <= $count; $i++) {
+                $amount = (float) CommonHelper::check_str_replace($request->input('net_amount' . $i, 0));
+                $tax_amount = (float) CommonHelper::check_str_replace($request->input('tax_amount' . $i, 0));
+
+                $itemsData[] = [
+                    'master_id' => $id,
                     'so_id' => $request->sales_order_id,
-                    'pos_id' => 0,
-                    'rv_id' => $row->id,
-                    'rv_no' => $row->rv_no,
-                    'received_amount' => $row->totalAmount,
-                    'tax_percent' => 0,
-                    'tax_amount' => 0,
-                    'discount_amount' => 0,
-                    'net_amount' => $row->totalAmount,
+                    'dn_data_ids' => $request->input('dn_ids'),
+                    'so_data_id' => $request->input('so_data_id' . $i),
+                    'groupby' => $request->input('groupby' . $i, ''),
+                    'description' => $request->description ?? '',
+                    'gi_no' => $gi_no,
+                    'so_no' => $request->so_no,
+                    'gd_no' => $request->despacth_document_no ?? '',
+                    'item_id' => $request->input('item_id' . $i),
+                    'ordered_qty' => (float) CommonHelper::check_str_replace($request->input('ordered_qty' . $i, 0)),
+                    'dn_qty' => (float) CommonHelper::check_str_replace($request->input('dn_qty' . $i, 0)),
+                    'qty' => (float) CommonHelper::check_str_replace($request->input('qty' . $i, 0)),
+                    'rate' => (float) CommonHelper::check_str_replace($request->input('rate' . $i, 0)),
+                    'tax' => (float) $request->input('tax' . $i, 0),
+                    'tax_amount' => $tax_amount,
+                    'amount' => $amount,
+                    'warehouse_id' => $request->input('warehouse_id' . $i, 0),
+                    'bundles_id' => $request->input('bundles_id' . $i, 0),
                     'status' => 1,
-                    'type' => 0,
+                    'date' => date('Y-m-d'),
+                    'username' => Auth::user()->name ?? 'system',
                     // 'created_at' => now(),
                     // 'updated_at' => now()
+                ];
+
+                $total_amount += $amount;
+            }
+
+            if (!empty($itemsData)) {
+                DB::connection('mysql2')->table('sales_tax_invoice_data')->insert($itemsData);
+            }
+
+
+            $accounts = $this->getAccountIds();
+
+            $customer_acc_id = SalesHelper::get_customer_acc_id($request->buyers_id);
+            ;
+
+            // Customer Debit Entry
+            DB::connection('mysql2')->table('transactions')->insert([
+                'voucher_no' => $gi_no,
+                'v_date' => $request->gi_date,
+                'acc_id' => $customer->acc_id,
+                'acc_code' => FinanceHelper::getAccountCodeByAccId($customer_acc_id),
+                'particulars' => $request->description ?? 'Sales Tax Invoice ' . $gi_no,
+                'opening_bal' => 0,
+                'debit_credit' => 1,
+                'amount' => ($request->total_amount_after_sale_tax),
+                'username' => Auth::user()->name ?? 'system',
+                'status' => 100,
+                'voucher_type' => 6,
+                // 'created_at' => now(),
+                // 'updated_at' => now()
+            ]);
+
+            // Advance Tax Entry (from SO)
+            if (!empty($request->pst_amount) && $request->pst_amount > 0) {
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => $gi_no,
+                    'v_date' => $request->gi_date,
+                    'acc_id' => $accounts['adv_tax_payable'],
+                    'acc_code' => $accounts['adv_tax_payable_code'],
+                    'particulars' => $request->description ?? 'Advance Tax (SO) - ' . $gi_no,
+                    'opening_bal' => 0,
+                    'debit_credit' => 0,
+                    'amount' => $request->pst_amount,
+                    'username' => Auth::user()->name ?? 'system',
+                    'status' => 100,
+                    'voucher_type' => 6,
                 ]);
-                
-                DB::connection('mysql2')->table('new_rvs')
-                    ->where('id', $row->id)
-                    ->update(['ref_bill_no' => $gi_no, 'updated_at' => now()]);
-                
-                DB::connection('mysql2')->table('received_paymet')->insert([
-                    'sales_tax_invoice_id' => $id,
-                    'receipt_id' => $row->id,
-                    'receipt_no' => $row->rv_no,
-                    'received_amount' => $row->totalAmount,
-                    'slip_no' => '-',
+            }
+
+            // Sales Revenue Entry
+            DB::connection('mysql2')->table('transactions')->insert([
+                'voucher_no' => $gi_no,
+                'v_date' => $request->gi_date,
+                'acc_id' => $accounts['sales_revenue'],
+                'acc_code' => $accounts['sales_revenue_code'],
+                'particulars' => $request->description ?? 'Sales Revenue - ' . $gi_no,
+                'opening_bal' => 0,
+                'debit_credit' => 0,
+                'amount' => ($request->total_amount_after_sale_tax - $request->pst_amount - $request->adv_tax_amount - $request->total_sales_tax),
+                'username' => Auth::user()->name ?? 'system',
+                'status' => 100,
+                'voucher_type' => 6,
+                // 'created_at' => now(),
+                // 'updated_at' => now()
+            ]);
+
+            // Advance Tax Payable Entry
+            if (!empty($request->adv_tax_amount) && $request->adv_tax_amount > 0) {
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => $gi_no,
+                    'v_date' => $request->gi_date,
+                    'acc_id' => $accounts['adv_tax_payable'],
+                    'acc_code' => $accounts['adv_tax_payable_code'],
+                    'particulars' => $request->description ?? 'Advance Tax Payable - ' . $gi_no,
+                    'opening_bal' => 0,
+                    'debit_credit' => 0,
+                    'amount' => $request->adv_tax_amount,
+                    'username' => Auth::user()->name ?? 'system',
+                    'status' => 100,
+                    'voucher_type' => 6,
+                ]);
+            }
+
+            // Sales Tax Payable Entry
+            if (!empty($request->total_sales_tax) && $request->total_sales_tax > 0) {
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => $gi_no,
+                    'v_date' => $request->gi_date,
+                    'acc_id' => $accounts['Output_GST_Payable'],
+                    'acc_code' => $accounts['Output_GST_Payable_code'],
+                    'particulars' => $request->description ?? 'Sales Tax Payable - ' . $gi_no,
+                    'opening_bal' => 0,
+                    'debit_credit' => 0,
+                    'amount' => $request->total_sales_tax,
+                    'username' => Auth::user()->name ?? 'system',
+                    'status' => 100,
+                    'voucher_type' => 6,
                     // 'created_at' => now(),
                     // 'updated_at' => now()
                 ]);
             }
-        }
-        
-        // Log Activity
-        SalesHelper::sales_activity($gi_no, $request->gi_date, $total_amount, 3, 'Insert');
-        
-        // Commit Transaction
-        DB::connection('mysql2')->commit();
-        
-       
-        
 
-     if ($SavePrintVal == 1) {
-            $Url = url('sales/PrintSalesTaxInvoice?id=' . $id . 'pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
-            //echo "<script type='text/javascript'>window.open('".$Url."', '_blank')</script>";
-            return Redirect::to($Url);
-            return Redirect::to('sales/CreateSalesTaxInvoiceList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
-        } else {
-            return Redirect::to('sales/CreateSalesTaxInvoiceList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
-        }
-    
 
-    } catch (\Exception $ex) {
-        // Rollback on Error
-        DB::connection('mysql2')->rollBack();
-        
-        // Log Error
-        \Log::error('Sales Tax Invoice Error: ' . $ex->getMessage() . ' at line ' . $ex->getLine());
-        
-        // Return Error Message
-        return back()->with('error', 'Error creating invoice: ' . $ex->getMessage())->withInput();
+            // Update Delivery Notes
+            DB::connection('mysql2')->table('delivery_note')
+                ->whereIn('id', $update_id)
+                ->update([
+                    'sales_tax_invoice_id' => $id,
+                    'sales_tax_invoice' => 1,
+                    // 'updated_at' => now()
+                ]);
+
+            // Process Receipts (Fixed SQL Injection)
+            if (!empty($request->sales_order_id)) {
+                $getPaidRvsList = DB::connection('mysql2')
+                    ->table('new_rvs as a')
+                    ->join('new_rv_data as b', 'b.rv_no', '=', 'a.rv_no')
+                    ->where('a.ref_bill_no', '')
+                    ->where('a.so_id', $request->sales_order_id)
+                    ->where('b.debit_credit', 0)
+                    ->select('a.id', 'a.rv_no', 'a.rv_date', 'a.buyer_id', DB::raw('SUM(b.amount) as totalAmount'))
+                    ->groupBy('a.id', 'a.rv_no', 'a.rv_date', 'a.buyer_id')
+                    ->get();
+
+                foreach ($getPaidRvsList as $row) {
+                    $bridgeId = DB::connection('mysql2')->table('brige_table_sales_receipt')->insertGetId([
+                        'si_id' => $id,
+                        'so_id' => $request->sales_order_id,
+                        'pos_id' => 0,
+                        'rv_id' => $row->id,
+                        'rv_no' => $row->rv_no,
+                        'received_amount' => $row->totalAmount,
+                        'tax_percent' => 0,
+                        'tax_amount' => 0,
+                        'discount_amount' => 0,
+                        'net_amount' => $row->totalAmount,
+                        'status' => 1,
+                        'type' => 0,
+                        // 'created_at' => now(),
+                        // 'updated_at' => now()
+                    ]);
+
+                    DB::connection('mysql2')->table('new_rvs')
+                        ->where('id', $row->id)
+                        ->update(['ref_bill_no' => $gi_no, 'updated_at' => now()]);
+
+                    DB::connection('mysql2')->table('received_paymet')->insert([
+                        'sales_tax_invoice_id' => $id,
+                        'receipt_id' => $row->id,
+                        'receipt_no' => $row->rv_no,
+                        'received_amount' => $row->totalAmount,
+                        'slip_no' => '-',
+                        // 'created_at' => now(),
+                        // 'updated_at' => now()
+                    ]);
+                }
+            }
+
+            // Log Activity
+            SalesHelper::sales_activity($gi_no, $request->gi_date, $total_amount, 3, 'Insert');
+
+            // Commit Transaction
+            DB::connection('mysql2')->commit();
+
+
+
+
+            if ($SavePrintVal == 1) {
+                $Url = url('sales/PrintSalesTaxInvoice?id=' . $id . 'pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
+                //echo "<script type='text/javascript'>window.open('".$Url."', '_blank')</script>";
+                return Redirect::to($Url);
+                return Redirect::to('sales/CreateSalesTaxInvoiceList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
+            } else {
+                return Redirect::to('sales/CreateSalesTaxInvoiceList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
+            }
+
+
+        } catch (\Exception $ex) {
+            // Rollback on Error
+            DB::connection('mysql2')->rollBack();
+
+            // Log Error
+            \Log::error('Sales Tax Invoice Error: ' . $ex->getMessage() . ' at line ' . $ex->getLine());
+
+            // Return Error Message
+            return back()->with('error', 'Error creating invoice: ' . $ex->getMessage())->withInput();
+        }
     }
-}
 
-/**
- * Helper function to get account IDs
- * Create this function in your controller or move to a helper class
- */
-private function getAccountIds()
-{
-    // You can store these in .env file or database settings
-    return [
-        'advance_tax_receivable' => '1777',
-        'advance_tax_receivable_code' => '1-57-2',
-        'sales_revenue' => '1045',
-        'sales_revenue_code' => '5-2',
-        'Output_GST_Payable' => '1778',
-        'Output_GST_Payable_code' => '2-371',
-        'adv_tax_payable' => '836',
-        'adv_tax_payable_code' => '2-6',
-    ];
-}
+    /**
+     * Helper function to get account IDs
+     * Create this function in your controller or move to a helper class
+     */
+    private function getAccountIds()
+    {
+        // You can store these in .env file or database settings
+        return [
+            'advance_tax_receivable' => '1777',
+            'advance_tax_receivable_code' => '1-57-2',
+            'sales_revenue' => '1045',
+            'sales_revenue_code' => '5-2',
+            'Output_GST_Payable' => '1778',
+            'Output_GST_Payable_code' => '2-371',
+            'adv_tax_payable' => '836',
+            'adv_tax_payable_code' => '2-6',
+        ];
+    }
     function updateSalesTaxInvoice(Request $request)
     {
         $sales_tax_invoice = new SalesTaxInvoice();
@@ -3538,7 +3566,7 @@ private function getAccountIds()
         $sales_tax_invoice->description = $request->description;
         $sales_tax_invoice->save();
 
-        
+
         return Redirect::to('sales/viewSalesTaxInvoiceList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
     }
 
@@ -3584,7 +3612,7 @@ private function getAccountIds()
         $type = "Sales Tax Invoice";
         SalesHelper::sales_activity($gi, date('Y-m-d'), 0, 3, 'Delete');
         \App\Helpers\CommonHelper::createNotification(
-            $type . " with " . $gi . " is deleted by " . auth()->user()->username, 
+            $type . " with " . $gi . " is deleted by " . auth()->user()->username,
             $type . ""
         );
         CommonHelper::reconnectMasterDatabase();
@@ -3614,7 +3642,7 @@ private function getAccountIds()
 
 
         if ($request->id != ""):
-            $count =  DB::table('delivery_note')->where('status', 1)->where('master_id', $request->id)->count();
+            $count = DB::table('delivery_note')->where('status', 1)->where('master_id', $request->id)->count();
 
 
             if ($count == 0):
@@ -3646,7 +3674,7 @@ private function getAccountIds()
 
         if ($request->id != ""):
             $MasterId = DB::table('delivery_note')->where('id', $request->id)->select('master_id')->first()->master_id;
-            $stid =  DB::table('sales_tax_invoice_data')->where('status', 1)
+            $stid = DB::table('sales_tax_invoice_data')->where('status', 1)
                 ->where('so_id', $MasterId)->groupBy('dn_data_ids')->get();
             $Array = "";
             foreach ($stid as $fil):
@@ -3679,15 +3707,15 @@ private function getAccountIds()
                 $Dn = DB::table('delivery_note')->where('id', $request->id)->select('gd_no', 'gd_date')->first();
                 SalesHelper::sales_activity($Dn->gd_no, $Dn->gd_date, '0', 2, 'Delete');
             }
-        //            die();
-        //
-        //            if ($count==0):
-        //
-        //            echo "yes";
-        //
-        //            else:
-        //                echo "0";
-        //            endif;
+            //            die();
+            //
+            //            if ($count==0):
+            //
+            //            echo "yes";
+            //
+            //            else:
+            //                echo "0";
+            //            endif;
 
         endif;
 
@@ -3698,7 +3726,7 @@ private function getAccountIds()
 
     function addCreditNote(Request $request)
     {
-        
+
 
         DB::Connection('mysql2')->beginTransaction();
         try {
@@ -3747,9 +3775,12 @@ private function getAccountIds()
                 endif;
                 $credit_note_data->so_data_id = $request->input('so_data_id' . $i);
 
-                $credit_note_data->voucher_no = $request->input('gi_no' . $i);;
-                $credit_note_data->voucher_date = $request->input('gi_date' . $i);;
-                $credit_note_data->item = $request->input('item_id' . $i);;
+                $credit_note_data->voucher_no = $request->input('gi_no' . $i);
+                ;
+                $credit_note_data->voucher_date = $request->input('gi_date' . $i);
+                ;
+                $credit_note_data->item = $request->input('item_id' . $i);
+                ;
                 $credit_note_data->qty = CommonHelper::check_str_replace($request->input('qty' . $i));
                 $credit_note_data->rate = CommonHelper::check_str_replace($request->input('rate' . $i));
 
@@ -3762,15 +3793,15 @@ private function getAccountIds()
                 $credit_note_data->discount_percent = CommonHelper::check_str_replace($request->input('discount_percent' . $i));
                 $credit_note_data->discount_amount = CommonHelper::check_str_replace($request->input('discount_amount' . $i));
                 $credit_note_data->actual_discount_percent = $request->input('actual_discount_percent' . $i);
-                $credit_note_data->actual_discount_amount = $request->input('actual_discount_amount' . $i); 
+                $credit_note_data->actual_discount_amount = $request->input('actual_discount_amount' . $i);
                 $credit_note_data->net_amount = CommonHelper::check_str_replace($request->input('net_amount' . $i));
                 $credit_note_data->batch_code = $request->input('batch_code' . $i);
 
                 $credit_note_data->date = date("Y-m-d");
                 $credit_note_data->type = $request->type;
                 $credit_note_data->status = 1;
-                $credit_note_data->warehouse_id= $request->input("warehouse" . $i);
-              
+                $credit_note_data->warehouse_id = $request->input("warehouse" . $i);
+
                 $credit_note_data->username = Auth::user()->name;
                 $credit_note_data->save();
                 $master_data_id = $credit_note_data->id;
@@ -3782,7 +3813,7 @@ private function getAccountIds()
                 $totalPurchasePriceAmount += ($subitem_data->purchase_price ?? 0) * $credit_note_data->qty;
 
                 $amount = CommonHelper::check_str_replace($request->input('net_amount' . $i));
-                $type =  CommonHelper::get_item_type($request->input('item_id' . $i));
+                $type = CommonHelper::get_item_type($request->input('item_id' . $i));
 
 
 
@@ -3795,9 +3826,9 @@ private function getAccountIds()
                             ->where('voucher_type', 5)
                             ->select('amount', 'qty')
                             ->first('amount');
-                        
+
                         $rate = 0;
-                        if($amount_data) {
+                        if ($amount_data) {
                             $rate = ($amount_data->amount) / $amount_data->qty;
                         }
                     endif;
@@ -3806,7 +3837,7 @@ private function getAccountIds()
                     if ($request->type == 2):
 
 
-                        $dn_data =   DB::Connection('mysql2')->table('delivery_note_data')->where('status', 1)->where('so_data_id', $request->input('so_data_id' . $i))->first();
+                        $dn_data = DB::Connection('mysql2')->table('delivery_note_data')->where('status', 1)->where('so_data_id', $request->input('so_data_id' . $i))->first();
 
 
 
@@ -3815,32 +3846,32 @@ private function getAccountIds()
 
                         if ($request->input('so_data_id' . $i) == 0):
 
-                            $dn_data =   DB::Connection('mysql2')->table('sales_tax_invoice_data')->where('status', 1)->where('id', $request->input('si_data_id' . $i))->first();
+                            $dn_data = DB::Connection('mysql2')->table('sales_tax_invoice_data')->where('status', 1)->where('id', $request->input('si_data_id' . $i))->first();
                             $voucher_no = $dn_data->gi_no;
                         endif;
 
-                     // dd($dn_data->so_data_id);
+                        // dd($dn_data->so_data_id);
 
                         $amount_data = DB::Connection('mysql2')->table('stock')->where('status', 1)
                             ->where('voucher_no', $voucher_no)
                             ->where('so_data_id', $dn_data->so_data_id)
                             // ->where('master_id', $dn_data->id)
                             ->where('voucher_type', 5)
-                            ->select('amount', 'qty','rate')
+                            ->select('amount', 'qty', 'rate')
                             ->first('amount');
 
 
-        
+
 
                         if (!$amount_data) {
 
                             dd("amouint is empty");
                         }
 
-                        
+
                         $rate = $amount_data->rate;
 
-                       
+
                     endif;
                     $stock = array(
                         'main_id' => $id,
@@ -3898,57 +3929,57 @@ private function getAccountIds()
             if ($request->type == 1):
                 // DB::rollBack();
                 // dd('in');
-                
+
                 $total_amount = $totalPurchasePriceAmount;
 
                 $sales_tax = DB::Connection('mysql2')->table('credit_note_data')->where('status', 1)->where('master_id', $id);
                 $sales_tax_amount = $sales_tax->sum('discount_amount');
 
 
-        
+
 
                 $sales_tax_further = CommonHelper::check_str_replace($request->sales_tax_further);
 
 
 
-                 $transaction = new Transactions();
-                    $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->master_id = $id;
-                    $transaction->voucher_no = $request->input('credit_not_no');
-                    $transaction->v_date = $request->input('credit_date');
-                    $transaction->acc_id = config('accounts.sales.cogs.id');
-                    $transaction->acc_code = config('accounts.sales.cogs.code');
-                    $transaction->cost_center = $request->input('credit_not_no');
-                    $transaction->particulars = 'Sales Return: ' . $request->input('credit_not_no') . ' - SO: ' . ($sale_order->so_no ?? '');
-                    $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 0; // Credit for COGS in return
-                    $transaction->amount = $total_amount;
-                    $transaction->username = Auth::user()->name;
-                    $transaction->status = 1;
-                    $transaction->voucher_type = 14;
-                    $transaction->date = date('Y-m-d');
-                    $transaction->action = 'insert';
-                    $transaction->save();
+                $transaction = new Transactions();
+                $transaction = $transaction->SetConnection('mysql2');
+                $transaction->master_id = $id;
+                $transaction->voucher_no = $request->input('credit_not_no');
+                $transaction->v_date = $request->input('credit_date');
+                $transaction->acc_id = config('accounts.sales.cogs.id');
+                $transaction->acc_code = config('accounts.sales.cogs.code');
+                $transaction->cost_center = $request->input('credit_not_no');
+                $transaction->particulars = 'Sales Return: ' . $request->input('credit_not_no') . ' - SO: ' . ($sale_order->so_no ?? '');
+                $transaction->opening_bal = 0;
+                $transaction->debit_credit = 0; // Credit for COGS in return
+                $transaction->amount = $total_amount;
+                $transaction->username = Auth::user()->name;
+                $transaction->status = 1;
+                $transaction->voucher_type = 14;
+                $transaction->date = date('Y-m-d');
+                $transaction->action = 'insert';
+                $transaction->save();
 
 
-                 $transaction = new Transactions();
-                    $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->master_id = $id;
-                    $transaction->voucher_no = $request->input('credit_not_no');
-                    $transaction->v_date = $request->input('credit_date');
-                    $transaction->acc_id = config('accounts.inventory.main.id');
-                    $transaction->acc_code = config('accounts.inventory.main.code');
-                    $transaction->cost_center = $request->input('credit_not_no');
-                    $transaction->particulars = 'Sales Return: ' . $request->input('credit_not_no') . ' - SO: ' . ($sale_order->so_no ?? '');
-                    $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 1; // Debit for Inventory in return
-                    $transaction->amount = $total_amount;
-                    $transaction->username = Auth::user()->name;
-                    $transaction->status = 1;
-                    $transaction->voucher_type = 14;
-                    $transaction->date = date('Y-m-d');
-                    $transaction->action = 'insert';
-                    $transaction->save();
+                $transaction = new Transactions();
+                $transaction = $transaction->SetConnection('mysql2');
+                $transaction->master_id = $id;
+                $transaction->voucher_no = $request->input('credit_not_no');
+                $transaction->v_date = $request->input('credit_date');
+                $transaction->acc_id = config('accounts.inventory.main.id');
+                $transaction->acc_code = config('accounts.inventory.main.code');
+                $transaction->cost_center = $request->input('credit_not_no');
+                $transaction->particulars = 'Sales Return: ' . $request->input('credit_not_no') . ' - SO: ' . ($sale_order->so_no ?? '');
+                $transaction->opening_bal = 0;
+                $transaction->debit_credit = 1; // Debit for Inventory in return
+                $transaction->amount = $total_amount;
+                $transaction->username = Auth::user()->name;
+                $transaction->status = 1;
+                $transaction->voucher_type = 14;
+                $transaction->date = date('Y-m-d');
+                $transaction->action = 'insert';
+                $transaction->save();
 
 
             endif;
@@ -3973,7 +4004,7 @@ private function getAccountIds()
                         DB::raw('SUM(a.discount_amount) as total_tax_amount'),
                         DB::raw('SUM(a.actual_discount_amount) as total_discount_amount'),
                         DB::raw('SUM(a.net_amount) as net_amount'),
-                        'd.revenue_acc_id as acc_id' 
+                        'd.revenue_acc_id as acc_id'
                     )
                     ->groupBy('d.id')
                     ->get();
@@ -3982,167 +4013,167 @@ private function getAccountIds()
                 $total_tax_return = 0;
                 $total_discount_amount = 0;
 
-                 
+
 
                 foreach ($item_data as $row) {
                     $total_return_gross += $row->total_gross_amount;
                     $total_tax_return += $row->total_tax_amount;
                     $total_discount_amount += $row->total_discount_amount;
 
-                 
-                        // $transaction = new Transactions();
-                        // $transaction = $transaction->SetConnection('mysql2');
-                        // $transaction->master_id = $id;
-                        // $transaction->voucher_no = $cr_no;
-                        // $transaction->v_date = $cr_date;
-                        // $transaction->acc_id = $customer_acc_id;
-                        // $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($customer_acc_id);
-                        // $transaction->particulars = 'Sales Return: ' . $cr_no . ' - SO: ' . ($sale_order->so_no ?? '');
-                        // $transaction->opening_bal = 0;
-                        // $transaction->debit_credit = 1; // Debit for Sales Return
-                        // $transaction->amount = $row->total_gross_amount;
-                        // $transaction->username = Auth::user()->name;
-                        // $transaction->status = 1;
-                        // $transaction->voucher_type = 15;
-                        // $transaction->save();
-                    
+
+                    // $transaction = new Transactions();
+                    // $transaction = $transaction->SetConnection('mysql2');
+                    // $transaction->master_id = $id;
+                    // $transaction->voucher_no = $cr_no;
+                    // $transaction->v_date = $cr_date;
+                    // $transaction->acc_id = $customer_acc_id;
+                    // $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($customer_acc_id);
+                    // $transaction->particulars = 'Sales Return: ' . $cr_no . ' - SO: ' . ($sale_order->so_no ?? '');
+                    // $transaction->opening_bal = 0;
+                    // $transaction->debit_credit = 1; // Debit for Sales Return
+                    // $transaction->amount = $row->total_gross_amount;
+                    // $transaction->username = Auth::user()->name;
+                    // $transaction->status = 1;
+                    // $transaction->voucher_type = 15;
+                    // $transaction->save();
+
                 }
 
-              
-
-        //sale return 
-                  $transaction = new Transactions();
-                    $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->master_id = $id;
-                    $transaction->voucher_no = $cr_no;
-                    $transaction->v_date = $cr_date;
-                    $transaction->acc_id = config('accounts.sales.output_adjustment.id');
-                    $transaction->acc_code = config('accounts.sales.output_adjustment.code');
-                    $transaction->particulars = 'Sales Return Output Adjustment: ' . $cr_no;
-                    $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 1; // Debit for Tax Adjustment
-                    $transaction->amount = $total_return_gross - $total_discount_amount;
-                    $transaction->username = Auth::user()->name;
-                    $transaction->status = 1;
-                    $transaction->voucher_type = 15;
-                    $transaction->save();
 
 
-
-         
-
-
-                       //GST Payable
-  
-                  $transaction = new Transactions();
-                    $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->master_id = $id;
-                    $transaction->voucher_no = $cr_no;
-                    $transaction->v_date = $cr_date;
-                    $transaction->acc_id = config('accounts.sales.gst_payable.id');
-                    $transaction->acc_code = config('accounts.sales.gst_payable.code');
-                    $transaction->particulars = 'Sales Return Output GST - Payable Adjustment: ' . $cr_no;
-                    $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 1; // Debit for Tax Adjustment
-                    $transaction->amount = $total_tax_return;
-                    $transaction->username = Auth::user()->name;
-                    $transaction->status = 1;
-                    $transaction->voucher_type = 15;
-                    $transaction->save();
+                //sale return 
+                $transaction = new Transactions();
+                $transaction = $transaction->SetConnection('mysql2');
+                $transaction->master_id = $id;
+                $transaction->voucher_no = $cr_no;
+                $transaction->v_date = $cr_date;
+                $transaction->acc_id = config('accounts.sales.output_adjustment.id');
+                $transaction->acc_code = config('accounts.sales.output_adjustment.code');
+                $transaction->particulars = 'Sales Return Output Adjustment: ' . $cr_no;
+                $transaction->opening_bal = 0;
+                $transaction->debit_credit = 1; // Debit for Tax Adjustment
+                $transaction->amount = $total_return_gross - $total_discount_amount;
+                $transaction->username = Auth::user()->name;
+                $transaction->status = 1;
+                $transaction->voucher_type = 15;
+                $transaction->save();
 
 
 
-                       //Accounts receivable 
-  
-                  $transaction = new Transactions();
-                    $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->master_id = $id;
-                    $transaction->voucher_no = $cr_no;
-                    $transaction->v_date = $cr_date;
-                    $transaction->acc_id = $customer_acc_id;
-                    $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($customer_acc_id);
-                    $transaction->particulars = 'Sales Return receivable- Payable Adjustment: ' . $cr_no;
-                    $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 0; // Credit for Accounts Receivable
-                    $transaction->amount = $total_return_gross - $total_discount_amount + $total_tax_return;
-                    $transaction->username = Auth::user()->name;
-                    $transaction->status = 1;
-                    $transaction->voucher_type = 15;
-                    $transaction->save();
+
+
+
+                //GST Payable
+
+                $transaction = new Transactions();
+                $transaction = $transaction->SetConnection('mysql2');
+                $transaction->master_id = $id;
+                $transaction->voucher_no = $cr_no;
+                $transaction->v_date = $cr_date;
+                $transaction->acc_id = config('accounts.sales.gst_payable.id');
+                $transaction->acc_code = config('accounts.sales.gst_payable.code');
+                $transaction->particulars = 'Sales Return Output GST - Payable Adjustment: ' . $cr_no;
+                $transaction->opening_bal = 0;
+                $transaction->debit_credit = 1; // Debit for Tax Adjustment
+                $transaction->amount = $total_tax_return;
+                $transaction->username = Auth::user()->name;
+                $transaction->status = 1;
+                $transaction->voucher_type = 15;
+                $transaction->save();
+
+
+
+                //Accounts receivable 
+
+                $transaction = new Transactions();
+                $transaction = $transaction->SetConnection('mysql2');
+                $transaction->master_id = $id;
+                $transaction->voucher_no = $cr_no;
+                $transaction->v_date = $cr_date;
+                $transaction->acc_id = $customer_acc_id;
+                $transaction->acc_code = FinanceHelper::getAccountCodeByAccId($customer_acc_id);
+                $transaction->particulars = 'Sales Return receivable- Payable Adjustment: ' . $cr_no;
+                $transaction->opening_bal = 0;
+                $transaction->debit_credit = 0; // Credit for Accounts Receivable
+                $transaction->amount = $total_return_gross - $total_discount_amount + $total_tax_return;
+                $transaction->username = Auth::user()->name;
+                $transaction->status = 1;
+                $transaction->voucher_type = 15;
+                $transaction->save();
 
 
 
 
                 //Advance Tax Receivable
-  
-                  $transaction = new Transactions();
-                    $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->master_id = $id;
-                    $transaction->voucher_no = $cr_no;
-                    $transaction->v_date = $cr_date;
-                    $transaction->acc_id = config('accounts.sales.advance_tax_receivable.id');
-                    $transaction->acc_code = config('accounts.sales.advance_tax_receivable.code');
-                    $transaction->particulars = 'Sales Return Advance Tax Receivable: ' . $cr_no;
-                    $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 0; // Credit for Accounts Receivable
-                  $transaction->amount = $request->pst ?? 0;
-                    $transaction->username = Auth::user()->name;
-                    $transaction->status = 1;
-                    $transaction->voucher_type = 15;
-                    $transaction->save();
+
+                $transaction = new Transactions();
+                $transaction = $transaction->SetConnection('mysql2');
+                $transaction->master_id = $id;
+                $transaction->voucher_no = $cr_no;
+                $transaction->v_date = $cr_date;
+                $transaction->acc_id = config('accounts.sales.advance_tax_receivable.id');
+                $transaction->acc_code = config('accounts.sales.advance_tax_receivable.code');
+                $transaction->particulars = 'Sales Return Advance Tax Receivable: ' . $cr_no;
+                $transaction->opening_bal = 0;
+                $transaction->debit_credit = 0; // Credit for Accounts Receivable
+                $transaction->amount = $request->pst ?? 0;
+                $transaction->username = Auth::user()->name;
+                $transaction->status = 1;
+                $transaction->voucher_type = 15;
+                $transaction->save();
 
 
 
-                    //Inventory
-
-  
-                  $transaction = new Transactions();
-                    $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->master_id = $id;
-                    $transaction->voucher_no = $cr_no;
-                    $transaction->v_date = $cr_date;
-                    $transaction->acc_id = config('accounts.inventory.main.id');
-                    $transaction->acc_code = config('accounts.inventory.main.code');
-                    $transaction->particulars = 'Sales Return Inventory: ' . $cr_no;
-                    $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 1; // Debit for Inventory
-                  $transaction->amount = $totalPurchasePriceAmount;
-                    $transaction->username = Auth::user()->name;
-                    $transaction->status = 1;
-                    $transaction->voucher_type = 15;
-                    $transaction->save();
+                //Inventory
 
 
-                     //Cost of Goods Sold (COGS)
-
-  
-                  $transaction = new Transactions();
-                    $transaction = $transaction->SetConnection('mysql2');
-                    $transaction->master_id = $id;
-                    $transaction->voucher_no = $cr_no;
-                    $transaction->v_date = $cr_date;
-                    $transaction->acc_id = 1053;
-                    $transaction->acc_code = '7-1';
-                    $transaction->particulars = 'Sales Return Cost of Goods Sold: ' . $cr_no;
-                    $transaction->opening_bal = 0;
-                    $transaction->debit_credit = 0; // Credit for COGS
-                  $transaction->amount = $totalPurchasePriceAmount;
-                    $transaction->username = Auth::user()->name;
-                    $transaction->status = 1;
-                    $transaction->voucher_type = 15;
-                    $transaction->save();
+                $transaction = new Transactions();
+                $transaction = $transaction->SetConnection('mysql2');
+                $transaction->master_id = $id;
+                $transaction->voucher_no = $cr_no;
+                $transaction->v_date = $cr_date;
+                $transaction->acc_id = config('accounts.inventory.main.id');
+                $transaction->acc_code = config('accounts.inventory.main.code');
+                $transaction->particulars = 'Sales Return Inventory: ' . $cr_no;
+                $transaction->opening_bal = 0;
+                $transaction->debit_credit = 1; // Debit for Inventory
+                $transaction->amount = $totalPurchasePriceAmount;
+                $transaction->username = Auth::user()->name;
+                $transaction->status = 1;
+                $transaction->voucher_type = 15;
+                $transaction->save();
 
 
+                //Cost of Goods Sold (COGS)
 
-                   
+
+                $transaction = new Transactions();
+                $transaction = $transaction->SetConnection('mysql2');
+                $transaction->master_id = $id;
+                $transaction->voucher_no = $cr_no;
+                $transaction->v_date = $cr_date;
+                $transaction->acc_id = 1053;
+                $transaction->acc_code = '7-1';
+                $transaction->particulars = 'Sales Return Cost of Goods Sold: ' . $cr_no;
+                $transaction->opening_bal = 0;
+                $transaction->debit_credit = 0; // Credit for COGS
+                $transaction->amount = $totalPurchasePriceAmount;
+                $transaction->username = Auth::user()->name;
+                $transaction->status = 1;
+                $transaction->voucher_type = 15;
+                $transaction->save();
 
 
 
 
 
 
-          
-             
+
+
+
+
+
+
             endif;
 
             // DB::rollBack();
@@ -4153,7 +4184,7 @@ private function getAccountIds()
 
             $type = "Sale Return";
             \App\Helpers\CommonHelper::createNotification(
-                $type . " with Sale Order of " . $sale_order->so_no . " is created by " . auth()->user()->name, 
+                $type . " with Sale Order of " . $sale_order->so_no . " is created by " . auth()->user()->name,
                 $type . ""
             );
 
@@ -4210,7 +4241,7 @@ private function getAccountIds()
             $transaction = $transaction->SetConnection('mysql2')
                 ->where('voucher_no', $cr_no)
                 ->delete();
-            $data =   DB::Connection('mysql2')->select(
+            $data = DB::Connection('mysql2')->select(
                 'select sum(a.amount) as amount,d.acc_id from credit_note_data as a
                 inner join
                 subitem as c
@@ -4242,7 +4273,8 @@ private function getAccountIds()
                 $transaction->opening_bal = 0;
                 $transaction->debit_credit = 1;
                 $transaction->amount = $row->amount;
-                $transaction->username = Auth::user()->name;;
+                $transaction->username = Auth::user()->name;
+                ;
                 $transaction->status = 1;
                 $transaction->voucher_type = 7;
                 $transaction->save();
@@ -4296,14 +4328,16 @@ private function getAccountIds()
                 $transaction->opening_bal = 0;
                 $transaction->debit_credit = 0;
                 $transaction->amount = $request->sales_tax_further;
-                $transaction->username = Auth::user()->name;;
+                $transaction->username = Auth::user()->name;
+                ;
                 $transaction->status = 1;
                 $transaction->voucher_type = 7;
                 $transaction->save();
-            //  $total_amout+=$request->sales_tax_further;
+                //  $total_amout+=$request->sales_tax_further;
 
             endif;
-            $customer_acc_id = SalesHelper::get_customer_acc_id($request->buyer_id);;
+            $customer_acc_id = SalesHelper::get_customer_acc_id($request->buyer_id);
+            ;
             $transaction = new Transactions();
             $transaction = $transaction->SetConnection('mysql2');
             $transaction->voucher_no = $cr_no;
@@ -4314,7 +4348,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
             $transaction->amount = $total_amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 7;
             $transaction->save();
@@ -4323,20 +4358,20 @@ private function getAccountIds()
         endif;
         $type = "Sale Return";
         \App\Helpers\CommonHelper::createNotification(
-            $type . " with " . $cr_no. " is edited by " . auth()->user()->name, 
+            $type . " with " . $cr_no . " is edited by " . auth()->user()->name,
             $type . ""
         );
-      return Redirect::to('sales/viewCustomerCreditNoteList?pageType=view&&parentCode=000&&m=' . $_GET['m'] . '#SFR');
+        return Redirect::to('sales/viewCustomerCreditNoteList?pageType=view&&parentCode=000&&m=' . $_GET['m'] . '#SFR');
     }
 
     function addType(Request $request)
     {
         $type = new Type();
         $type = $type->SetConnection('mysql2');
-        $type->name        = $request->type_name;
-        $type->status           = 1;
-        $type->username         = Auth::user()->name;
-        $type->date             = date('Y-m-d');
+        $type->name = $request->type_name;
+        $type->status = 1;
+        $type->username = Auth::user()->name;
+        $type->date = date('Y-m-d');
         $type->save();
 
         return Redirect::to('sales/typeList?pageType=view&&parentCode=000&&m=' . Input::get('m') . '#SFR');
@@ -4346,10 +4381,10 @@ private function getAccountIds()
     {
         $condition = new Conditions();
         $condition = $condition->SetConnection('mysql2');
-        $condition->name        = $request->condition_name;
-        $condition->status           = 1;
-        $condition->username         = Auth::user()->name;
-        $condition->date             = date('Y-m-d');
+        $condition->name = $request->condition_name;
+        $condition->status = 1;
+        $condition->username = Auth::user()->name;
+        $condition->date = date('Y-m-d');
         $condition->save();
 
         return Redirect::to('sales/conditionList?pageType=view&&parentCode=000&&m=' . Input::get('m') . '#SFR');
@@ -4359,7 +4394,7 @@ private function getAccountIds()
     {
         CommonHelper::companyDatabaseConnection($request->CompanyId);
 
-        $ConditionData['name']        = $request->condition_name;
+        $ConditionData['name'] = $request->condition_name;
         DB::table('conditions')->where('condition_id', '=', $request->condition_id)->update($ConditionData);
         CommonHelper::reconnectMasterDatabase();
         return Redirect::to('sales/conditionList?pageType=view&&parentCode=000&&m=' . Input::get('m') . '#SFR');
@@ -4368,7 +4403,7 @@ private function getAccountIds()
     function updateProductType(Request $request)
     {
         CommonHelper::companyDatabaseConnection($request->CompanyId);
-        $data['type']        = $request->product_type;
+        $data['type'] = $request->product_type;
         DB::table('product_type')->where('product_type_id', '=', $request->product_type_id)->update($data);
         CommonHelper::reconnectMasterDatabase();
         return Redirect::to('sales/producttypeList?pageType=view&&parentCode=000&&m=' . Input::get('m') . '#SFR');
@@ -4376,7 +4411,7 @@ private function getAccountIds()
     function updateProductTrend(Request $request)
     {
         // CommonHelper::companyDatabaseConnection($request->CompanyId);
-        $data['name']        = $request->product_trend;
+        $data['name'] = $request->product_trend;
         $productTrenObj = new ProductTrend();
         $productTrenObj->where('id', '=', $request->id)->update($data);
         // CommonHelper::reconnectMasterDatabase();
@@ -4385,7 +4420,7 @@ private function getAccountIds()
     function updateProductClassification(Request $request)
     {
         // CommonHelper::companyDatabaseConnection($request->CompanyId);
-        $data['name']        = $request->product_classification;
+        $data['name'] = $request->product_classification;
         $productClassificationObj = new ProductClassification();
         $productClassificationObj->where('id', '=', $request->id)->update($data);
         // CommonHelper::reconnectMasterDatabase();
@@ -4395,7 +4430,7 @@ private function getAccountIds()
     function updateResourceAssigned(Request $request)
     {
         CommonHelper::companyDatabaseConnection($request->CompanyId);
-        $data['resource_type']        = $request->resource_type;
+        $data['resource_type'] = $request->resource_type;
         DB::table('resource_assign')->where('id', '=', $request->id)->update($data);
         CommonHelper::reconnectMasterDatabase();
         return Redirect::to('sales/resourceAssignedList?pageType=view&&parentCode=000&&m=' . Input::get('m') . '#SFR');
@@ -4404,8 +4439,8 @@ private function getAccountIds()
     function updateSurveyByForm(Request $request)
     {
         CommonHelper::companyDatabaseConnection($request->CompanyId);
-        $data['name']        = $request->name;
-        $data['remarks']     = $request->remarks;
+        $data['name'] = $request->name;
+        $data['remarks'] = $request->remarks;
         DB::table('survey_by')->where('id', '=', $request->id)->update($data);
         CommonHelper::reconnectMasterDatabase();
         return Redirect::to('sales/branchList?pageType=view&&parentCode=000&&m=' . Input::get('m') . '#SFR');
@@ -4414,7 +4449,7 @@ private function getAccountIds()
     function updateTypeList(Request $request)
     {
         CommonHelper::companyDatabaseConnection($request->CompanyId);
-        $data['name']        = $request->name;
+        $data['name'] = $request->name;
         DB::table('type')->where('type_id', '=', $request->id)->update($data);
         CommonHelper::reconnectMasterDatabase();
         return Redirect::to('sales/typeList?pageType=view&&parentCode=000&&m=' . Input::get('m') . '#SFR');
@@ -4423,8 +4458,8 @@ private function getAccountIds()
     function updateProductForm(Request $request)
     {
 
-        $product['p_name']        = $request->product_name;
-        $product['type_id']        = $request->type_id;
+        $product['p_name'] = $request->product_name;
+        $product['type_id'] = $request->type_id;
         DB::Connection('mysql2')->table('product')->where('product_id', '=', $request->product_id)->update($product);
 
         $acc_id = DB::Connection('mysql2')->table('product')->where('product_id', '=', $request->product_id)->select('acc_id')->first();
@@ -4439,10 +4474,10 @@ private function getAccountIds()
     function updateClientForm(Request $request)
     {
         CommonHelper::companyDatabaseConnection($request->CompanyId);
-        $client['client_name']    = $request->client_name;
-        $client['ntn']            = $request->ntn;
-        $client['strn']           = $request->strn;
-        $client['address']        = $request->address;
+        $client['client_name'] = $request->client_name;
+        $client['ntn'] = $request->ntn;
+        $client['strn'] = $request->strn;
+        $client['address'] = $request->address;
         if ($request->AccId != 0):
             $UpdateAcc['name'] = $request->client_name;
             DB::table('accounts')->where('id', '=', $request->AccId)->update($UpdateAcc);
@@ -4455,11 +4490,11 @@ private function getAccountIds()
     function updateClientBranchForm(Request $request)
     {
         CommonHelper::companyDatabaseConnection($request->CompanyId);
-        $client['client_id']    = $request->client_id;
-        $client['branch_name']    = $request->branch_name;
-        $client['ntn']            = $request->ntn;
-        $client['strn']           = $request->strn;
-        $client['address']        = $request->address;
+        $client['client_id'] = $request->client_id;
+        $client['branch_name'] = $request->branch_name;
+        $client['ntn'] = $request->ntn;
+        $client['strn'] = $request->strn;
+        $client['address'] = $request->address;
         if ($request->AccId != 0):
             $UpdateAcc['name'] = $request->client_name;
             DB::table('accounts')->where('id', '=', $request->AccId)->update($UpdateAcc);
@@ -4479,11 +4514,11 @@ private function getAccountIds()
     {
         $survery_by = new SurveryBy();
         $survery_by = $survery_by->SetConnection('mysql2');
-        $survery_by->name        = $request->branch_name;
-        $survery_by->remarks        = $request->remarks;
-        $survery_by->status           = 1;
-        $survery_by->username         = Auth::user()->name;
-        $survery_by->date             = date('Y-m-d');
+        $survery_by->name = $request->branch_name;
+        $survery_by->remarks = $request->remarks;
+        $survery_by->status = 1;
+        $survery_by->username = Auth::user()->name;
+        $survery_by->date = date('Y-m-d');
         $survery_by->save();
 
         return Redirect::to('sales/branchList?pageType=view&&parentCode=000&&m=' . Input::get('m') . '#SFR');
@@ -4493,12 +4528,12 @@ private function getAccountIds()
     {
         $client = new Client();
         $client = $client->SetConnection('mysql2');
-        $client->client_name    = $request->client_name;
-        $client->ntn            = $request->ntn;
-        $client->strn           = $request->strn;
-        $client->address        = $request->address;
-        $client->status         = 1;
-        $client->username       = Auth::user()->name;
+        $client->client_name = $request->client_name;
+        $client->ntn = $request->ntn;
+        $client->strn = $request->strn;
+        $client->address = $request->address;
+        $client->status = 1;
+        $client->username = Auth::user()->name;
         $client->save();
 
         return Redirect::to('sales/clientList?pageType=&&parentCode=105&&m=' . Input::get('m') . '#SFR');
@@ -4507,13 +4542,13 @@ private function getAccountIds()
     {
         $Branch = new Branch();
         $Branch = $Branch->SetConnection('mysql2');
-        $Branch->client_id    = "";
-        $Branch->branch_name    = $request->branch_name;
-        $Branch->ntn            = "";
-        $Branch->strn           = "";
-        $Branch->address        = "";
-        $Branch->status         = 1;
-        $Branch->username       = Auth::user()->name;
+        $Branch->client_id = "";
+        $Branch->branch_name = $request->branch_name;
+        $Branch->ntn = "";
+        $Branch->strn = "";
+        $Branch->address = "";
+        $Branch->status = 1;
+        $Branch->username = Auth::user()->name;
         $Branch->save();
 
         return Redirect::to('sales/branchList?pageType=&&parentCode=105&&m=' . Input::get('m') . '#SFR');
@@ -4522,13 +4557,13 @@ private function getAccountIds()
     {
         $Branch = new Branch();
         $Branch = $Branch->SetConnection('mysql2');
-        $Branch->client_id    = $request->client_id;
-        $Branch->branch_name    = $request->branch_name;
-        $Branch->ntn            = $request->ntn;
-        $Branch->strn           = $request->strn;
-        $Branch->address        = $request->address;
-        $Branch->status         = 1;
-        $Branch->username       = Auth::user()->name;
+        $Branch->client_id = $request->client_id;
+        $Branch->branch_name = $request->branch_name;
+        $Branch->ntn = $request->ntn;
+        $Branch->strn = $request->strn;
+        $Branch->address = $request->address;
+        $Branch->status = 1;
+        $Branch->username = Auth::user()->name;
         $Branch->save();
 
         echo 'success';
@@ -4541,9 +4576,9 @@ private function getAccountIds()
     {
         $InvDesc = new InvDesc();
         $InvDesc = $InvDesc->SetConnection('mysql2');
-        $InvDesc->invoice_desc    = $request->InvoiceDesc;
-        $InvDesc->status         = 1;
-        $InvDesc->username       = Auth::user()->name;
+        $InvDesc->invoice_desc = $request->InvoiceDesc;
+        $InvDesc->status = 1;
+        $InvDesc->username = Auth::user()->name;
         $InvDesc->save();
 
         return Redirect::to('sales/clientList?pageType=&&parentCode=105&&m=' . Input::get('m') . '#SFR');
@@ -4556,8 +4591,8 @@ private function getAccountIds()
         //print_r($_POST); die();
         $ClientJob = new ClientJob();
         $ClientJob = $ClientJob->SetConnection('mysql2');
-        $ClientJob->client_job    = $request->ClientJob;
-        $ClientJob->status    = 1;
+        $ClientJob->client_job = $request->ClientJob;
+        $ClientJob->status = 1;
         $ClientJob->save();
 
         return Redirect::to('sales/addClientJob?pageType=&&parentCode=115&&m=' . Input::get('m') . '#SFR');
@@ -4567,8 +4602,8 @@ private function getAccountIds()
     {
         $ClientJob = new ClientJob();
         $ClientJob = $ClientJob->SetConnection('mysql2');
-        $ClientJob->client_job    = $request->ClientJob;
-        $ClientJob->status    = 1;
+        $ClientJob->client_job = $request->ClientJob;
+        $ClientJob->status = 1;
         $ClientJob->save();
         $id = $ClientJob->id;
         echo $data = $id . "," . $request->ClientJob;
@@ -4576,32 +4611,32 @@ private function getAccountIds()
 
     function addProductType(Request $request)
     {
-        $productType = new  ProductType();
+        $productType = new ProductType();
         $productType = $productType->SetConnection('mysql2');
-        $productType->type        = $request->product_type;
-        $productType->status      = 1;
-        $productType->date        = date('Y-m-d');
-        $productType->username    = Auth::user()->name;
+        $productType->type = $request->product_type;
+        $productType->status = 1;
+        $productType->date = date('Y-m-d');
+        $productType->username = Auth::user()->name;
         $productType->save();
 
         return Redirect::to('sales/producttypeList?pageType=&&parentCode=105&&m=' . Input::get('m') . '#SFR');
     }
     function addProductTrend(Request $request)
     {
-        $productType = new  ProductTrend();
+        $productType = new ProductTrend();
         $productType = $productType->SetConnection('mysql2');
-        $productType->name        = $request->product_trend;
-        $productType->status      = 1;
+        $productType->name = $request->product_trend;
+        $productType->status = 1;
         $productType->save();
 
         return Redirect::to('sales/productTrendList?pageType=&&parentCode=105&&m=' . Input::get('m') . '#SFR');
     }
     function addProductClassification(Request $request)
     {
-        $productType = new  ProductClassification();
+        $productType = new ProductClassification();
         $productType = $productType->SetConnection('mysql2');
-        $productType->name        = $request->product_classification;
-        $productType->status      = 1;
+        $productType->name = $request->product_classification;
+        $productType->status = 1;
         $productType->save();
 
         return Redirect::to('sales/productClassificationList?pageType=&&parentCode=105&&m=' . Input::get('m') . '#SFR');
@@ -4609,12 +4644,12 @@ private function getAccountIds()
 
     function addResourceAssign(Request $request)
     {
-        $resource = new  ResourceAssigned();
+        $resource = new ResourceAssigned();
         $resource = $resource->SetConnection('mysql2');
         $resource->resource_type = $request->resource_type;
-        $resource->status        = 1;
-        $resource->date          = date('Y-m-d');
-        $resource->username      = Auth::user()->name;
+        $resource->status = 1;
+        $resource->date = date('Y-m-d');
+        $resource->username = Auth::user()->name;
         $resource->save();
 
         return Redirect::to('sales/createResourceAssigned?pageType=&&parentCode=105&&m=' . Input::get('m') . '#SFR');
@@ -4665,14 +4700,14 @@ private function getAccountIds()
                 $quotation_data = $quotation_data->find($quotation_edit_id);
             }
             $survey_data_id = $request->input('survey_data_id');
-            $product_id     = $request->input('product_id');
-            $description    = $request->input('descr');
-            $height         = $request->input('height');
-            $width          = $request->input('width');
-            $uom            = $request->input('uom');
-            $qty            = $request->input('qty');
-            $rate           = $request->input('rate');
-            $amount         = $request->input('amount');
+            $product_id = $request->input('product_id');
+            $description = $request->input('descr');
+            $height = $request->input('height');
+            $width = $request->input('width');
+            $uom = $request->input('uom');
+            $qty = $request->input('qty');
+            $rate = $request->input('rate');
+            $amount = $request->input('amount');
 
             $quotation_data->master_id = $EditId;
             if ($request->type == 1) {
@@ -4772,11 +4807,11 @@ private function getAccountIds()
             $survery->save();
         endif;
 
-        $voucher_no     = $request->quotation_no;
-        $voucher_date   = $request->quotation_date;
-        $action_type    = 1;
-        $client_id      = $request->client_id;
-        $table_name     = "quotation";
+        $voucher_no = $request->quotation_no;
+        $voucher_date = $request->quotation_date;
+        $action_type = 1;
+        $client_id = $request->client_id;
+        $table_name = "quotation";
 
         CommonHelper::logActivity($voucher_no, $voucher_date, $action_type, $client_id, $table_name);
 
@@ -4789,48 +4824,48 @@ private function getAccountIds()
         //            print_r($_POST);die;
         $complaint = new Complaint();
         $complaint = $complaint->SetConnection('mysql2');
-        $complaint->client_name         = $request->ClientId;
-        $complaint->region_id         = $request->RegionId;
-        $complaint->branch_name         = $request->BranchName;
-        $complaint->branch_code         = $request->BranchCode;
-        $complaint->date                = $request->ComplaintDate;
-        $complaint->contanct_person     = $request->ContactPersonName;
-        $complaint->designation         = $request->Designation;
-        $complaint->phone               = $request->Phone;
-        $complaint->address             = $request->Address;
+        $complaint->client_name = $request->ClientId;
+        $complaint->region_id = $request->RegionId;
+        $complaint->branch_name = $request->BranchName;
+        $complaint->branch_code = $request->BranchCode;
+        $complaint->date = $request->ComplaintDate;
+        $complaint->contanct_person = $request->ContactPersonName;
+        $complaint->designation = $request->Designation;
+        $complaint->phone = $request->Phone;
+        $complaint->address = $request->Address;
         if ($request->Monthly == 1):
-            $complaint->monthly             = $request->Monthly;
+            $complaint->monthly = $request->Monthly;
         elseif ($request->Quaterly == 1):
-            $complaint->Quaterly            = $request->Quaterly;
+            $complaint->Quaterly = $request->Quaterly;
         elseif ($request->SemiAnnually == 1):
-            $complaint->Semi_Annually       = $request->SemiAnnually;
+            $complaint->Semi_Annually = $request->SemiAnnually;
         elseif ($request->Annually == 1):
-            $complaint->Annually            = $request->Annually;
+            $complaint->Annually = $request->Annually;
         elseif ($request->OnCall == 1):
-            $complaint->On_Call             = $request->OnCall;
+            $complaint->On_Call = $request->OnCall;
         endif;
 
-        $complaint->board_cleaning      = $request->BoardCleaning;
-        $complaint->led_stip            = $request->LedStrip;
-        $complaint->led_wiring          = $request->LedWiring;
-        $complaint->led_rope            = $request->LedRope;
-        $complaint->power_supply        = $request->PowerSupply;
-        $complaint->sign_note           = $request->sign_note;
-        $complaint->auto_manual         = $request->AutoManualSelector;
-        $complaint->contractor          = $request->Contractor;
-        $complaint->breaker             = $request->Breaker;
-        $complaint->sun_switch            = $request->SunSwitch;
-        $complaint->volt_led            = $request->VoltLed;
-        $complaint->stabilizer          = $request->StabilizerLightingDevice;
-        $complaint->note                = $request->Note;
-        $complaint->timer_connection    = $request->timer_connection;
-        $complaint->breaker_replaced    = $request->breaker_replaced;
-        $complaint->wiring_additional   = $request->wiring_additional;
-        $complaint->rft                 = $request->Rft;
-        $complaint->comments            = $request->comments;
-        $complaint->status              = 1;
-        $complaint->created_date        = date('Y-m-d');
-        $complaint->username            = Auth::user()->name;
+        $complaint->board_cleaning = $request->BoardCleaning;
+        $complaint->led_stip = $request->LedStrip;
+        $complaint->led_wiring = $request->LedWiring;
+        $complaint->led_rope = $request->LedRope;
+        $complaint->power_supply = $request->PowerSupply;
+        $complaint->sign_note = $request->sign_note;
+        $complaint->auto_manual = $request->AutoManualSelector;
+        $complaint->contractor = $request->Contractor;
+        $complaint->breaker = $request->Breaker;
+        $complaint->sun_switch = $request->SunSwitch;
+        $complaint->volt_led = $request->VoltLed;
+        $complaint->stabilizer = $request->StabilizerLightingDevice;
+        $complaint->note = $request->Note;
+        $complaint->timer_connection = $request->timer_connection;
+        $complaint->breaker_replaced = $request->breaker_replaced;
+        $complaint->wiring_additional = $request->wiring_additional;
+        $complaint->rft = $request->Rft;
+        $complaint->comments = $request->comments;
+        $complaint->status = 1;
+        $complaint->created_date = date('Y-m-d');
+        $complaint->username = Auth::user()->name;
         $complaint->save();
         $master_id = $complaint->id;
 
@@ -4838,15 +4873,15 @@ private function getAccountIds()
         foreach ($ProductIds as $key => $row) {
             $ComplaintProduct = new ComplaintProduct();
             $ComplaintProduct = $ComplaintProduct->SetConnection('mysql2');
-            $ComplaintProduct->product      = $request->ProductId[$key];
-            $ComplaintProduct->front        = $request->Front[$key];
-            $ComplaintProduct->p_left       = $request->Left[$key];
-            $ComplaintProduct->p_right      = $request->Right[$key];
-            $ComplaintProduct->back         = $request->Back[$key];
+            $ComplaintProduct->product = $request->ProductId[$key];
+            $ComplaintProduct->front = $request->Front[$key];
+            $ComplaintProduct->p_left = $request->Left[$key];
+            $ComplaintProduct->p_right = $request->Right[$key];
+            $ComplaintProduct->back = $request->Back[$key];
             $ComplaintProduct->complaint_id = $master_id;
-            $ComplaintProduct->status       = 1;
-            $ComplaintProduct->username     = Auth::user()->name;
-            $ComplaintProduct->date         = date('Y-m-d');
+            $ComplaintProduct->status = 1;
+            $ComplaintProduct->username = Auth::user()->name;
+            $ComplaintProduct->date = date('Y-m-d');
             $ComplaintProduct->save();
         }
         $ImageCounter = $request->ImageCounter;
@@ -4860,9 +4895,9 @@ private function getAccountIds()
 
             $ComplaintDocument = new ComplaintDocument();
             $ComplaintDocument = $ComplaintDocument->SetConnection('mysql2');
-            $ComplaintDocument->image_file   = $path;
+            $ComplaintDocument->image_file = $path;
             $ComplaintDocument->complaint_id = $master_id;
-            $ComplaintDocument->status       = 1;
+            $ComplaintDocument->status = 1;
             $ComplaintDocument->save();
         endforeach;
 
@@ -4983,11 +5018,11 @@ private function getAccountIds()
 
 
 
-            $voucher_no     = strtoupper($InvNo);
-            $voucher_date   = $request->inv_date;
-            $action_type    = 1;
-            $client_id      = $request->bill_to_client_id;
-            $table_name     = "Invoice";
+            $voucher_no = strtoupper($InvNo);
+            $voucher_date = $request->inv_date;
+            $action_type = 1;
+            $client_id = $request->bill_to_client_id;
+            $table_name = "Invoice";
             CommonHelper::logActivity($voucher_no, $voucher_date, $action_type, $client_id, $table_name);
             DB::Connection('mysql2')->commit();
         } catch (\Exception $e) {
@@ -5005,8 +5040,8 @@ private function getAccountIds()
 
         DB::Connection('mysql2')->beginTransaction();
         try {
-            $EditId  = $request->EditId;
-            $inv_no  = $request->inv_no;
+            $EditId = $request->EditId;
+            $inv_no = $request->inv_no;
             $InvoiceUpdate['inv_date'] = $request->inv_date;
             $InvoiceUpdate['ship_to'] = $request->ship_too;
             $InvoiceUpdate['bill_to_client_id'] = $request->bill_to_client_id;
@@ -5148,7 +5183,8 @@ private function getAccountIds()
                         $trans1 = new Transactions();
                         $trans1 = $trans1->SetConnection('mysql2');
                         $trans1->acc_id = $row->client_acc_id;
-                        $trans1->acc_code = FinanceHelper::getAccountCodeByAccId($row->client_acc_id, '');;
+                        $trans1->acc_code = FinanceHelper::getAccountCodeByAccId($row->client_acc_id, '');
+                        ;
                         $trans1->master_id = $row->id;
                         $trans1->particulars = $row->description;
                         $trans1->opening_bal = 0;
@@ -5170,7 +5206,8 @@ private function getAccountIds()
                             $trans1 = new Transactions();
                             $trans1 = $trans1->SetConnection('mysql2');
                             $trans1->acc_id = 612;
-                            $trans1->acc_code = '4-1-3';;
+                            $trans1->acc_code = '4-1-3';
+                            ;
                             $trans1->master_id = $row->id;
                             $trans1->particulars = 'Discount';
                             $trans1->opening_bal = 0;
@@ -5221,7 +5258,8 @@ private function getAccountIds()
                             $trans1 = new Transactions();
                             $trans1 = $trans1->SetConnection('mysql2');
                             $trans1->acc_id = 521;
-                            $trans1->acc_code = '3-2-3-8';;
+                            $trans1->acc_code = '3-2-3-8';
+                            ;
                             $trans1->master_id = $row->id;
                             $trans1->particulars = 'Advance';
                             $trans1->paid_to = $row->bill_to_client_id;
@@ -5273,7 +5311,8 @@ private function getAccountIds()
                         $trans1 = new Transactions();
                         $trans1 = $trans1->SetConnection('mysql2');
                         $trans1->acc_id = $row->prduct_acc_id;
-                        $trans1->acc_code = FinanceHelper::getAccountCodeByAccId($row->prduct_acc_id, '');;
+                        $trans1->acc_code = FinanceHelper::getAccountCodeByAccId($row->prduct_acc_id, '');
+                        ;
                         $trans1->master_id = $row->id;
                         $trans1->particulars = $row->description;
                         $trans1->opening_bal = 0;
@@ -5328,7 +5367,8 @@ private function getAccountIds()
                     $trans1 = new Transactions();
                     $trans1 = $trans1->SetConnection('mysql2');
                     $trans1->acc_id = $row->sales_tax_acc_id;
-                    $trans1->acc_code = FinanceHelper::getAccountCodeByAccId($row->sales_tax_acc_id, '');;
+                    $trans1->acc_code = FinanceHelper::getAccountCodeByAccId($row->sales_tax_acc_id, '');
+                    ;
                     $trans1->master_id = $row->id;
                     $trans1->particulars = $row->description;
                     $trans1->opening_bal = 0;
@@ -5345,7 +5385,7 @@ private function getAccountIds()
                     $trans1->action = 1;
                     $trans1->status = 1;
                     $trans1->username = Auth::user()->name;
-                //     $trans1->save();
+                    //     $trans1->save();
                 endif;
 
 
@@ -5359,11 +5399,11 @@ private function getAccountIds()
                 $invoice = $invoice->where('id', $id)->update(['inv_status' => 2]);
             }
 
-            $voucher_no     = $inv_no;
-            $voucher_date   = $request->inv_date;
-            $action_type    = 1;
-            $client_id      = $request->bill_to_client_id;
-            $table_name     = "Invoice";
+            $voucher_no = $inv_no;
+            $voucher_date = $request->inv_date;
+            $action_type = 1;
+            $client_id = $request->bill_to_client_id;
+            $table_name = "Invoice";
             CommonHelper::logActivity($voucher_no, $voucher_date, $action_type, $client_id, $table_name);
             DB::Connection('mysql2')->commit();
         } catch (\Exception $e) {
@@ -5403,7 +5443,8 @@ private function getAccountIds()
 
             else:
                 $sales_order_no = $budnles_record->first()->so_no;
-                $bd_no = $budnles_record->where('id', $bundle_id)->first()->bd_no;;
+                $bd_no = $budnles_record->where('id', $bundle_id)->first()->bd_no;
+                ;
             endif;
             $data = array(
 
@@ -5725,7 +5766,7 @@ private function getAccountIds()
             DB::Connection('mysql2')->table('import_payment')->where('id', $EditId)->update($data);
 
 
-            $igm_data =   DB::Connection('mysql2')->table('import_po')->where('status', 1)->where('id', $request->voucher_no)->first();
+            $igm_data = DB::Connection('mysql2')->table('import_po')->where('status', 1)->where('id', $request->voucher_no)->first();
             $igm_no = $igm_data->voucher_no;
             $document_no = $igm_data->document_no;
             $desc = 'IGM No: ' . $igm_no . ' - Doument No: ' . $document_no . ' - Grand Total: ' . $request->grand_total . ' - Amount In Foreign Currency: ' . $request->f_currency;
@@ -5740,8 +5781,8 @@ private function getAccountIds()
 
             if ($check_existing_data->count() > 0):
 
-                $id =   $check_existing_data->first()->id;
-                $pv_no =  $check_existing_data->first()->pv_no;
+                $id = $check_existing_data->first()->id;
+                $pv_no = $check_existing_data->first()->pv_no;
 
 
 
@@ -5778,8 +5819,8 @@ private function getAccountIds()
             $pv_data = new NewPvData();
             $pv_data = $pv_data->SetConnection('mysql2');
             $pv_data->master_id = $master_id;
-            $pv_data->pv_no     = $pv_no;
-            $pv_data->pv_date   = $request->pv_date_1;
+            $pv_data->pv_no = $pv_no;
+            $pv_data->pv_date = $request->pv_date_1;
             $acc_id = ReuseableCode::get_acc_id_by_code('1-2-12');
             $pv_data->acc_id = $acc_id;
             $pv_data->description = $desc;
@@ -5794,8 +5835,8 @@ private function getAccountIds()
             $pv_data = new NewPvData();
             $pv_data = $pv_data->SetConnection('mysql2');
             $pv_data->master_id = $master_id;
-            $pv_data->pv_no     = $pv_no;
-            $pv_data->pv_date   = $request->pv_date_1;
+            $pv_data->pv_no = $pv_no;
+            $pv_data->pv_date = $request->pv_date_1;
             $pv_data->acc_id = $request->cr_account;
             $pv_data->description = $desc;
             $pv_data->amount = $request->amount_pkr;
@@ -5837,7 +5878,7 @@ private function getAccountIds()
 
 
 
-                $igm_data =   DB::Connection('mysql2')->table('import_po')->where('status', 1)->where('id', $request->voucher_no)->first();
+                $igm_data = DB::Connection('mysql2')->table('import_po')->where('status', 1)->where('id', $request->voucher_no)->first();
                 $igm_no = $igm_data->voucher_no;
                 $document_no = $igm_data->document_no;
                 $desc = 'IGM No: ' . $igm_no . ' - Doument No: ' . $document_no . ' - Grand Total: ' . $request->grand_total . ' - Amount In Foreign Currency: ' . $request->f_currency;
@@ -5852,8 +5893,8 @@ private function getAccountIds()
 
                 if ($check_existing_data->count() > 0):
 
-                    $id =   $check_existing_data->first()->id;
-                    $pv_no =  $check_existing_data->first()->pv_no;
+                    $id = $check_existing_data->first()->id;
+                    $pv_no = $check_existing_data->first()->pv_no;
 
 
                     $payment = $payment->find($id);
@@ -5930,8 +5971,8 @@ private function getAccountIds()
                 $pv_data = new NewPvData();
                 $pv_data = $pv_data->SetConnection('mysql2');
                 $pv_data->master_id = $master_id;
-                $pv_data->pv_no     = $pv_no;
-                $pv_data->pv_date   = $request->pv_date_1;
+                $pv_data->pv_no = $pv_no;
+                $pv_data->pv_date = $request->pv_date_1;
 
                 $pv_data->acc_id = $request->cr_account;
                 $pv_data->description = $desc;
@@ -5978,7 +6019,7 @@ private function getAccountIds()
 
 
                 $import_id = DB::Connection('mysql2')->table('import_payment')->insertGetId($data);
-                $igm_data =   DB::Connection('mysql2')->table('import_po')->where('status', 1)->where('id', $request->voucher_no)->first();
+                $igm_data = DB::Connection('mysql2')->table('import_po')->where('status', 1)->where('id', $request->voucher_no)->first();
                 $igm_no = $igm_data->voucher_no;
                 $document_no = $igm_data->document_no;
                 $desc = 'IGM No: ' . $igm_no . ' - Doument No: ' . $document_no . ' - Grand Total: ' . $request->grand_total . ' - Amount In Foreign Currency: ' . $request->f_currency;
@@ -6011,8 +6052,8 @@ private function getAccountIds()
                 $pv_data = new NewPvData();
                 $pv_data = $pv_data->SetConnection('mysql2');
                 $pv_data->master_id = $master_id;
-                $pv_data->pv_no     = $pv_no;
-                $pv_data->pv_date   = $request->pv_date_1;
+                $pv_data->pv_no = $pv_no;
+                $pv_data->pv_date = $request->pv_date_1;
 
 
                 $acc_id = ReuseableCode::get_acc_id_by_code('1-2-12');
@@ -6029,8 +6070,8 @@ private function getAccountIds()
                 $pv_data = new NewPvData();
                 $pv_data = $pv_data->SetConnection('mysql2');
                 $pv_data->master_id = $master_id;
-                $pv_data->pv_no     = $pv_no;
-                $pv_data->pv_date   = $request->pv_date_1;
+                $pv_data->pv_no = $pv_no;
+                $pv_data->pv_date = $request->pv_date_1;
                 $pv_data->acc_id = $request->cr_account;
                 $pv_data->description = $desc;
                 $pv_data->amount = $request->amount_pkr;
@@ -6067,11 +6108,11 @@ private function getAccountIds()
 
 
                 );
-                $import_id =     DB::Connection('mysql2')->table('import_expense')->insertGetId($data1);
+                $import_id = DB::Connection('mysql2')->table('import_expense')->insertGetId($data1);
 
 
 
-                $igm_data =   DB::Connection('mysql2')->table('import_po')->where('status', 1)->where('id', $request->voucher_no)->first();
+                $igm_data = DB::Connection('mysql2')->table('import_po')->where('status', 1)->where('id', $request->voucher_no)->first();
                 $igm_no = $igm_data->voucher_no;
                 $document_no = $igm_data->document_no;
                 $desc = 'IGM No: ' . $igm_no . ' - Doument No: ' . $document_no . ' - Grand Total: ' . $request->grand_total . ' - Amount In Foreign Currency: ' . $request->f_currency;
@@ -6168,8 +6209,8 @@ private function getAccountIds()
                 $pv_data = new NewPvData();
                 $pv_data = $pv_data->SetConnection('mysql2');
                 $pv_data->master_id = $master_id;
-                $pv_data->pv_no     = $pv_no;
-                $pv_data->pv_date   = $request->pv_date_1;
+                $pv_data->pv_no = $pv_no;
+                $pv_data->pv_date = $request->pv_date_1;
 
                 $pv_data->acc_id = $request->cr_account;
                 $pv_data->description = $desc;
@@ -6191,7 +6232,7 @@ private function getAccountIds()
 
     function addCustomerOpeningBalance(Request $request)
     {
-       
+
         $BuyerId = $request->customer_id;
         $CoDate = $request->co_date;
         $SiNo = $request->si_no;
@@ -6205,7 +6246,7 @@ private function getAccountIds()
             $InsertData['so_no'] = $SoNo[$key];
             $InsertData['invoice_amount'] = $InvoiceAmount[$key];
             $InsertData['balance_amount'] = $BalanceAmount[$key];
-            
+
 
             DB::Connection('mysql2')->table('customer_opening_balance')->insert($InsertData);
             ReuseableCode::insert_si($SiNo[$key]);
@@ -6214,13 +6255,13 @@ private function getAccountIds()
     }
 
 
-// function addCustomerOpeningBalance(Request $request)
+    // function addCustomerOpeningBalance(Request $request)
 // {
 //     DB::connection('mysql2')->beginTransaction();
 
 
-    
-//     try {
+
+    //     try {
 //         $BuyerId = $request->customer_id;
 //         $CoDate = $request->co_date;
 //         $SiNo = $request->si_no;
@@ -6228,12 +6269,12 @@ private function getAccountIds()
 //         $InvoiceAmount = $request->invoice_amount;
 //         $BalanceAmount = $request->balance_amount;
 
-//         $customer_acc_id = SalesHelper::get_customer_acc_id($BuyerId);
-        
+    //         $customer_acc_id = SalesHelper::get_customer_acc_id($BuyerId);
 
-//         foreach ($CoDate as $key => $row) {
 
-//             // Insert into customer_opening_balance
+    //         foreach ($CoDate as $key => $row) {
+
+    //             // Insert into customer_opening_balance
 //             $InsertData = [
 //                 'buyer_id' => $BuyerId,
 //                 'date' => $CoDate[$key],
@@ -6243,9 +6284,9 @@ private function getAccountIds()
 //                 'balance_amount' => $BalanceAmount[$key],
 //             ];
 
-//             DB::connection('mysql2')->table('customer_opening_balance')->insert($InsertData);
+    //             DB::connection('mysql2')->table('customer_opening_balance')->insert($InsertData);
 
-//             // Create corresponding entry in transactions table
+    //             // Create corresponding entry in transactions table
 //             $transactionData = [
 //                 'acc_id'        => $customer_acc_id,
 //                 'v_date'        => $CoDate[$key],
@@ -6258,15 +6299,15 @@ private function getAccountIds()
 //                 'acc_code'      => FinanceHelper::getAccountCodeByAccId($customer_acc_id),
 //             ];
 
-//             DB::connection('mysql2')->table('transactions')->insert($transactionData);
+    //             DB::connection('mysql2')->table('transactions')->insert($transactionData);
 
-//             // Optional reusable code
+    //             // Optional reusable code
 //             ReuseableCode::insert_si($SiNo[$key]);
 //         }
 
-//         DB::connection('mysql2')->commit();
+    //         DB::connection('mysql2')->commit();
 
-//         return Redirect::to('sales/createCustomerOpeningBalance?m=1');
+    //         return Redirect::to('sales/createCustomerOpeningBalance?m=1');
 //     } catch (\Exception $e) {
 //         DB::connection('mysql2')->rollBack();
 //         dd($e->getMessage());
@@ -6300,7 +6341,7 @@ private function getAccountIds()
                 $invoice_amount += $BalanceAmount[$key];
                 DB::Connection('mysql2')->table('vendor_opening_balance')->insert($InsertData);
                 ReuseableCode::insert_pv($PiNo[$key]);
-           
+
             endforeach;
 
             ReuseableCode::hit_ledger_vendor_opening($VendorId, $VoDate);
@@ -6417,7 +6458,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
             $transaction->amount = $total_cost;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 8;
             $transaction->save();
@@ -6433,7 +6475,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
             $transaction->amount = $total_cost;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 8;
             $transaction->save();
@@ -6482,7 +6525,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
             $transaction->amount = $net_total;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 11;
             $transaction->save();
@@ -6498,7 +6542,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
             $transaction->amount = $total_amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 11;
             $transaction->save();
@@ -6516,7 +6561,8 @@ private function getAccountIds()
                     $transaction->opening_bal = 0;
                     $transaction->debit_credit = 0;
                     $transaction->amount = $request->input('expense_amountt')[$key];
-                    $transaction->username = Auth::user()->name;;
+                    $transaction->username = Auth::user()->name;
+                    ;
                     $transaction->status = 1;
                     $transaction->voucher_type = 11;
                     $transaction->save();
@@ -6582,9 +6628,12 @@ private function getAccountIds()
                 $credit_note_data->master_id = $id;
                 $credit_note_data->voucher_data_id = $request->input('pos_data_id')[$i];
 
-                $credit_note_data->voucher_no = $request->input('pos_no');;
-                $credit_note_data->voucher_date = $request->input('pos_date');;
-                $credit_note_data->item = $request->input('item_id')[$i];;
+                $credit_note_data->voucher_no = $request->input('pos_no');
+                ;
+                $credit_note_data->voucher_date = $request->input('pos_date');
+                ;
+                $credit_note_data->item = $request->input('item_id')[$i];
+                ;
 
                 $qty = CommonHelper::check_str_replace($request->input('return_qty')[$i]);
                 $rate = CommonHelper::check_str_replace($request->input('rate')[$i]);
@@ -6671,7 +6720,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
             $transaction->amount = $total_amout;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 7;
             $transaction->save();
@@ -6683,7 +6733,8 @@ private function getAccountIds()
 
 
 
-            $customer_acc_id = SalesHelper::get_customer_acc_id(123);;
+            $customer_acc_id = SalesHelper::get_customer_acc_id(123);
+            ;
             $transaction = new Transactions();
             $transaction = $transaction->SetConnection('mysql2');
             $transaction->voucher_no = $cr_no;
@@ -6694,7 +6745,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
             $transaction->amount = $total_amout;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 7;
             $transaction->save();
@@ -6719,7 +6771,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 1;
             $transaction->amount = $total_cost_amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 9;
             $transaction->save();
@@ -6735,7 +6788,8 @@ private function getAccountIds()
             $transaction->opening_bal = 0;
             $transaction->debit_credit = 0;
             $transaction->amount = $total_cost_amount;
-            $transaction->username = Auth::user()->name;;
+            $transaction->username = Auth::user()->name;
+            ;
             $transaction->status = 1;
             $transaction->voucher_type = 9;
             $transaction->save();
@@ -6753,7 +6807,7 @@ private function getAccountIds()
         return Redirect::to('sales/viewCustomerCreditNoteList?pageType=view&&parentCode=000&&m=' . Session::get('run_company') . '#SFR');
     }
 
-    function  update_cost(Request $request)
+    function update_cost(Request $request)
     {
         $id = $request->id;
         $value = $request->value;
@@ -6766,7 +6820,7 @@ private function getAccountIds()
     {
 
         if ($request->type == 1):
-            $data =  DB::Connection('mysql2')->select('select sum(a.amount)amount,b.buyers_id from sales_tax_invoice_data a
+            $data = DB::Connection('mysql2')->select('select sum(a.amount)amount,b.buyers_id from sales_tax_invoice_data a
         inner join
         sales_tax_invoice b
         on
@@ -6789,7 +6843,7 @@ private function getAccountIds()
 
 
         if ($request->type == 2):
-            $data =  DB::Connection('mysql2')->select('select sum(a.amount)amount,b.buyers_id from transactions a
+            $data = DB::Connection('mysql2')->select('select sum(a.amount)amount,b.buyers_id from transactions a
         inner join
         sales_tax_invoice b
         on
@@ -6813,7 +6867,7 @@ private function getAccountIds()
 
 
         if ($request->type == 3):
-            $data =  DB::Connection('mysql2')->select('select sum(a.amount)amount,b.buyer_id from transactions a
+            $data = DB::Connection('mysql2')->select('select sum(a.amount)amount,b.buyer_id from transactions a
         inner join
         credit_note b
         on
@@ -6839,14 +6893,16 @@ private function getAccountIds()
     }
 
 
-    function set_cogs() {}
+    function set_cogs()
+    {
+    }
 
-    public  function uploadFile()
+    public function uploadFile()
     {
         return view('uploadDocument');
     }
 
-    public  function uploadCustomer(Request $request)
+    public function uploadCustomer(Request $request)
     {
         DB::Connection('mysql2')->beginTransaction();
         $errorCheck = "";
@@ -6859,13 +6915,14 @@ private function getAccountIds()
                 $html = '';
                 $file = $file[0];
 
-                foreach ($file as $key => $value) :
-                    if ($key == 0) continue;
-                    $item  =  new Subitem();
-                    $item->item_code =  $value[1];
-                    $item->sub_ic =   $value[1];
-                    $item->main_ic_id =  8;
-                    $item->sub_category_id =  1;
+                foreach ($file as $key => $value):
+                    if ($key == 0)
+                        continue;
+                    $item = new Subitem();
+                    $item->item_code = $value[1];
+                    $item->sub_ic = $value[1];
+                    $item->main_ic_id = 8;
+                    $item->sub_category_id = 1;
                     $item->uom = 4;
                     $item->stockType = 2;
                     $item->itemType = 3;
@@ -6874,7 +6931,7 @@ private function getAccountIds()
                     $item->date = date('y-m-d');
                     $item->save();
                 endforeach;
-                
+
             }
             DB::Connection('mysql2')->commit();
             return redirect()->back()->with('dataInsert', 'Item create SuccessFully');

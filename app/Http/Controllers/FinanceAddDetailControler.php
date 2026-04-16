@@ -2779,6 +2779,7 @@ class FinanceAddDetailControler extends Controller
 					$rv_no = CommonHelper::uniqe_no_for_rvs(date('y'),date('m'),2);
 					$pay_mode=2;
 					$rv_type=2;
+					$bank=$request->bank;
 					elseif ($request->pay_mode=='3,1'):
 						$rv_no = CommonHelper::uniqe_no_for_rvs(date('y'),date('m'),1);
 						$rv_type=1;
@@ -2808,7 +2809,8 @@ class FinanceAddDetailControler extends Controller
 				'pay_mode'=>$pay_mode,
 				'territory_id' => $territory_id,
 				'brand_id' => $brand_id,
-				'principal_group_id' => $principal_group_id
+				'principal_group_id' => $principal_group_id,
+				'acc_id' => $request->acc_id
 			);
 
 			// dd($data);
@@ -2830,21 +2832,20 @@ class FinanceAddDetailControler extends Controller
 					'rv_id'=>$master_id,
 					'rv_no'=>$rv_no,
 					'received_amount'=>CommonHelper::check_str_replace($request->input('receive_amount')[$key]),
-					'tax_percent'=>$request->input('percent')[$key],
-					'tax_amount'=>$request->input('tax_amount')[$key],
-					'discount_amount'=>$request->input('discount')[$key],
-					'net_amount'=>CommonHelper::check_str_replace($request->input('net_amount')[$key]),
+					'tax_percent'     => ($request->input('percent') ?? [])[$key] ?? 0,
+					'tax_amount'      => ($request->input('tax_amount') ?? [])[$key] ?? 0,
+					'discount_amount' => ($request->input('discount') ?? [])[$key] ?? 0,
+					'net_amount'      => CommonHelper::check_str_replace(($request->input('net_amount') ?? [])[$key] ?? 0),
 				);
-				if ($request->input('percent')[$key]!=0):
-				$tax_acc_id=	CommonHelper::generic('invoice_tax',array('name'=>$request->input('percent')[$key]),'acc_id')->first()->acc_id;
+				if (($request->input('percent') ?? [])[$key] ?? 0 != 0):
+				$tax_acc_id=	CommonHelper::generic('invoice_tax',array('name'=>($request->input('percent') ?? [])[$key] ?? 0),'acc_id')->first()->acc_id;
 
 					endif;
 
 				$net_amount+=CommonHelper::check_str_replace($request->input('receive_amount')[$key]);
-				$discount_amount+=$request->input('discount')[$key];
-
-				if ($request->input('percent')[$key]!=0):
-				$tax_amount+=$request->input('tax_amount')[$key];
+				$discount_amount += ($request->input('discount') ?? [])[$key] ?? 0;
+				if (($request->input('percent') ?? [])[$key] ?? 0 != 0):
+				$tax_amount += ($request->input('tax_amount') ?? [])[$key] ?? 0;
 					else:
 						$tax_amount+=0;
 					endif;
@@ -3263,6 +3264,7 @@ try {
     elseif ($request->pay_mode == '2,2'):
         $pay_mode = 2;
         $rv_type = 2;
+        $bank = $request->bank;
     elseif ($request->pay_mode == '3,1'):
         $rv_type = 1;
         $pay_mode = 3;
@@ -3317,19 +3319,19 @@ try {
             'rv_id'           => $id,
             'rv_no'           => $rv_no,
             'received_amount' => CommonHelper::check_str_replace($request->input('receive_amount')[$key]),
-            'tax_percent'     => $request->input('percent')[$key],
-            'tax_amount'      => $request->input('tax_amount')[$key],
-            'discount_amount' => $request->input('discount')[$key],
-            'net_amount'      => CommonHelper::check_str_replace($request->input('net_amount')[$key]),
+            'tax_percent'     => ($request->input('percent') ?? [])[$key] ?? 0,
+            'tax_amount'      => ($request->input('tax_amount') ?? [])[$key] ?? 0,
+            'discount_amount' => ($request->input('discount') ?? [])[$key] ?? 0,
+            'net_amount'      => CommonHelper::check_str_replace(($request->input('net_amount') ?? [])[$key] ?? 0),
         ];
 
-        if ($request->input('percent')[$key] != 0):
-            $tax_acc_id = CommonHelper::generic('invoice_tax', ['name' => $request->input('percent')[$key]], 'acc_id')->first()->acc_id;
+        if (($request->input('percent') ?? [])[$key] ?? 0 != 0):
+            $tax_acc_id = CommonHelper::generic('invoice_tax', ['name' => ($request->input('percent') ?? [])[$key] ?? 0], 'acc_id')->first()->acc_id;
         endif;
 
         $net_amount += CommonHelper::check_str_replace($request->input('receive_amount')[$key]);
-        $discount_amount += $request->input('discount')[$key];
-        $tax_amount += ($request->input('percent')[$key] != 0) ? $request->input('tax_amount')[$key] : 0;
+        $discount_amount += ($request->input('discount') ?? [])[$key] ?? 0;
+        $tax_amount += (($request->input('percent') ?? [])[$key] ?? 0 != 0) ? (($request->input('tax_amount') ?? [])[$key] ?? 0) : 0;
         $total_amount += CommonHelper::check_str_replace($request->input('net_amount')[$key]);
 
         DB::connection('mysql2')->table('brige_table_sales_receipt')->insert($data1);

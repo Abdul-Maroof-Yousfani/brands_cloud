@@ -61,7 +61,7 @@ class SalesHelper
     {
         $batch = new Batch();
         $batch = $batch->SetConnection('mysql2');
-        return  $batch = $batch->where('item_id', $id)->get();
+        return $batch = $batch->where('item_id', $id)->get();
     }
 
     public static function get_all_customers()
@@ -85,10 +85,10 @@ class SalesHelper
         from `sales_order` where substr(`so_no`,3,2) = " . $year . " and substr(`so_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $purchaseRequestNo = 'so' . $year . $month . $str;
+        return $purchaseRequestNo = 'so' . $year . $month . $str;
     }
 
-    public static    function  sales_activity($voucher_no, $voucher_date, $amount, $table, $action)
+    public static function sales_activity($voucher_no, $voucher_date, $amount, $table, $action)
     {
 
         date_default_timezone_set("Asia/Karachi");
@@ -115,7 +115,7 @@ class SalesHelper
         from `delivery_note` where substr(`gd_no`,3,2) = " . $year . " and substr(`gd_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $purchaseRequestNo = 'dn' . $year . $month . $str;
+        return $purchaseRequestNo = 'dn' . $year . $month . $str;
     }
 
     public static function get_unique_no_sales_tax_invoice($year, $month)
@@ -127,7 +127,7 @@ class SalesHelper
         from `sales_tax_invoice` where substr(`gi_no`,3,2) = " . $year . " and substr(`gi_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $purchaseRequestNo = 'si' . $year . $month . $str;
+        return $purchaseRequestNo = 'si' . $year . $month . $str;
     }
 
     public static function get_unique_no_quotation($year, $month)
@@ -140,7 +140,7 @@ class SalesHelper
         from `quotation` where substr(`quotation_no`,3,2) = " . $year . " and substr(`quotation_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $quotation_no = 'qo' . $year . $month . $str;
+        return $quotation_no = 'qo' . $year . $month . $str;
     }
 
     public static function get_unique_no_inv($year, $month)
@@ -153,7 +153,7 @@ class SalesHelper
         from `invoice` where substr(`inv_no`,3,2) = " . $year . " and substr(`inv_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $quotation_no = 'in' . $year . $month . $str;
+        return $quotation_no = 'in' . $year . $month . $str;
     }
 
     public static function get_unique_no_job_order($year, $month)
@@ -166,9 +166,9 @@ class SalesHelper
         from `job_order` where substr(`job_order_no`,3,2) = " . $year . " and substr(`job_order_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $job_order_no = 'jo' . $year . $month . $str;
+        return $job_order_no = 'jo' . $year . $month . $str;
     }
-    public static  function get_all_customer()
+    public static function get_all_customer()
     {
         $customer = new Customer();
         $customer = $customer->SetConnection('mysql2');
@@ -177,14 +177,14 @@ class SalesHelper
 
 
 
-    public static  function get_all_customer_only_distributors()
+    public static function get_all_customer_only_distributors()
     {
         $customer = new Customer();
         $customer = $customer->SetConnection('mysql2');
         return $customer = $customer->where('CustomerType', 3)->select('id', 'name', 'cnic_ntn', 'strn', 'terms_of_payment')->get();
     }
 
-    public static  function get_all_employees()
+    public static function get_all_employees()
     {
         $customer = new Employees();
         $customer = $customer->SetConnection('mysql2');
@@ -205,16 +205,16 @@ class SalesHelper
     //         ->get();
     // }
 
-//     public static function get_all_unregistered_employees()
+    //     public static function get_all_unregistered_employees()
 // {
 //     $customer = (new Employees())->setConnection('mysql2');
 
-//     $existingEmails = User::whereNotNull('email')
+    //     $existingEmails = User::whereNotNull('email')
 //         ->where('email', '!=', '')
 //         ->pluck('email')
 //         ->toArray();
 
-//     return $customer
+    //     return $customer
 //         ->where('status', 1)
 //         ->where(function ($q) use ($existingEmails) {
 //             $q->whereNull('email')          // NULL email allow
@@ -224,29 +224,29 @@ class SalesHelper
 //         ->select('emp_id as id', 'name', 'email')
 //         ->get();
 // }
-public static function get_all_unregistered_employees()
-{
-    $employee = (new Employees())->setConnection('mysql2');
+    public static function get_all_unregistered_employees()
+    {
+        $employee = (new Employees())->setConnection('mysql2');
 
-    return $employee
-        ->where('status', 1)
-        ->select('emp_id as id', 'name', 'email')
-        ->get();
-}
+        return $employee
+            ->where('status', 1)
+            ->select('emp_id as id', 'name', 'email')
+            ->get();
+    }
 
 
 
-    public static  function get_all_client()
+    public static function get_all_client()
     {
         $client = new Client();
         $client = $client->SetConnection('mysql2');
         return $client = $client->select('id', 'client_name', 'ntn', 'strn', 'address', 'status', 'username')->where('status', 1)->get();
     }
 
-    public static  function get_total_amount_for_sales_order_by_id($id)
+    public static function get_total_amount_for_sales_order_by_id($id)
     {
 
-        return    DB::Connection('mysql2')->selectOne('select sum(b.amount)amount, sum(b.qty)qty,sum(c.amount)dn_amount,a.total_amount_after_sale_tax
+        return DB::Connection('mysql2')->selectOne('select sum(b.amount)amount, sum(b.qty)qty,sum(c.amount)dn_amount,a.total_amount_after_sale_tax
         from sales_order a
         inner join
         sales_order_data b
@@ -271,7 +271,7 @@ public static function get_all_unregistered_employees()
 
     public static function get_so_amount($id)
     {
-        return    DB::Connection('mysql2')->selectOne('select sum(b.amount)amount, sum(b.qty)qty,a.sales_tax_rate
+        return DB::Connection('mysql2')->selectOne('select sum(b.amount)amount, sum(b.qty)qty,a.sales_tax_rate
         from sales_order a
         inner join
         sales_order_data b
@@ -289,7 +289,7 @@ public static function get_all_unregistered_employees()
 
     public static function get_dn_amount_by_so_id($id)
     {
-        return    DB::Connection('mysql2')->selectOne('select sum(b.qty)qty
+        return DB::Connection('mysql2')->selectOne('select sum(b.qty)qty
         from delivery_note a
         inner join
         delivery_note_data b
@@ -302,10 +302,10 @@ public static function get_all_unregistered_employees()
 
         ');
     }
-    public static  function get_total_amount_for_dn_by_id($id)
+    public static function get_total_amount_for_dn_by_id($id)
     {
 
-        return    DB::Connection('mysql2')->selectOne('select sum(b.amount)amount, sum(b.qty)qty,sum(c.amount)dn_amount,a.sales_tax_amount
+        return DB::Connection('mysql2')->selectOne('select sum(b.amount)amount, sum(b.qty)qty,sum(c.amount)dn_amount,a.sales_tax_amount
         from delivery_note a
         inner join
         delivery_note_data b
@@ -325,17 +325,17 @@ public static function get_all_unregistered_employees()
 
     }
 
-    public static  function getTotalAmountSalesTaxInvoice($id)
+    public static function getTotalAmountSalesTaxInvoice($id)
     {
 
 
-        $data =    DB::Connection('mysql2')->selectOne('select (sum(b.amount)+a.sales_tax+a.sales_tax_further+a.adv_tax)total,sum(b.qty)qty,sum(b.amount)amount
+        $data = DB::Connection('mysql2')->selectOne('select (sum(a.total))total,sum(b.qty)qty,sum(b.amount)amount
         from sales_tax_invoice a
         inner join
         sales_tax_invoice_data b
         on
         a.id=b.master_id
-
+        left join sales_order so ON a.so_id = so.id
         where a.id="' . $id . '"
         and a.status=1
         group by a.id
@@ -349,41 +349,41 @@ public static function get_all_unregistered_employees()
 
     public static function get_freight($id)
     {
-        return  DB::Connection('mysql2')->table('addional_expense_sales_tax_invoice')->where('main_id', $id)->where('status', 1)->sum('amount');
+        return DB::Connection('mysql2')->table('addional_expense_sales_tax_invoice')->where('main_id', $id)->where('status', 1)->sum('amount');
     }
 
-    public static  function get_total_amount_for_delivery_not_by_id($id)
+    public static function get_total_amount_for_delivery_not_by_id($id)
     {
-        return  $data = DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty from delivery_note_data where master_id="' . $id . '"
+        return $data = DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty from delivery_note_data where master_id="' . $id . '"
         and status=1');
     }
-    public static  function get_total_amount_for_sales_tax_invoice_by_id($id)
+    public static function get_total_amount_for_sales_tax_invoice_by_id($id)
     {
-        return  $data = DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty,dn_data_ids,sum(tax_amount)tax_amount from sales_tax_invoice_data where master_id="' . $id . '"
+        return $data = DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty,dn_data_ids,sum(tax_amount)tax_amount from sales_tax_invoice_data where master_id="' . $id . '"
         and status=1');
     }
 
 
 
-    public static  function get_total_amount_for_credit_note_by_id($id)
+    public static function get_total_amount_for_credit_note_by_id($id)
     {
-        return  $data = DB::Connection('mysql2')->selectOne('select sum(net_amount)amount,sum(qty)qty from credit_note_data where master_id="' . $id . '" and status =1');
+        return $data = DB::Connection('mysql2')->selectOne('select sum(net_amount)amount,sum(qty)qty from credit_note_data where master_id="' . $id . '" and status =1');
     }
 
-    public static  function get_return($voucher_no, $type)
+    public static function get_return($voucher_no, $type)
     {
-        return  $data = DB::Connection('mysql2')->selectOne('select sum(net_amount)amount,sum(qty)qty from credit_note_data where voucher_no="' . $voucher_no . '" and type="' . $type . '" and status =1');
+        return $data = DB::Connection('mysql2')->selectOne('select sum(net_amount)amount,sum(qty)qty from credit_note_data where voucher_no="' . $voucher_no . '" and type="' . $type . '" and status =1');
     }
 
     public static function get_sales_tax_by_sales_order_id($id)
     {
         $sales_order = new Sales_Order();
         $sales_order = $sales_order->SetConnection('mysql2');
-        return  $sales_order = $sales_order->where('id', $id)->select('sales_tax_rate', 'sales_tax_further', 'buyers_unit')->first();
+        return $sales_order = $sales_order->where('id', $id)->select('sales_tax_rate', 'sales_tax_further', 'buyers_unit')->first();
         // return  $sales_order=$sales_order->where('id',$id)->select('sales_tax','sales_tax_further','buyers_unit','other_refrence')->first();
     }
 
-    public static  function get_client_by_id($id)
+    public static function get_client_by_id($id)
     {
         $client = new Client();
         $client = $client->SetConnection('mysql2');
@@ -394,13 +394,11 @@ public static function get_all_unregistered_employees()
     {
 
 
-        return  DB::Connection('mysql2')->selectOne('select a.inv_no, a.branch_id, a.client_ref, a.bill_to_client_id,b.net_value as  total_amount from invoice a
-                inner join
-                invoice_data_totals b
-                ON
-                a.id=b.master_id
-                where a.id="' . $id . '"
-                ');
+        return DB::Connection('mysql2')->selectOne('select a.inv_no, a.branch_id, a.client_ref, a.bill_to_client_id, (b.total + IFNULL(so.sale_taxes_amount_rate, 0)) as total_amount 
+                from sales_tax_invoice a 
+                inner join sales_tax_invoice_data_totals b ON a.id=b.master_id 
+                left join sales_order so ON a.so_id = so.id
+                where a.id="' . $id . '"');
     }
 
     public static function generateCustomerCode()
@@ -433,7 +431,7 @@ public static function get_all_unregistered_employees()
 
 
         if ($type == 1):
-            return   $users = DB::Connection('mysql2')->table('delivery_note as a')
+            return $users = DB::Connection('mysql2')->table('delivery_note as a')
                 ->join('delivery_note_data as b', 'a.id', '=', 'b.master_id')
                 ->select('b.id', 'b.master_id', 'b.qty', 'b.rate', 'b.amount', 'b.tax', 'b.tax_amount', 'b.item_id', 'a.sales_tax_invoice_id', )
                 ->where('a.status', 1)
@@ -448,7 +446,7 @@ public static function get_all_unregistered_employees()
 
             $sales_tax_invoice_data = new SalesTaxInvoiceData();
             $sales_tax_invoice_data = $sales_tax_invoice_data->SetConnection('mysql2');
-            return  $sales_tax_invoice_data = $sales_tax_invoice_data->where('master_id', $master_id)->get();
+            return $sales_tax_invoice_data = $sales_tax_invoice_data->where('master_id', $master_id)->get();
         endif;
     }
 
@@ -463,14 +461,14 @@ public static function get_all_unregistered_employees()
         from `credit_note` where substr(`cr_no`,3,2) = " . $year . " and substr(`cr_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $purchaseRequestNo = 'SR' . $year . $month . $str;
+        return $purchaseRequestNo = 'SR' . $year . $month . $str;
     }
 
     public static function get_data_from_invoice($id, $type)
     {
 
         if ($type == 1):
-            return    $acc_id = DB::Connection('mysql2')->table('delivery_note_data as a')
+            return $acc_id = DB::Connection('mysql2')->table('delivery_note_data as a')
                 ->join('delivery_note as b', 'a.master_id', '=', 'b.id')
                 ->select(
                     'a.id',
@@ -492,7 +490,7 @@ public static function get_all_unregistered_employees()
 
         else:
 
-            return    $acc_id = DB::Connection('mysql2')->table('sales_tax_invoice_data as a')
+            return $acc_id = DB::Connection('mysql2')->table('sales_tax_invoice_data as a')
                 ->join('sales_tax_invoice as b', 'a.master_id', '=', 'b.id')
                 ->select('b.gi_no', 'a.id', 'b.gi_date', 'a.qty', 'a.rate', 'a.tax', 'a.tax_amount', 'a.amount', 'a.item_id', 'a.so_id', 'a.warehouse_id', 'a.so_data_id')
                 ->where('a.id', $id)
@@ -522,7 +520,7 @@ public static function get_all_unregistered_employees()
             ->first();
     }
 
-    public  static function return_qty($type, $id, $voucher_no)
+    public static function return_qty($type, $id, $voucher_no)
     {
 
         if ($type == 1):
@@ -535,14 +533,14 @@ public static function get_all_unregistered_employees()
 
         else:
 
-            return   DB::Connection('mysql2')->table('credit_note_data')->where('status', 1)
+            return DB::Connection('mysql2')->table('credit_note_data')->where('status', 1)
                 ->where('type', $type)
                 ->where('voucher_data_id', $voucher_no)
                 ->where('voucher_no', $id)
                 ->sum('qty');
         endif;
     }
-    public  static function return_qty_for_dn($type, $id)
+    public static function return_qty_for_dn($type, $id)
     {
 
         if ($type == 1):
@@ -554,7 +552,7 @@ public static function get_all_unregistered_employees()
 
 
         else:
-            return   DB::Connection('mysql2')->table('credit_note_data')->where('status', 1)
+            return DB::Connection('mysql2')->table('credit_note_data')->where('status', 1)
                 ->where('type', $type)
 
                 ->where('voucher_no', $id)
@@ -565,8 +563,8 @@ public static function get_all_unregistered_employees()
     public static function get_batch_code($id, $type)
     {
         if ($type == 1):
-            return    $purchases = DB::Connection('mysql2')->table('delivery_note_data')
-                ->where('id',  $id)
+            return $purchases = DB::Connection('mysql2')->table('delivery_note_data')
+                ->where('id', $id)
                 ->where('status', 1)
                 ->select('batch_code')
                 ->first();
@@ -574,8 +572,8 @@ public static function get_all_unregistered_employees()
 
         else:
 
-            return   $purchases = DB::Connection('mysql2')->table('delivery_note_data')
-                ->where('so_data_id',  $id)
+            return $purchases = DB::Connection('mysql2')->table('delivery_note_data')
+                ->where('so_data_id', $id)
                 ->where('status', 1)
                 ->select('batch_code')
                 ->first();
@@ -585,7 +583,7 @@ public static function get_all_unregistered_employees()
 
     public static function dn_qty($so_data_id, $dn_ids)
     {
-        return  DB::Connection('mysql2')->selectOne('select sum(qty)qty,rate,tax from delivery_note_data where status=1
+        return DB::Connection('mysql2')->selectOne('select sum(qty)qty,rate,tax from delivery_note_data where status=1
             and so_data_id="' . $so_data_id . '"
             and master_id in (' . $dn_ids . ')');
     }
@@ -611,7 +609,7 @@ public static function get_all_unregistered_employees()
     {
 
 
-        $data = DB::Connection('mysql2')->selectOne('select a.gi_no,a.sc_no,c.so_no,(sum(b.amount)+a.sales_tax+a.sales_tax_further) invoice_amount,a.gi_no,a.so_id,a.buyers_id,a.so_type,a.description,sum(b.amount)as old_amount from sales_tax_invoice as  a
+        $data = DB::Connection('mysql2')->selectOne('select a.gi_no,a.sc_no,c.so_no,(sum(b.amount)+a.sales_tax+a.sales_tax_further + IFNULL(c.sale_taxes_amount_rate, 0)) invoice_amount,a.gi_no,a.so_id,a.buyers_id,a.so_type,a.description, (sum(b.amount) + IFNULL(c.sale_taxes_amount_rate, 0)) as old_amount from sales_tax_invoice as  a
         inner join
         sales_tax_invoice_data as b
         on
@@ -624,6 +622,7 @@ public static function get_all_unregistered_employees()
         where
          a.status=1
         and a.id="' . $id . '"
+        group by a.id
         ');
 
 
@@ -633,7 +632,7 @@ public static function get_all_unregistered_employees()
     public static function get_sales_return_from_sales_tax_invoice($id)
     {
 
-        return  DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+c.sales_tax+c.sales_tax_further)amount from credit_note_data a
+        return DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+c.sales_tax+c.sales_tax_further)amount from credit_note_data a
 
         inner join
         credit_note c
@@ -652,7 +651,7 @@ public static function get_all_unregistered_employees()
     public static function get_sales_return_from_sales_tax_invoice_by_date($id, $from, $to)
     {
 
-        return  DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+c.sales_tax+c.sales_tax_further)amount from credit_note_data a
+        return DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+c.sales_tax+c.sales_tax_further)amount from credit_note_data a
         inner join
         credit_note c
         on
@@ -670,7 +669,7 @@ public static function get_all_unregistered_employees()
 
     public static function get_sales_return_dn($id)
     {
-        return  DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+c.sales_tax+c.sales_tax_further)amount from credit_note_data a
+        return DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+c.sales_tax+c.sales_tax_further)amount from credit_note_data a
 
         inner join
         credit_note c
@@ -688,7 +687,7 @@ public static function get_all_unregistered_employees()
 
     public static function get_sales_inv_amount($id)
     {
-        return  DB::Connection('mysql2')->selectOne('select (sum(a.amount)+c.sales_tax+c.sales_tax_further) amount from sales_tax_invoice_data a
+        return DB::Connection('mysql2')->selectOne('select (sum(a.amount)+c.sales_tax+c.sales_tax_further) amount from sales_tax_invoice_data a
         inner join
         sales_tax_invoice c
         on
@@ -715,11 +714,12 @@ public static function get_all_unregistered_employees()
             FROM brige_table_sales_receipt br
             INNER JOIN (
                 SELECT a.id,
-                       (SUM(b.amount) + a.sales_tax + a.sales_tax_further) as invoice_amount
+                       (SUM(b.amount) + a.sales_tax + a.sales_tax_further + IFNULL(so.sale_taxes_amount_rate, 0)) as invoice_amount
                 FROM sales_tax_invoice a
                 INNER JOIN sales_tax_invoice_data b ON a.id = b.master_id AND b.status = 1
+                LEFT JOIN sales_order so ON a.so_id = so.id
                 WHERE a.status = 1
-                GROUP BY a.id
+                GROUP BY a.id, so.sale_taxes_amount_rate
             ) inv ON br.si_id = inv.id
             WHERE br.rv_id = "' . $rv_id . '"
         ');
@@ -738,10 +738,10 @@ public static function get_all_unregistered_employees()
         and b.status=1')->net_amount;
     }
 
-    public static  function get_total_amount_for_invoice_by_id($id)
+    public static function get_total_amount_for_invoice_by_id($id)
     {
 
-        return    DB::Connection('mysql2')->selectOne('select sum(b.amount)amount,sum(c.amount)addition_amount,a.sales_tax
+        return DB::Connection('mysql2')->selectOne('select sum(b.amount)amount,sum(c.amount)addition_amount,a.sales_tax
         from  sales_tax_invoice a
         inner join
         sales_tax_invoice_data b
@@ -762,10 +762,10 @@ public static function get_all_unregistered_employees()
     }
 
 
-    public static  function get_total_amount_si_status($id)
+    public static function get_total_amount_si_status($id)
     {
 
-        return    DB::Connection('mysql2')->selectOne('select sum(b.amount)amount,sum(c.amount)addition_amount,a.sales_tax,sum(d.received_amount) as received_amount
+        return DB::Connection('mysql2')->selectOne('select sum(b.amount)amount,sum(c.amount)addition_amount,a.sales_tax,sum(d.received_amount) as received_amount
         from  sales_tax_invoice a
         inner join
         sales_tax_invoice_data b
@@ -807,7 +807,7 @@ public static function get_all_unregistered_employees()
 
     public static function get_pos_qty_amount($id, $type)
     {
-        return  DB::Connection('mysql2')->selectOne('
+        return DB::Connection('mysql2')->selectOne('
       select sum(qty)qty,sum(amount)amount,sum(discount_amount)discount_amount
       from pos_data
       where status=1
@@ -829,7 +829,7 @@ public static function get_all_unregistered_employees()
 
     public static function get_return_data_against_pos($pos_id)
     {
-        return  DB::Connection('mysql2')->selectOne('select sum(b.qty)qty,sum(b.net_amount)net_amount
+        return DB::Connection('mysql2')->selectOne('select sum(b.qty)qty,sum(b.net_amount)net_amount
         from credit_note as a
         inner join
         credit_note_data b
@@ -865,10 +865,10 @@ public static function get_all_unregistered_employees()
             $approve = 'Approved';
 
         elseif ($status == 4):
-            $approve =   'Approved';
+            $approve = 'Approved';
 
         elseif ($status == 1):
-            $approve =   'Approved';
+            $approve = 'Approved';
 
         endif;
         return $approve;
@@ -890,7 +890,7 @@ public static function get_all_unregistered_employees()
 
     public static function sale_order_qty($id)
     {
-        $response =  FacadesDB::connection('mysql2')
+        $response = FacadesDB::connection('mysql2')
             ->table('sales_order_data')
             ->leftJoin('delivery_note_data', function ($join) {
                 $join->on('delivery_note_data.so_data_id', '=', 'sales_order_data.id');
@@ -903,7 +903,7 @@ public static function get_all_unregistered_employees()
             ->where('sales_order_data.item_id', $id)
             ->first();
         if (!empty($response)) {
-            return  $response->quantity_difference;
+            return $response->quantity_difference;
         } else {
             return 0;
         }

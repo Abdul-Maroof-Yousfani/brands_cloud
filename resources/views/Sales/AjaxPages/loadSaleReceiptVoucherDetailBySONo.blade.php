@@ -76,18 +76,27 @@ $soId = $makeGetValue[2];
 				</div>
 			</div>
 			<div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <label class="sf-label">Receipt Type.</label>
                     <select name="receiptType" id="receiptType" class="form-control" onchange="changeReceiptVoucherType()">
                         <option value="1">Bank</option>
                         <option value="2">Cash</option>
                     </select>
                 </div>
-				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 show_bank_div">
+                    <label class="sf-label">Bank</label>
+                    <select name="bank" id="bank" class="form-control select2">
+                        <option value="">Select Bank</option>
+                        @foreach(DB::connection('mysql2')->table('bank_detail')->get() as $bank)
+                            <option value="{{ $bank->id }}">{{ $bank->bank_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 					<label class="sf-label">Cheque No.</label>
 					<input type="text" class="form-control requiredField" placeholder="Cheque No" name="cheque_no" id="cheque_no" value="" />
 				</div>
-				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 					<label class="sf-label">Cheque Date.</label>
 					<span class="rflabelsteric"><strong>*</strong></span>
 					<input type="date" class="form-control requiredField" name="cheque_date" id="cheque_date" value="<?php echo date('Y-m-d') ?>" />
@@ -124,6 +133,9 @@ $soId = $makeGetValue[2];
                                     <?php
                                     $counter = 1;
                                     ?>
+                                        @php
+                                            $customer_defaults = DB::connection('mysql2')->table('customers')->where('id', $saleQuotationDetail->customer_id)->first();
+                                        @endphp
                                         <tr>
                                             <td>
                                                 <?php $counter++;?>
@@ -131,7 +143,7 @@ $soId = $makeGetValue[2];
                                                 <select class="form-control requiredField" name="account_id_<?php echo $counter?>" id="account_id_<?php echo $counter?>">
                                                     <option value="">Select Account</option>
                                                     @foreach($accounts as $key => $y)
-                                                        <option value="{{ $y->id}}">{{ $y->code .' ---- '. $y->name}}</option>
+                                                        <option value="{{ $y->id}}" {{ ($customer_defaults->deposit_to_acc_id ?? 0) == $y->id ? 'selected' : '' }}>{{ $y->code .' ---- '. $y->name}}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
@@ -204,6 +216,7 @@ $soId = $makeGetValue[2];
         if(receiptType == 1){
             $("#cheque_no").removeAttr('disabled');
             $("#cheque_date").removeAttr('disabled');
+            $(".show_bank_div").show();
             
             $('#cheque_no').addClass('requiredField');
             $('#cheque_no').addClass('requiredField');
@@ -212,6 +225,7 @@ $soId = $makeGetValue[2];
         }else if(receiptType == 2){
             $("#cheque_no").attr('disabled','disabled');
             $("#cheque_date").attr('disabled','disabled');
+            $(".show_bank_div").hide();
 
             $('#cheque_no').removeClass('requiredField');
             $('#cheque_date').removeClass('requiredField');
