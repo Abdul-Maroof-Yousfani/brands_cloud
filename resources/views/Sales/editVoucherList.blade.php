@@ -82,19 +82,31 @@ use App\Helpers\ReuseableCode;
                                 $customer = CommonHelper::byers_name($invoice_detail_first->buyers_id ?? 0);
                                 $cust_acc = DB::connection('mysql2')->table('accounts')->where('id', $customer->acc_id ?? 0)->select('name', 'code')->first();
                             @endphp
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <label>Customer Name & Cr Account</label>
                                 <input type="text" class="form-control" readonly
                                     value="{{ ($customer->name ?? 'N/A') . ' (' . ($cust_acc->name ?? 'N/A') . ' - ' . ($cust_acc->code ?? 'N/A') . ')' }}">
                             </div>
 
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
-                                <label for="bank">Banks (Customer Bank)</label>
+                                <label for="bank">Banks (Company Bank)</label>
                                 <?php $bank = DB::Connection('mysql2')->table('bank_detail')->get(); ?>
                                 <select name="bank" class="form-control select2">
                                     <option value="">Select Bank</option>
                                     @foreach ($bank as $row)
                                         <option value="{{ $row->id }}" {{ $NewRvs->bank == $row->id ? 'selected' : '' }}>
+                                            {{ $row->bank_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
+                                <label for="bank_detail_customer">Banks (Deposit To)</label>
+                                <?php $bank = DB::Connection('mysql2')->table('bank_detail_customer')->get(); ?>
+                                <select name="bank_detail_customer" class="form-control select2">
+                                    <option value="">Select Bank</option>
+                                    @foreach ($bank as $row)
+                                        <option value="{{ $row->id }}" {{ $NewRvs->bank_customer_id == $row->id ? 'selected' : '' }}>
                                             {{ $row->bank_name }}
                                         </option>
                                     @endforeach
@@ -116,7 +128,7 @@ use App\Helpers\ReuseableCode;
                             </div>
 
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                                <label for="acc_id">Dr Account (Deposit To)</label>
+                                <label for="acc_id">Dr Account</label>
                                 @php
                                     $dr_acc_selected = $NewRvs->acc_id;
                                     if (!$dr_acc_selected) {

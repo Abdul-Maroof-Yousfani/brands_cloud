@@ -76,7 +76,7 @@ if ($so_data_raw) {
                     <select name="territory_id" id="territory_id" class="form-control select2">
                         <option value="">Select Territory</option>
                         @foreach (CommonHelper::get_all_territories() as $territory)
-                            <option value="{{ $territory->id }}">{{ $territory->name }}</option>
+                            <option value="{{ $territory->id }}" {{ ($customer->territory_id ?? 0) == $territory->id ? 'selected' : '' }}>{{ $territory->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -92,16 +92,26 @@ if ($so_data_raw) {
             </div>
 
             <div class="row" style="margin-top: 15px;">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                     <label>Customer Name & Cr Account</label>
                     <input type="text" class="form-control" readonly
                         value="{{ ($customer->name ?? 'N/A') . ' (' . ($cust_acc->name ?? 'N/A') . ' - ' . ($cust_acc->code ?? 'N/A') . ')' }}">
                 </div>
 
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
-                    <label for="bank">Banks (Customer Bank)</label>
+                    <label for="bank">Banks (Company Bank)</label>
                     <?php $bank = DB::Connection('mysql2')->table('bank_detail')->get(); ?>
                     <select name="bank" class="form-control select2">
+                        <option value="">Select Bank</option>
+                        @foreach ($bank as $row)
+                            <option value="{{ $row->id }}">{{ $row->bank_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
+                    <label for="bank_detail_customer">Banks (Deposit To)</label>
+                    <?php $bank = DB::Connection('mysql2')->table('bank_detail_customer')->get(); ?>
+                    <select name="bank_detail_customer" class="form-control select2">
                         <option value="">Select Bank</option>
                         @foreach ($bank as $row)
                             <option value="{{ $row->id }}">{{ $row->bank_name }}</option>
@@ -122,7 +132,7 @@ if ($so_data_raw) {
                 </div>
 
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <label for="acc_id">Dr Account (Deposit To)</label>
+                    <label for="acc_id">Dr Account</label>
                     <select name="acc_id" id="acc_id" class="form-control select2">
                         <option value="">Select</option>
                         @foreach (CommonHelper::get_all_account() as $row11)

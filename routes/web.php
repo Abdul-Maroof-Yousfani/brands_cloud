@@ -2445,6 +2445,12 @@ Route::post('/insertAllPayment', 'AllInOnePaymentVoucherController@insertAllPaym
 Route::get('/get_pv_merge_chunk', 'AllInOnePaymentVoucherController@get_pv_merge_chunk')->name('get_pv_merge_chunk');
 Route::get('/pv_acount_head_po_pi_chunk', 'AllInOnePaymentVoucherController@pv_acount_head_po_pi_chunk')->name('pv_acount_head_po_pi_chunk');
 
+// Customer bank details routing
+Route::get('sales/addCustomerBank', 'SalesAddDetailControler@addCustomerBank');
+Route::post('sales/submitCustomerBank', 'SalesAddDetailControler@submitCustomerBank');
+Route::get('sales/viewCustomerBank', 'SalesAddDetailControler@viewCustomerBank');
+Route::get('sales/editCustomerBank/{id}', 'SalesAddDetailControler@editCustomerBank');
+Route::post('sales/updateCustomerBank/{id}', 'SalesAddDetailControler@updateCustomerBank');
 
 require('Production/Production.php');
 require('InventoryMaster/InventoryMaster.php');

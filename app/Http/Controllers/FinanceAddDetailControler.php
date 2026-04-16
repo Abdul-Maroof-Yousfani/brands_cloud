@@ -2775,6 +2775,7 @@ class FinanceAddDetailControler extends Controller
 				$pay_mode=1;
 				$rv_type=1;
 				$bank=$request->bank;
+				$bank_detail_customer=$request->bank_detail_customer;
 				elseif ($request->pay_mode=='2,2'):
 					$rv_no = CommonHelper::uniqe_no_for_rvs(date('y'),date('m'),2);
 					$pay_mode=2;
@@ -2809,6 +2810,7 @@ class FinanceAddDetailControler extends Controller
 				'pay_mode'=>$pay_mode,
 				'territory_id' => $territory_id,
 				'brand_id' => $brand_id,
+				'bank_customer_id' => $bank_detail_customer,
 				'principal_group_id' => $principal_group_id,
 				'acc_id' => $request->acc_id
 			);

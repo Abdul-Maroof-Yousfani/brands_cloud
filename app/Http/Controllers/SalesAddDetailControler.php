@@ -233,6 +233,53 @@ class SalesAddDetailControler extends Controller
         return Redirect::to('sales/addReceiptVoucherAgainstSOForm?pageType=' . $pageType . '&&parentCode=' . $parentCode . '&&m=' . $m . '#SFR');
     }
 
+    public function addCustomerBank()
+    {
+        return view('Sales.addCustomerBank');
+    }
+
+    public function submitCustomerBank(Request $request)
+    {
+        $m = Input::get('m');
+        
+        $data['bank_name'] = Input::get('bank_name');
+        $data['username']  = Auth::user()->name;
+        $data['status']    = 'active';
+        $data['date']      = date('Y-m-d');
+        
+        DB::connection('mysql2')->table('bank_detail_customer')->insert($data);
+        
+        return Redirect::to('sales/viewCustomerBank?m='.$m)->with('success', 'Customer Bank created successfully!');
+    }
+
+    public function viewCustomerBank()
+    {
+        $m = Input::get('m');
+        CommonHelper::companyDatabaseConnection($m);
+        $data = DB::connection('mysql2')->table('bank_detail_customer')->orderBy('id', 'desc')->get();
+        return view('Sales.viewCustomerBank', compact('data'));
+    }
+
+    public function editCustomerBank($id)
+    {
+        $m = Input::get('m');
+        $bank = DB::connection('mysql2')->table('bank_detail_customer')->where('id', $id)->first();
+        return view('Sales.editCustomerBank', compact('bank'));
+    }
+
+    public function updateCustomerBank(Request $request, $id)
+    {
+        $m = Input::get('m');
+        
+        DB::connection('mysql2')->table('bank_detail_customer')
+            ->where('id', $id)
+            ->update([
+                'bank_name' => Input::get('bank_name')
+            ]);
+            
+        return Redirect::to('sales/viewCustomerBank?m='.$m)->with('success', 'Customer Bank updated successfully!');
+    }
+
     public function addCashCustomerDetail()
     {
         CommonHelper::companyDatabaseConnection($_GET['m']);
