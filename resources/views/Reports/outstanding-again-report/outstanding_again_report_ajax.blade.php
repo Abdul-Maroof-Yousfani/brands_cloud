@@ -18,9 +18,10 @@
             @endif
         </td>
     
-        <td>{{ $data->internal_bank_name ?? 'N/A' }}</td>
+                <td>{{ $data->company_bank_id ? \App\Helpers\CommonHelper::get_bank_account_by_id($data->company_bank_id)->bank_name : "N/A" }}</td>
+
         <td>{{ $data->cheque_no }}</td>
-        <td>{{ $data->customer_bank_id ? \App\Helpers\CommonHelper::get_bank_account_by_id($data->customer_bank_id)->bank_name : "N/A" }}</td>
+        <td>{{ $data->bank_customer_id ? \App\Helpers\CommonHelper::get_bank_account_by_id_customer($data->bank_customer_id)->bank_name : "N/A" }}</td>
         <td>{{ $data->cheque_date }}</td>
         <td class="total_amount">{{ number_format($data->amount) }}</td>
     </tr>

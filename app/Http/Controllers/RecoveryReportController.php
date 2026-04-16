@@ -13,8 +13,10 @@ class RecoveryReportController extends Controller
             $v_no = $request->v_no;
             $customer_id = $request->customer_id;
             $internal_bank_id = $request->internal_bank_id;
-            $customer_bank_id = $request->customer_bank_id;
+            $company_bank_id = $request->company_bank_id;
             $principal_group_id = $request->principal_group_id;
+            $bank_customer_id = $request->bank_customer_id;
+            $bank_customer_id = $request->bank_customer_id;
 
             $outstandings = DB::connection("mysql2")
                                 ->table("new_rvs")
@@ -30,7 +32,8 @@ class RecoveryReportController extends Controller
                                     "customers.territory_id as customer_territory",
                                     "new_rvs.pay_mode",
                                     "new_rvs.cheque_no",
-                                    "new_rvs.bank as customer_bank_id",
+                                    "new_rvs.bank as company_bank_id",
+                                    "new_rvs.bank_customer_id as bank_customer_id",
                                     "new_rvs.cheque_date",
                                     "accounts.name as internal_bank_name",
                                     "new_rvs.principal_group_id",
@@ -48,8 +51,11 @@ class RecoveryReportController extends Controller
                                 ->when($internal_bank_id, function($q) use ($internal_bank_id) {
                                     $q->where("new_rv_data.acc_id", $internal_bank_id);
                                 })
-                                ->when($customer_bank_id, function($q) use ($customer_bank_id) {
-                                    $q->where("new_rvs.bank", $customer_bank_id);
+                                ->when($company_bank_id, function($q) use ($company_bank_id) {
+                                    $q->where("new_rvs.bank", $company_bank_id);
+                                })
+                                ->when($bank_customer_id, function($q) use ($bank_customer_id) {
+                                    $q->where("new_rvs.bank_customer_id", $bank_customer_id);
                                 })
                                 ->when($principal_group_id, function($q) use ($principal_group_id) {
                                     $q->where("new_rvs.principal_group_id", $principal_group_id);

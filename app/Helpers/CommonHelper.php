@@ -133,6 +133,11 @@ public static function territory_name($id)
     return $territory->where('id', $id)->value('name');
 }
 
+public static function get_bank_account_by_id_customer($id)
+{
+    return DB::Connection('mysql2')->table('bank_detail_customer')->where('id', $id)->first();
+}
+
 
 public static function get_ba_location($ba_id) {
     $location = DB::table("ba_locations")

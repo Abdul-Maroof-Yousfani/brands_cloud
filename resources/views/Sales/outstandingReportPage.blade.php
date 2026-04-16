@@ -65,7 +65,9 @@ $AccYearTo = $AccYearDate->accyearto;
                     <div class="lineHeight">&nbsp;</div>
                     <div class="panel">
                         <div class="panel-body" id="PrintEmpExitInterviewList">
-                            <?php echo CommonHelper::headerPrintSectionInPrintView($m);?>
+                            <div class="visible-print-block">
+                                <?php echo CommonHelper::headerPrintSectionInPrintView($m);?>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12col-xs-12">
                                     <div class="table-responsive" id="ShowHide">
