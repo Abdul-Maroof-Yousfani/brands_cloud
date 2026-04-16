@@ -25,7 +25,7 @@ use App\Helpers\ReuseableCode;
     <div class="panel-body well_N">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
+                <h2 style="font-size: large;font-weight: bold; text-decoration: underline;">Edit Receipt Voucher</h2>
                 <div class="well">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

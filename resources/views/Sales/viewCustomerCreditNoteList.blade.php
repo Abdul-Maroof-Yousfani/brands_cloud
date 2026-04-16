@@ -89,7 +89,8 @@ $export=ReuseableCode::check_rights(258);
                                             <th class="text-center col-sm-1">SO No</th>
                                             <th class="text-center col-sm-1">SI / Deliver No</th>
                                             <th class="text-center col-sm-1">Type</th>
-                                            <th class="text-center col-sm-1">Return No (CR)</th>
+                                            <th class="text-center col-sm-1">Return No</th>
+                                            <th class="text-center col-sm-1">Date</th>
                                             <th class="text-center col-sm-2">Customer / Buyer</th>
                                             <th class="text-center col-sm-2">Amount</th>
                                             <th class="text-center col-sm-1">Action</th>
@@ -121,6 +122,7 @@ $export=ReuseableCode::check_rights(258);
                                                 <tr @if($row->type==3) style="background-color: lavenderblush" @endif title="" id="{{$row->id}}">
                                                     <td class="text-center">{{$counter++}}</td>
                                                     <td class="text-center"><?php if($row->type==3): echo strtoupper($pos_no); else: echo strtoupper($SoNo); endif?></td>
+                                                    <td class="text-center">-</td>
                                                     <td class="text-center">@if($row->type==1) DN @elseif($row->type==2) SI @else POS @endif</td>
                                                     <td title="{{$row->id}}" class="text-center">{{strtoupper($row->cr_no)}}</td>
                                                     <td class="text-center"><?php  echo CommonHelper::changeDateFormat($row->cr_date);?></td>
@@ -224,7 +226,7 @@ $export=ReuseableCode::check_rights(258);
             var si_dn_no    = $('#si_dn_no').val();
             var m           = '<?php echo $m;?>';
 
-            $('#data').html('<tr><td colspan="8"><div class="row"><div class="col-lg-12"><div class="loader"></div></div></div></td></tr>');
+            $('#data').html('<tr><td colspan="9"><div class="row"><div class="col-lg-12"><div class="loader"></div></div></div></td></tr>');
 
             $.ajax({
                 url: "{{ route('getCustomerCreditNoteData') }}",

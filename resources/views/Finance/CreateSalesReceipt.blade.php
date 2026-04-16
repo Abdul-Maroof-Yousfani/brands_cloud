@@ -55,8 +55,12 @@ if ($so_data_raw) {
     <?php echo Form::open(['url' => 'fad/addSalesReceipt?m=' . $_GET['m'] . '', 'id' => 'createSalesOrder', 'class' => 'stop']); ?>
     <div class="well_N">
         <div class="well">
+             <h2 style="font-size: large;font-weight: bold; text-decoration: underline;">Receipt Voucher</h2>
             <div class="row">
+
+            
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <label for="email">Voucher Date</label>
                         <input type="date" value="{{ date('Y-m-d') }}" class="form-control" id="v_date" name="v_date">

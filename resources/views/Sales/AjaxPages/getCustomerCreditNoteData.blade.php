@@ -48,6 +48,7 @@ $OverAllTotal = 0;
             @endif
         </td>
         <td class="text-center" title="{{ $row->id }}">{{ strtoupper($row->cr_no) }}</td>
+        <td class="text-center">{{ CommonHelper::changeDateFormat($row->cr_date) }}</td>
         <td class="text-center">{{ $customerName }}</td>
         <td class="text-center">{{ number_format($NetAmount, 2) }}</td>
         <td class="text-center">
