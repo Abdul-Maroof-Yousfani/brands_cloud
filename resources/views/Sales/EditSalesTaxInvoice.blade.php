@@ -132,9 +132,7 @@ label {
 
                                                                             <div
                                                                                 class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                                                                <label class="sf-label">Buyer's
-                                                                                    Order
-                                                                                    Date<span
+                                                                                <label class="sf-label">Invoice Due Date<span
                                                                                         class="rflabelsteric"><strong>*</strong></span></label>
                                                                                 <input type="date"
                                                                                     class="form-control"
@@ -279,6 +277,52 @@ label {
                                                                                 <span class="rflabelsteric">
                                                                                     <textarea name="description" id="description" rows="4" cols="50" style="resize:none;text-transform:capitalize" class="form-control">{{$sales_tax_invoice->description}}</textarea>
                                                                                 </span>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {{-- SO Fields --}}
+                                                                        <?php
+                                                                            $relatedSO = DB::connection('mysql2')->table('sales_order')->where('so_no', $sales_tax_invoice->so_no)->first();
+                                                                        ?>
+                                                                        <div class="row" style="margin-top:10px;">
+                                                                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                <label class="sf-label">Mode / Terms Of Payment</label>
+                                                                                <input readonly type="text" class="form-control" name="model_terms_of_payment" value="{{$relatedSO->model_terms_of_payment ?? ''}}" />
+                                                                            </div>
+                                                                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                <label class="sf-label">Sales Person</label>
+                                                                                <input readonly type="text" class="form-control" name="sales_person" value="{{$relatedSO->sales_person ?? ''}}" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row" style="margin-top:5px;">
+                                                                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                <label class="sf-label">Warehouse</label>
+                                                                                <?php
+                                                                                    $warehouseName = '';
+                                                                                    if(!empty($relatedSO->warehouse_from)) {
+                                                                                        $wh = DB::connection('mysql2')->table('warehouse')->where('id', $relatedSO->warehouse_from)->first();
+                                                                                        $warehouseName = $wh ? $wh->name : '';
+                                                                                    }
+                                                                                ?>
+                                                                                <input readonly type="text" class="form-control" name="warehouse_name" value="{{$warehouseName}}" />
+                                                                            </div>
+                                                                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                <label class="sf-label">Special Price Mapped</label>
+                                                                                <input readonly type="text" class="form-control" name="special_price_mapped" value="{{$customerDetail->special_price ?? 'no'}}" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row" style="margin-top:5px;">
+                                                                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                <label class="sf-label">Principal Group</label>
+                                                                                <?php
+                                                                                    $principalNames = '';
+                                                                                    if(!empty($relatedSO->principal_group_ids)) {
+                                                                                        $pgIds = explode(',', $relatedSO->principal_group_ids);
+                                                                                        $pgNames = DB::connection('mysql2')->table('products_principal_group')->whereIn('id', $pgIds)->pluck('products_principal_group')->toArray();
+                                                                                        $principalNames = implode(', ', $pgNames);
+                                                                                    }
+                                                                                ?>
+                                                                                <input readonly type="text" class="form-control" name="principal_group" value="{{$principalNames}}" />
                                                                             </div>
                                                                         </div>
 

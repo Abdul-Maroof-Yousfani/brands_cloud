@@ -225,15 +225,13 @@ label {
 
                                                                                 <div
                                                                                     class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                                                                    <label class="sf-label">Buyer's
-                                                                                        Order
-                                                                                        Date<span
+                                                                                    <label class="sf-label">Invoice Due Date<span
                                                                                             class="rflabelsteric"><strong>*</strong></span></label>
                                                                                     <input type="date"
                                                                                         class="form-control"
                                                                                         placeholder="" name="order_date"
                                                                                         id="order_date"
-                                                                                        value="{{$sales_order->so_date}}" />
+                                                                                        value="<?php echo $DueDue?>" />
                                                                                 </div>
 
                                                                                 <div
@@ -372,6 +370,49 @@ label {
                                                                                     <span class="rflabelsteric">
                                                                                         <textarea name="description" id="description" rows="4" cols="50" style="resize:none;text-transform:capitalize" class="form-control"></textarea>
                                                                                     </span>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {{-- SO Fields --}}
+                                                                            <div class="row" style="margin-top:10px;">
+                                                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                    <label class="sf-label">Mode / Terms Of Payment</label>
+                                                                                    <input readonly type="text" class="form-control" name="model_terms_of_payment" id="model_terms_of_payment" value="{{$sales_order->model_terms_of_payment}}" />
+                                                                                </div>
+                                                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                    <label class="sf-label">Sales Person</label>
+                                                                                    <input readonly type="text" class="form-control" name="sales_person" value="{{$sales_order->sales_person}}" />
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row" style="margin-top:5px;">
+                                                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                    <label class="sf-label">Warehouse</label>
+                                                                                    <?php
+                                                                                        $warehouseName = '';
+                                                                                        if(!empty($sales_order->warehouse_from)) {
+                                                                                            $wh = DB::connection('mysql2')->table('warehouse')->where('id', $sales_order->warehouse_from)->first();
+                                                                                            $warehouseName = $wh ? $wh->name : '';
+                                                                                        }
+                                                                                    ?>
+                                                                                    <input readonly type="text" class="form-control" name="warehouse_name" value="{{$warehouseName}}" />
+                                                                                </div>
+                                                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                    <label class="sf-label">Special Price Mapped</label>
+                                                                                    <input readonly type="text" class="form-control" name="special_price_mapped" value="{{$customerDetail->special_price ?? 'no'}}" />
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row" style="margin-top:5px;">
+                                                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                                                    <label class="sf-label">Principal Group</label>
+                                                                                    <?php
+                                                                                        $principalNames = '';
+                                                                                        if(!empty($sales_order->principal_group_ids)) {
+                                                                                            $pgIds = explode(',', $sales_order->principal_group_ids);
+                                                                                            $pgNames = DB::connection('mysql2')->table('products_principal_group')->whereIn('id', $pgIds)->pluck('products_principal_group')->toArray();
+                                                                                            $principalNames = implode(', ', $pgNames);
+                                                                                        }
+                                                                                    ?>
+                                                                                    <input readonly type="text" class="form-control" name="principal_group" value="{{$principalNames}}" />
                                                                                 </div>
                                                                             </div>
 
