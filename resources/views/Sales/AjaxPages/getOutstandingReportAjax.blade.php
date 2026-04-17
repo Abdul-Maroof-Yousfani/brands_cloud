@@ -124,12 +124,12 @@ if((!empty($Invoice))):
 
             <?php
 
-            $inv=$data->total+$get_freight+$sale_taxes_amount_rate; ?>
+            $inv=$data->total; ?>
 
             <td class="text-right">{{number_format($inv,2)}}</td>
             <td class="text-right">{{number_format($return_amount,2)}} <?php $total_return+=$return_amount; ?></td>
             <?php
-            $rema=$data->total+$get_freight+$sale_taxes_amount_rate-$return_amount-$rece;?>
+            $rema=$data->total-$return_amount-$rece;?>
             <td class="text-right">{{number_format($rece,2)}}</td>
             <td class="text-right">{{number_format($rema,2)}}</td>
 

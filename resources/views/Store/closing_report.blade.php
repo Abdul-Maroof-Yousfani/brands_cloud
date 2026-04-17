@@ -45,31 +45,23 @@ if (isset($_GET['item_id'])) {
                             </div>
                         </div>
                         <div class="panel-body">
-                            <form method="get" id="list_data"
-                                class="form-horizontal">
+                            <form method="get" id="list_data" class="form-horizontal">
                                 <?php csrf_token(); ?>
-                                <div class="row">
-                                    <!-- <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label class="control-label">From Date</label>
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="date" name="from" class="form-control" value="{{ date('Y-m-d') }}">
-                                            </div>
-                                        </div>
-                                    </div> -->
+                                <div class="row" style="align-items:flex-end; display:flex; flex-wrap:wrap;">
 
-                                    <div class="col-md-2">
+                                    {{-- As On Date --}}
+                                    <div class="col-md-2 col-sm-6 col-xs-12">
                                         <div class="form-group">
                                             <label class="control-label">As on</label>
                                             <div class="input-group">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="date" name="to" class="form-control"
-                                                    value="{{ date('Y-m-d') }}">
+                                                <input type="date" name="to" class="form-control" value="{{ date('Y-m-d') }}">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+
+                                    {{-- Territory --}}
+                                    <div class="col-md-2 col-sm-6 col-xs-12" style="margin-left: 32px;">
                                         <div class="form-group">
                                             <label class="control-label">Territory</label>
                                             <select name="territory_id" id="territory_id" class="form-control select2"
@@ -85,11 +77,11 @@ if (isset($_GET['item_id'])) {
                                         </div>
                                     </div>
 
-                                    <div class="col-md-2">
+                                    {{-- Warehouse --}}
+                                    <div class="col-md-2 col-sm-6 col-xs-12">
                                         <div class="form-group">
                                             <label class="control-label">Warehouse</label>
-                                            <select name="warehouse_id[]" id="warehouse_id" class="form-control select2"
-                                                multiple>
+                                            <select name="warehouse_id[]" id="warehouse_id" class="form-control select2" multiple>
                                                 @foreach ($warehouses as $warehouse)
                                                     <option value="{{ $warehouse->id }}"
                                                         {{ collect(request('warehouse_id'))->contains($warehouse->id) ? 'selected' : '' }}>
@@ -99,7 +91,9 @@ if (isset($_GET['item_id'])) {
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+
+                                    {{-- Brand --}}
+                                    <div class="col-md-2 col-sm-6 col-xs-12">
                                         <div class="form-group">
                                             <label class="control-label">Brand</label>
                                             <select name="brand_id[]" id="brand_id" class="form-control select2" multiple>
@@ -112,74 +106,46 @@ if (isset($_GET['item_id'])) {
                                             </select>
                                         </div>
                                     </div>
-                                    <!--
-                                    <div class="col-md-3">
+
+                                    {{-- Product --}}
+                                    <div class="col-md-2 col-sm-6 col-xs-12">
                                         <div class="form-group">
                                             <label class="control-label">Product</label>
-                                            <select name="product_id" class="form-control select2">
-                                                <option value="">All Products</option>
-                                                @foreach ($products as $product)
-    <option value="{{ $product->id }}" {{ request('product_id') == $product->id ? 'selected' : '' }}>
-                                                        {{ $product->product_name }}
-                                                    </option>
-    @endforeach
-                                            </select>
-                                        </div>
-                                    </div> -->
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label class="control-label">Product</label>
-
-                                            <!-- <select name="product_id" id="product_id" class="form-control" style="width: 100%">
-                                                @if (request('product_id'))
-    <option value="{{ request('product_id') }}" selected>
-                                                        {{ \App\Models\Subitem::find(request('product_id'))->product_name ?? 'Selected Product' }}
-                                                    </option>
-    @endif
-                                            </select> -->
-
-
-                                            <select name="product_id" id="product_id" class="form-control select2-ajax"
-                                                style="width: 100%">
-                                                <option value="">Select Product</option>
-
+                                            <select name="product_id" id="product_id" class="form-control select2-ajax" style="width: 100%">
+                                                <option value="">Search Product</option>
                                                 @foreach ($defaultProducts as $product)
                                                     <option value="{{ $product->id }}"
                                                         {{ request('product_id') == $product->id ? 'selected' : '' }}>
                                                         {{ $product->product_name }}
                                                     </option>
                                                 @endforeach
-
-
                                                 @if (request('product_id') && !$defaultProducts->contains('id', request('product_id')))
                                                     <option value="{{ request('product_id') }}" selected>
                                                         {{ \App\Models\Subitem::find(request('product_id'))->product_name ?? 'Selected Product' }}
                                                     </option>
                                                 @endif
                                             </select>
-
                                         </div>
                                     </div>
 
-
-
-
-                                    <div class="col-md-2" style="margin-top: 25px;">
-                                        <div class="form-check">
-                                            <input type="checkbox" name="show_virtual" id="show_virtual" value="1" class="form-check-input" {{ request('show_virtual') == '1' ? 'checked' : '' }} onchange="getWarehousesByTerritory()">
-                                            <label for="show_virtual" class="control-label" style="margin-left: 5px; cursor: pointer;">Show Virtual W.H</label>
+                                    {{-- Show Virtual + Generate --}}
+                                    <div class="col-md-2 col-sm-6 col-xs-12">
+                                        <div class="form-group">
+                                            <label class="control-label">&nbsp;</label>
+                                            <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
+                                                <div class="checkbox" style="margin:0; display:flex; align-items:center; gap:5px; white-space:nowrap;">
+                                                    <input type="checkbox" name="show_virtual" id="show_virtual" value="1"
+                                                        {{ request('show_virtual') == '1' ? 'checked' : '' }}
+                                                        onchange="getWarehousesByTerritory()" style="margin:0;">
+                                                    <label for="show_virtual" style="margin:0; cursor:pointer; font-weight:normal; font-size:12px;">Virtual W.H</label>
+                                                </div>
+                                                <button type="button" onclick="get_ajax_data()" class="btn btn-primary btn-sm" style="white-space:nowrap;">
+                                                    <i class="fa fa-refresh"></i> Generate
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-1">
-                                        <div class="form-group" style="margin-top: 25px;">
-                                            <button type="button" onclick="get_ajax_data()" class="btn btn-primary"
-                                                style="margin-top: 11px;margin-left: 20px;">
-                                                <i class="fa fa-refresh"></i> Generate
-                                            </button>
-
-                                        </div>
-                                    </div>
                                 </div>
                             </form>
                         </div>
