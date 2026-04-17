@@ -398,7 +398,7 @@
                                                        @foreach(CommonHelper::get_table_data('sale_taxes') as $item)
                                                     <option value="{{ $item->id }}" 
                                                             {{ $sale_orders->sale_taxes_id == $item->id ? 'selected' : '' }}>
-                                                        {{ $item->name }} - {{ $item->discount_percentage }}%
+                                                        {{ $item->name }}
                                                     </option>
                                                 @endforeach
                                                     </select>

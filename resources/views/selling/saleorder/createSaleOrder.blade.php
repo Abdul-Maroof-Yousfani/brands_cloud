@@ -375,7 +375,7 @@
                                                         <option value="">Select</option>
                                                         @foreach($taxes as $index => $item)
                                                             <option value="{{ $item->id }}" {{ $index == 0 ? 'selected' : '' }}>
-                                                                {{ $item->name }} - {{ $item->discount_percentage }}%
+                                                                {{ $item->name }}
                                                             </option>
                                                         @endforeach
                                                     </select>
