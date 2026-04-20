@@ -51,7 +51,7 @@ $approved_user=$row->approved_user;
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
 
-                    <h3 style="text-align: center;">   @if($row->rv_type==1) Bank @else Cash @endif Reciept Voucher</h3>
+                    <h3 style="text-align: center;">Credit Note Voucher</h3>
                 </div>
 
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-right">
@@ -81,22 +81,6 @@ $approved_user=$row->approved_user;
                                     </tbody>
                                 </table>
                             </div>
-
-                            <div style="width:40%; float:right;">
-                                <table  class="table table-bordered table-striped table-condensed tableMargin">
-                                    <tbody>
-                                    <tr>
-                                        <td style="width:40%;">Cheque No</td>
-                                        <td style="width:60%;"><?php  echo $row->cheque_no;?></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="width:40%;">Cheque Date</td>
-                                        <td style="width:60%;"><?php  echo FinanceHelper::changeDateFormat($row->cheque_date);?></td>
-                                    </tr>
-
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <div class="table-responsive">
@@ -113,7 +97,14 @@ $approved_user=$row->approved_user;
                                     <tbody>
                                     <?php
                                     FinanceHelper::companyDatabaseConnection($m);
-                                    $rvsDetail = DB::table('new_rv_data')->where('master_id','=',$id)->orderby('debit_credit','1')->get();
+                                    // Primary source for Credit/Debit Notes should be credits_item_data
+                                    $rvsDetail = DB::table('credits_item_data')->where('rv_no','=',$row->rv_no)->orderby('debit_credit','desc')->get();
+                                    
+                                    // Fallback to new_rv_data if no credits_item_data found (legacy support)
+                                    if($rvsDetail->isEmpty()) {
+                                        $rvsDetail = DB::table('new_rv_data')->where('master_id','=',$id)->orderby('debit_credit','desc')->get();
+                                    }
+                                    
                                     $costing_data=$rvsDetail;
                                     $type = 5;
                                     FinanceHelper::reconnectMasterDatabase();
@@ -135,7 +126,7 @@ $approved_user=$row->approved_user;
                                             <?php
                                             if($row2->debit_credit == 1)
                                             {
-                                                $g_t_credit += $row2->amount;
+                                                $g_t_debit += $row2->amount;
                                                 echo number_format($row2->amount,2);
                                             }
                                             ?>
@@ -145,7 +136,7 @@ $approved_user=$row->approved_user;
                                             <?php
                                             if($row2->debit_credit == 0)
                                             {
-                                                $g_t_debit += $row2->amount;
+                                                $g_t_credit += $row2->amount;
                                                 echo number_format($row2->amount,2);
                                             }
                                             ?>
@@ -159,8 +150,8 @@ $approved_user=$row->approved_user;
                                         <td class="text-center" colspan="2">
                                             <label for="field-1" class="sf-label"><b>Total</b></label>
                                         </td>
-                                        <td class="text-right"><b><?php echo number_format($g_t_credit,2);?></b></td>
                                         <td class="text-right"><b><?php echo number_format($g_t_debit,2);?></b></td>
+                                        <td class="text-right"><b><?php echo number_format($g_t_credit,2);?></b></td>
                                     </tr>
                                     </tbody>
                                 </table>

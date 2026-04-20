@@ -65,11 +65,11 @@ $this->m = Session::get('run_company');
                                             <thead>
                                                 <th class="text-center col-sm-1">S.No</th>
                                                 <th class="text-center col-sm-1">Store</th>
-                                                <th class="text-center col-sm-2">Delivery Man</th>
+                                                
                                                 <th class="text-center col-sm-2">Description</th>
-                                                <th class="text-center">Credit</th>
-                                                <th class="text-center">On Record</th>
-                                                <th class="text-center">Voucher Type</th>
+                                                <th class="text-center">Debit Account</th>
+                                                
+                                                
                                                 <th class="text-center">Branch</th>
                                                 <th class="text-center">Status</th>
 

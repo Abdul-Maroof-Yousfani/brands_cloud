@@ -67,13 +67,13 @@
 
 
 
-                                <div class="col-md-6">
+                                {{-- <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Delivery Man</label>
                                         <input type="text" class="form-control" name="delivery_man" id="delivery_man"
                                             value="{{ old('delivery_man') }}" placeholder="-">
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="col-md-6" id="amount" style="display: none;">
                                     <div class="form-group">
@@ -122,7 +122,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Debit</label>
-                                        <select class="form-control select2" name="debit" id="debit">
+                                        <select class="form-control select2" name="debit" id="debit" onchange="updateAccountingPreview()">
                                             <option value="">Select Debit</option>
                                             @foreach ($accounts as $y)
                                                 <option {{ old('debit') == $y->id ? 'selected' : '' }}
@@ -134,7 +134,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                {{-- <div class="col-md-6">
                                     <div class="form-group d-flex align-items-center">
                                         <label class="me-2">On Record</label>
                                         <input type="checkbox" name="on_record">
@@ -151,7 +151,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -170,6 +170,15 @@
                     </div>
                     <div class="col-md-12 col-lg-12" style="margin-top: 30px; padding-left: 0px; width: 100%;"
                         id="receipt-table"></div>
+                    
+                    <div class="col-md-12 col-lg-12" id="total-amount-display" style="display:none; margin-top:20px;">
+                        <div class="alert alert-info">
+                            <h4>Total Net Amount: <span id="display-net-total">0.00</span></h4>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-12" style="margin-top: 20px; padding-left: 0px; width: 100%;"
+                        id="accounting-entry-preview"></div>
                     <div class="col-md-12" style="margin-top: 30px; padding-left: 0px;">
                         <button type="reset" class="btn btn-danger">Reset</button>
                         <button type="submit" class="btn btn-success">Issue Voucher</button>
@@ -258,7 +267,11 @@
             if(type === "without-invoice") {
                 $("#invoices").css("display", "none");
                 $("#amount").css("display", "block");
+                $("#receipt-table").html("");
+                temp = []; 
+                $(".AllCheckbox").prop("checked", false);
                 invoice_required = false;
+                updateAccountingPreview();
             } else if(type === "against-invoice") {
                 $("#invoices").css("display", "block");
 
@@ -288,6 +301,7 @@
             event.preventDefault();
 
             const store = $("#ClientId");
+            const type = $("input[name='type']:checked").val();
             const delivery_man = $("#delivery_man");
             const date_and_time = $("#date_and_time");
             const details = $("#details");
@@ -300,10 +314,10 @@
                 alert("Store name is manadatory");
                 return;
             }
-            if (!delivery_man.val()) {
+            /* if (!delivery_man.val()) {
                 alert("Delivery name is mandatory");
                 return
-            }
+            } */
             if (!date_and_time.val()) {
                 alert("Date and Time is mandatory");
                 return;
@@ -316,10 +330,10 @@
                 alert("Debit is mandatory");
                 return;
             }
-            if (!voucher_type.val()) {
+            /* if (!voucher_type.val()) {
                 alert("Voucher Type is mandatory");
                 return;
-            }
+            } */
             if (!branch.val()) {
                 alert("Branch is mandatory");
                 return;
@@ -342,51 +356,25 @@
             receiptData(temp);
         });
 
-        function CheckUncheck(Counter, Id) {
-            if ($("input:checkbox:checked").length > 0) {
-
-            } else {
-                temp = [];
-            }
+        function CheckUncheck() {
+            temp = [];
             $('.AllCheckbox').each(function() {
-
                 if ($(this).is(':checked')) {
-                    $('.BtnSub' + Id).prop('disabled', false);
-
-                } else {
-                    $('.BtnSub' + Id).prop('disabled', true);
-                    //temp =[];
-                }
-
-            });
-
-
-            $(".AddRemoveClass" + Id).each(function() {
-                if ($(this).is(':checked')) {
-                    var checked = ($(this).attr('value'));
-                    if (!temp.includes(checked)) {
-                        temp.push(checked);
-                    }
-
-                    // if(temp.indexOf(checked))
-                    // {
-                    //     if ($(this).is(':checked')) {
-                    //         alert('Please Checked Same Client and then Create Receipt...!');
-                    //         $(this).prop("checked", false);
-                    //         $('.BtnSub'+Id).prop("disabled", true);
-                    //     }
-                    // }
-                    // else
-                    // {
-                    //     $('.BtnSub'+Id).prop("disabled", false);
-                    // }
-                } else {
-
+                    temp.push($(this).val());
                 }
             });
 
+            if (temp.length > 0) {
+                $('.BtnSub').prop('disabled', false);
+            } else {
+                $('.BtnSub').prop('disabled', true);
+                $('#receipt-table').html(""); // Clear breakdown if nothing selected
+                updateAccountingPreview(); // Update preview as well
+            }
 
-
+            if(temp.length > 0) {
+                receiptData();
+            }
         }
 
         function receiptData() {
@@ -430,9 +418,79 @@
 
                 success: function(response) {
                     $('#table').html(response);
+                    updateAccountingPreview();
                 }
             });
         }
+
+        function updateAccountingPreview() {
+            const debit_acc_id = $("#debit").val();
+            const customer_id = $("#ClientId").val();
+            const type = $("input[name='type']:checked").val();
+            
+            let amount = 0;
+            let tax_amount = 0;
+            let discount_amount = 0;
+            let net_total = 0;
+            let tax_percent = "";
+
+            if(type === "against-invoice") {
+                amount = parseFloat($("#net_total").val()) || 0; 
+                tax_amount = parseFloat($("#tax_total").val()) || 0;
+                discount_amount = parseFloat($("#discount_total").val()) || 0;
+                net_total = amount; // Net total from grid is already subtotal - disc - tax? 
+                // Actually based on calc() in creditNoteCustomer:
+                // net_amount = receive_amount - tax_amount - discount_amount;
+                // so net_total is the total Credit to customer.
+                // receive_amount (subtotal) is the Debit to account.
+                
+                // Let's re-calculate to be sure
+                let receive_total = 0;
+                $(".receive_amount").each(function() {
+                    receive_total += parseFloat($(this).val()) || 0;
+                });
+                amount = receive_total;
+                net_total = parseFloat($("#net_total").val()) || 0;
+                tax_percent = $(".tex_p").val();
+
+                $("#total-amount-display").show();
+                $("#display-net-total").text(net_total.toLocaleString(undefined, {minimumFractionDigits: 2}));
+            } else {
+                amount = parseFloat($("#amount_val").val()) || 0;
+                net_total = amount;
+                $("#total-amount-display").hide();
+            }
+
+            if(!debit_acc_id || !customer_id) {
+                $("#accounting-entry-preview").html("");
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route("creditNote.accounting.preview") }}',
+                type: 'GET',
+                data: {
+                    debit_acc_id: debit_acc_id,
+                    customer_id: customer_id,
+                    amount: amount,
+                    tax_amount: tax_amount,
+                    discount_amount: discount_amount,
+                    net_amount: net_total,
+                    tax_percent: tax_percent
+                },
+                success: function(response) {
+                    $("#accounting-entry-preview").html(response);
+                }
+            });
+        }
+
+        $(document).on("change", "#debit, #ClientId, #amount_val", function() {
+            updateAccountingPreview();
+        });
+
+        $(document).on("keyup", ".receive_amount, .tax, .discount", function() {
+            updateAccountingPreview();
+        });
     </script>
 
     <script>

@@ -109,8 +109,7 @@ class CreditNoteController extends Controller
         $accounts = DB::connection("mysql2")
         ->table("accounts")
         ->where("status", 1)
-        ->where("operational", 1)
-        ->select("id", "name", "code", "type")
+        ->where('operational', 1)
         ->orderBy("level1", "ASC")
         ->orderBy("level2", "ASC")
         ->orderBy("level3", "ASC")
@@ -123,6 +122,39 @@ class CreditNoteController extends Controller
 
         return view("creditNote.create", compact("vouchers", "branches", "customers", "accounts"));
     }
+
+    public function getAccountingEntryPreview(Request $request) {
+        $debit_acc_id = $request->debit_acc_id;
+        $credit_acc_id = $request->credit_acc_id;
+        $customer_id = $request->customer_id;
+        $amount = $request->amount;
+        $tax_amount = $request->tax_amount ?? 0;
+        $discount_amount = $request->discount_amount ?? 0;
+        $net_amount = $request->net_amount ?? 0;
+
+        $debit_acc = DB::connection("mysql2")->table("accounts")->where("id", $debit_acc_id)->first();
+        $customer = DB::connection("mysql2")->table("customers")->where("id", $customer_id)->first();
+        $customer_acc = null;
+
+        if($credit_acc_id) {
+            $customer_acc = DB::connection("mysql2")->table("accounts")->where("id", $credit_acc_id)->first();
+        } else if($customer) {
+            $customer_acc = DB::connection("mysql2")->table("accounts")->where("id", $customer->acc_id)->first();
+        }
+
+        $tax_acc = null;
+        if($request->tax_percent) {
+             $tax_acc_data = DB::connection("mysql2")->table('invoice_tax')->where('name', $request->tax_percent)->first();
+             if($tax_acc_data) {
+                 $tax_acc = DB::connection("mysql2")->table("accounts")->where("id", $tax_acc_data->acc_id)->first();
+             }
+        }
+
+        $disc_acc = DB::connection("mysql2")->table('accounts')->where('status', 1)->where('name', 'Sales Discount')->first();
+
+        return view("creditNote.ajax.accounting_preview", compact('debit_acc', 'customer_acc', 'amount', 'tax_amount', 'discount_amount', 'net_amount', 'tax_acc', 'disc_acc'));
+    }
+
     public function submitReceiptData(Request $request) {
         DB::Connection('mysql2')->beginTransaction();
 		try
@@ -405,11 +437,11 @@ class CreditNoteController extends Controller
 
 		$rules = [
 			"store" => "required",
-			"delivery_man" => "required",
+			// "delivery_man" => "required",
 			"date_and_time" => "required",
 			"details" => "required",
 			"debit" => "required",
-			"voucher_type" => "required",
+			// "voucher_type" => "required",
 			"branch" => "required",
 			'type' => "required"
 		];
@@ -427,15 +459,15 @@ class CreditNoteController extends Controller
         $credit = Credit::create([
 			"rv_no" => $rv_no,
             "store" => $request->store,
-            "delivery_man" => $request->delivery_man,
+            "delivery_man" => $request->delivery_man ?? "-",
             "date" => $request->date_and_time,
             "amount" => $request->amount ?? 0,
             "details" => $request->details,
             "credit" => "-",
             "debit" => $request->debit,
             "on_record" => $request->on_record == "on" ? 1 : 0,
-            "voucher_type" => $request->voucher_type,
-            "branch" => $request->branch,
+            "voucher_type" => $request->voucher_type ?? 0,
+            "branch" => $request->branch ?? 0,
 			"company_id" => auth()->user()->company_id
         ]);
 
@@ -459,243 +491,175 @@ class CreditNoteController extends Controller
 				'sales'=>1,
 				'status'=>1,
 				'description'=>"-",
-				'bank'=>0,
-				'pay_mode'=>0
-            );
+			);
 
 			$master_id=DB::Connection('mysql2')->table('credits_data')->insertGetId($data);
             
-            
-			// $brig=$request->si_id;
-			$net_amount=0;
-			$tax_amount=0;	$notifyType = "Credit Note";
-			\App\Helpers\CommonHelper::createNotification($notifyType . " with " . $rv_no . " is created by " . auth()->user()->name, $notifyType . "");
-        
-			$tax_acc_id=0;
-			$total_amount=0;
-			$discount_amount=0;
-
-            $brig=$request->si_id;
             $master_id = $credit->id;
 
+			$total_receive_amount = 0;
+			$total_tax_amount = 0;
+			$total_discount_amount = 0;
+			$total_net_amount = 0;
+			$tax_acc_id = 0;
+
 			if($request->type == 'against-invoice'):
+                $brig = $request->si_id;
 				foreach($brig as $key=>$row):
+                    $received_amount = CommonHelper::check_str_replace($request->input('receive_amount')[$key]);
+                    $tax_amt = CommonHelper::check_str_replace($request->input('tax_amount')[$key]);
+                    $disc_amt = CommonHelper::check_str_replace($request->input('discount')[$key]);
+                    $net_amt = CommonHelper::check_str_replace($request->input('net_amount')[$key]);
+
 					$data1=array
 					(
 						'si_id'=>$row,
 						'so_id'=>$request->input('so_id')[$key],
 						'rv_id'=>$master_id,
 						'rv_no'=>$rv_no,
-						'received_amount'=>CommonHelper::check_str_replace($request->input('receive_amount')[$key]),
+						'received_amount'=>$received_amount,
 						'tax_percent'=>$request->input('percent')[$key],
-						'tax_amount'=>$request->input('tax_amount')[$key],
-						'discount_amount'=>$request->input('discount')[$key],
-						'net_amount'=>CommonHelper::check_str_replace($request->input('net_amount')[$key]),
+						'tax_amount'=>$tax_amt,
+						'discount_amount'=>$disc_amt,
+						'net_amount'=>$net_amt,
 					);
-					if ($request->input('percent')[$key]!=0):
-					$tax_acc_id=	CommonHelper::generic('invoice_tax',array('name'=>$request->input('percent')[$key]),'acc_id')->first()->acc_id;
-
-						endif;
-
-					$net_amount+=CommonHelper::check_str_replace($request->input('receive_amount')[$key]);
-					$discount_amount+=$request->input('discount')[$key];
-
-					if ($request->input('percent')[$key]!=0):
-					$tax_amount+=$request->input('tax_amount')[$key];
-						else:
-							$tax_amount+=0;
-						endif;
-					$total_amount+=CommonHelper::check_str_replace($request->input('net_amount')[$key]);
+					
 					DB::Connection('mysql2')->table('brige_table_sales_receipt')->insert($data1);
 
+					if ($request->input('percent')[$key] != 0 && $tax_acc_id == 0):
+					    $tax_acc_id = CommonHelper::generic('invoice_tax',array('name'=>$request->input('percent')[$key]),'acc_id')->first()->acc_id;
+					endif;
 
+					$total_receive_amount += $received_amount;
+					$total_tax_amount += $tax_amt;
+					$total_discount_amount += $disc_amt;
+					$total_net_amount += $net_amt;
 
-					$received_paymet=array
+					$received_payment=array
 					(
 						'sales_tax_invoice_id'=>$row,
 						'receipt_id'=>$master_id,
 						'receipt_no'=>$rv_no,
-						'received_amount'=>CommonHelper::check_str_replace($request->input('receive_amount')[$key]),
+						'received_amount'=>$received_amount,
 						'slip_no'=>"-",
 						'status'=>1,
 					);
-					DB::Connection('mysql2')->table('received_paymet')->insert($received_paymet);
-				endforeach;
-		
+					DB::Connection('mysql2')->table('received_paymet')->insert($received_payment);
 
-			endif;
-
-			$transaction=new Transactions();
-			$transaction=$transaction->SetConnection('mysql2');
-			//   $count=$transaction->where('acc_id',$row->acc_id)->where('opening_bal',1)->count();
-
-
-
-
-			
-			if($request->type === 'against-invoice'):
-				foreach($brig as $key=>$row):
-					$data2=array
+                    // DR Debit Account (Net portion)
+                    $data2=array
 					(
 						'master_id' => $master_id,
 						'rv_no'=>$rv_no,
 						'acc_id' => $request->debit,
-						'amount' => CommonHelper::check_str_replace($request->input('net_amount')[$key]),
+						'amount' => $net_amt,
 						'debit_credit' => 1,
 						'status' => 1,
 						'rv_status' => 1,
-						'description' => $request->desc
-
+						'description' => $request->details
 					);
 					DB::Connection('mysql2')->table('credits_item_data')->insert($data2);
+
+                    // CR Customer (Gross portion per invoice)
+                    $customer_acc_id = SalesHelper::get_customer_acc_id($request->store);
+                    $data_cust=array
+                    (
+                        'master_id' => $master_id,
+                        'rv_no'=>$rv_no,
+                        'acc_id' => $customer_acc_id,
+                        'amount' => $received_amount,
+                        'debit_credit' => 0,
+                        'status' => 1,
+                        'rv_status' => 1,
+                        'description' => $request->details
+                    );
+                    DB::Connection('mysql2')->table('credits_item_data')->insert($data_cust);
+
 				endforeach;
 
+                // Total Tax DR
+                if ($total_tax_amount > 0 && $tax_acc_id != 0):
+                    $data3=array
+                    (
+                        'master_id'=>$master_id,
+                        'rv_no'=>$rv_no,
+                        'acc_id'=>$tax_acc_id,
+                        'amount'=>$total_tax_amount,
+                        'debit_credit'=>1,
+                        'description'=>'Tax Portion',
+                        'status'=>1,
+                        'rv_status'=>1,
+                    );
+                    DB::Connection('mysql2')->table('credits_item_data')->insert($data3);
+                endif;
+
+                // Total Discount DR
+                if ($total_discount_amount > 0):
+                    $disc_acc_id = DB::Connection('mysql2')->table('accounts')->where('status',1)->where('name','Sales Discount')->value('id');
+                    if($disc_acc_id) {
+                        $data6=array
+                        (
+                            'master_id' => $master_id,
+                            'rv_no'=>$rv_no,
+                            'acc_id' => $disc_acc_id,
+                            'amount' => $total_discount_amount,
+                            'debit_credit' => 1,
+                            'status' => 1,
+                            'rv_status' => 1,
+                            'description' => 'Discount Portion'
+                        );
+                        DB::Connection('mysql2')->table('credits_item_data')->insert($data6);
+                    }
+                endif;
+
+                // Update Master Amounts
+                $credit->update(['amount' => $total_receive_amount]);
+
 			else:
+                // Without Invoice
+                $amount = $request->amount ?? 0;
 				$data2=array
 				(
 					'master_id' => $master_id,
 					'rv_no'=>$rv_no,
 					'acc_id' => $request->debit,
-					'amount' => $request->amount ?? 0,
+					'amount' => $amount,
 					'debit_credit' => 1,
 					'status' => 1,
 					'rv_status' => 1,
-					'description' => $request->desc
-
+					'description' => $request->details
 				);
 				DB::Connection('mysql2')->table('credits_item_data')->insert($data2);
-			endif;
-		
 
-		if ($tax_amount>0):
-
-			$data3=array
-			(
-				'master_id'=>$master_id,
-				'rv_no'=>$rv_no,
-				'acc_id'=>$tax_acc_id,
-				'amount'=>$tax_amount,
-				'debit_credit'=>0,
-				'description'=>'',
-				'status'=>1,
-				'rv_status'=>1,
-			);
-					DB::Connection('mysql2')->table('credits_item_data')->insert($data3);
-
-			foreach($brig as $key=>$row):
-				$data3=array
-				(
-					'master_id' => $master_id,
-					'rv_no'=>$rv_no,
-					'acc_id' => $tax_acc_id,
-					'amount' => $tax_amount,
-					'debit_credit' => 0,
-					'status' => 1,
-					'rv_status' => 1,
-					'description' => ''
-
-				);
-				DB::Connection('mysql2')->table('credits_item_data')->insert($data3);
-			endforeach;
-
-			endif;
-
-
-			if ($discount_amount>0):
-			$disc_acc_id=DB::Connection('mysql2')->table('accounts')->where('status',1)->where('name','Sales Discount')->first()->id;
-        		
-			if($request->type === 'against-invoice'):
-				foreach($brig as $key=>$row):
-					$data6=array
-					(
-						'master_id' => $master_id,
-						'rv_no'=>$rv_no,
-						'acc_id' => $disc_acc_id,
-						'amount' => $discount_amount,
-						'debit_credit' => 0,
-						'status' => 1,
-						'rv_status' => 1,
-						'description' => ''
-
-					);
-					DB::Connection('mysql2')->table('credits_item_data')->insert($data6);
-					
-				endforeach;
-			endif;
-				endif;
-
-
-		$customer_acc_id=	SalesHelper::get_customer_acc_id($request->store);
-       
-
-		if($request->type === 'against-invoice'):
-			foreach($brig as $key=>$row):
-				$data6=array
+                $customer_acc_id = SalesHelper::get_customer_acc_id($request->store);
+                $data_cust=array
 				(
 					'master_id' => $master_id,
 					'rv_no'=>$rv_no,
 					'acc_id' => $customer_acc_id,
-					'amount' => CommonHelper::check_str_replace($request->input('net_amount')[$key]),
+					'amount' => $amount,
 					'debit_credit' => 0,
 					'status' => 1,
 					'rv_status' => 1,
-					'description' => $request->desc
-
+					'description' => $request->details
 				);
-				DB::Connection('mysql2')->table('credits_item_data')->insert($data6);
+				DB::Connection('mysql2')->table('credits_item_data')->insert($data_cust);
+			endif;
 
-			endforeach;
-		else:
-			$data6=array
-				(
-					'master_id' => $master_id,
-					'rv_no'=>$rv_no,
-					'acc_id' => $customer_acc_id,
-					'amount' => $request->amount ?? 0,
-					'debit_credit' => 0,
-					'status' => 1,
-					'rv_status' => 1,
-					'description' => $request->desc
-
-				);
-				DB::Connection('mysql2')->table('credits_item_data')->insert($data6);
-		endif;
-
-			// lala
-
-
-
-			SalesHelper::sales_activity($rv_no,"",$total_amount,5,'Insert');
+			SalesHelper::sales_activity($rv_no,"",$total_receive_amount > 0 ? $total_receive_amount : ($request->amount ?? 0),5,'Insert');
 
 			DB::Connection('mysql2')->commit();
+
+            $notifyType = "Credit Note";
+            \App\Helpers\CommonHelper::createNotification($notifyType . " with " . $rv_no . " is created by " . auth()->user()->name, $notifyType . "");
+
+            return redirect()->route("creditNote.list")->with('success', 'Credit Note Issued Successfully');
 
 		}
 		catch(\Exception $e)
 		{
 			DB::Connection('mysql2')->rollback();
-			echo "EROOR"; //die();
-			dd($e);
-
+			return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
 		}
-        
-        return redirect()->route("creditNote.list");
-
-		$SavePrintVal = Input::get('SavePrintVal');
-
-		//Testing Redirect
-		if($SavePrintVal == 1)
-		{
-			$Url = url('sdc/viewReceiptVoucherDirect?id='.$master_id.'&&pageType='.Input::get('pageType').'&&parentCode='.Input::get('parentCode').'&&m='.Session::get('run_company').'#Murtaza Corp');
-			return Redirect::to($Url);
-		}
-		else
-		{
-			return Redirect::to('sales/receiptVoucherList?m='.$request->m);
-		}
-
-		$notifyType = "Credit Note";
-		\App\Helpers\CommonHelper::createNotification($notifyType . " with " . $rv_no . " is created by " . auth()->user()->name, $notifyType . "");
-        
-
     }
 }

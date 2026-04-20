@@ -56,7 +56,7 @@ echo Form::open(array('url' => 'finance/CreateReceiptVoucherForSales?m='.$m,'id'
                 <input name="checkbox[]" onclick="check(),supplier_check('',this.id)"
                        class="checkbox1 form-control AllCheckbox AddRemoveClass<?php echo $row->buyers_id?>"
                        id="<?php echo $row->buyers_id?>" type="checkbox" value="{{$row->id}}"
-                       onchange="CheckUncheck('<?php echo $counter?>','<?php echo $row->buyers_id?>')" style="height: 30px;">
+                       onchange="CheckUncheck()" style="height: 30px;">
                     @else<p>Clear</p>
                     @endif
             </td>

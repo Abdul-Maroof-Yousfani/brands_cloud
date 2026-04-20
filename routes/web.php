@@ -805,6 +805,7 @@ Route::group(['middleware' => 'mysql2','before' => 'csrf'], function () {
     Route::get("creditNote/{debit}/delete", "CreditNoteController@destroy")->name("creditNote.delete");
     Route::get("creditNote/{debit}/approve", "CreditNoteController@approve")->name("creditNote.approve");
     Route::get("creditNote/submit_receipt", "CreditNoteController@submitReceiptData")->name("creditNote.receipt.create");
+    Route::get("creditNote/accounting_preview", "CreditNoteController@getAccountingEntryPreview")->name("creditNote.accounting.preview");
 });
 
 
