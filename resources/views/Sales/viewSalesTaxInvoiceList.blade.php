@@ -221,7 +221,8 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                                                         href="{{ route('edit.sales.tax.invoice', ['id' => $row->id, 'm' => $row->id]) }}">Edit</a>
                                                                                 @endif
 
-
+ <a target="_blank" class="btn btn-xs btn-primary"
+                                                                                        href="{{ route('edit.sales.tax.invoice', ['id' => $row->id, 'm' => $row->id]) }}">Edit</a>
 
                                                                         </li>
                                                                     </ul>

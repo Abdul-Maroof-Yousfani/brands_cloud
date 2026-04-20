@@ -133,12 +133,12 @@ label {
                                                                             <div
                                                                                 class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                                                                 <label class="sf-label">Invoice Due Date<span
-                                                                                        class="rflabelsteric"><strong>*</strong></span></label>
+                                                                                        class="rflabelsteric"><strong></strong></span></label>
                                                                                 <input type="date"
                                                                                     class="form-control"
-                                                                                    placeholder="" name="order_date"
-                                                                                    id="order_date"
-                                                                                    value="{{$sales_tax_invoice->order_date}}" />
+                                                                                    placeholder="" name="due_date"
+                                                                                    id="due_date"
+                                                                                    value="{{$sales_tax_invoice->due_date}}" />
                                                                             </div>
 
                                                                             <div

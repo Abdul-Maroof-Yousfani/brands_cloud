@@ -43,13 +43,17 @@ $MainCount = count($Cust);
 $BuyerCounter = 1;
 $count = 1;
 ?>
-<script !src="">
-    var ClsCounter = "";
-    var n = 0;
-</script>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+        <h3 style="text-align: center; margin-bottom: 5px;"><?php echo CommonHelper::get_company_name(Session::get('run_company')); ?></h3>
+        <h4 style="text-align: center; margin-top: 0;">Debtor Ageing Detail Report</h4>
+        <p style="text-align: right; margin-right: 20px;">Printed On: <?php echo date_format(date_create(date('Y-m-d')), 'F d, Y'); ?></p>
+    </div>
+</div>
 <?php
 foreach($Cust as $Cfil):
-$vendor_data=DB::Connection('mysql2')->select('select a.id,a.model_terms_of_payment,a.due_date,a.gi_no,a.gi_date,a.so_id,(sum(b.amount)+a.sales_tax)total
+    $s_no_counter = 1;
+    $vendor_data=DB::Connection('mysql2')->select('select a.id,a.model_terms_of_payment,a.due_date,a.gi_no,a.gi_date,a.so_id,(sum(b.amount)+a.sales_tax+IFNULL(a.sales_tax_further,0))total
                 from sales_tax_invoice a
                 inner join
                 sales_tax_invoice_data b
@@ -63,54 +67,30 @@ $vendor_data=DB::Connection('mysql2')->select('select a.id,a.model_terms_of_paym
 
 ?>
 
-<table class="table table-bordered ApnaBorder  AutoCounter table{{ $BuyerCounter }}"
-    id="export_table_to_excel_<?php echo $BuyerCounter; ?>">
-    <thead>
-        <th colspan="15" class="text-center">
-            <h3 style="text-align: center;"><?php echo CommonHelper::get_company_name(Session::get('run_company')); ?></h3>
-        </th>
-    </thead>
-    <thead>
-        <th colspan="15" class="text-center">Debtor Ageing Detail Report</th>
-    </thead>
-    <thead>
-        <th colspan="15" class="text-right">
-            <p style="float: right;">Printed On: <?php echo date_format(date_create(date('Y-m-d')), 'F d, Y'); ?></p>
-        </th>
-    </thead>
+<table class="table table-bordered ApnaBorder AutoCounter table{{ $BuyerCounter }}" id="export_table_to_excel_<?php echo $BuyerCounter; ?>">
     <span>
         <thead class="ApnaBorder">
             <tr class="ApnaBorder text-center">
-                <th colspan="8" class="ApnaBorder text-center"><?php echo CommonHelper::byers_name($Cfil->id)->name; ?>
-                    <!--<span >  (AS ON  < ?php echo CommonHelper::changeDateFormat($as_on);?>)</span>--></th>
-
-                <th class="ApnaBorder text-center Chnage-bg" colspan="7">Days</th>
+                <th colspan="9" class="ApnaBorder text-center"><?php echo CommonHelper::byers_name($Cfil->id)->name; ?></th>
+                <th class="ApnaBorder text-center Chnage-bg" colspan="6">Days</th>
             </tr>
         </thead>
         <thead>
             <tr class="text-center ApnaBorder">
-                <th class="text-center ApnaBorder" style="width: 7%">SI Date</th>
+                <th class="text-center ApnaBorder">S.No#</th>
                 <th class="text-center ApnaBorder">SI NO</th>
-                <th class="text-center ApnaBorder">Buyer Order No</th>
-                <th class="text-center ApnaBorder">Buyer Unit</th>
+                <th class="text-center ApnaBorder">SI Date</th>
+                <th class="text-center ApnaBorder">Due date</th>
                 <th class="text-center ApnaBorder">Invoice Amount</th>
                 <th class="text-center ApnaBorder">Return Amount</th>
                 <th class="text-center ApnaBorder">Received Amount</th>
                 <th class="text-center ApnaBorder">Balance</th>
-                <!-- <th class="text-center ApnaBorder Chnage-bg">Not Yet Due</th> -->
-                <!-- <th class="text-center ApnaBorder Chnage-bg">(1-30)</th>
-    <th class="text-center ApnaBorder Chnage-bg">(31-60)</th>
-    <th class="text-center ApnaBorder Chnage-bg">(61-90)</th>
-    <th class="text-center ApnaBorder Chnage-bg">(91-180)</th> -->
-
                 <th class="text-center ApnaBorder Chnage-bg">Not Yet Due</th>
-                <th class="text-center ApnaBorder Chnage-bg">(1-45)</th>
-                <th class="text-center ApnaBorder Chnage-bg">(46-90)</th>
-                <th class="text-center ApnaBorder Chnage-bg">(91-179)</th>
-                <!-- <th class="text-center ApnaBorder Chnage-bg">(180)</th> -->
+                <th class="text-center ApnaBorder Chnage-bg">(1-45 Days)</th>
+                <th class="text-center ApnaBorder Chnage-bg">(46-90 Days)</th>
+                <th class="text-center ApnaBorder Chnage-bg">(91-179 Days)</th>
                 <th class="text-center ApnaBorder Chnage-bg">More Than 180 days</th>
                 <th class="text-center ApnaBorder Chnage-bg">Total Amount</th>
-
             </tr>
         </thead>
         <tbody class="ApnaBorder">
@@ -150,7 +130,7 @@ $InvoiceAmount = $fil->total+$sale_taxes_amount_rate+SalesHelper::get_freight($f
 $PaidAmount = CommonHelper::bearkup_receievd_approved($fil->id,$from,$as_on);
 $return_amount=SalesHelper::get_sales_return_from_sales_tax_invoice_by_date($fil->id,$from,$as_on);
 $BalanceAmount = $InvoiceAmount-$return_amount-$PaidAmount;
-$date1_ts = strtotime($fil->gi_date.'+'.$fil->model_terms_of_payment.'day');
+$date1_ts = $fil->due_date ? strtotime($fil->due_date) : strtotime($fil->gi_date . ' + ' . ($fil->model_terms_of_payment ?? 0) . ' days');
        
 $date2_ts = strtotime($as_on);
 $diff = $date2_ts - $date1_ts;// - $date1_ts;
@@ -174,19 +154,15 @@ $NoOfDays = round($diff / 86400);
        if ($BalanceAmount>0):
 ?>
 
-            <?php
+             <?php
             $SalesOrder = DB::Connection('mysql2')->table('sales_order')->where('id', $fil->so_id)->select('buyers_unit', 'so_no')->first();
-            
+            $dueDateFormatted = $fil->due_date ? CommonHelper::changeDateFormat($fil->due_date) : '-';
             ?>
             <tr title="{{ $count++ }}" class="text-center ApnaBorder yes">
+                <td class="ApnaBorder"><?php echo $s_no_counter++; ?></td>
+                <td class="ApnaBorder"><?php echo strtoupper($fil->gi_no); ?></td>
                 <td class="ApnaBorder"><?php echo CommonHelper::changeDateFormat($fil->gi_date); ?> </td>
-                <td class="ApnaBorder"><?php echo strtoupper($fil->gi_no); //.' '.$fil->id ?></td>
-                <td class="ApnaBorder"><?php if ($fil->so_id != 0):
-                    echo $SalesOrder->so_no;
-                endif; ?></td>
-                <td class="ApnaBorder"><?php if ($fil->so_id != 0):
-                    echo $SalesOrder->buyers_unit;
-                endif; ?></td>
+                <td class="ApnaBorder"><?php echo $dueDateFormatted; ?></td>
                 <td class="ApnaBorder">
                     <a href="#"
                         onclick="showDetailModelOneParamerter('sales/viewSalesTaxInvoiceDetail','<?php echo $fil->id; ?>','View Sales Tax Invoice')"><?php echo number_format($InvoiceAmount, 2);
@@ -214,30 +190,25 @@ $NoOfDays = round($diff / 86400);
                     echo number_format($BalanceAmount, 2);
                     $total_not_yet_due += $BalanceAmount;
                 } ?></td>
-                <td class="ApnaBorder Chnage-bg"><?php if (in_array($NoOfDays, range(1, 45))) {
+                <td class="ApnaBorder Chnage-bg"><?php if ($NoOfDays >= 1 && $NoOfDays <= 45) {
                     echo number_format($BalanceAmount, 2);
                     $Tot_1_30 += $BalanceAmount;
                 } ?></td>
-                <td class="ApnaBorder Chnage-bg"><?php if (in_array($NoOfDays, range(46, 90))) {
+                <td class="ApnaBorder Chnage-bg"><?php if ($NoOfDays >= 46 && $NoOfDays <= 90) {
                     echo number_format($BalanceAmount, 2);
                     $Tot_31_60 += $BalanceAmount;
                 } ?></td>
-                <td class="ApnaBorder Chnage-bg"><?php if (in_array($NoOfDays, range(91, 179))) {
+                <td class="ApnaBorder Chnage-bg"><?php if ($NoOfDays >= 91 && $NoOfDays <= 179) {
                     echo number_format($BalanceAmount, 2);
                     $Tot_61_90 += $BalanceAmount;
                 } ?></td>
-                <!-- <td class="ApnaBorder Chnage-bg"><?php if (in_array($NoOfDays, range(1, 180))) {
-                    echo number_format($BalanceAmount, 2);
-                    $Tot_91_180 += $BalanceAmount;
-                } ?></td> -->
-                <td class="ApnaBorder Chnage-bg"><?php if (in_array($NoOfDays, range(181, 10000))) {
+                <td class="ApnaBorder Chnage-bg"><?php if ($NoOfDays >= 180) {
                     echo number_format($BalanceAmount, 2);
                     $Tot_180_1000 += $BalanceAmount;
                 } ?></td>
                 <td class="ApnaBorder Chnage-bg"><?php echo number_format($BalanceAmount, 2);
                 $TotOverAll += $BalanceAmount; ?></td>
-                <td class="ApnaBorder Chnage-bg hide"><?php echo str_replace('-', '', $NoOfDays); ?></td>
-
+               
             </tr>
 
 
@@ -286,7 +257,7 @@ endforeach;?>
 </table>
 
 
-<table class="table table-bordered ApnaBorder table{{ $BuyerCounter }} GrandTotal"
+<table class="table table-bordered ApnaBorder GrandTotal"
     id="export_table_to_excel_<?php echo $BuyerCounter; ?>">
     <tr class="text-center ApnaBorder">
         <th colspan="4" class="ApnaBorder"></th>
@@ -296,10 +267,10 @@ endforeach;?>
         <th class="text-center ApnaBorder">Total Balance</th>
         <th class="text-center ApnaBorder Chnage-bg">Total Not Yet Due</th>
 
-        <th class="text-center ApnaBorder Chnage-bg">(1-45)</th>
-        <th class="text-center ApnaBorder Chnage-bg">(46-90)</th>
-        <th class="text-center ApnaBorder Chnage-bg">(91-179)</th>
-        <th class="text-center ApnaBorder Chnage-bg">Total More Than 180 days</th>
+        <th class="text-center ApnaBorder Chnage-bg">(1-45 Days)</th>
+        <th class="text-center ApnaBorder Chnage-bg">(46-90 Days)</th>
+        <th class="text-center ApnaBorder Chnage-bg">(91-179 Days)</th>
+        <th class="text-center ApnaBorder Chnage-bg">More Than 180 days</th>
 
 
         <th class="text-center ApnaBorder Chnage-bg">Total Amount</th>

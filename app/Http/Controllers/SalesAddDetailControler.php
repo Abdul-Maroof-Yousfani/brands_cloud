@@ -3611,6 +3611,7 @@ class SalesAddDetailControler extends Controller
         $sales_tax_invoice->gi_date = $request->gi_date;
         $sales_tax_invoice->acc_id = $request->acc_id;
         $sales_tax_invoice->description = $request->description;
+        $sales_tax_invoice->due_date = $request->due_date;
         $sales_tax_invoice->save();
 
 

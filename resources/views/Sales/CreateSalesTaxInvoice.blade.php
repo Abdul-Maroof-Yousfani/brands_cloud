@@ -229,8 +229,8 @@ label {
                                                                                             class="rflabelsteric"><strong>*</strong></span></label>
                                                                                     <input type="date"
                                                                                         class="form-control"
-                                                                                        placeholder="" name="order_date"
-                                                                                        id="order_date"
+                                                                                        placeholder="" name="due_date"
+                                                                                        id="due_date"
                                                                                         value="<?php echo $DueDue?>" />
                                                                                 </div>
 
