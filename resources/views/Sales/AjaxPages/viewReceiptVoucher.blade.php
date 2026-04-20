@@ -203,7 +203,7 @@ $approved_user=$row->approved_user;
                                         ->join('sales_tax_invoice as c','a.si_id','=','c.id')
                                         ->where('a.status',1)
                                         ->where('a.rv_id',$row->id)
-                                        ->select('a.*','c.gi_no','c.so_type','c.description','c.so_no','c.sales_tax','c.sales_tax_further');
+                                        ->select('a.*','c.gi_no','c.so_type','c.description','c.so_no','c.sales_tax','c.sales_tax_further','c.wh_tax');
 
 
 
@@ -241,14 +241,14 @@ $approved_user=$row->approved_user;
                                                 <td>{{$count++}}</td>
                                                 <td>{{ strtoupper($row3->gi_no)}}</td>
                                                 <td>@if($row3->so_type==0){{ strtoupper( $row3->so_no)}} @else {{ strtoupper($row3->description)}} @endif</td>
-                                                <td class="text-right">{{number_format(SalesHelper::get_total_amount_for_sales_tax_invoice_by_id($row3->si_id)->amount+$row3->sales_tax+$row3->sales_tax_further+$freight,2)}}</td>
+                                                <td class="text-right">{{number_format(SalesHelper::get_total_amount_for_sales_tax_invoice_by_id($row3->si_id)->amount+$row3->sales_tax+$row3->sales_tax_further+$row3->wh_tax+$freight,2)}}</td>
                                                 <td class="text-right">{{number_format($row3->received_amount,2)}}</td>
                                                 <td class="text-right">{{number_format($row3->tax_amount,2)}}</td>
                                                 <td class="text-right">{{number_format($row3->discount_amount,2)}}</td>
                                                 <td class="text-right">{{number_format($row3->net_amount,2)}}</td>
                                             <?php
 
-                                                $invoice_amount+=SalesHelper::get_total_amount_for_sales_tax_invoice_by_id($row3->si_id)->amount+$row3->sales_tax+$freight+$row3->sales_tax_further;
+                                                $invoice_amount+=SalesHelper::get_total_amount_for_sales_tax_invoice_by_id($row3->si_id)->amount+$row3->sales_tax+$freight+$row3->sales_tax_further+$row3->wh_tax;
                                                 $received_amount+=$row3->received_amount;
                                                 $tax_amount+=$row3->tax_amount;
                                                     $net_amount+=$row3->net_amount;
