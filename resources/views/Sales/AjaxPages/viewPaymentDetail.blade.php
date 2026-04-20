@@ -13,11 +13,10 @@ $VoucherData = DB::Connection('mysql2')->table('received_paymet')->where('status
                             <thead>
                             <tr>
                                 <th class="text-center">S.No</th>
-                                <th class="text-center">Pv No</th>
-                                <th class="text-center">Supplier Name</th>
+                                <th class="text-center">SI No</th>
+                                <th class="text-center">Customer Name</th>
                                 <th class="text-center" >Amount</th>
                                 <th class="text-center" >Voucher No</th>
-                                {{--<th class="text-center" >Username</th>--}}
                             </tr>
                             </thead>
                             <tbody>
@@ -33,9 +32,7 @@ $VoucherData = DB::Connection('mysql2')->table('received_paymet')->where('status
                                 <td class="text-center"><?php echo $SalesTaxInvoice->gi_no;?></td>
                                 <td class="text-center"><?php echo $Acc = CommonHelper::byers_name($SalesTaxInvoice->buyers_id)->name; ?></td>
                                 <td class="text-center">{{number_format($val->received_amount,2)}}<?php $AmountTotal+=$val->received_amount;?></td>
-                                <td class="text-center">{{$val->receipt_no}}</td>
                                 <td  class="text-center"><a target="_blank" href="{{ url('sdc/viewReceiptVoucherDirect?id='.$val->receipt_id.'&&m='.Session::get('run_company')).'&&other=1' }}">{{$val->receipt_no}}</a></td>
-                                {{--<td class="text-center">{{$val->username}}</td>--}}
                             </tr>
                             <?php
                             }
