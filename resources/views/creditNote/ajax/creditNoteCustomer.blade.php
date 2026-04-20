@@ -12,9 +12,6 @@
             <th  class="text-center">Return Amount</th>
             <th  class="text-center">Previous Received Amount</th>
             <th  class="text-center">Received  Amout</th>
-            <th  class="text-center">Tax%</th>
-            <th  class="text-center">Tax Amount</th>
-            <th  class="text-center">Discount Amount</th>
             <th  class="text-center">Net Amount</th>
 
         </tr>
@@ -68,22 +65,9 @@
                       value="{{$invoice_amount-$received_amount-$return_amount}}"
                         ></td>
 
-            <td><select  onchange="calc('{{$invoice_amount}}','{{$received_amount}}','{{$counter}}','{{$return_amount}}',0)" id="percent{{$counter}}" class="form-control tex_p" name="percent[]">
-                    <option value="0">Select</option>
-                    @foreach(App\Helpers\ReuseableCode::get_invoice_tax() as $row1)
-                        <option value="{{$row1->name}}">{{$row1->name}}</option>
-                        @endforeach
-                </select>
-            </td>
-
-
-            <td><input onkeyup="calc('{{$invoice_amount}}','{{$received_amount}}','{{$counter}}','{{$return_amount}}',1)"
-                       onblur="calc('{{$invoice_amount}}','{{$received_amount}}','{{$counter}}','{{$return_amount}}',1)" class="form-control tax" type="text"  value="" name="tax_amount[]" id="tax_amount{{$counter}}"></td>
-
-            <td><input onkeyup="calc('{{$invoice_amount}}','{{$received_amount}}','{{$counter}}','{{$return_amount}}',1)"
-            onblur="calc('{{$invoice_amount}}','{{$received_amount}}','{{$counter}}','{{$return_amount}}',1)"
-            class="form-control discount" type="text"  value="" name="discount[]" id="discount_amount{{$counter}}"></td>
-
+            <input type="hidden" name="percent[]" value="0">
+            <input type="hidden" name="tax_amount[]" value="0">
+            <input type="hidden" name="discount[]" value="0">
             <td><input class="form-control net_amount comma_seprated" type="text"  value="{{$invoice_amount-$received_amount-$return_amount}}" name="net_amount[]" id="net_amount{{$counter}}"></td>
 
 
@@ -101,10 +85,7 @@
             <input type="hidden" name="ref_bill_no" value="{{$gi}}" />
             <input type="hidden" name="buyers_id" value="{{$invoice_detail->buyers_id}}"/>
         <tr class="heading" style="background-color: darkgrey">
-        <td class="text-center" colspan="8">Total</td>
-        <td><input readonly type="text" id="tax_total" class="form-control comma_seprated"/></td>
-
-            <td><input readonly type="text" id="discount_total" class="form-control comma_seprated"/></td>
+        <td class="text-center" colspan="7">Total</td>
             <td  id=""><input  type="text" id="net_total" class="form-control comma_seprated"/> </td>
         </tr>
 
