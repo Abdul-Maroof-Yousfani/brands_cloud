@@ -84,6 +84,9 @@
                             // Some old data might have dn as 1
                             $trans_type = "Sales";
                             $is_issued = true;
+                        } else if(str_contains(strtolower($unit_activity->voucher_no), 'si')) {
+                            $trans_type = "Stock In Transfer";
+                            $is_received = true;
                         } else if(str_contains(strtolower($unit_activity->voucher_no), 'grn') || $unit_activity->voucher_no == '') {
                             $trans_type = "GRN";
                             $is_received = true;
@@ -99,14 +102,19 @@
                         $trans_type = "Purchase Return";
                         $is_received = true;
                     } elseif($unit_activity->voucher_type == 3) {
-                        $trans_type = "Stock Transfer";
-                        // Distinguish OUT and IN for transfer
-                        if($unit_activity->warehouse_id_from == $unit_activity->warehouse_id) {
+                        if(str_contains(strtolower($unit_activity->voucher_no), 'so')) {
+                            $trans_type = "Stock Out Transfer";
                             $is_issued = true;
-                            $trans_type = "Stock Transfer (Out)";
                         } else {
-                            $is_received = true;
-                            $trans_type = "Stock Transfer (In)";
+                            $trans_type = "Stock Transfer";
+                            // Distinguish OUT and IN for transfer
+                            if($unit_activity->warehouse_id_from == $unit_activity->warehouse_id) {
+                                $is_issued = true;
+                                $trans_type = "Stock Transfer (Out)";
+                            } else {
+                                $is_received = true;
+                                $trans_type = "Stock Transfer (In)";
+                            }
                         }
                     } elseif($unit_activity->voucher_type == 4) {
                         $trans_type = "Stock Received";
