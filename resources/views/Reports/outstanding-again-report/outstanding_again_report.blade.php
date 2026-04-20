@@ -182,7 +182,7 @@ use App\Helpers\SaleHelper;
                                                     <th>Mode</th>
                                                     <th>Banks</th>
                                                     <th>Cheque No</th>
-                                                    <th>Banks (Deposit To)</th>
+                                                    <th>Customer Bank</th>
                                                     <th>Cheque date</th>
                                                     <th>Amount</th>
                                                 </tr>
