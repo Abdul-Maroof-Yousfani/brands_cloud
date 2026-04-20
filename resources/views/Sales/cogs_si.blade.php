@@ -1,11 +1,11 @@
 <?php
 $accType = Auth::user()->acc_type;
-if($accType == 'client'){
-    $m = $_GET['m'];
-}else{
+if ($accType == 'client') {
+    $m = $_GET['m'] ?? Auth::user()->company_id;
+} else {
     $m = Auth::user()->company_id;
 }
-$parentCode = $_GET['parentCode'];
+$parentCode = $_GET['parentCode'] ?? 0;
 
 use App\Helpers\CommonHelper;
 use App\Helpers\SalesHelper;
@@ -100,9 +100,9 @@ $currentMonthEndDate   = date('Y-m-t');
             $('#data').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
 
             $.ajax({
-                url: '/sdc/cogs_si',
+                url: "<?php echo url('sdc/cogs_si') ?>",
                 type: 'Get',
-                data: {from: from,to:to,radio:radio},
+                data: { from: from, to: to, radio: radio },
 
                 success: function (response)
                 {

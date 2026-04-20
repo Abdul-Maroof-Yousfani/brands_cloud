@@ -55,7 +55,7 @@ $data=  DB::Connection('mysql2')->select('select a.gi_date,a.gi_no,b.*,a.buyers_
         <tr class="text-center">
             <td>{{$count++}}</td>
             <td>{{strtoupper($row->gi_no)}}</td>
-            <td>{{$row->gi_date}}</td>
+            <td>{{CommonHelper::changeDateFormat($row->gi_date)}}</td>
 
 
             <td>@foreach($data as $row1)
@@ -70,15 +70,20 @@ $data=  DB::Connection('mysql2')->select('select a.gi_date,a.gi_no,b.*,a.buyers_
             <td> {{SalesHelper::get_customer_name($row->buyers_id)}}</td>
 
             <td><?php
-                $gross=DB::Connection('mysql2')->table('sales_tax_invoice_data')->where('master_id',$row->id)->sum('amount');
+                $gross=DB::Connection('mysql2')->table('sales_tax_invoice_data')->where('master_id',$row->id)->where('dn_data_ids',$row->dn_data_ids)->sum('amount');
                 echo number_format($gross,2);
                 $total_gross+=$gross;
                 ?></td>
 
             <td>
                 <?php
+                $on_dn = DB::Connection('mysql2')->table('sales_tax_invoice_data as a')
+                    ->join('subitem as b', 'a.item_id', '=', 'b.id')
+                    ->where('a.master_id', $row->id)
+                    ->where('a.dn_data_ids', $row->dn_data_ids)
+                    ->select(DB::raw('SUM(a.qty * b.purchase_price) as total_cost'))
+                    ->first()->total_cost ?? 0;
 
-                $on_dn=ReuseableCode::get_stock_amount_of_dn($dn_nos);
                 $total_on_dn+=$on_dn;
                 echo number_format($on_dn,2);
 

@@ -1928,7 +1928,7 @@ Route::group(['prefix' => 'sales', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get('/soReportPage', 'SalesController@soReportPage');
     Route::get('/dnReportPage', 'SalesController@dnReportPage');
     Route::get('/dn_without_Sales', 'SalesController@dn_without_Sales');
-    Route::get('/cogs_si', 'SalesController@cogs_si');
+    Route::get('/cogs_si', 'SalesController@cogs_si')->name('cogs_si');
     Route::get('/add_point_of_sale', 'SalesController@add_point_of_sale');
     Route::get('/pos_list', 'SalesController@pos_list');
     Route::get('/po_detail', 'SalesController@po_detail');
