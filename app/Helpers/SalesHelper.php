@@ -342,7 +342,7 @@ class SalesHelper
         ');
 
 
-        return $data;
+        return $data ?? (object)['total' => 0, 'qty' => 0, 'amount' => 0];
         //   return  $data=DB::Connection('mysql2')->selectOne('select sum(amount)amount,sum(qty)qty from sales_tax_invoice_data where master_id="'.$id.'"');
 
     }
@@ -651,7 +651,7 @@ class SalesHelper
     public static function get_sales_return_from_sales_tax_invoice_by_date($id, $from, $to)
     {
 
-        return DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+c.sales_tax+c.sales_tax_further)amount from credit_note_data a
+        $data = DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+c.sales_tax+c.sales_tax_further)amount from credit_note_data a
         inner join
         credit_note c
         on
@@ -664,7 +664,8 @@ class SalesHelper
         where a.status=1
         and a.type=2
         and c.cr_date between "' . $from . '" and "' . $to . '"
-        and b.master_id="' . $id . '"')->amount;
+        and b.master_id="' . $id . '"');
+        return $data->amount ?? 0;
     }
 
     public static function get_sales_return_dn($id)

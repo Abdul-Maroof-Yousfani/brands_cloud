@@ -5,7 +5,7 @@ if($accType == 'client'){
 }else{
     $m = Auth::user()->company_id;
 }
-$parentCode = $_GET['parentCode'];
+$parentCode = $_GET['parentCode'] ?? 0;
 
 use App\Helpers\CommonHelper;
 use App\Helpers\SalesHelper;
@@ -15,9 +15,9 @@ $export=ReuseableCode::check_rights(306);
 
 $currentMonthStartDate = date('Y-m-01');
 $currentMonthEndDate   = date('Y-m-t');
-$AccYearDate = DB::table('company')->select('accyearfrom','accyearto')->where('id',$_GET['m'])->first();
-$AccYearFrom = $AccYearDate->accyearfrom;
-$AccYearTo = $AccYearDate->accyearto;
+$AccYearDate = DB::table('company')->select('accyearfrom','accyearto')->where('id',$m)->first();
+$AccYearFrom = $AccYearDate->accyearfrom ?? '2017-07-01';
+$AccYearTo = $AccYearDate->accyearto ?? date('Y-12-31');
 ?>
 @extends('layouts.default')
 @section('content')
@@ -118,9 +118,10 @@ $AccYearTo = $AccYearDate->accyearto;
             $('#ShowHide').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
 
             $.ajax({
-                url: '/sdc/get_debtor_balance_ajax',
-                type: 'Get',
-                data: {ClientId: ClientId,FromDate:FromDate,ToDate:ToDate,m:m},
+                // url: '/sdc/get_debtor_balance_ajax',
+                url: "<?php echo url('/sdc/get_debtor_balance_ajax') ?>",
+                type: 'GET',
+                data: {ClientId: ClientId, FromDate: FromDate, ToDate: ToDate, m: m},
 
                 success: function (response) {
                     $('#ShowHide').html(response);
