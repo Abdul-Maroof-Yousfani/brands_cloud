@@ -283,9 +283,11 @@ input.form-control.form-control2{margin:0!important;}
                                         <p>SO #: {{ $sales_order->so_no }}</p>
                                        <p>GDN #: {{ strtoupper($dn_detail->gd_no) }}</p>
                                         <p>Branch: {{ $sales_order->branch }}</p>
-                                        <p>Sales Rep: {{ $customer_data->SaleRep }} </p>
+                                         <p>Sales Rep:
+                                            {{ $sales_order->sales_person ?: (DB::table('sub_department')->where('id', $sales_order->sales_person_id ?? $customer_data->SaleRep)->value('sub_department_name') ?: $customer_data->SaleRep) }}
+                                        </p>
                                         @if (strtoupper($customer_data->display_note_invoice) == 'YES')
-                                            <p>Note: {{ $customer_data->strn_term }} </p>
+                                          <p>Note: {{ $sales_order->remark }} </p>
                                         @endif
                                     </div>
                                 </div>
