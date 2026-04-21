@@ -1666,12 +1666,13 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
     public static function get_account_name($id)
     {
-        if ($id != ""):
-            $account = new Account();;
+        if ($id != "" && !empty($id)):
+            $account = new Account();
             $account = $account->SetConnection('mysql2');
             $account = $account->where('status', 1)->where('id', $id)->select('name')->first();
-            return ucwords($account['name']);
+            return $account ? ucwords($account->name) : 'N/A';
         endif;
+        return 'N/A';
     }
 
 
@@ -1686,12 +1687,13 @@ public static function get_supplier()
 
     public static function get_account_code($id)
     {
-        if ($id != 0):
+        if ($id != 0 && !empty($id)):
             $account = new Account();
             $account = $account->SetConnection('mysql2');
             $account = $account->where('id', $id)->select('code')->first();
-            return $account['code'] ?? "N/A";
+            return $account ? $account->code : "N/A";
         endif;
+        return "N/A";
     }
 
     public static function get_account_code_by_name($name)

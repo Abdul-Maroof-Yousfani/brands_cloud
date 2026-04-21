@@ -64,12 +64,9 @@ $this->m = Session::get('run_company');
                                         <table class="userlittab table table-bordered sf-table-list" id="EmpExitInterviewList">
                                             <thead>
                                                 <th class="text-center col-sm-1">S.No</th>
-                                                <th class="text-center col-sm-1">Store</th>
-                                                <th class="text-center col-sm-2">Delivery Man</th>
-                                                <th class="text-center col-sm-2">Description</th>
-                                                <th class="text-center">Credit</th>
-                                                <th class="text-center">On Record</th>
-                                                <th class="text-center">Voucher Type</th>
+                                                <th class="text-center col-sm-2">Store</th>
+                                                <th class="text-center col-sm-3">Description</th>
+                                                <th class="text-center">Account</th>
                                                 <th class="text-center">Branch</th>
                                                 <th class="text-center">Status</th>
 
@@ -109,12 +106,25 @@ $this->m = Session::get('run_company');
         let is_confirmed = confirm("Are you sure?");
         if(is_confirmed) {
             $.ajax({
-                url: `debitNote/${id}/approve`, // empty = current URL (self)
+                url: `{{ url('debitNote') }}/${id}/approve`, 
                 type: "get",
                 success: function(response) {
-                    $(el).closest("tr").find(".approve").text("Approved");
-                    $(el).closest("tr").find(".btn-success").prop("disabled", true);
+                    // Update list table if it exists
+                    let row = $(el).closest("tr");
+                    if(row.length) {
+                        row.find(".approve").text("Approved");
+                        row.find(".btn-success").prop("disabled", true);
+                        row.find("li:contains('Approve')").remove(); // Remove from dropdown if exists
+                    }
+                    // Update modal button if it exists
+                    if($(el).parent().hasClass('text-right')) {
+                        $(el).remove();
+                    }
+                    alert("Approved successfully");
                 },
+                error: function() {
+                    alert("Approval failed!");
+                }
             });
         }
     }

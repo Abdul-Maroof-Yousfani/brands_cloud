@@ -43,12 +43,6 @@ $so_no = CommonHelper::generateUniquePosNo('production_work_order', 'work_no', '
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Delivery Man</label>
-                                    <input type="text" class="form-control" name="delivery_man" value="{{ old('delivery_man') }}" placeholder="-">
-                                </div>
-                            </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -99,24 +93,6 @@ $so_no = CommonHelper::generateUniquePosNo('production_work_order', 'work_no', '
                                 </div>
                             </div> --}}
 
-                            <div class="col-md-6">
-                                <div class="form-group d-flex align-items-center">
-                                    <label class="me-2">On Record</label>
-                                    <input type="checkbox" name="on_record">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Voucher Type</label>
-                                    <select class="form-control select2" name="voucher_type">
-                                        <option value="">Select Voucher Type</option>
-                                        @foreach($vouchers as $voucher)
-                                            <option value="{{ $voucher->id }}">{{ $voucher->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -133,10 +109,15 @@ $so_no = CommonHelper::generateUniquePosNo('production_work_order', 'work_no', '
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-12 col-lg-12" id="accounting-entry-preview" style="margin-top: 20px;">
+                    <!-- Accounting Preview will be loaded here -->
+                </div>
+
                 <div class="col-md-12 col-lg-12" style="margin-top: 30px; padding-left: 0px; width: 100%;" id="receipt-table"></div>
                 <div class="col-md-12" style="margin-top: 30px; padding-left: 0px;">
                     <button type="reset" class="btn btn-danger">Reset</button>
-                    <button type="submit" class="btn btn-success">Issue Voucher</button>
+                    <button type="submit" class="btn btn-success">Create</button>
                 </div>
             </form>
             </div>
@@ -163,7 +144,8 @@ $so_no = CommonHelper::generateUniquePosNo('production_work_order', 'work_no', '
             <!-- Pending Debit Note -->
             {{-- <div class="panel panel-default shadow-sm" style="border-radius:10px; overflow:hidden;">
                 <div class="panel-heading text-white" style="background-color:#28a745; padding:10px 15px;">
-                    <strong>PENDING DEBIT NOTE (PARTIAL PAYMENT)</strong>
+                    <strong>PENDING DEBIT NOTE (PARTIAL PAY
+                        MENT)</strong>
                 </div>
                 <div class="panel-body" style="background-color:#f8f9fa;">
                     <div class="table-responsive">
@@ -312,6 +294,53 @@ function issue() {
 
             success: function (response) {
                 $('#receipt-table').html(response);
+                updateAccountingPreview();
+            }
+        });
+    }
+
+    $(document).on("change", "#ClientId, select[name='credit'], input[name='amount']", function() {
+        updateAccountingPreview();
+    });
+
+    $(document).on("keyup", "input[name='receive_amount[]'], input[name='amount']", function() {
+        updateAccountingPreview();
+    });
+
+    function updateAccountingPreview() {
+        const credit_acc_id = $("select[name='credit']").val();
+        const customer_id = $("#ClientId").val();
+        
+        let amount = 0;
+        
+        // Find if we have invoice breakdown
+        if($("input[name='receive_amount[]']").length > 0) {
+            let receive_total = 0;
+            $("input[name='receive_amount[]']").each(function() {
+                receive_total += parseFloat($(this).val()) || 0;
+            });
+            amount = receive_total;
+        } else {
+            amount = parseFloat($("input[name='amount']").val()) || 0;
+        }
+
+        if(!credit_acc_id || !customer_id) {
+            $("#accounting-entry-preview").html("");
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("creditNote.accounting.preview") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                debit: customer_id, // Store (Customer) is Debited in Debit Note
+                credit: credit_acc_id,
+                amount: amount,
+                is_debit_note: 1
+            },
+            success: function(response) {
+                $("#accounting-entry-preview").html(response);
             }
         });
     }

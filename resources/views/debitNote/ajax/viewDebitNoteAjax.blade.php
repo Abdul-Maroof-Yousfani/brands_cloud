@@ -86,27 +86,9 @@ input.form-control.form-control2{margin:0!important;}
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Delivery Man</td>
-                                                                <td style="text-align: right;">
-                                                                    {{ $debit->delivery_man }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
                                                                 <td>Date</td>
                                                                 <td style="text-align: right;">
                                                                     {{ \Carbon\Carbon::parse($debit->date)->format("d-M-y") }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>On Record</td>
-                                                                <td style="text-align: right;">
-                                                                    {{ $debit->on_record == 1 ? "Yes" : "No" }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Voucher Type</td>
-                                                                <td style="text-align: right;">
-                                                                    {{ json_decode(\App\Helpers\CommonHelper::get_vouchers($debit->voucher_type))[0]->name }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -116,9 +98,9 @@ input.form-control.form-control2{margin:0!important;}
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Debit</td>
+                                                                <td>Account</td>
                                                                 <td style="text-align: right;">
-                                                                    {{ $debit->debit != "-" ? \App\Helpers\CommonHelper::get_account_name_by_id($debit->debit) : "N/A" }}
+                                                                    {{ \App\Helpers\CommonHelper::get_account_name($debit->debit) }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
