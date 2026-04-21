@@ -806,6 +806,22 @@ Route::group(['middleware' => 'mysql2','before' => 'csrf'], function () {
     Route::get("creditNote/{debit}/approve", "CreditNoteController@approve")->name("creditNote.approve");
     Route::get("creditNote/submit_receipt", "CreditNoteController@submitReceiptData")->name("creditNote.receipt.create");
     Route::get("creditNote/accounting_preview", "CreditNoteController@getAccountingEntryPreview")->name("creditNote.accounting.preview");
+
+    // Vendor Debit Note
+    Route::get("vendorDebitNote/create", "VendorDebitNoteController@create")->name("vendordebitnote.create");
+    Route::post("vendorDebitNote/create", "VendorDebitNoteController@store")->name("vendordebitnote.store");
+    Route::get("vendorDebitNote", "VendorDebitNoteController@show")->name("vendordebitnote.list");
+    Route::get("vendorDebitNote/{vdebit}/delete", "VendorDebitNoteController@destroy")->name("vendordebitnote.delete");
+    Route::get("vendorDebitNote/{vdebit}/approve", "VendorDebitNoteController@approve")->name("vendordebitnote.approve");
+    Route::get("vendorDebitNote/view", "VendorDebitNoteController@view")->name("vendordebitnote.view");
+
+    // Vendor Credit Note
+    Route::get("vendorCreditNote/create", "VendorCreditNoteController@create")->name("vendorcreditnote.create");
+    Route::post("vendorCreditNote/create", "VendorCreditNoteController@store")->name("vendorcreditnote.store");
+    Route::get("vendorCreditNote", "VendorCreditNoteController@show")->name("vendorcreditnote.list");
+    Route::get("vendorCreditNote/{vcredit}/delete", "VendorCreditNoteController@destroy")->name("vendorcreditnote.delete");
+    Route::get("vendorCreditNote/{vcredit}/approve", "VendorCreditNoteController@approve")->name("vendorcreditnote.approve");
+    Route::get("vendorCreditNote/view", "VendorCreditNoteController@view")->name("vendorcreditnote.view");
 });
 
 

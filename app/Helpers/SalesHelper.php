@@ -605,6 +605,17 @@ class SalesHelper
         return isset($customer->name) ? $customer->name : 'N/A';
     }
 
+    public static function get_supplier_name($id)
+    {
+        $supplier = DB::connection('mysql2')
+            ->table('supplier')
+            ->where('id', $id)
+            ->select('name')
+            ->first();
+
+        return isset($supplier->name) ? $supplier->name : 'N/A';
+    }
+
     public static function get_sales_detail_for_receipt($id)
     {
 
