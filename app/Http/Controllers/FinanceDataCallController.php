@@ -6624,6 +6624,24 @@ function vendor_summery(Request $request)
 
         if ($warehouse_to != "") {
             $query->where('sod.warehouse_to', $warehouse_to);
+        } else {
+            // Default to user's assigned warehouses if exists
+            $user = Auth::user();
+            // if ($user && $user->territory_id) {
+            //     $territory_ids = json_decode($user->territory_id, true);
+            //     if (!is_array($territory_ids)) {
+            //         $territory_ids = [$user->territory_id];
+            //     }
+                
+                $warehouse_ids = DB::connection('mysql2')->table('warehouse')
+                    // ->whereIn('territory_id', $territory_ids)
+                    ->where('status', 1)
+                    ->pluck('id');
+                
+                if (!$warehouse_ids->isEmpty()) {
+                    $query->whereIn('sod.warehouse_to', $warehouse_ids);
+                }
+            // }
         }
 
         if ($brand_id != "") {

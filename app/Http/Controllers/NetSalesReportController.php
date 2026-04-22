@@ -210,10 +210,14 @@ class NetSalesReportController extends Controller
                                 DB::raw("DATE_FORMAT(sales_tax_invoice.gi_date, '%M') as month_name"),
 
                                 DB::raw("SUM(sales_tax_invoice_data.qty) AS qty"),
+                                DB::raw("SUM(sales_tax_invoice_data.rate * sales_tax_invoice_data.qty) AS gross_sales_amount"),
+                                DB::raw("AVG(sales_tax_invoice_data.rate) AS rate"),
+                                DB::raw("AVG(sales_tax_invoice_data.tax) AS tax_percent"),
                                 DB::raw("SUM(sales_tax_invoice_data.amount) AS amount"),
                                 DB::raw("SUM(sales_tax_invoice_data.amount) AS net_amount"),
                                 DB::raw("SUM(sales_tax_invoice_data.amount * (sales_tax_invoice_data.tax / 100)) AS tax_amount"),
-                                DB::raw("SUM(sales_tax_invoice_data.discount_amount) AS discount_amount"),
+                                DB::raw("SUM((sales_tax_invoice_data.rate * sales_tax_invoice_data.qty * COALESCE(sales_order_data.discount_percent_1, 0)) / 100) AS discount_amount"),
+                                DB::raw("MAX(subitem.mrp_price) AS mrp_price"),
 
                                 DB::raw("COALESCE(sr.sales_return_qty, 0) AS sales_return_qty"),
                                 DB::raw("COALESCE(sr.gross_return_amount, 0) AS gross_return_amount")
@@ -222,6 +226,7 @@ class NetSalesReportController extends Controller
                             ->join("product_type", "subitem.product_type_id", "=", "product_type.product_type_id")
                             ->join("sales_tax_invoice_data", "sales_tax_invoice_data.item_id", "=", "subitem.id")
                             ->join("sales_tax_invoice", "sales_tax_invoice.id", "=", "sales_tax_invoice_data.master_id")
+                            ->leftJoin("sales_order_data", "sales_order_data.id", "=", "sales_tax_invoice_data.so_data_id")
 
                             // FIXED: Aggregated return data join
                             ->leftJoin(

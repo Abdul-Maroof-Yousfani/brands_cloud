@@ -2464,6 +2464,34 @@ public static function pendingDocuments(
 
     return $query->count();
 }
+
+public static function getPendingStockInCount() {
+    $user = Auth::user();
+    if (!$user) return 0;
+    
+    // $territory_ids = json_decode($user->territory_id, true);
+    // if (!is_array($territory_ids)) {
+    //     $territory_ids = [$user->territory_id];
+    // }
+
+    // Find warehouses for these territories
+    $warehouse_ids = DB::connection('mysql2')->table('warehouse')
+        // ->whereIn('territory_id', $territory_ids)
+        ->where('status', 1)
+        ->pluck('id');
+
+    if ($warehouse_ids->isEmpty()) return 0;
+
+    // Count pending stock outs to these warehouses
+    $count = DB::connection('mysql2')->table('stock_out_data')
+        ->whereIn('warehouse_to', $warehouse_ids)
+        ->where('si_status', 0)
+        ->whereRaw('qty > received_qty')
+        ->where('status', 1)
+        ->count();
+
+    return $count;
+}
 // In CommonHelper.php
 public static function pendingPurchaseOrdersCreation() {
     return DB::connection("mysql2")

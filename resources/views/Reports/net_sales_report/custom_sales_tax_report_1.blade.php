@@ -234,10 +234,14 @@ use App\Helpers\SaleHelper;
                                                     <th class="text-center" style="width:150px;">COGS Amount</th>
                                                     <th class="text-center" style="width:150px;">Total COGS</th>
                                                 @endif -->
+                                                <th class="text-center" style="width:150px;">Unit MRP</th>
+                                                <th class="text-center" style="width:150px;">Unit Rate</th>
                                                 <th class="text-center" style="width:150px;">Sale Quantity</th>
                                                 <th class="text-center" style="width:150px;">Gross Amount</th>
                                                 <th class="text-center" style="width:150px;">Discount</th>
-                                                <th class="text-center" style="width:150px;">Sale Amount</th>
+                                                <th class="text-center" style="width:150px;">Tax (%)</th>
+                                                <th class="text-center" style="width:150px;">Tax Amount</th>
+                                                <th class="text-center" style="width:150px;">Total Amount</th>
                                                 <th class="text-center" style="width:150px;">Sale Return Qty</th>
                                                 <th class="text-center" style="width:150px;">Gross Return Amount</th>
                                                 <th class="text-center" style="width:150px;">Sales Return Amount</th>

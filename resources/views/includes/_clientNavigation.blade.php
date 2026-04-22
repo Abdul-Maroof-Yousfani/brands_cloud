@@ -242,6 +242,7 @@ CommonHelper::reconnectMasterDatabase();
                         $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
                         $pending_purchase_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 2, "status", 1, false, ['type' => ['!=', 3]]);
                         $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
+                        $pending_stock_in = \App\Helpers\CommonHelper::getPendingStockInCount();
                         $delivery_note_creatable = \App\Helpers\CommonHelper::deliveryNoteCreatable();
                         $total_pending = 
                             $pending_delivery_notes +
@@ -258,6 +259,7 @@ CommonHelper::reconnectMasterDatabase();
                             $pending_purchase_invoices +
                             $pending_purchase_invoices_creation +
                             $pending_stock_transfers +
+                            $pending_stock_in +
                             $delivery_note_creatable;
                     @endphp
         <ul class="profile-admin d-flex">
@@ -476,6 +478,20 @@ CommonHelper::reconnectMasterDatabase();
                                             <span class="fw-bolder">Stock Transfer</span>
                                         </p>
                                         <small class="notification-text">{{ $pending_stock_transfers }} Stock Transfers are pending</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
+
+                        @if($pending_stock_in > 0)
+                            <a class="d-flex" href="/store/stock_in_form?m={{ request()->m ?? $m }}&parentCode={{ request()->parentCode ?? '264' }}&type=pending">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Stock IN</span>
+                                        </p>
+                                        <small class="notification-text">{{ $pending_stock_in }} Stock IN are pending</small>
                                         <br>
                                     </div>
                                 </div>
