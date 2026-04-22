@@ -21,12 +21,12 @@
         <td>{{ number_format($data->qty, 0) }}</td>
         <td>{{ number_format($data->gross_sales_amount, 2) }}</td>
         <td>{{ number_format($data->discount_amount, 2) }}</td>
-        <td>{{ number_format($data->tax_percent, 2) }}%</td>
+        <!-- <td>{{ number_format($data->tax_percent, 2) }}%</td> -->
         <td>{{ number_format($data->tax_amount, 2) }}</td>
         <td>{{ number_format($data->amount, 2) }}</td>
 
         <td>{{ number_format($data->sales_return_qty, 0) ?? "0" }}</td>
-        <td>{{ number_format($data->gross_return_amount, 0) ?? "0" }}</td>
+        <!-- <td>{{ number_format($data->gross_return_amount, 0) ?? "0" }}</td> -->
         <td>{{ number_format($data->gross_return_amount, 0) ?? "0" }}</td>
         <td>{{ number_format($data->qty - ($data->sales_return_qty ?? 0), 0) }}</td>
         <td>{{ number_format($data->gross_sales_amount - $data->gross_return_amount, 2) }}</td>
