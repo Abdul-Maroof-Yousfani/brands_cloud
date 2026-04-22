@@ -257,7 +257,7 @@ table.dataTable thead .sorting:after,table.dataTable thead .sorting_asc:after,ta
                                                     <td style="text-align:left;" class="text-center"><strong>{{$customer->name}}</strong></td>
                                                     <td style="text-align: center !important;" class="text-center">{{number_format($data->qty,0)}}</td>
                                                   
-                                                    <td   style="text-align: center !important;" class="text-center">{{$final_performa_total}}</td>
+                                                    <td   style="text-align: center !important;" class="text-center">{{ round($final_performa_total) }}</td>
                                                     <!-- <td>{{$status}}</td> -->
                                                     <td>{{$approvalStatus}}</td>
                                                     <!-- <td class="text-center"><?php echo $row->username?></td> -->
