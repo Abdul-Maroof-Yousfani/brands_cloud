@@ -174,17 +174,35 @@ use App\Helpers\CommonHelper;
 
         function select_brand() {
             const brand_id = $("#brands").val();
-            const $items = $(".items");
+            
+            $(".items").each(function() {
+                const $select = $(this);
+                const currentVal = $select.val();
+                
+                $select.find("option").each(function() {
+                    const $opt = $(this);
+                    if ($opt.val() == "0") return;
+                    
+                    const optBrand = $opt.data("brand");
+                    const shouldHide = brand_id && optBrand != brand_id;
+                    
+                    $opt.prop("disabled", shouldHide);
+                    if (shouldHide) {
+                        $opt.attr("hidden", "hidden");
+                    } else {
+                        $opt.removeAttr("hidden");
+                    }
+                });
 
-            $items.find("option[data-brand]").each(function() {
-                const $opt = $(this);
-                const optBrand = $opt.data("brand");
-                const shouldHide = brand_id && optBrand != brand_id;
-                $opt.prop("disabled", shouldHide).prop("hidden", shouldHide);
-            });
-
-            $items.each(function() {
-                $(this).select2('destroy').select2();
+                // Clear value if current selection doesn't match new brand
+                if (brand_id && currentVal != "0") {
+                    const selectedOpt = $select.find("option[value='" + currentVal + "']");
+                    if (selectedOpt.data("brand") != brand_id) {
+                        $select.val("0").trigger('change');
+                    }
+                }
+                
+                $select.select2('destroy').select2();
             });
         }
 
@@ -195,6 +213,9 @@ use App\Helpers\CommonHelper;
             const item = itemMap.get(Number(selectedVal));
             const row = changedSelect.closest("tr");
             const number = row.id ? row.id.replace('RemoveRow', '') : 1;
+
+            // Nullify Quantity Out when item changes
+            $(row).find('.SendQty').val('');
 
             if (item) {
                 row.querySelector(".barCodes").value = item.product_barcode || '';
@@ -261,6 +282,7 @@ use App\Helpers\CommonHelper;
             );
             $('.select2').last().select2();
             $('#span').text($(".AutoNo").length);
+            select_brand(); // Apply filter to new row
         }
 
         function RemoveRows(id) {

@@ -1484,6 +1484,7 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
 
     Route::get('/add_opening', 'StoreController@add_opening');
     Route::get('/add_opening_import', 'StoreController@add_opening_import');
+    Route::get('/download_opening_template', 'StoreController@download_opening_template')->name('download_opening_template');
     Route::post('/add_opening_import_post', 'StoreController@add_opening_import_post')->name('add_opening_import_post');
     Route::get('/createIssuanceForm', 'StoreController@createIssuanceForm');
     Route::get('/editIssuanceForm', 'StoreController@editIssuanceForm');
@@ -1564,6 +1565,7 @@ Route::get('/ajax/get-brands-by-warehouse', 'StoreController@getBrandsByWarehous
     Route::get('/stock_transfer_list', 'StoreController@stock_transfer_list');
     Route::get('/stock_in_list', 'StoreController@stock_in_list');
     Route::get('/stock_out_list', 'StoreController@stock_out_list');
+    Route::get('/delete_stock_out', 'StoreDataCallController@delete_stock_out');
     Route::get('/editStockTransferForm/{id}/{TrNo}', 'StoreController@editStockTransferForm');
     Route::get('/itemWiseOpening', 'StoreController@itemWiseOpening');
     Route::get('/itemWiseOpeningSingle', 'StoreController@itemWiseOpeningSingle');

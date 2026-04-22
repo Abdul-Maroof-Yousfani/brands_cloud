@@ -840,6 +840,24 @@ public function approve_transfer(Request $request)
     }
 }
 
+    public function delete_stock_out(Request $request)
+    {
+        $id = $request->id;
+        $so_no = $request->voucher_no;
+
+        DB::connection('mysql2')->beginTransaction();
+        try {
+            DB::connection('mysql2')->table('stock_out')->where('id', $id)->update(['status' => 0]);
+            DB::connection('mysql2')->table('stock_out_data')->where('master_id', $id)->update(['status' => 0]);
+            DB::connection('mysql2')->table('stock')->where('voucher_no', $so_no)->update(['status' => 0]);
+            
+            DB::connection('mysql2')->commit();
+            echo $id;
+        } catch (\Exception $e) {
+            DB::connection('mysql2')->rollBack();
+            echo "ERROR";
+        }
+    }
 
     public function internal_cosum(Request $request)
     {

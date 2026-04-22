@@ -63,6 +63,7 @@ $view=true;
                                     $MasterData = DB::table('stock_out as so')
                                         ->leftJoin('stock_out_data as sod', 'so.id', '=', 'sod.master_id')
                                         ->select('so.*', 'sod.warehouse_from', 'sod.warehouse_to', DB::raw('SUM(sod.si_status) as received_count'), DB::raw('COUNT(sod.id) as total_items'))
+                                        ->where('so.status', 1) // Only active records
                                         ->groupBy('so.id')
                                         ->orderBy('so.id', 'desc')
                                         ->get();
@@ -72,7 +73,7 @@ $view=true;
                                     foreach($MasterData as $row):
                                         $status_label = ($row->received_count >= $row->total_items) ? '<span class="label label-success">Received</span>' : '<span class="label label-warning">In Transit</span>';
                                     ?>
-                                    <tr class="text-center">
+                                    <tr class="text-center" id="row_<?php echo $row->id; ?>">
                                         <td><?php echo $Counter++;?></td>
                                         <td><?php echo strtoupper($row->so_no);?></td>
                                         <td><?php echo CommonHelper::changeDateFormat($row->so_date);?></td>
@@ -82,6 +83,9 @@ $view=true;
                                         <td><?php echo $status_label; ?></td>
                                         <td>
                                             <button type="button" class="btn btn-success btn-xs" onclick="showDetailModelOneParamerter('stdc/viewStockOutDetail?m=<?php echo $m; ?>', '<?php echo $row->so_no; ?>', 'View Stock Out Detail')">View</button>
+                                            <?php if ($row->received_count < $row->total_items): ?>
+                                                <button type="button" class="btn btn-danger btn-xs" onclick="DeleteStockOut('<?php echo $row->id; ?>', '<?php echo $row->so_no; ?>')">Delete</button>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                     <?php endforeach;?>
@@ -95,4 +99,43 @@ $view=true;
         </div>
     </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function DeleteStockOut(id, voucher_no) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '<?php echo url('/') ?>/store/delete_stock_out',
+                        type: "GET",
+                        data: { id: id, voucher_no: voucher_no, m: '<?php echo $m; ?>' },
+                        success: function(data) {
+                            if (data != "ERROR") {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Stock Out has been deleted.',
+                                    'success'
+                                );
+                                $('#row_' + id).remove();
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    </script>
 @endsection
