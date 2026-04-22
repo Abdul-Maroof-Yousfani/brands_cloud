@@ -133,6 +133,7 @@ use App\Helpers\CommonHelper;
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         var Counter = 1;
         var row_count = 1;
@@ -187,7 +188,9 @@ use App\Helpers\CommonHelper;
                 '<td><strong>' + doc.so_no + '</strong> (' + doc.items_count + ' items)</td>' +
                 '<td>' + doc.from_warehouse_name + '</td>' +
                 '<td>' + doc.to_warehouse_name + '</td>' +
-                '<td class="text-center">--</td>' +
+                '<td class="text-center">' +
+                    '<button type="button" class="btn btn-warning btn-xs" onclick="receiveWithAdjustment(this)">Transfer to Adj</button>' +
+                '</td>' +
                 '</tr>';
             $('#PendingList').append(html);
         }
@@ -233,7 +236,7 @@ use App\Helpers\CommonHelper;
                 '<td><input readonly type="text" value="' + (data.sku_code || '') + '" class="form-control " style="width: 100%; text-align: center;"></td>' +
                 '<td><input type="text" name="stock_out_no[]" value="' + data.so_no + '" class="form-control" readonly></td>' +
                 '<td><input type="hidden" name="warehouse_from[]" value="' + data.warehouse_from + '"><input type="text" value="' + (data.from_warehouse_name || 'Warehouse ' + data.warehouse_from) + '" class="form-control" readonly></td>' +
-                '<td><input type="text" value="' + (data.to_warehouse_name || 'Warehouse ' + data.warehouse_to) + '" class="form-control" readonly></td>' +
+                '<td><input type="hidden" name="warehouse_to[]" id="wh_to_' + row_count + '" value="' + data.warehouse_to + '"><input type="text" id="wh_to_text_' + row_count + '" value="' + (data.to_warehouse_name || 'Warehouse ' + data.warehouse_to) + '" class="form-control" readonly></td>' +
                 '<td><input type="number" step="any" value="' + data.total_qty + '" class="form-control" readonly></td>' +
                 '<td><input type="number" step="any" value="' + data.prev_received_qty + '" class="form-control" readonly></td>' +
                 '<td><input type="number" step="any" value="' + data.pending_qty + '" class="form-control" readonly></td>' +
@@ -329,6 +332,56 @@ use App\Helpers\CommonHelper;
 
         function remove_row(row_id) {
             $('#row_' + row_id).remove();
+            $('#span').text($(".AutoNo").length);
+        }
+
+        function receiveWithAdjustment(btn) {
+            var row = $(btn).closest('tr');
+            var checkbox = row.find('.pending-check')[0];
+            
+            // 1. Clear other selections if any (optional, but ensures we only process this doc)
+            // $('.pending-check').prop('checked', false);
+            // $('#AppendHtml').empty();
+            
+            // 2. Select this document
+            if (!checkbox.checked) {
+                checkbox.checked = true;
+                toggleDocumentSelection(checkbox);
+            }
+            
+            // 3. Update the warehouse to Adjustment (ID 34)
+            var doc = JSON.parse(checkbox.getAttribute('data-json').replace(/&apos;/g, "'"));
+            doc.items.forEach(function(item) {
+                var detailRow = $('input[name="stock_out_data_id[]"][value="' + item.id + '"]').closest('tr');
+                if (detailRow.length > 0) {
+                    detailRow.find('input[name="warehouse_to[]"]').val('34');
+                    detailRow.find('input[id^="wh_to_text_"]').val('warehouse_adjustment');
+                    detailRow.css('background-color', '#fff4e5');
+                }
+            });
+            
+            // 4. Ask for confirmation before submitting
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to receive " + doc.so_no + " into Warehouse Adjustment?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, receive it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Processing Adjustment...',
+                        icon: 'info',
+                        timer: 1000,
+                        showConfirmButton: false,
+                        willClose: () => {
+                            $('#addStockInDetail').submit();
+                        }
+                    });
+                }
+            });
         }
     </script>
 @endsection

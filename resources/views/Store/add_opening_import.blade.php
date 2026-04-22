@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="modal-footer d-flex justify-content-between flex-wrap">
-                    <a  style="width: 43%;" target="_blank" href="{{ asset('Closing_Inventory_opning.csv') }}" class="btn btn-dark">
+                    <a  style="width: 43%;" target="_blank" href="{{ route('download_opening_template') }}" class="btn btn-dark">
                         <i class="fa fa-download mr-1"></i> Download Sample File
                     </a>
                     <div>

@@ -4396,7 +4396,7 @@ $sales_tax_amount = ($total_amount/100)*$gst_percent;
                                 'si_status' => $si_status
                             ]);
                         
-                        $warehouse_to = $sod_record->warehouse_to;
+                        $warehouse_to = $request->warehouse_to[$key] ?? $sod_record->warehouse_to;
                     }
                 }
 

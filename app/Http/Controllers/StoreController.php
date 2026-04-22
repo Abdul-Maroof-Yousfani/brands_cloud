@@ -1673,6 +1673,42 @@ public function getBrandsByWarehouse(Request $request)
         return view('Store.add_opening_import');
     }
 
+    public function download_opening_template()
+    {
+        $warehouses = DB::connection('mysql2')->table('warehouse')
+            ->where('is_virtual', 0)
+            ->where('status', 1)
+            ->get(['id', 'name']);
+
+        $headers = [
+            'SKU', 'Barcode', 'Product', 'Total QTY', 'per unit Rate', 'Stock value'
+        ];
+        
+        foreach($warehouses as $w) {
+            $headers[] = $w->name;
+        }
+
+        $headers[] = 'Status';
+
+        $filename = "Opening_Inventory_Template_" . date('Y-m-d') . ".csv";
+        
+        $handle = fopen('php://output', 'w');
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        fputcsv($handle, $headers);
+        
+        // Sample row
+        $sample = ['202445', '', 'Sample Product', '0', '0', '0'];
+        foreach($warehouses as $w) $sample[] = '0';
+        $sample[] = 'Fresh Stock';
+        
+        fputcsv($handle, $sample);
+
+        fclose($handle);
+        exit;
+    }
+
     public function BAclosingReportViewClone(Request $request)
     {
         // Exact copy of BAclosingReportView method
@@ -2365,7 +2401,7 @@ public function getBrandsByWarehouse(Request $request)
 
 public function add_opening_import_post(Request $request)
 {
-    ini_set('max_execution_time', 300); 
+    ini_set('max_execution_time', 600); 
 
     $validator = Validator::make($request->all(), [
         'file' => 'required|mimes:csv,txt',
@@ -2383,70 +2419,59 @@ public function add_opening_import_post(Request $request)
 
     if (($handle = fopen($file, 'r')) !== false) {
         $header = fgetcsv($handle, 1000, ",");
+        
+        // Find warehouse columns (index 6 onwards) and Status column
+        $warehouse_map = [];
+        $status_index = -1;
+        $all_warehouses = DB::connection('mysql2')->table('warehouse')->where('status', 1)->get(['id', 'name'])->pluck('id', 'name')->toArray();
+
+        foreach ($header as $index => $colName) {
+            $colNameTrim = trim($colName);
+            if ($colNameTrim == 'Status') {
+                $status_index = $index;
+                continue;
+            }
+            if ($index < 6) continue;
+            
+            if (isset($all_warehouses[$colNameTrim])) {
+                $warehouse_map[$index] = $all_warehouses[$colNameTrim];
+            }
+        }
 
         DB::beginTransaction();
 
         try {
             while (($row = fgetcsv($handle, 1000, ",")) !== false) {
-                if (count($row) > 20) continue;
+                if (empty($row) || !isset($row[1])) continue;
 
-                $product_name       = strtolower(trim($row[2]));
-                $sku_code           = strtolower(trim($row[1]));
-                $product_mrp        = trim($row[5]);
-                $product_sale_price = trim($row[6]);
+                $sku_code = strtolower(trim($row[0]));
+                $product_name = strtolower(trim($row[2]));
+                $unit_rate = (isset($row[4]) && is_numeric($row[4])) ? (float)trim($row[4]) : 0; // Get Rate from Column E
+                $status_val = ($status_index !== -1 && isset($row[$status_index])) ? trim($row[$status_index]) : null;
 
-
-                //  $warehouse_quantities = [
-                //     35 => trim($row[7]),  // Make Up City North
-                  
-                // ];
-
-                // $warehouse_quantities = [
-                //     17 => trim($row[8]),  // Make Up City North
-                //     18 => trim($row[9]), // Liquidation Stock RWL
-                //     19 => trim($row[10]), // Tariq Trader Warehouse PSH
-                //     15 => trim($row[11]), // FOC Warehouse Rawalpindi
-                // ];
-
-
-
-                $warehouse_quantities = [
-                    34 => trim($row[8]),  // Make Up City North
-                    // 22 => trim($row[9]), // Liquidation Stock RWL
-                  
-                   
-                ];
-
-
-                //     $warehouse_quantities = [
-                //     10 => trim($row[8]),  // Make Up City North
-                   
-                // ];
-
-                if ($product_name !== '' && $sku_code !== '') {
-                    $subitem = Subitem::whereRaw('LOWER(product_name) = ?', [$product_name])
-                                      ->whereRaw('LOWER(sku_code) = ?', [$sku_code])
-                                      ->first();
+                if ($sku_code !== '') {
+                    $subitem = Subitem::on('mysql2')->whereRaw('LOWER(sku_code) = ?', [$sku_code])->first();
 
                     if ($subitem) {
-                        foreach ($warehouse_quantities as $warehouse_id => $qty) {
-                            if (is_numeric($qty)) {
-                                $data = [
-                                    'voucher_type'  => 1,
+                        foreach ($warehouse_map as $index => $warehouse_id) {
+                            $qty = isset($row[$index]) ? trim($row[$index]) : 0;
+                            
+                            if (is_numeric($qty) && (float)$qty != 0) {
+                                $total_amount = (float)$qty * $unit_rate; // Calculate Amount
+
+                                DB::connection('mysql2')->table('stock')->insert([
+                                    'voucher_type'  => 1, // Opening
                                     'sub_item_id'   => $subitem->id,
                                     'batch_code'    => $subitem->batch_code,
                                     'qty'           => $qty,
-                                    'amount'        => 0,
+                                    'amount'        => $total_amount, // Dynamic Amount
                                     'warehouse_id'  => $warehouse_id,
                                     'opening'       => 1,
                                     'created_date'  => date('Y-m-d'),
-                                    'username'      => 'Amir Murshad',
+                                    'username'      => Auth::user()->name ?? 'System',
                                     'status'        => 1,
-                                    'Territory'     => isset($row[9]) ? $row[9] : null,
-                                ];
-
-
-                                DB::connection('mysql2')->table('stock')->insert($data);
+                                    'description'   => $status_val,
+                                ]);
                             }
                         }
                     } else {
