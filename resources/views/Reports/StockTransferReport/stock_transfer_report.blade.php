@@ -52,6 +52,17 @@ use App\Helpers\CommonHelper;
                     </div>
                 </div>
                 <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Status</label>
+                        <select name="status" id="status" class="form-control select2">
+                            <option value="all">All</option>
+                            <option value="pending">In Transit</option>
+                            <option value="partial">Partial</option>
+                            <option value="received">Received</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="form-group" style="margin-top: 25px;">
                         <button type="button" onclick="get_ajax_data()" class="btn btn-primary">
                             <i class="fa fa-refresh"></i> Generate
@@ -76,10 +87,12 @@ use App\Helpers\CommonHelper;
                                             <th class="text-center">Item Name</th>
                                             <th class="text-center">Barcode</th>
                                             <th class="text-center">Transfer Quantity</th>
+                                            <th class="text-center">Received Quantity</th>
                                             <th class="text-center">Warehouse From</th>
                                             <th class="text-center">Warehouse To</th>
+                                            <th class="text-center">Status</th>
                                             <th class="text-center">Description</th>
-                                            <th class="text-center">Created By (User)</th>
+                                            <th class="text-center">Created By</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tbody">
@@ -117,7 +130,8 @@ use App\Helpers\CommonHelper;
             data: {
                 from: $("#from").val(),
                 to: $("#to").val(),
-                sku: $("#sku").val()
+                sku: $("#sku").val(),
+                status: $("#status").val()
             },
             beforeSend: function() {
                 $('#data').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
