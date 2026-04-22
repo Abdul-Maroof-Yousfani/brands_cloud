@@ -24,7 +24,7 @@ use App\Helpers\SaleHelper;
         <div class="dp_sdw">
             <h1 style="font-size: 20px; margin-bottom: 20px; font-weight: bold;">Sales Summary Report</h1>
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-                <?php echo CommonHelper::displayPrintButtonInBlade('printDemandVoucherList','','1');?>
+                <?php echo CommonHelper::displayPrintButtonInBlade('printCashSaleVoucherDetail','','1');?>
                 <?php if(true):?>
                     <a id="dlink" style="display:none;"></a>
                     <button type="button" class="btn btn-warning" onclick="ExportToExcel('xlsx')">Export <b>(xlsx)</b></button>
