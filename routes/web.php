@@ -1237,7 +1237,7 @@ Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::get('/viewPurchaseVoucherDetailThroughGrn/{id?}', 'PurchaseDataCallController@viewPurchaseVoucherDetailThroughGrn');
     Route::get('/viewPurchaseVoucherDetailAfterSubmit/{id?}', 'PurchaseDataCallController@viewPurchaseVoucherDetailAfterSubmit');
     Route::get('/purchase_voucher_list_ajax', 'PurchaseDataCallController@purchase_voucher_list_ajax');
-    Route::get('/get_data_debit_note_ajax', 'PurchaseDataCallController@get_data_debit_note_ajax');
+    Route::get('/get_data_debit_note_ajax', 'PurchaseDataCallController@get_data_debit_note_ajax')->name('get_data_debit_note_ajax');
     Route::get('/filterByClientAndRegionJobOrder', 'PurchaseDataCallController@filterByClientAndRegionJobOrder');
     Route::get('/filterByClientAndRegionJobOrderTwo', 'PurchaseDataCallController@filterByClientAndRegionJobOrderTwo');
     Route::get('/filterByCategoryAndRegionWiseStockOpening', 'PurchaseDataCallController@filterByCategoryAndRegionWiseStockOpening');

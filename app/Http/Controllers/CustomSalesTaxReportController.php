@@ -18,26 +18,36 @@ class CustomSalesTaxReportController extends Controller
 
         if($request->ajax()) {
             $sales_report_data = DB::connection("mysql2")->table("sales_tax_invoice")
-                                        
-                                        ->leftJoin("sales_tax_invoice_data", "sales_tax_invoice_data.master_id", "=", "sales_tax_invoice.id")
+                                        ->join("sales_tax_invoice_data", "sales_tax_invoice_data.master_id", "=", "sales_tax_invoice.id")
                                         ->leftJoin("subitem", "subitem.id", "=", "sales_tax_invoice_data.item_id")
                                         ->leftJoin("brands", "brands.id", "=", "subitem.brand_id")
                                         ->leftJoin("customers", "customers.id", "=", "sales_tax_invoice.buyers_id")
                                         ->leftJoin("category", "category.id", "=", "subitem.main_ic_id")
-                                        ->leftJoin("gst", "sales_tax_invoice.acc_id", "=", "gst.acc_id")
-                                        ->join("territories", "territories.id", "=", "customers.territory_id")
-                                        ->join(DB::raw("
-                                            (SELECT so_no, SUM(amount) as amount, SUM(amount * (tax / 100)) AS tax_amount, SUM(amount) AS net_amount, SUM(amount * (discount_percent_1 / 100)) as discount_amount, SUM(sales_order_data.mrp_price) AS retail_value
-                                            FROM sales_order_data
-                                            GROUP BY so_no
-                                            ) as sod
-                                        "), "sod.so_no", "=", "sales_tax_invoice.so_no")
-                                        ->groupBy("sales_tax_invoice.gi_no")
-                                        ->select("*",
-                                            DB::raw("SUM(sales_tax_invoice_data.qty) as qty"), 
-                                            DB::raw("SUM(sales_tax_invoice.sales_tax_further) as sales_tax_further"),
+                                        ->leftJoin("territories", "territories.id", "=", "customers.territory_id")
+                                        ->leftJoin("sales_order", "sales_order.so_no", "=", "sales_tax_invoice.so_no")
+                                        ->leftJoin("sales_order_data", "sales_order_data.id", "=", "sales_tax_invoice_data.so_data_id")
+                                        ->select(
+                                            "sales_tax_invoice.*",
+                                            "sales_tax_invoice_data.qty",
+                                            "sales_tax_invoice_data.rate",
+                                            "sales_tax_invoice_data.tax",
+                                            "sales_tax_invoice_data.tax_amount",
+                                            DB::raw("(sales_tax_invoice_data.rate * sales_tax_invoice_data.qty * COALESCE(sales_order_data.discount_percent_1, 0)) / 100 AS discount_amount"),
+                                            "sales_tax_invoice_data.amount AS total_amount",
+                                            "sales_tax_invoice_data.gi_no",
+                                            "sales_tax_invoice_data.date AS item_date",
+                                            "subitem.product_name",
+                                            "subitem.product_barcode",
+                                            "subitem.mrp_price",
+                                            "subitem.hs_code",
                                             "brands.name AS brand_name",
-                                            "subitem.group_id AS group_id"
+                                            "subitem.group_id AS group_id",
+                                            "category.main_ic",
+                                            "territories.name AS region_name",
+                                            "customers.name AS customer_name",
+                                            "customers.city",
+                                            "customers.warehouse_from",
+                                            "sales_order.sale_taxes_amount_rate"
                                         )
                                         ->when(isset($from) && isset($to), function($query) use($from, $to) {
                                             $query->whereBetween("sales_tax_invoice_data.date", [$from, $to]);
@@ -57,6 +67,7 @@ class CustomSalesTaxReportController extends Controller
                                         ->when($warehouse_id, function($q) use($warehouse_id) {
                                             $q->where("customers.warehouse_from", $warehouse_id);
                                         })
+                                        ->orderBy("sales_tax_invoice.gi_date", "desc")
                                         ->get();
 
             return view("Reports.Custom_Sales_Tax_Report.custom_sales_tax_report_ajax", compact("sales_report_data"));

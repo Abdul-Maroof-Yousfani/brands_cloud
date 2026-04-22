@@ -201,7 +201,7 @@ $last_day_this_month  = date('Y-m-t');
             $('#ShowHide').html('<tr><td colspan="13"><div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div></td><tr>');
 
             $.ajax({
-                url: '/pdc/get_data_debit_note_ajax',
+                url: "{{ route('get_data_debit_note_ajax') }}",
                 type: 'Get',
                 data: {from: from,to:to,m:m,SupplierId:SupplierId,VoucherType:VoucherType},
 
@@ -236,7 +236,7 @@ $last_day_this_month  = date('Y-m-t');
         }
 
         function ApprovedGoodIssuance(IssuanceId){
-            var m = '<?php echo $_GET['m'];?>';
+            var m = '<?php echo $m;?>';
             $('#BtnApprove'+IssuanceId).prop('disabled',true);
 
             $.ajax({
@@ -253,7 +253,7 @@ $last_day_this_month  = date('Y-m-t');
         }
 
         function Recieved(IssuanceId,m){
-            var m = '<?php echo $_GET['m'];?>';
+            var m = '<?php echo $m;?>';
             $('#recieved'+IssuanceId).prop('disabled',true);
 
             $.ajax({
