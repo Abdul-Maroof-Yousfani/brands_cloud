@@ -61,10 +61,10 @@ $export=ReuseableCode::check_rights(243);
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label for="">Items</label>
-                <select name="ItemId" id="ItemId" class="form-control">
+                <select name="ItemId" id="ItemId" class="form-control select2">
                     <option value="all">ALL</option>
-                    <?php foreach(App\Helpers\CommonHelper::get_items_with_movements() as $subitem):?>
-                        <option value="<?php echo $subitem->id?>"><?php echo $subitem->product_name?></option>
+                    <?php foreach(App\Helpers\CommonHelper::get_all_subitems() as $subitem):?>
+                        <option value="<?php echo $subitem->id?>"><?php echo $subitem->product_name . ' (' . $subitem->sku_code . ')'?></option>
                     <?php endforeach;?>
                 </select>
             </div>
