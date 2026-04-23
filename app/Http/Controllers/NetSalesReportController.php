@@ -34,9 +34,9 @@ class NetSalesReportController extends Controller
                                 "item",
                                 "credit_note.buyer_id",
                                 DB::raw("SUM(qty) as sales_return_qty"),
-                                DB::raw("SUM(amount) as gross_return_amount")
+                                DB::raw("SUM(net_amount) as gross_return_amount")
                             )
-                            ->groupBy("item")
+                            ->groupBy("item", "credit_note.buyer_id")
                             ->toSql();
 
                         $net_sales_reports = DB::connection("mysql2")
@@ -183,9 +183,9 @@ class NetSalesReportController extends Controller
                                 "item",
                                 "credit_note.buyer_id",
                                 DB::raw("SUM(qty) as sales_return_qty"),
-                                DB::raw("SUM(amount) as gross_return_amount")
+                                DB::raw("SUM(net_amount) as gross_return_amount")
                             )
-                            ->groupBy("item")
+                            ->groupBy("item", "credit_note.buyer_id")
                             ->toSql();
 
                         $net_sales_reports = DB::connection("mysql2")
