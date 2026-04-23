@@ -1648,7 +1648,8 @@ class StoreAddDetailControler extends Controller
             foreach ($item_id as $key => $val) {
                 if (!empty($val) && (float) $diff_qty[$key] != 0) {
 
-                    $cost = ReuseableCode::average_cost($val, $warehouse_id) ?? 0;
+                    $item_data = DB::Connection('mysql2')->table('subitem')->where('id', $val)->first();
+                    $cost = $item_data->purchase_price ?? 0;
                     $amount = abs($diff_qty[$key]) * $cost;
 
                     DB::Connection('mysql2')->table('qty_adjustment_data')->insert([
@@ -1676,7 +1677,7 @@ class StoreAddDetailControler extends Controller
                         'description' => 'Qty Adjustment: ' . $description
                     ]);
 
-                    $item_name = DB::Connection('mysql2')->table('subitem')->where('id', $val)->value('product_name');
+                    $item_name = $item_data->product_name;
                     $detailed_particulars = "Adj No: {$adj_no}, Item: {$item_name}, Qty: {$diff_qty[$key]}, {$description}";
 
                     if ($diff_qty[$key] > 0) {
