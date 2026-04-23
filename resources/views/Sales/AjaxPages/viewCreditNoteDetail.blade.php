@@ -151,9 +151,8 @@ $currentDate = date('Y-m-d');
                                     <?php if($creit_note->type == 1):?>
                                     <th class="text-center" id="Heading" style="display: none;">Delivery Not Qty</th>
                                     <?php else:?>
-                                    <th class="text-center" id="Heading">Sales Tax Invoice Qty</th>
+                                    <th class="text-center" id="Heading" style="display: none;">Sales Tax Invoice Qty</th>
                                     <?php endif;?>
-                                    <th class="text-center" >Batch Code </th>
                                     <th class="text-center" >Location </th>
                                     <th class="text-center" >QTY. </th>
                                     <th class="text-center">Rate</th>
@@ -192,8 +191,7 @@ $currentDate = date('Y-m-d');
                                         <a target="_blank"
                                         href="<?php echo url('store/fullstockReportView?sub_item_id='.$row1->item.'&&m='.Session::get('run_company').'&&warehouse_id='.$Stock->warehouse_id)?>">
                                         <?php echo CommonHelper::get_item_name($row1->item);?></a></td>
-                                    <td>&nbsp;</td>
-                                    <td class="text-center"><?php echo $Stock->batch_code?></td>
+                                    <td class="ShowHide" style="display: none;">&nbsp;</td>
                                     <td class="text-center"><?php echo CommonHelper::get_name_warehouse($row1->warehouse_id);?></td>
                                    
                                    
@@ -215,7 +213,7 @@ $currentDate = date('Y-m-d');
 
                                 <tr>
 
-                                    <td style="background-color: darkgray" class="text-center" colspan="7" id="TotalSpan">Total</td>
+                                    <td style="background-color: darkgray" class="text-center" colspan="5" id="TotalSpan">Total</td>
                                     <td  style="background-color: darkgray" class="text-right" >{{number_format($TotalAmount,2)}}</td>
                                     <td style="background-color: darkgray" class="text-center" colspan="3"></td>
                                     <td  style="background-color: darkgray" class="text-right" >{{number_format($TotalDisAmount,2)}}</td>
@@ -227,7 +225,7 @@ $currentDate = date('Y-m-d');
                                 @if($creit_note->sales_tax >0)
                                     <?php  $TotalNetAmount+=$creit_note->sales_tax; ?>
                                     <tr>
-                                        <td class="text-center" colspan="7" id="SalesTaxSpan">Sales Tax 17%</td>
+                                        <td class="text-center" colspan="6" id="SalesTaxSpan">Sales Tax 17%</td>
                                         <td class="text-right" colspan="1">{{   number_format($creit_note->sales_tax,2)}}</td>
                                     </tr>
                                 @endif
@@ -236,14 +234,14 @@ $currentDate = date('Y-m-d');
                                 @if($creit_note->sales_tax_further >0)
                                     <?php $TotalNetAmount+=$creit_note->sales_tax_further; ?>
                                     <tr>
-                                        <td class="text-center" colspan="7" id="FurtherTaxSpan">Sales Tax Further 3%</td>
+                                        <td class="text-center" colspan="6" id="FurtherTaxSpan">Sales Tax Further 3%</td>
                                         <td class="text-right" colspan="1">{{   number_format($creit_note->sales_tax_further,2)}}</td>
                                     </tr>
                                 @endif
 
                                 <tr>
 
-                                    <td style="background-color: darkgray" class="text-center" colspan="10" id="GrandTotalSpan">Grand Total</td>
+                                    <td style="background-color: darkgray" class="text-center" colspan="8" id="GrandTotalSpan">Grand Total</td>
                                     <td style="background-color: darkgray"  class="text-right" colspan="2">&nbsp;</td>
                                     <td style="background-color: darkgray"  class="text-right" colspan="1">{{number_format($TotalNetAmount,2)}}</td>
 
@@ -394,19 +392,19 @@ $currentDate = date('Y-m-d');
             {
                 $('#Heading').fadeIn();
                 $('.ShowHide').fadeIn();
-                $("#TotalSpan").attr('colspan',5);
-                $("#SalesTaxSpan").attr('colspan',8);
-                $("#FurtherTaxSpan").attr('colspan',8);
-                $("#GrandTotalSpan").attr('colspan',8);
+                $("#TotalSpan").attr('colspan',4);
+                $("#SalesTaxSpan").attr('colspan',7);
+                $("#FurtherTaxSpan").attr('colspan',7);
+                $("#GrandTotalSpan").attr('colspan',7);
 
             }
             else{
                 $('#Heading').fadeOut();
                 $('.ShowHide').fadeOut();
-                $("#TotalSpan").attr('colspan',4);
-                $("#SalesTaxSpan").attr('colspan',7);
-                $("#FurtherTaxSpan").attr('colspan',7);
-                $("#GrandTotalSpan").attr('colspan',7);
+                $("#TotalSpan").attr('colspan',3);
+                $("#SalesTaxSpan").attr('colspan',6);
+                $("#FurtherTaxSpan").attr('colspan',6);
+                $("#GrandTotalSpan").attr('colspan',6);
             }
         }
 
