@@ -165,7 +165,7 @@ use App\Helpers\CommonHelper;
                                 type="text"></li>
                     </ul>
                     <ul class="sale-l sale-l2">
-                        <li>Tax Amount</li>
+                        <li>GST Amount</li>
                         <li class="text-left"><input name="total_sales_tax" id="total_sales_tax"
                                 class="form-control form-control2" value="{{ $sale_orders->sales_tax_rate }}" type="text">
                         </li>
