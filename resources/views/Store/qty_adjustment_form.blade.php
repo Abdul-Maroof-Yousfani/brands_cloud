@@ -69,21 +69,6 @@ use App\Helpers\CommonHelper;
                                                 </div>
                                             </div>
                                             <hr>
-                                            <div class="row">
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                                    <label for="">Select Item to Adjust</label>
-                                                    <select id="item_selector" class="form-control select2">
-                                                        <option value="">Search Item...</option>
-                                                        <?php foreach(CommonHelper::get_all_subitems() as $item): ?>
-                                                            <option value="{{ $item->id }}">{{ $item->product_name }} ({{ $item->sku_code }})</option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                                    <label style="visibility: hidden;">Add</label>
-                                                    <button type="button" onclick="addItemToAdjustment()" class="btn btn-success btn-block">Add Item</button>
-                                                </div>
-                                            </div>
                                             <br>
                                             <div class="row">
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -188,7 +173,7 @@ use App\Helpers\CommonHelper;
                 '<td class="text-center">' + rowCount + '</td>' +
                 '<td>' + itemName + '<input type="hidden" name="item_id[]" value="' + itemId + '"></td>' +
                 '<td class="text-center"><input type="number" name="old_qty[]" value="' + systemQty + '" class="form-control text-center" readonly></td>' +
-                '<td class="text-center"><input type="number" step="0.01" name="actual_qty[]" class="form-control text-center requiredField" onkeyup="calculateDiff(' + rowCount + ')"></td>' +
+                '<td class="text-center"><input type="number" step="0.01" name="actual_qty[]" class="form-control text-center" onkeyup="calculateDiff(' + rowCount + ')"></td>' +
                 '<td class="text-center"><input type="number" step="0.01" name="diff_qty[]" class="form-control text-center" readonly></td>' +
                 '<td class="text-center"><button type="button" onclick="removeRow(' + rowCount + ')" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></td>' +
                 '</tr>';
@@ -209,6 +194,47 @@ use App\Helpers\CommonHelper;
 
         $(document).ready(function() {
             $('.select2').select2();
+
+            $('#warehouse_id').on('change', function() {
+                var warehouseId = $(this).val();
+                if (warehouseId) {
+                    // Clear existing rows
+                    $('#adjustment_table tbody').empty();
+                    rowCount = 0;
+                    
+                    // Show a loader or disable button if needed, but for now just load
+                    loadWarehouseItems(warehouseId);
+                }
+            });
+
+            $('#addQtyAdjustmentDetail').on('submit', function(e) {
+                // Find rows where actual_qty is empty and remove them before submit
+                $('input[name="actual_qty[]"]').each(function() {
+                    if ($(this).val() === "" || $(this).val() === null) {
+                        $(this).closest('tr').remove();
+                    }
+                });
+                
+                // If no rows are being adjusted, prevent submission
+                if ($('input[name="item_id[]"]').length === 0) {
+                    alert('Please enter Actual Qty for at least one item before saving.');
+                    e.preventDefault();
+                    return false;
+                }
+            });
         });
+
+        function loadWarehouseItems(warehouseId) {
+            $.ajax({
+                url: '<?php echo url('pdc/get_warehouse_stock_bulk'); ?>',
+                type: 'GET',
+                data: { warehouse: warehouseId },
+                success: function(data) {
+                    $.each(data, function(index, item) {
+                        addRow(item.id, item.name, item.qty);
+                    });
+                }
+            });
+        }
     </script>
 @endsection

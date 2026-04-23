@@ -4607,5 +4607,38 @@ public function get_stock_location_wise(Request $request)
         CommonHelper::reconnectMasterDatabase();
         return view('Purchase.AjaxPages.get_qr_code_history_ajax', compact('historyData', 'm'))->render();
     }
+    public function get_warehouse_stock_bulk(Request $request)
+    {
+        $warehouse = $request->warehouse;
+
+        $stocks = DB::Connection('mysql2')->table('stock as s')
+            ->join('subitem as i', 'i.id', '=', 's.sub_item_id')
+            ->where('s.status', 1)
+            ->where('s.warehouse_id', $warehouse)
+            ->select(
+                's.sub_item_id',
+                'i.product_name',
+                'i.sku_code',
+                DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11) THEN s.qty WHEN s.voucher_type IN (2,5,3,9,8,50,52) THEN -s.qty ELSE 0 END) as total_qty'),
+                DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11) THEN s.amount ELSE 0 END) as in_amount'),
+                DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11) THEN s.qty ELSE 0 END) as in_qty')
+            )
+            ->groupBy('s.sub_item_id', 'i.product_name', 'i.sku_code')
+            ->having('total_qty', '>', 0)
+            ->get();
+
+        $data = [];
+        foreach($stocks as $s) {
+            $rate = ($s->in_qty > 0) ? ($s->in_amount / $s->in_qty) : 0;
+            $data[] = [
+                'id' => $s->sub_item_id,
+                'name' => $s->product_name . ' (' . $s->sku_code . ')',
+                'qty' => number_format((float)$s->total_qty, 2, '.', ''),
+                'rate' => number_format((float)$rate, 2, '.', '')
+            ];
+        }
+
+        return response()->json($data);
+    }
 }
 

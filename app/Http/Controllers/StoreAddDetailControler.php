@@ -1657,8 +1657,6 @@ class StoreAddDetailControler extends Controller
                         'old_qty' => $old_qty[$key],
                         'actual_qty' => $actual_qty[$key],
                         'diff_qty' => $diff_qty[$key],
-                        'cost' => $cost,
-                        'amount' => $amount,
                     ]);
 
                     $v_type = ($diff_qty[$key] > 0) ? 1 : 2;

@@ -1153,6 +1153,7 @@ Route::group(['prefix' => 'pad', 'middleware' => 'mysql2', 'before' => 'csrf'], 
 });
 Route::get('/set_user_db_id', 'PurchaseDataCallController@set_user_db_id');
 Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {
+    Route::get('/get_warehouse_stock_bulk', 'PurchaseDataCallController@get_warehouse_stock_bulk');
     Route::get('/getPurchaseDebitNoteAjax', 'PurchaseDataCallController@getPurchaseDebitNoteAjax')->name('getPurchaseDebitNoteAjax');
     Route::get('/getQRCodeHistoryAjax', 'PurchaseDataCallController@getQRCodeHistoryAjax')->name('getQRCodeHistoryAjax');
 

@@ -2468,6 +2468,7 @@ public function add_opening_import_post(Request $request)
                                     'amount'        => $total_amount, // Dynamic Amount
                                     'warehouse_id'  => $warehouse_id,
                                     'opening'       => 1,
+                                    'voucher_date'  => date('Y-m-d'),
                                     'created_date'  => date('Y-m-d'),
                                     'username'      => Auth::user()->name ?? 'System',
                                     'status'        => 1,
