@@ -69,6 +69,11 @@ use App\Helpers\CommonHelper;
                                                 </div>
                                             </div>
                                             <hr>
+                                            <div class="row">
+                                                <div class="col-lg-12 text-right">
+                                                    <button type="button" onclick="AddMore()" class="btn btn-success btn-sm">Add More</button>
+                                                </div>
+                                            </div>
                                             <br>
                                             <div class="row">
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -110,59 +115,61 @@ use App\Helpers\CommonHelper;
     <script>
         var rowCount = 0;
 
-        function addItemToAdjustment() {
-            var itemId = $('#item_selector').val();
-            var itemName = $('#item_selector option:selected').text();
+        function AddMore() {
             var warehouseId = $('#warehouse_id').val();
-
             if (!warehouseId) {
                 alert('Please select a warehouse first.');
                 return;
             }
-            if (!itemId) {
-                alert('Please select an item.');
-                return;
-            }
-
-            // Check if item already exists in table
-            var exists = false;
-            $('input[name="item_id[]"]').each(function() {
-                if ($(this).val() == itemId) {
-                    exists = true;
-                    return false;
-                }
+            
+            rowCount++;
+            var html = '<tr id="row_' + rowCount + '">' +
+                '<td class="text-center">' + rowCount + '</td>' +
+                '<td>' +
+                    '<select name="item_id[]" class="form-control select2-dynamic" onchange="fetchItemStock(this, ' + rowCount + ')">' +
+                        '<option value="">Search Item...</option>' +
+                        '<?php foreach(CommonHelper::get_all_subitems() as $item): ?>' +
+                            '<option value="{{ $item->id }}">{{ $item->product_name }} ({{ $item->sku_code }})</option>' +
+                        '<?php endforeach; ?>' +
+                    '</select>' +
+                '</td>' +
+                '<td class="text-center"><input type="number" name="old_qty[]" value="0" class="form-control text-center old_qty" readonly tabindex="-1"></td>' +
+                '<td class="text-center"><input type="number" step="0.01" name="actual_qty[]" class="form-control text-center actual_qty" onkeyup="calculateDiff(' + rowCount + ')"></td>' +
+                '<td class="text-center"><input type="number" step="0.01" name="diff_qty[]" class="form-control text-center diff_qty" readonly tabindex="-1"></td>' +
+                '<td class="text-center"><button type="button" onclick="removeRow(' + rowCount + ')" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></td>' +
+                '</tr>';
+            $('#adjustment_table tbody').append(html);
+            
+            // Initialize select2 for the new row
+            var $newSelect = $('#row_' + rowCount + ' .select2-dynamic');
+            $newSelect.select2({
+                placeholder: "Search Item...",
+                width: '100%'
             });
 
-            if (exists) {
-                alert('Item already added.');
-                return;
-            }
+            // Auto focus actual_qty when item is selected
+            $newSelect.on('select2:select', function(e) {
+                $(this).closest('tr').find('.actual_qty').focus();
+            });
+        }
 
-            // Fetch current stock
+        function fetchItemStock(element, id) {
+            var itemId = $(element).val();
+            var warehouseId = $('#warehouse_id').val();
+            if (!itemId) return;
+
             $.ajax({
                 url: '<?php echo url('pdc/get_stock_location_wise'); ?>',
                 type: 'GET',
-                data: {
-                    warehouse: warehouseId,
-                    item: itemId
-                },
+                data: { warehouse: warehouseId, item: itemId },
                 success: function(response) {
-                    // response is usually a JSON with qty and amount
-                    // Assuming get_stock_location_wise returns sum(in) - sum(out) logic?
-                    // Actually, let's check what it returns exactly.
-                    // Based on my view of get_stock_location_wise, it needs to subtract in and out.
-                    // Wait, the controller code I saw earlier was just fetching $in and $out.
-                    // It doesn't seem to return the final subtracted value unless I missed it.
-                    // Let me check the controller again.
-                    
-                    // For now, I'll calculate it from response or assume a simple response
                     var systemQty = 0;
                     if(response) {
                         var parts = response.split('/');
                         systemQty = parseFloat(parts[0]) || 0;
                     }
-                    
-                    addRow(itemId, itemName, systemQty);
+                    $('#row_' + id + ' .old_qty').val(systemQty);
+                    calculateDiff(id);
                 }
             });
         }
@@ -196,15 +203,9 @@ use App\Helpers\CommonHelper;
             $('.select2').select2();
 
             $('#warehouse_id').on('change', function() {
-                var warehouseId = $(this).val();
-                if (warehouseId) {
-                    // Clear existing rows
-                    $('#adjustment_table tbody').empty();
-                    rowCount = 0;
-                    
-                    // Show a loader or disable button if needed, but for now just load
-                    loadWarehouseItems(warehouseId);
-                }
+                // Clear existing rows on warehouse change
+                $('#adjustment_table tbody').empty();
+                rowCount = 0;
             });
 
             $('#addQtyAdjustmentDetail').on('submit', function(e) {
@@ -220,6 +221,19 @@ use App\Helpers\CommonHelper;
                     alert('Please enter Actual Qty for at least one item before saving.');
                     e.preventDefault();
                     return false;
+                }
+            });
+
+            // Handle Tab key on Actual Qty to add more rows
+            $(document).on('keydown', '.actual_qty', function(e) {
+                if (e.keyCode == 9 && !e.shiftKey) { // Tab key pressed
+                    var currentRow = $(this).closest('tr');
+                    if (currentRow.is(':last-child')) {
+                        e.preventDefault(); // Prevent leaving the current input
+                        AddMore();
+                        // Focus and open the new row's selector
+                        $('#adjustment_table tbody tr:last .select2-dynamic').select2('open');
+                    }
                 }
             });
         });
