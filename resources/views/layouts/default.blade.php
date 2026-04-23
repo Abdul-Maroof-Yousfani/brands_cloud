@@ -398,6 +398,39 @@
                 </div>
             @endif
             @if (Session::has('dataInsert'))
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        });
+                        Toast.fire({
+                            icon: 'success',
+                            title: `{!! session('dataInsert') !!}`
+                        });
+                        
+                        Swal.fire({
+                            title: 'Good job!',
+                            text: `{!! session('dataInsert') !!}`,
+                            icon: 'success',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            },
+                            confirmButtonColor: '#4CAF50',
+                            confirmButtonText: 'Great!'
+                        });
+                    });
+                </script>
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
                         <div class="alert-success"><span class="glyphicon glyphicon-ok"></span> {!! session('dataInsert') !!}
@@ -407,6 +440,20 @@
             @endif
 
             @if (Session::has('message'))
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: `{!! session('message') !!}`,
+                            icon: 'success',
+                            showClass: {
+                                popup: 'animate__animated animate__bounceIn'
+                            },
+                            confirmButtonColor: '#00c853',
+                            confirmButtonText: 'Done'
+                        });
+                    });
+                </script>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center alert alert-success center">
                     <strong>Success!</strong> {!! session('message') !!}
                 </div>

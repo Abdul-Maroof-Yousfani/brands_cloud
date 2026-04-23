@@ -978,18 +978,19 @@ class StoreAddDetailControler extends Controller
                     ->value('territory_id');
 
                 if (is_numeric($qty) && $qty > 0) {
-
+                    $unit_price = $request->input('unit_price')[$key];
 
                     $data = [
                         'voucher_type' => 1,
                         'sub_item_id' => $request->sub_1,
                         'batch_code' => $request->input('batch_code')[$key],
                         'qty' => $qty,
+                        'rate' => $unit_price,
                         'amount' => $amount,
                         'warehouse_id' => $row,
                         'opening' => 1,
                         'created_date' => date('Y-m-d'),
-                        'username' => 'Amir Murshad',
+                        'username' => Auth::user()->name,
                         'status' => 1,
                         'check_status' => 1,
                         'Territory' => $territory ?? 0,
@@ -1008,7 +1009,8 @@ class StoreAddDetailControler extends Controller
 
         }
 
-        return redirect('store/itemWiseOpeningSingle?m=1')->with('message', 'Opening Stock Inserted Successfully!');
+        Session::flash('dataInsert', 'Opening Stock Inserted Successfully!');
+        return redirect('store/itemWiseOpeningSingle?m=1');
     }
     public function addConvertGrnData()
     {

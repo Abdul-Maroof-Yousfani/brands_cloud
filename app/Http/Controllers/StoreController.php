@@ -2464,6 +2464,7 @@ public function add_opening_import_post(Request $request)
                                     'sub_item_id'   => $subitem->id,
                                     'batch_code'    => $subitem->batch_code,
                                     'qty'           => $qty,
+                                    'rate'          => $unit_rate,
                                     'amount'        => $total_amount, // Dynamic Amount
                                     'warehouse_id'  => $warehouse_id,
                                     'opening'       => 1,

@@ -19,7 +19,8 @@
                         <th class="text-center" style="">SR No</th>
                         <th style="" class="text-center" >Warehouse<span class="rflabelsteric"><strong>*</strong></span></th>
                         <th style="" class="text-center" > Stock IN<span class="rflabelsteric"><strong>*</strong></span></th>
-                        <th class="text-center"  style="display: none" >Closing Value<span class="rflabelsteric"><strong>*</strong></span></th>
+                        <th style="" class="text-center" > Unit Price<span class="rflabelsteric"><strong>*</strong></span></th>
+                        <th class="text-center"  style="" >Closing Value<span class="rflabelsteric"><strong>*</strong></span></th>
                         <th class="text-center" style="display: none">Batch Number<span class="rflabelsteric"><strong>*</strong></span></th>
 
                     </tr>
@@ -28,44 +29,29 @@
                         @php
                             $closingStock = 0;
                             $closingValue = 0;
+                            $allWarehouses = CommonHelper::get_all_warehouse();
                         @endphp
                     <?php $counter=1; ?>
-                    @if ($stock->isEmpty())
-
-                    @foreach(CommonHelper::get_all_warehouse() as $row)
+                    
+                    @foreach($allWarehouses as $row)
                         <tr>
                             <td>{{$counter++}}</td>
                             <input type="hidden" name="warehouse[]" value="{{$row->id}}"/>
                             <td class="text-center">{{$row->name}}</td>
-                            <td><input step="any" type="number" onkeyup="calculateClosingStock()" class="form-control requiredField closing_stock" value="0" name="closing_stock[]" id="closing_stock{{$counter}}" /> </td>
-                            <td style="display: none"><input step="any" type="number" onkeyup="calculateClosingRate()" class="form-control requiredField closing_value" value="0" name="closing_val[]" id="closing_val{{$counter}}" /> </td>
+                            <td><input step="any" type="number" onkeyup="calculateRowAmount({{$counter}})" class="form-control requiredField closing_stock" value="0" name="closing_stock[]" id="closing_stock{{$counter}}" /> </td>
+                            <td><input step="any" type="number" onkeyup="calculateRowAmount({{$counter}})" class="form-control requiredField unit_price" value="0" name="unit_price[]" id="unit_price{{$counter}}" /> </td>
+                            <td style=""><input readonly step="any" type="number" onkeyup="calculateClosingRate()" class="form-control requiredField closing_value" value="0" name="closing_val[]" id="closing_val{{$counter}}" /> </td>
                             <td style="display: none"><input type="text" class="form-control requiredField" value="0" name="batch_code[]" id="batch_code{{$counter}}" /> </td>
                         </tr>
                     @endforeach
-                        @else
-
-                        @foreach($stock as $row1)
-                            @php
-                                $closingStock += $row1->qty;
-                                $closingValue += $row1->amount;
-                            @endphp
-                            <tr>
-                                <td>{{$counter++}}</td>
-                                <input type="hidden" name="warehouse[]" value="{{$row1->warehouse_id}}"/>
-                                <td class="text-center">{{CommonHelper::get_name_warehouse($row1->warehouse_id)}}</td>
-                                <td><input step="any" type="number" onkeyup="calculateClosingStock()" class="form-control requiredField closing_stock" value="{{$row1->qty}}" name="closing_stock[]"  id="closing_stock{{$counter}}" /> </td>
-                                <td style="display: none"><input step="any" type="number" onkeyup="calculateClosingRate()" class="form-control requiredField closing_value" value="{{$row1->amount}}" name="closing_val[]" id="closing_val{{$counter}}" /> </td>
-                                <td style="display: none"><input type="text" value="{{$row1->batch_code}}" class="form-control requiredField" value="" name="batch_code[]" id="batch_code{{$counter}}" /> </td>
-                            </tr>
-                        @endforeach
-                        @endif
                     </tbody>
 
                     <tbody>
                     <tr  style="font-size:large;font-weight: bold">
                         <td class="text-center" colspan="2">Total</td>
                         <td id="" class="text-right" colspan="1"><input readonly class="form-control clear closing_stock_value" type="text" value="{{ $closingStock }}" id="total_qty"/> </td>
-                        <td style="display: none" id="" class="text-right" colspan="1"><input readonly class="form-control clear closing_rate_value" type="text" value="{{ $closingValue }}" id="total_rate"/> </td>
+                        <td></td>
+                        <td style="" id="" class="text-right" colspan="1"><input readonly class="form-control clear closing_rate_value" type="text" value="{{ $closingValue }}" id="total_rate"/> </td>
 
 
                     </tr>
@@ -90,6 +76,16 @@
 </div>
 
 <script>
+    function calculateRowAmount(id) {
+        let qty = Number($("#closing_stock" + id).val());
+        let rate = Number($("#unit_price" + id).val());
+        let amount = qty * rate;
+        $("#closing_val" + id).val(amount.toFixed(2));
+        
+        calculateClosingStock();
+        calculateClosingRate();
+    }
+
     function calculateClosingStock() {
         let closing_stock_value = 0;
 
@@ -107,7 +103,7 @@
             closing_rate_value += Number($(this).val());
         });
     
-        $(".closing_rate_value").val(closing_rate_value);    
+        $(".closing_rate_value").val(closing_rate_value.toFixed(2));    
     }
 
    
@@ -129,7 +125,14 @@
                 jqueryValidationCustom();
 
                 if(validate == 0){
-                    //return false;
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'info',
+                        title: 'Saving opening stock...',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
                 }else{
                     return false;
                 }
