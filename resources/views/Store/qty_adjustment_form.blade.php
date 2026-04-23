@@ -217,7 +217,7 @@ use App\Helpers\CommonHelper;
                 });
                 
                 // If no rows are being adjusted, prevent submission
-                if ($('input[name="item_id[]"]').length === 0) {
+                if ($('[name="item_id[]"]').length === 0) {
                     alert('Please enter Actual Qty for at least one item before saving.');
                     e.preventDefault();
                     return false;

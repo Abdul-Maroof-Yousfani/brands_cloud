@@ -1676,6 +1676,9 @@ class StoreAddDetailControler extends Controller
                         'description' => 'Qty Adjustment: ' . $description
                     ]);
 
+                    $item_name = DB::Connection('mysql2')->table('subitem')->where('id', $val)->value('product_name');
+                    $detailed_particulars = "Adj No: {$adj_no}, Item: {$item_name}, Qty: {$diff_qty[$key]}, {$description}";
+
                     if ($diff_qty[$key] > 0) {
                         // Inventory Gain: Dr Inventory, Cr Inventory Gain
                         DB::Connection('mysql2')->table('transactions')->insert([
@@ -1684,7 +1687,7 @@ class StoreAddDetailControler extends Controller
                             'v_date' => $adj_date,
                             'voucher_no' => $adj_no,
                             'voucher_type' => 16,
-                            'particulars' => 'Inventory Gain: ' . $description,
+                            'particulars' => 'Inventory Gain: ' . $detailed_particulars,
                             'debit_credit' => 1,
                             'amount' => $amount,
                             'username' => Auth::user()->name,
@@ -1697,7 +1700,7 @@ class StoreAddDetailControler extends Controller
                             'v_date' => $adj_date,
                             'voucher_no' => $adj_no,
                             'voucher_type' => 16,
-                            'particulars' => 'Inventory Gain: ' . $description,
+                            'particulars' => 'Inventory Gain: ' . $detailed_particulars,
                             'debit_credit' => 0,
                             'amount' => $amount,
                             'username' => Auth::user()->name,
@@ -1712,7 +1715,7 @@ class StoreAddDetailControler extends Controller
                             'v_date' => $adj_date,
                             'voucher_no' => $adj_no,
                             'voucher_type' => 16,
-                            'particulars' => 'Inventory Loss: ' . $description,
+                            'particulars' => 'Inventory Loss: ' . $detailed_particulars,
                             'debit_credit' => 1,
                             'amount' => $amount,
                             'username' => Auth::user()->name,
@@ -1725,7 +1728,7 @@ class StoreAddDetailControler extends Controller
                             'v_date' => $adj_date,
                             'voucher_no' => $adj_no,
                             'voucher_type' => 16,
-                            'particulars' => 'Inventory Loss: ' . $description,
+                            'particulars' => 'Inventory Loss: ' . $detailed_particulars,
                             'debit_credit' => 0,
                             'amount' => $amount,
                             'username' => Auth::user()->name,
