@@ -29,7 +29,7 @@ $remaining = 0;
         @foreach($Invoice as $row)
                 <?php
             CommonHelper::companyDatabaseConnection($_GET['m']);
-            $data = SalesHelper::getTotalAmountSalesTaxInvoice($row->id);
+            $data = SalesHelper::getTotalAmountSalesTaxInvoiceNew($row->id);
             $get_freight = SalesHelper::get_freight($row->id);
             $customer = CommonHelper::byers_name($row->buyers_id);
             $rece = SalesHelper::get_received_payment($row->id);

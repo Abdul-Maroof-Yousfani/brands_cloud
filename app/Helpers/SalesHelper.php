@@ -347,6 +347,27 @@ class SalesHelper
 
     }
 
+    public static function getTotalAmountSalesTaxInvoiceNew($id)
+    {
+
+
+        $data = DB::Connection('mysql2')->selectOne('select MAX(a.total) as total,sum(b.qty)qty,sum(b.amount)amount
+        from sales_tax_invoice a
+        inner join
+        sales_tax_invoice_data b
+        on
+        a.id=b.master_id
+        left join sales_order so ON a.so_id = so.id
+        where a.id="' . $id . '"
+        and a.status=1
+        group by a.id
+        ');
+
+
+        return $data ?? (object)['total' => 0, 'qty' => 0, 'amount' => 0];
+
+    }
+
     public static function get_freight($id)
     {
         return DB::Connection('mysql2')->table('addional_expense_sales_tax_invoice')->where('main_id', $id)->where('status', 1)->sum('amount');

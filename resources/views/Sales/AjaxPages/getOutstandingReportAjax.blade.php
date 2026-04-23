@@ -89,7 +89,7 @@ if((!empty($Invoice))):
         <?php
 
         CommonHelper::companyDatabaseConnection($_GET['m']);
-        $data=SalesHelper::getTotalAmountSalesTaxInvoice($row->id);
+        $data=SalesHelper::getTotalAmountSalesTaxInvoiceNew($row->id);
         $get_freight=SalesHelper::get_freight($row->id);
         $customer=CommonHelper::byers_name($row->buyers_id);
         $return_amount=SalesHelper::get_sales_return_from_sales_tax_invoice_by_date($row->id,$FromDate,$ToDate);
