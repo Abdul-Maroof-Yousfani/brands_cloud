@@ -964,9 +964,10 @@ class StoreAddDetailControler extends Controller
 
         try {
             // DB::connection('mysql2')->table('stock')->where('sub_item_id', $request->sub_1)->where('opening', 1)->delete();
+            // DB::connection('mysql2')->table('transactions')->where('voucher_no', 'OS-' . $request->sub_1)->delete();
 
             $warehouse = $request->warehouse;
-
+            $total_amount = 0;
             foreach ($warehouse as $key => $row) {
 
                 $qty = $request->input('closing_stock')[$key];
@@ -979,7 +980,7 @@ class StoreAddDetailControler extends Controller
 
                 if (is_numeric($qty) && $qty > 0) {
                     $unit_price = $request->input('unit_price')[$key];
-
+                    $total_amount += $amount;
                     $data = [
                         'voucher_type' => 1,
                         'sub_item_id' => $request->sub_1,
@@ -998,6 +999,38 @@ class StoreAddDetailControler extends Controller
 
                     DB::connection('mysql2')->table('stock')->insert($data);
                 }
+            }
+
+            if ($total_amount > 0) {
+                // Entry for Inventory (Debit)
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => 'OS-' . $request->sub_1,
+                    'v_date' => date('Y-m-d'),
+                    'acc_id' => config('accounts.inventory.main.id'),
+                    'acc_code' => config('accounts.inventory.main.code'),
+                    'particulars' => 'Opening Stock Item ID: ' . $request->sub_1,
+                    'opening_bal' => 1,
+                    'debit_credit' => 1,
+                    'amount' => $total_amount,
+                    'username' => Auth::user()->name,
+                    'status' => 1,
+                    'voucher_type' => 1,
+                ]);
+
+                // Entry for Opening Stock (Credit)
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => 'OS-' . $request->sub_1,
+                    'v_date' => date('Y-m-d'),
+                    'acc_id' => config('accounts.opening_stock.id'),
+                    'acc_code' => config('accounts.opening_stock.code'),
+                    'particulars' => 'Opening Stock Item ID: ' . $request->sub_1,
+                    'opening_bal' => 1,
+                    'debit_credit' => 0,
+                    'amount' => $total_amount,
+                    'username' => Auth::user()->name,
+                    'status' => 1,
+                    'voucher_type' => 1,
+                ]);
             }
 
             DB::connection('mysql2')->commit();
