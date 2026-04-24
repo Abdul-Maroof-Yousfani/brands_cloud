@@ -24,6 +24,7 @@ echo Form::open(array('url' => 'finance/CreateReceiptVoucherForSales?m=' . $m, '
 $total = 0;
 $received = 0;
 $remaining = 0;
+$total_return = 0;
     ?>
 
         @foreach($Invoice as $row)
@@ -86,6 +87,7 @@ $remaining = 0;
                 $total += $inv + $sale_taxes_amount_rate;
                 $received += $rece;
                 $remaining += $rema + $sale_taxes_amount_rate;
+                $total_return += $return_amount;
                     ?>
                     <td class="text-center"><button
                             onclick="showDetailModelOneParamerter('sales/viewSalesTaxInvoiceDetail','<?php        echo $row->id ?>','View Sales Tax Invoice')"
@@ -107,7 +109,7 @@ $remaining = 0;
         <tr>
             <td class="text-center" colspan="7" style="font-size: 20px;">Total</td>
             <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($total, 2)}}</td>
-            <td class="text-right" colspan="1" style="font-size: 20px;"></td>
+            <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($total_return, 2)}}</td>
             <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($received, 2)}}</td>
             <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($remaining, 2)}}</td>
             <td class="text-right" colspan="1" style="font-size: 20px;"></td>
