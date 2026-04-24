@@ -86,7 +86,7 @@ class CommonHelper
 
     public static function companyDatabaseConnection($param1)
     {
-          static::reconnectMasterDatabase();
+        static::reconnectMasterDatabase();
         $d = DB::selectOne('select `dbName` from `company` where `id` = ' . Session::get('run_company') . '')->dbName;
         Config::set(['database.connections.tenant.database' => $d]);
         // Config::set(['database.connections.tenant.username' => 'inno-sfr-01']);
@@ -100,133 +100,149 @@ class CommonHelper
         DB::reconnect('mysql');
     }
 
-    public static function get_all_principal_groups() {
+    public static function get_all_principal_groups()
+    {
         $principal_groups = ProductsPrincipalGroup::select("id", "products_principal_group")->where("status", 1)->get();
         return $principal_groups;
     }
-   public static function get_all_principal_groups_name($id) {
-    $principal_group = ProductsPrincipalGroup::select("id", "products_principal_group")
-        ->where("status", 1)
-        ->where("id", $id)
-        ->first();
+    public static function get_all_principal_groups_name($id)
+    {
+        $principal_group = ProductsPrincipalGroup::select("id", "products_principal_group")
+            ->where("status", 1)
+            ->where("id", $id)
+            ->first();
 
-    return $principal_group ? $principal_group->products_principal_group : '-';
-}
+        return $principal_group ? $principal_group->products_principal_group : '-';
+    }
 
     public static function get_all_products()
     {
-        $product= new Product();
-        $product=$product->SetConnection('mysql2');
-        return $product=$product->where('p_status',1)->get();
+        $product = new Product();
+        $product = $product->SetConnection('mysql2');
+        return $product = $product->where('p_status', 1)->get();
     }
     public static function checkStockData($ItemId)
     {
-        $Count = DB::Connection('mysql2')->table('stock')->where('status',1)->whereIn('sub_item_id', array($ItemId))->count();
+        $Count = DB::Connection('mysql2')->table('stock')->where('status', 1)->whereIn('sub_item_id', array($ItemId))->count();
 
         return $Count;
     }
 
-public static function territory_name($id)
-{
-    $territory = new Territory();
-    $territory = $territory->SetConnection('mysql2');
-    return $territory->where('id', $id)->value('name');
-}
+    public static function territory_name($id)
+    {
+        $territory = new Territory();
+        $territory = $territory->SetConnection('mysql2');
+        return $territory->where('id', $id)->value('name');
+    }
 
-public static function get_bank_account_by_id_customer($id)
-{
-    return DB::Connection('mysql2')->table('bank_detail_customer')->where('id', $id)->first();
-}
+    public static function get_bank_account_by_id_customer($id)
+    {
+        return DB::Connection('mysql2')->table('bank_detail_customer')->where('id', $id)->first();
+    }
 
 
-public static function get_ba_location($ba_id) {
-    $location = DB::table("ba_locations")
-                    ->select("id", "location_name")
-                    ->where("ba_id", $ba_id)
-                    ->first();
-    return $location ? $location->location_name : "N/A";
-}
-    public static function get_group_by($group_id) {
+    public static function get_ba_location($ba_id)
+    {
+        $location = DB::table("ba_locations")
+            ->select("id", "location_name")
+            ->where("ba_id", $ba_id)
+            ->first();
+        return $location ? $location->location_name : "N/A";
+    }
+    public static function get_group_by($group_id)
+    {
         $group = DB::connection("mysql2")->table("company_groups")->find($group_id);
         return $group->name;
     }
 
-    public static function get_unadjusted_advance($customer_id, $toDate) {
-        $total_rv = DB::connection('mysql2')->table('new_rv_data')
-            ->join('new_rvs', 'new_rv_data.master_id', '=', 'new_rvs.id')
-            ->where('new_rvs.buyer_id', $customer_id)
-            ->where('new_rvs.rv_date', '<=', $toDate)
-            ->where('new_rvs.status', 1)
-            ->sum('new_rv_data.amount');
-            
-        $adjusted_rv = DB::connection('mysql2')->table('received_paymet')
-            ->join('new_rvs', 'received_paymet.receipt_id', '=', 'new_rvs.id')
-            ->where('new_rvs.buyer_id', $customer_id)
-            ->where('new_rvs.rv_date', '<=', $toDate)
-            ->where('received_paymet.status', 1)
-            ->sum('received_paymet.received_amount');
-            
-        return $total_rv - $adjusted_rv;
+    public static function get_unadjusted_advance($customer_id, $toDate)
+    {
+        // Calculate remaining advance from advance_payments table
+        // Parent rows are positive, child rows (adjustments) are negative.
+        // sum('amount') gives the net unadjusted amount.
+        return DB::connection('mysql2')->table('advance_payments')
+            ->where('customer_id', $customer_id)
+            ->where('adv_date', '<=', $toDate)
+            ->where('status', 1)
+            ->sum('amount');
     }
 
-    public static function get_unadjusted_outstanding_si($customer_id, $toDate) {
-        $total_si = DB::connection('mysql2')->table('sales_tax_invoice')
-            ->where('buyers_id', $customer_id)
-            ->where('gi_date', '<=', $toDate)
-            ->where('status', 1)
-            ->sum('total');
-            
-        $adjusted_si = DB::connection('mysql2')->table('received_paymet')
-            ->join('sales_tax_invoice', 'received_paymet.sales_tax_invoice_id', '=', 'sales_tax_invoice.id')
+    public static function get_unadjusted_outstanding_si($customer_id, $toDate)
+    {
+        $invoices = DB::connection('mysql2')->table('sales_tax_invoice')
+            ->leftJoin('sales_order', 'sales_tax_invoice.so_id', '=', 'sales_order.id')
             ->where('sales_tax_invoice.buyers_id', $customer_id)
             ->where('sales_tax_invoice.gi_date', '<=', $toDate)
-            ->where('received_paymet.status', 1)
-            ->sum('received_paymet.received_amount');
+            ->where('sales_tax_invoice.status', 1)
+            ->select('sales_tax_invoice.id', 'sales_tax_invoice.total', 'sales_order.sale_taxes_amount_rate')
+            ->get();
+
+        $total_remaining = 0;
+
+        foreach ($invoices as $inv) {
+            $received = DB::Connection('mysql2')->table('received_paymet')
+                ->where('sales_tax_invoice_id', $inv->id)
+                ->where('status', 1)
+                ->sum('received_amount');
+
+            $return_data = DB::Connection('mysql2')->selectOne('select (sum(a.net_amount)+IFNULL(MAX(c.sales_tax),0)+IFNULL(MAX(c.sales_tax_further),0)) as amount 
+                from credit_note_data a
+                inner join credit_note c on a.master_id=c.id
+                inner join sales_tax_invoice_data b on a.voucher_data_id=b.id
+                where a.status=1 and a.type=2 and b.master_id="' . $inv->id . '"');
             
-        return $total_si - $adjusted_si;
+            $returns = $return_data->amount ?? 0;
+            
+            $freight = DB::Connection('mysql2')->table('addional_expense_sales_tax_invoice')
+                ->where('main_id', $inv->id)
+                ->where('status', 1)
+                ->sum('amount');
+
+            $rema_check = $inv->total + $freight - $returns - $received;
+
+            if ($rema_check > 0) {
+                $total_remaining += ($rema_check + ($inv->sale_taxes_amount_rate ?? 0));
+            }
+        }
+
+        return $total_remaining;
     }
 
-   public static function get_product_names_by_brand_id($brand_id) {
+    public static function get_product_names_by_brand_id($brand_id)
+    {
         $products = Subitem::select("id", "product_name")->where("brand_id", $brand_id)->get();
         return $products;
     }
-public static function get_companies() {
-    return DB::table("company")->where("status", 1)->get();
-}
+    public static function get_companies()
+    {
+        return DB::table("company")->where("status", 1)->get();
+    }
 
     public static function get_company_logo($CompanyId)
     {
-        $Cdata = DB::table('company')->where('status',1)->where('id',$CompanyId)->first();
-        $HtmlData='';
-        if($CompanyId == 1)
-        {
-            $HtmlData = '<img style=" width: 175px;margin:20px 0px;" src="'.url("public/logoo2.png").'">';
+        $Cdata = DB::table('company')->where('status', 1)->where('id', $CompanyId)->first();
+        $HtmlData = '';
+        if ($CompanyId == 1) {
+            $HtmlData = '<img style=" width: 175px;margin:20px 0px;" src="' . url("public/logoo2.png") . '">';
 
             // $HtmlData = '<img style=" width: 125px;margin:20px 0px;" src="'.url("public/logoo2.png").'">
             // <p style="font-size: 20px;"><strong>Premier Industrial</strong></p>
 
             // <p style="font-size: 13px;margin: 10px !important;">Plot No. 3, Sector-N, H.I.T.E, Hub, Balochistan</p>';
-        }
-        elseif($CompanyId == 2)
-        {
-            $HtmlData = '<img style="float: left; width: 100px;margin:-20px 0px 0px 0px;" src="'.url("/storage/app/uploads/second.png").'">
+        } elseif ($CompanyId == 2) {
+            $HtmlData = '<img style="float: left; width: 100px;margin:-20px 0px 0px 0px;" src="' . url("/storage/app/uploads/second.png") . '">
                         <p style="float: left; font-size: 20px;"><strong>AQMS PIPE SOLUTION</strong></p>
                         <br>
                         <p style="font-size: 13px;margin: 10px !important;">Shop-1,2,3 Tawakkal Mansion Bellasis Street Karachi, 74200 Pakistan</p>';
-        }
-        elseif($CompanyId == 3)
-        {
-            $HtmlData = '<img style="float: left; width: 100px;margin:-20px 0px 0px 0px;" src="'.url("/storage/app/uploads/fourth.png").'">
+        } elseif ($CompanyId == 3) {
+            $HtmlData = '<img style="float: left; width: 100px;margin:-20px 0px 0px 0px;" src="' . url("/storage/app/uploads/fourth.png") . '">
                         <p style="float: left; font-size: 20px;"><strong>BURHANI AQMS INDUSTRIES</strong></p>
                         <br>
                         <p style="font-size: 13px;margin: 10px !important;">A-516/517, Mehran Town, Sector 6-A, Korangi Industrial Area, Karachi-74900, Pakistan.</p>';
-        
-            $HtmlData = "";
-        }
 
-        elseif($CompanyId == 5)
-        {
-            $HtmlData = '<img style="float: left; width: 100px;margin:-20px 0px 0px 0px;" src="'.url("/storage/app/uploads/third.png").'">
+            $HtmlData = "";
+        } elseif ($CompanyId == 5) {
+            $HtmlData = '<img style="float: left; width: 100px;margin:-20px 0px 0px 0px;" src="' . url("/storage/app/uploads/third.png") . '">
                         <p style="float: left; font-size: 20px;"><strong>AL AQMAR HARDWARE</strong></p>
                         <br>
                         <p style="font-size: 13px;margin: 10px !important;">Shop-1,2,3 Tawakkal Mansion Bellasis Street Karachi, 74200 Pakistan</p>';
@@ -238,22 +254,15 @@ public static function get_companies() {
 
     public static function get_company_name($CompanyId)
     {
-        $Cdata = DB::table('company')->where('status',1)->where('id',$CompanyId)->first();
-        $HtmlData='';
-        if($CompanyId == 1)
-        {
+        $Cdata = DB::table('company')->where('status', 1)->where('id', $CompanyId)->first();
+        $HtmlData = '';
+        if ($CompanyId == 1) {
             $HtmlData = '<strong>Brands </strong>';
-        }
-        elseif($CompanyId == 2)
-        {
+        } elseif ($CompanyId == 2) {
             $HtmlData = '<strong>Brands</strong>';
-        }
-        elseif($CompanyId == 3)
-        {
+        } elseif ($CompanyId == 3) {
             $HtmlData = '<strong>Unisons</strong>';
-        }
-        elseif($CompanyId == 5)
-        {
+        } elseif ($CompanyId == 5) {
             $HtmlData = '<strong>Unisons</strong>';
         }
 
@@ -262,270 +271,265 @@ public static function get_companies() {
 
     public static function get_company_logo_front($CompanyId)
     {
-        $Cdata = DB::table('company')->where('status',1)->where('id',$CompanyId)->first();
-        $HtmlData='';
-        if($CompanyId == 1 || $CompanyId == 6)
-        {
-            $HtmlData = '<img style="float: left; width: 200px" src="'.url("/storage/app/uploads/second.png").'">';
-        }
-        elseif($CompanyId == 2)
-        {
-            $HtmlData = '<img style="float: left; width: 200px;margin: -40px 0px 0px 0px" src="'.url("/storage/app/uploads/second.png").'">';
-        }
-        elseif($CompanyId == 3)
-        {
-            $HtmlData = '<img style="float: left; width: 200px; margin:-45px 0px 0px 0px;" src="'.url("/storage/app/uploads/fourth.png").'">';
-        }
-
-        elseif($CompanyId == 5)
-        {
-            $HtmlData = '<img style="float: left; width: 188px; margin:-28px 0px 0px 0px;" src="'.url("/storage/app/uploads/third.png").'">';
+        $Cdata = DB::table('company')->where('status', 1)->where('id', $CompanyId)->first();
+        $HtmlData = '';
+        if ($CompanyId == 1 || $CompanyId == 6) {
+            $HtmlData = '<img style="float: left; width: 200px" src="' . url("/storage/app/uploads/second.png") . '">';
+        } elseif ($CompanyId == 2) {
+            $HtmlData = '<img style="float: left; width: 200px;margin: -40px 0px 0px 0px" src="' . url("/storage/app/uploads/second.png") . '">';
+        } elseif ($CompanyId == 3) {
+            $HtmlData = '<img style="float: left; width: 200px; margin:-45px 0px 0px 0px;" src="' . url("/storage/app/uploads/fourth.png") . '">';
+        } elseif ($CompanyId == 5) {
+            $HtmlData = '<img style="float: left; width: 188px; margin:-28px 0px 0px 0px;" src="' . url("/storage/app/uploads/third.png") . '">';
         }
         return $HtmlData;
     }
-    public static function get_all_brand(){
-        $brands = DB::Connection('mysql2')->table('brands')->where('status',1)->get();
-      
+    public static function get_all_brand()
+    {
+        $brands = DB::Connection('mysql2')->table('brands')->where('status', 1)->get();
+
         return $brands;
-    } 
-
-
-     public static function get_all_brand_territory()
-{
-    $user = Auth::user();
-
-    if (!$user) {
-        return collect(); // Not logged in
     }
 
-    // If user is restricted by territory (e.g., TSO, Sales, etc.)
-    if (in_array($user->acc_type, ['user'])) {
 
-        // Get territory IDs (can be JSON array or single ID)
-        $territory_ids = json_decode($user->territory_id, true);
-        if (!is_array($territory_ids)) {
-            $territory_ids = [$user->territory_id];
-        }
-
-        // Step 1: Get item_ids from stock table for these territories
-        $item_ids = DB::connection('mysql2')
-            ->table('stock')
-            ->whereIn('territory', $territory_ids)
-            ->distinct()
-            ->pluck('sub_item_id');
-
-        if ($item_ids->isEmpty()) {
-            return collect(); // No items found
-        }
-
-        // Step 2: Get brand_ids from subitem table
-        $brand_ids = DB::connection('mysql2')
-            ->table('subitem')
-            ->whereIn('id', $item_ids)
-            ->whereNotNull('brand_id')
-            ->distinct()
-            ->pluck('brand_id');
-
-        if ($brand_ids->isEmpty()) {
-            return collect(); // No brand IDs found
-        }
-
-        // Step 3: Get active brands based on those brand IDs
-        return DB::connection('mysql2')
-            ->table('brands')
-            ->where('status', 1)
-            ->whereIn('id', $brand_ids)
-            ->get();
-    }
-
-    // If not a restricted acc_type, return all active brands
-    return DB::connection('mysql2')
-        ->table('brands')
-        ->where('status', 1)
-        ->get();
-}
-
-
-public static function buyers_id_with_warehouse_name($customerId)
-{
-    $customer = DB::connection('mysql2')
-        ->table('customers')
-        ->where('id', $customerId)
-        ->where('status', 1)
-        ->select('warehouse_from')
-        ->first();
-
-    
-
-    if (!$customer || !$customer->warehouse_from) {
-        return null; // or return 'N/A';
-    }
-
-    $warehouse = DB::connection('mysql2')
-        ->table('warehouse') // replace with your actual warehouse table name if different
-        ->where('id', $customer->warehouse_from)
-        ->select('name')
-        ->first();
-
-    return $warehouse->name; // returns warehouse name or null if not found
-}
-
-
-
-
-public function getlistSaleOrder(Request $request)
-{
-    if ($request->ajax()) {
-        $sale_orders = DB::connection('mysql2')
-            ->table('sales_order')
-            ->join('customers', 'sales_order.buyers_id', '=', 'customers.id')
-            ->join('sales_order_data', 'sales_order_data.master_id', '=', 'sales_order.id')
-            ->join('subitem', 'subitem.id', '=', 'sales_order_data.item_id');
-
-        // 👇 Apply user territory filter if user is 'user' acc_type
+    public static function get_all_brand_territory()
+    {
         $user = Auth::user();
 
-        dd($user);
-        if ($user && $user->acc_type === 'user') {
+        if (!$user) {
+            return collect(); // Not logged in
+        }
+
+        // If user is restricted by territory (e.g., TSO, Sales, etc.)
+        if (in_array($user->acc_type, ['user'])) {
+
+            // Get territory IDs (can be JSON array or single ID)
             $territory_ids = json_decode($user->territory_id, true);
             if (!is_array($territory_ids)) {
                 $territory_ids = [$user->territory_id];
             }
-            dd($territory_ids);
 
-            $sale_orders->whereIn('customers.territory_id', $territory_ids);
+            // Step 1: Get item_ids from stock table for these territories
+            $item_ids = DB::connection('mysql2')
+                ->table('stock')
+                ->whereIn('territory', $territory_ids)
+                ->distinct()
+                ->pluck('sub_item_id');
+
+            if ($item_ids->isEmpty()) {
+                return collect(); // No items found
+            }
+
+            // Step 2: Get brand_ids from subitem table
+            $brand_ids = DB::connection('mysql2')
+                ->table('subitem')
+                ->whereIn('id', $item_ids)
+                ->whereNotNull('brand_id')
+                ->distinct()
+                ->pluck('brand_id');
+
+            if ($brand_ids->isEmpty()) {
+                return collect(); // No brand IDs found
+            }
+
+            // Step 3: Get active brands based on those brand IDs
+            return DB::connection('mysql2')
+                ->table('brands')
+                ->where('status', 1)
+                ->whereIn('id', $brand_ids)
+                ->get();
         }
 
-        // 🔍 Search filter
-        if ($request->has('search') && $request->search != '') {
-            $search = strtolower($request->search);
-            $sale_orders->where(function ($query) use ($search) {
-                $query->whereRaw('LOWER(customers.name) LIKE ?', ['%' . $search . '%'])
-                    ->orWhereRaw('LOWER(sales_order.so_no) LIKE ?', ['%' . $search . '%'])
-                    ->orWhereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . $search . '%'])
-                    ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%' . $search . '%'])
-                    ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%' . $search . '%'])
-                    ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%' . $search . '%']);
-            });
-        }
-
-        // 👤 Username filter
-        if ($request->has('username') && $request->username != '') {
-            $username = $request->username;
-            $sale_orders->whereIn('subitem.username', $username);
-        }
-
-        // 📅 Date filter
-        if ($request->has('date') && $request->date != '') {
-            $sale_orders->whereDate('sales_order.so_date', '=', $request->date);
-        }
-
-        // ✅ Status filter
-        if ($request->has('status') && $request->status != '') {
-            $sale_orders->where('sales_order.status', $request->status);
-        }
-
-        // 🔍 Sale Order No filter
-        if (!empty($request->Filter)) {
-            $sale_orders->where('sales_order.so_no', 'like', '%' . $request->SoNo . '%');
-        }
-
-        // 🧠 Group by to avoid duplicates due to join with sales_order_data
-        $sale_orders = $sale_orders
-            ->select('sales_order.*', 'customers.name')
-            ->groupBy('sales_order.id')
-            ->paginate(request('per_page'));
-
-        return view('selling.saleorder.listSaleOrderAjax', compact('sale_orders'));
+        // If not a restricted acc_type, return all active brands
+        return DB::connection('mysql2')
+            ->table('brands')
+            ->where('status', 1)
+            ->get();
     }
-}
-   public static function get_brand_by_id($id){
+
+
+    public static function buyers_id_with_warehouse_name($customerId)
+    {
+        $customer = DB::connection('mysql2')
+            ->table('customers')
+            ->where('id', $customerId)
+            ->where('status', 1)
+            ->select('warehouse_from')
+            ->first();
+
+
+
+        if (!$customer || !$customer->warehouse_from) {
+            return null; // or return 'N/A';
+        }
+
+        $warehouse = DB::connection('mysql2')
+            ->table('warehouse') // replace with your actual warehouse table name if different
+            ->where('id', $customer->warehouse_from)
+            ->select('name')
+            ->first();
+
+        return $warehouse->name; // returns warehouse name or null if not found
+    }
+
+
+
+
+    public function getlistSaleOrder(Request $request)
+    {
+        if ($request->ajax()) {
+            $sale_orders = DB::connection('mysql2')
+                ->table('sales_order')
+                ->join('customers', 'sales_order.buyers_id', '=', 'customers.id')
+                ->join('sales_order_data', 'sales_order_data.master_id', '=', 'sales_order.id')
+                ->join('subitem', 'subitem.id', '=', 'sales_order_data.item_id');
+
+            // 👇 Apply user territory filter if user is 'user' acc_type
+            $user = Auth::user();
+
+            dd($user);
+            if ($user && $user->acc_type === 'user') {
+                $territory_ids = json_decode($user->territory_id, true);
+                if (!is_array($territory_ids)) {
+                    $territory_ids = [$user->territory_id];
+                }
+                dd($territory_ids);
+
+                $sale_orders->whereIn('customers.territory_id', $territory_ids);
+            }
+
+            // 🔍 Search filter
+            if ($request->has('search') && $request->search != '') {
+                $search = strtolower($request->search);
+                $sale_orders->where(function ($query) use ($search) {
+                    $query->whereRaw('LOWER(customers.name) LIKE ?', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(sales_order.so_no) LIKE ?', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(subitem.product_name) LIKE ?', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(subitem.sys_no) LIKE ?', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(subitem.product_barcode) LIKE ?', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(subitem.sku_code) LIKE ?', ['%' . $search . '%']);
+                });
+            }
+
+            // 👤 Username filter
+            if ($request->has('username') && $request->username != '') {
+                $username = $request->username;
+                $sale_orders->whereIn('subitem.username', $username);
+            }
+
+            // 📅 Date filter
+            if ($request->has('date') && $request->date != '') {
+                $sale_orders->whereDate('sales_order.so_date', '=', $request->date);
+            }
+
+            // ✅ Status filter
+            if ($request->has('status') && $request->status != '') {
+                $sale_orders->where('sales_order.status', $request->status);
+            }
+
+            // 🔍 Sale Order No filter
+            if (!empty($request->Filter)) {
+                $sale_orders->where('sales_order.so_no', 'like', '%' . $request->SoNo . '%');
+            }
+
+            // 🧠 Group by to avoid duplicates due to join with sales_order_data
+            $sale_orders = $sale_orders
+                ->select('sales_order.*', 'customers.name')
+                ->groupBy('sales_order.id')
+                ->paginate(request('per_page'));
+
+            return view('selling.saleorder.listSaleOrderAjax', compact('sale_orders'));
+        }
+    }
+    public static function get_brand_by_id($id)
+    {
         $brands = DB::Connection('mysql2')->table('brands')->find($id);
         return $brands ? $brands->name : 'N/A';
-    } 
+    }
 
     public static function get_data($item_id)
     {
 
-        $item_data=DB::Connection('mysql2')->table('subitem')->where('id',$item_id)->select('uom');
+        $item_data = DB::Connection('mysql2')->table('subitem')->where('id', $item_id)->select('uom');
 
-        if ($item_data->count()>0):
+        if ($item_data->count() > 0):
 
-            $max_data = DB::Connection('mysql2')->table('grn_data')->where('status',1)->where('sub_item_id',$item_id);
+            $max_data = DB::Connection('mysql2')->table('grn_data')->where('status', 1)->where('sub_item_id', $item_id);
 
-            $stock = DB::Connection('mysql2')->table('stock')->where('status',1)->where('sub_item_id',$item_id)->where('voucher_type',1)->sum('qty');
-            $uom_name=static::get_uom_name($item_data->first()->uom);
-            return $uom_name.','.$max_data->max('purchase_approved_qty').','.$max_data->max('purchase_recived_qty').','.$stock;
+            $stock = DB::Connection('mysql2')->table('stock')->where('status', 1)->where('sub_item_id', $item_id)->where('voucher_type', 1)->sum('qty');
+            $uom_name = static::get_uom_name($item_data->first()->uom);
+            return $uom_name . ',' . $max_data->max('purchase_approved_qty') . ',' . $max_data->max('purchase_recived_qty') . ',' . $stock;
         endif;
     }
-     public static function get_subitem($item_id)
+    public static function get_subitem($item_id)
     {
-        $item_data=DB::Connection('mysql2')->table('subitem')->where('id',$item_id)->first();
+        $item_data = DB::Connection('mysql2')->table('subitem')->where('id', $item_id)->first();
         return $item_data;
     }
 
     public static function only_uom_nam_by_item_id($item_id)
     {
-        $item_data=DB::Connection('mysql2')->table('subitem')->where('id',$item_id)->select('uom');
-        return $uom_name=static::get_uom_name($item_data->first()->uom);
+        $item_data = DB::Connection('mysql2')->table('subitem')->where('id', $item_id)->select('uom');
+        return $uom_name = static::get_uom_name($item_data->first()->uom);
     }
     public static function get_product_name_by_id($id)
     {
-        $product= new Product();
-        $product=$product->SetConnection('mysql2');
-        return $product=$product->where('product_id',$id)->first();
+        $product = new Product();
+        $product = $product->SetConnection('mysql2');
+        return $product = $product->where('product_id', $id)->first();
     }
-  public static function get_product_by_id($id)
-{
-    if (empty($id)) {
-        return null;
-    }
+    public static function get_product_by_id($id)
+    {
+        if (empty($id)) {
+            return null;
+        }
 
-    try {
-        $product = DB::connection('mysql2')
-                    ->table('subitem')
-                    ->where('id', $id)
-                    ->first();
-        
-        return $product;
-    } catch (\Exception $e) {
-        // Log error if needed
-        // \Log::error("Error fetching product: " . $e->getMessage());
-        return null;
+        try {
+            $product = DB::connection('mysql2')
+                ->table('subitem')
+                ->where('id', $id)
+                ->first();
+
+            return $product;
+        } catch (\Exception $e) {
+            // Log error if needed
+            // \Log::error("Error fetching product: " . $e->getMessage());
+            return null;
+        }
     }
-}
     public static function get_product_type_name($id)
     {
-        $productType= new ProductType();
-        $productType=$productType->SetConnection('mysql2');
-        $productType=$productType->where('product_type_id',$id)->select('type')->first();
+        $productType = new ProductType();
+        $productType = $productType->SetConnection('mysql2');
+        $productType = $productType->where('product_type_id', $id)->select('type')->first();
         return $productType->type ?? "NULL";
     }
     public static function get_product_classification_name($id)
     {
-        $productClassification= new ProductClassification();
-        $productClassification=$productClassification->SetConnection('mysql2');
-        $productClassification=$productClassification->where('id',$id)->select('name')->first();
+        $productClassification = new ProductClassification();
+        $productClassification = $productClassification->SetConnection('mysql2');
+        $productClassification = $productClassification->where('id', $id)->select('name')->first();
         return $productClassification->name ?? "NULL";
     }
-        
-    public static function get_all_product_from_sub_items(){
-        $data=DB::Connection('mysql2')->table('subitem')->select('id','product_name','product_barcode','sku_code','product_type_id','product_classification_id','product_trend_id','main_ic_id','mrp_price')->where('product_status','Active')->orWhere('product_status','active')->get();
+
+    public static function get_all_product_from_sub_items()
+    {
+        $data = DB::Connection('mysql2')->table('subitem')->select('id', 'product_name', 'product_barcode', 'sku_code', 'product_type_id', 'product_classification_id', 'product_trend_id', 'main_ic_id', 'mrp_price')->where('product_status', 'Active')->orWhere('product_status', 'active')->get();
         return $data;
     }
     public static function get_product_trend_name($id)
     {
-        $productTrend= new ProductClassification();
-        $productTrend=$productTrend->SetConnection('mysql2');
-        $productTrend=$productTrend->where('id',$id)->select('name')->first();
+        $productTrend = new ProductClassification();
+        $productTrend = $productTrend->SetConnection('mysql2');
+        $productTrend = $productTrend->where('id', $id)->select('name')->first();
         return $productTrend->name ?? "NULL";
     }
 
-     public static function get_product_trend_name_new($id)
+    public static function get_product_trend_name_new($id)
     {
-        $productTrend= new ProductTrend();
-        $productTrend=$productTrend->SetConnection('mysql2');
-        $productTrend=$productTrend->where('id',$id)->select('name')->first();
+        $productTrend = new ProductTrend();
+        $productTrend = $productTrend->SetConnection('mysql2');
+        $productTrend = $productTrend->where('id', $id)->select('name')->first();
         return $productTrend->name ?? "NULL";
     }
     // public static function get_product_trend_name($id)
@@ -537,41 +541,42 @@ public function getlistSaleOrder(Request $request)
     // }
     public static function get_branch_list($AccountId)
     {
-        $Client=new Client();
-        $Client=$Client->SetConnection('mysql2')->where('acc_id',$AccountId)->select('id')->first();
+        $Client = new Client();
+        $Client = $Client->SetConnection('mysql2')->where('acc_id', $AccountId)->select('id')->first();
         $Branch = new Branch();
-        $Branch = $Branch->SetConnection('mysql2')->where('client_id',$Client->id)->where('status',1)->get();
+        $Branch = $Branch->SetConnection('mysql2')->where('client_id', $Client->id)->where('status', 1)->get();
         return $Branch;
     }
 
     public static function get_all_branch()
     {
         $Branch = new Branch();
-        $Branch = $Branch->SetConnection('mysql2')->where('status',1)->get();
+        $Branch = $Branch->SetConnection('mysql2')->where('status', 1)->get();
         return $Branch;
     }
 
-    public static function get_branch_by_id($branch_id) {
+    public static function get_branch_by_id($branch_id)
+    {
         $Branch = (new Branch)
-                ->setConnection('mysql2')
-                ->where('id', $branch_id)
-                ->where('status', 1)
-                ->first();
+            ->setConnection('mysql2')
+            ->where('id', $branch_id)
+            ->where('status', 1)
+            ->first();
 
-            return $Branch ? $Branch->branch_name : 'N/A';
+        return $Branch ? $Branch->branch_name : 'N/A';
     }
 
     public static function get_branch($ClientId)
     {
 
         $Branch = new Branch();
-        $Branch=$Branch->SetConnection('mysql2');
-        $Branch=$Branch
-            ->select('branch.id','branch.branch_name','branch.acc_id','transactions.acc_code','transactions.paid_to','transactions.paid_to_type')
+        $Branch = $Branch->SetConnection('mysql2');
+        $Branch = $Branch
+            ->select('branch.id', 'branch.branch_name', 'branch.acc_id', 'transactions.acc_code', 'transactions.paid_to', 'transactions.paid_to_type')
             ->join('transactions', 'transactions.paid_to', '=', 'branch.id')
-            ->where('branch.status','=',1)
-            ->where('transactions.status','=',1)
-            ->where('branch.client_id','=',$ClientId)
+            ->where('branch.status', '=', 1)
+            ->where('transactions.status', '=', 1)
+            ->where('branch.client_id', '=', $ClientId)
             ->groupBy('transactions.paid_to')
             ->get();
         return $Branch;
@@ -580,28 +585,28 @@ public function getlistSaleOrder(Request $request)
 
     public static function getEmpSuppClientPaidTo()
     {
-        $Emp= new Employee();
-        $Emp=$Emp->SetConnection('mysql2');
+        $Emp = new Employee();
+        $Emp = $Emp->SetConnection('mysql2');
         //$MultiTable['Emp']=$Emp->where('status',1)->select('id','emp_name')->get();
         // $MultiTable['Emp']=$Emp->where('status',1)->select(DB::raw('CONCAT(emp_name, "(Employee) ") AS emp_name'), 'id')->get();
-        $MultiTable['Emp']=  DB::Connection('mysql2')->select('select id,emp_name from employee where status=1');
+        $MultiTable['Emp'] = DB::Connection('mysql2')->select('select id,emp_name from employee where status=1');
 
 
-        $Supplier= new Supplier();
-        $Supplier=$Supplier->SetConnection('mysql2');
+        $Supplier = new Supplier();
+        $Supplier = $Supplier->SetConnection('mysql2');
         //$MultiTable['Supp']=$Supplier->where('status',1)->get();
-        $MultiTable['Supp']=$Supplier->where('status',1)->select(DB::raw('CONCAT(name, "(Supplier) ") AS name'), 'id')->get();
+        $MultiTable['Supp'] = $Supplier->where('status', 1)->select(DB::raw('CONCAT(name, "(Supplier) ") AS name'), 'id')->get();
 
 
-        $Client= new Client();
-        $Client=$Client->SetConnection('mysql2');
+        $Client = new Client();
+        $Client = $Client->SetConnection('mysql2');
         //$MultiTable['Client']=$Client->where('status',1)->get();
-        $MultiTable['Client']=$Client->where('status',1)->select(DB::raw('CONCAT(client_name, "(Client) ") AS client_name'), 'id')->get();
+        $MultiTable['Client'] = $Client->where('status', 1)->select(DB::raw('CONCAT(client_name, "(Client) ") AS client_name'), 'id')->get();
 
-        $PaidTo= new PaidTo();
-        $PaidTo=$PaidTo->SetConnection('mysql2');
-//       $MultiTable['PaidTo']=$PaidTo->where('status',1)->get();
-        $MultiTable['PaidTo']=$PaidTo->where('status',1)->select(DB::raw('CONCAT(name, "(Other) ") AS name'), 'id')->get();
+        $PaidTo = new PaidTo();
+        $PaidTo = $PaidTo->SetConnection('mysql2');
+        //       $MultiTable['PaidTo']=$PaidTo->where('status',1)->get();
+        $MultiTable['PaidTo'] = $PaidTo->where('status', 1)->select(DB::raw('CONCAT(name, "(Other) ") AS name'), 'id')->get();
 
         return $MultiTable;
     }
@@ -613,8 +618,8 @@ public function getlistSaleOrder(Request $request)
         static::reconnectMasterDatabase();
         ?>
         <datalist id="selectSubItem">
-            <?php foreach ($subItemList as $row){ ?>
-            <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->sub_ic; ?>">
+            <?php foreach ($subItemList as $row) { ?>
+                <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->sub_ic; ?>">
                 <?php } ?>
         </datalist>
         <?php
@@ -628,7 +633,7 @@ public function getlistSaleOrder(Request $request)
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                 <label>Branches List</label>
                 <select class="form-control" name="adminBranchFilter" id="adminBranchFilter"
-                        onchange="<?php echo $param1 ?>('<?php echo $param1 ?>',this.value)">
+                    onchange="<?php echo $param1 ?>('<?php echo $param1 ?>',this.value)">
                     <option value="0">All Branch</option>
                     <?php
                     foreach ($branchList as $row) {
@@ -642,7 +647,7 @@ public function getlistSaleOrder(Request $request)
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                 <label>Filter Type</label>
                 <select class="form-control" name="adminRangeFilter" id="adminRangeFilter"
-                        onchange="adminRangeFilter(this.value)">
+                    onchange="adminRangeFilter(this.value)">
                     <option value="1">Date Wise</option>
                     <option value="2">Month Wise</option>
                     <option value="3">Year Wise</option>
@@ -668,17 +673,17 @@ public function getlistSaleOrder(Request $request)
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <label>Start Date</label>
                                             <input type="date" name="startDate" id="startDate"
-                                                   value="<?php echo $currentMonthStartDate ?>" class="form-control"/>
+                                                value="<?php echo $currentMonthStartDate ?>" class="form-control" />
                                         </div>
 
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <label>End Date</label>
                                             <input type="date" name="endDate" id="endDate"
-                                                   value="<?php echo $currentMonthEndDate ?>" class="form-control"/>
+                                                value="<?php echo $currentMonthEndDate ?>" class="form-control" />
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <input type="button" value="Submit" class="btn btn-xs btn-primary"
-                                                   id="btnDate" onclick="dataFilterDateWise('<?php echo $param1 ?>');"/>
+                                            <input type="button" value="Submit" class="btn btn-xs btn-primary" id="btnDate"
+                                                onclick="dataFilterDateWise('<?php echo $param1 ?>');" />
                                         </div>
                                     </div>
                                 </div>
@@ -693,18 +698,16 @@ public function getlistSaleOrder(Request $request)
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <label>Start Month</label>
                                             <input type="month" name="startMonth" id="startMonth" value=""
-                                                   class="form-control"/>
+                                                class="form-control" />
                                         </div>
 
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <label>End Month</label>
-                                            <input type="month" name="endMonth" id="endMonth" value=""
-                                                   class="form-control"/>
+                                            <input type="month" name="endMonth" id="endMonth" value="" class="form-control" />
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <input type="button" value="Submit" class="btn btn-xs btn-primary"
-                                                   id="btnMonth"
-                                                   onclick="dataFilterMonthWise('<?php echo $param2 ?>');"/>
+                                            <input type="button" value="Submit" class="btn btn-xs btn-primary" id="btnMonth"
+                                                onclick="dataFilterMonthWise('<?php echo $param2 ?>');" />
                                         </div>
                                     </div>
                                 </div>
@@ -748,8 +751,8 @@ public function getlistSaleOrder(Request $request)
                                             ?>
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <input type="button" value="Submit" class="btn btn-xs btn-primary"
-                                                   id="btnYear" onclick="dataFilterYearWise('<?php echo $param3 ?>');"/>
+                                            <input type="button" value="Submit" class="btn btn-xs btn-primary" id="btnYear"
+                                                onclick="dataFilterYearWise('<?php echo $param3 ?>');" />
                                         </div>
                                     </div>
                                 </div>
@@ -766,51 +769,49 @@ public function getlistSaleOrder(Request $request)
     {
 
 
-            ?>
-            <button class="btn btn-warning"
-                    onclick="exportView('<?php echo $param1 ?>','<?php echo $param2 ?>','<?php echo $param3 ?>')"
-                    style="<?php echo $param2; ?>">
-                <span class="glyphicon glyphicon-print"></span> &nbsp; Export to CSV
-            </button>
-            <?php
+        ?>
+        <button class="btn btn-warning"
+            onclick="exportView('<?php echo $param1 ?>','<?php echo $param2 ?>','<?php echo $param3 ?>')"
+            style="<?php echo $param2; ?>">
+            <span class="glyphicon glyphicon-print"></span> &nbsp; Export to CSV
+        </button>
+        <?php
 
     }
 
     public static function displayPrintButtonInView($param1, $param2, $param3)
-{
-    ?>
-    <button class="btn btn-primary prinn pritns"
+    {
+        ?>
+        <button class="btn btn-primary prinn pritns"
             onclick="remove();printView('<?php echo $param1 ?>','<?php echo $param2 ?>','<?php echo $param3 ?>')"
             style="<?php echo $param2; ?>">
-        <span class="glyphicon glyphicon-print"></span> Print
-    </button>
-    <?php
-}
+            <span class="glyphicon glyphicon-print"></span> Print
+        </button>
+        <?php
+    }
 
-// View Sale Order
-public static function newdisplayPrintButtonInView($param1, $param2, $param3)
-{
-    ?>
-    <button class="btn btn-primary prinn pritns"
-            onclick="printView('printReport')"
-            style="<?php echo $param2; ?>">
-        <span class="glyphicon glyphicon-print"></span> Print
-    </button>
-    <?php
-}
+    // View Sale Order
+    public static function newdisplayPrintButtonInView($param1, $param2, $param3)
+    {
+        ?>
+        <button class="btn btn-primary prinn pritns" onclick="printView('printReport')" style="<?php echo $param2; ?>">
+            <span class="glyphicon glyphicon-print"></span> Print
+        </button>
+        <?php
+    }
 
-public static function displayPrintButtonInBlade($param1, $param2, $param3)
-{
-    $print_permission = static::crudRights();
-    //if (in_array('print', $print_permission)):
-    ?>
-    <button class="btn btn-primary"
+    public static function displayPrintButtonInBlade($param1, $param2, $param3)
+    {
+        $print_permission = static::crudRights();
+        //if (in_array('print', $print_permission)):
+        ?>
+        <button class="btn btn-primary"
             onclick="printView('<?php echo $param1 ?>','<?php echo $param2 ?>','<?php echo $param3 ?>')"
             style="<?php echo $param2; ?>">
-        <span class="glyphicon glyphicon-print"></span> &nbsp; Print
-    </button>
+            <span class="glyphicon glyphicon-print"></span> &nbsp; Print
+        </button>
     <?php //endif;
-}
+    }
 
     public static function getCompanyName($param1)
     {
@@ -828,9 +829,9 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
                     style="border-bottom:2px solid #000 !important;"><?php echo static::changeDateFormat($current_date); ?></label>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-5 text-center">
-            <div >
-                           <h2 class="subHeadingLabelClass"><?php echo static::getCompanyName(Session::get('run_company')); ?></h2>
-                        </div>
+                <div>
+                    <h2 class="subHeadingLabelClass"><?php echo static::getCompanyName(Session::get('run_company')); ?></h2>
+                </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-right">
                 <?php $nameOfDay = date('l', strtotime($current_date)); ?>
@@ -847,23 +848,23 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
     {
         ?>
         <a onclick="showDetailModelMasterTable('<?php echo $param1 ?>','<?php echo $param9 ?>','<?php echo $param2 ?>','<?php echo $param3; ?>','<?php echo $param4; ?>','<?php echo $param5; ?>','<?php echo $param6; ?>','<?php echo $param10 ?>')"
-           class="btn btn-xs btn-success"><span class="glyphicon glyphicon-eye-open"></span></a>
+            class="btn btn-xs btn-success"><span class="glyphicon glyphicon-eye-open"></span></a>
         <?php if ($param2 == 2) { ?>
-        <button class="delete-modal btn btn-xs btn-primary"
+            <button class="delete-modal btn btn-xs btn-primary"
                 onclick="repostCompanyMasterTableRecord('<?php echo $param12 ?>','<?php echo $param3 ?>','<?php echo $param6 ?>','<?php echo $param1 ?>','<?php echo $param5 ?>')">
-            <span class="glyphicon glyphicon-refresh"> Repost</span>
-        </button>
+                <span class="glyphicon glyphicon-refresh"> Repost</span>
+            </button>
 
-    <?php } else { ?>
-        <button class="edit-modal btn btn-xs btn-info"
+        <?php } else { ?>
+            <button class="edit-modal btn btn-xs btn-info"
                 onclick="showMasterTableEditModel('<?php echo $param7 ?>','<?php echo $param3 ?>','<?php echo $param8 ?>','<?php echo $param1 ?>')">
-            <span class="glyphicon glyphicon-edit"> Edit</span>
-        </button>
-        <button class="delete-modal btn btn-xs btn-danger"
+                <span class="glyphicon glyphicon-edit"> Edit</span>
+            </button>
+            <button class="delete-modal btn btn-xs btn-danger"
                 onclick="deleteCompanyMasterTableRecord('<?php echo $param11 ?>','<?php echo $param3 ?>','<?php echo $param6 ?>','<?php echo $param1 ?>','<?php echo $param5 ?>')">
-            <span class="glyphicon glyphicon-trash"> Delete</span>
-        </button>
-    <?php } ?>
+                <span class="glyphicon glyphicon-trash"> Delete</span>
+            </button>
+        <?php } ?>
 
         <?php
     }
@@ -889,8 +890,8 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         static::reconnectMasterDatabase();
         ?>
         <datalist id="selectAccountHead">
-            <?php foreach ($accountList as $row){ ?>
-            <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
+            <?php foreach ($accountList as $row) { ?>
+                <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
                 <?php } ?>
         </datalist>
         <?php
@@ -901,8 +902,8 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         $branchList = DB::table('company')->get();
         ?>
         <datalist id="selectBranch">
-            <?php foreach ($branchList as $row){ ?>
-            <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
+            <?php foreach ($branchList as $row) { ?>
+                <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
                 <?php } ?>
         </datalist>
         <?php
@@ -920,11 +921,11 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
                     <?php
                     $subDepartmentList = DB::table('sub_department')->where('company_id', '=', $param1)->where('department_id', '=', $row->id)->get();
                     foreach ($subDepartmentList as $row1) {
-                    ?>
-                    <option data-id="<?php echo $row1->id; ?>" value="<?php echo $row1->sub_department_name; ?>">
-                        <?php
-                        }
                         ?>
+                        <option data-id="<?php echo $row1->id; ?>" value="<?php echo $row1->sub_department_name; ?>">
+                            <?php
+                    }
+                    ?>
                 </optgroup>
                 <?php
             }
@@ -940,8 +941,8 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         static::reconnectMasterDatabase();
         ?>
         <datalist id="selectSubItem">
-            <?php foreach ($subItemList as $row){ ?>
-            <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->sub_ic; ?>">
+            <?php foreach ($subItemList as $row) { ?>
+                <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->sub_ic; ?>">
                 <?php } ?>
         </datalist>
         <?php
@@ -955,8 +956,8 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         static::reconnectMasterDatabase();
         ?>
         <datalist id="selectCustomer">
-            <?php foreach ($cashCustomersList as $row){ ?>
-            <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
+            <?php foreach ($cashCustomersList as $row) { ?>
+                <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
                 <?php } ?>
         </datalist>
         <?php
@@ -969,8 +970,8 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         static::reconnectMasterDatabase();
         ?>
         <datalist id="selectCustomer">
-            <?php foreach ($creditCustomersList as $row){ ?>
-            <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
+            <?php foreach ($creditCustomersList as $row) { ?>
+                <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
                 <?php } ?>
         </datalist>
         <?php
@@ -983,8 +984,8 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         static::reconnectMasterDatabase();
         ?>
         <datalist id="selectSupplier">
-            <?php foreach ($suppierList as $row){ ?>
-            <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
+            <?php foreach ($suppierList as $row) { ?>
+                <option data-id="<?php echo $row->id; ?>" value="<?php echo $row->name; ?>">
                 <?php } ?>
         </datalist>
         <?php
@@ -1076,10 +1077,10 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
     public static function getMasterTableValueById($param1, $param2, $param3, $param4)
     {
         // echo $param1."-".$param2."-".$param3."--".$param4;
-        if($param4!="") {
+        if ($param4 != "") {
             $detailName = DB::table($param2)->select($param3)->where('status', '1')->where('id', $param4)->value($param3);
             // $detailName = DB::selectOne('select  ' . $param3 . ' from ' . $param2 . ' where `status` = 1 and `company_id` = ' . $param1 . ' and id = ' . $param4 . '')->$param3;
-            if($detailName !=""):
+            if ($detailName != ""):
                 return $detailName;
             else:
                 return "";
@@ -1100,7 +1101,7 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
     {
 
         static::companyDatabaseConnection($param1);
-        if($param4!="") {
+        if ($param4 != "") {
             $detailName = DB::selectOne('select  ' . $param3 . ' from ' . $param2 . ' where id = ' . $param4 . '')->$param3;
         } else {
             $detailName = '---';
@@ -1119,8 +1120,9 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         foreach ($categoryList as $row) {
             ?>
             <option value="<?php echo $row['id']; ?>" <?php if ($param2 == $row['id']) {
-                echo 'selected';
-            } ?>><?php echo $row['main_ic']; ?></option>
+                   echo 'selected';
+               } ?>>
+                <?php echo $row['main_ic']; ?></option>
             <?php
         }
     }
@@ -1135,8 +1137,9 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         foreach ($subItemList as $row) {
             ?>
             <option value="<?php echo $row['id']; ?>" <?php if ($param2 == $row['id']) {
-                echo 'selected';
-            } ?>><?php echo $row['sub_ic']; ?></option>
+                   echo 'selected';
+               } ?>>
+                <?php echo $row['sub_ic']; ?></option>
             <?php
         }
     }
@@ -1408,7 +1411,7 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
     public static function get_supplier_name($id)
     {
-        if($id!=""):
+        if ($id != ""):
             $supplier = new Supplier();
             $supplier = $supplier->SetConnection('mysql2');
             $supplier = $supplier->where('status', 1)->where('id', $id)->select('name');
@@ -1420,20 +1423,20 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
     public static function get_category_name($id)
     {
-        if ($id=='Select'):
+        if ($id == 'Select'):
             return '';
 
-            endif;
+        endif;
         $Category = new Category();
         $Category = $Category->SetConnection('mysql2');
-        $Category = $Category->where('id', $id)->where('status',1)->select('main_ic','status');
-        $delete='';
-        $category='';
-        if ($Category->count()>0):
+        $Category = $Category->where('id', $id)->where('status', 1)->select('main_ic', 'status');
+        $delete = '';
+        $category = '';
+        if ($Category->count() > 0):
 
-            $category=$Category->first()->main_ic;
-            endif;
-        return strtoupper($category.$delete);
+            $category = $Category->first()->main_ic;
+        endif;
+        return strtoupper($category . $delete);
     }
 
     public static function get_category_row($id)
@@ -1441,7 +1444,7 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
         $Category = new Category();
         $Category = $Category->SetConnection('mysql2');
-       return $Category = $Category->where('id', $id)->where('status',1)->select('main_ic','acc_id');
+        return $Category = $Category->where('id', $id)->where('status', 1)->select('main_ic', 'acc_id');
 
     }
     public static function get_category_by_itemid($id)
@@ -1461,12 +1464,12 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
             $Subitem = new Subitem();
             $Subitem = $Subitem->SetConnection('mysql2');
-            $Subitem = $Subitem->where('id', $id)->select('sub_ic','status','product_name')->first();
-            $delete='';
-            if ($Subitem->status!=1):
-                $delete='(Delete)';
-                endif;
-            return strtoupper($Subitem->product_name).' '.$delete;
+            $Subitem = $Subitem->where('id', $id)->select('sub_ic', 'status', 'product_name')->first();
+            $delete = '';
+            if ($Subitem->status != 1):
+                $delete = '(Delete)';
+            endif;
+            return strtoupper($Subitem->product_name) . ' ' . $delete;
         else:
             return '';
         endif;
@@ -1477,12 +1480,12 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
             $Subitem = new Subitem();
             $Subitem = $Subitem->SetConnection('mysql2');
-            $Subitem = $Subitem->where('id', $id)->select('sub_ic','status','product_name','product_barcode','sku_code')->first();
-            $delete='';
-            if ($Subitem->status!=1):
-                $delete='(Delete)';
-                endif;
-            return strtoupper($Subitem->product_barcode).' '.$delete;
+            $Subitem = $Subitem->where('id', $id)->select('sub_ic', 'status', 'product_name', 'product_barcode', 'sku_code')->first();
+            $delete = '';
+            if ($Subitem->status != 1):
+                $delete = '(Delete)';
+            endif;
+            return strtoupper($Subitem->product_barcode) . ' ' . $delete;
         else:
             return '';
         endif;
@@ -1493,12 +1496,12 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
             $Subitem = new Subitem();
             $Subitem = $Subitem->SetConnection('mysql2');
-            $Subitem = $Subitem->where('id', $id)->select('sub_ic','status','product_name','product_barcode','sku_code')->first();
-            $delete='';
-            if ($Subitem->status!=1):
-                $delete='(Delete)';
-                endif;
-            return strtoupper($Subitem->sku_code).' '.$delete;
+            $Subitem = $Subitem->where('id', $id)->select('sub_ic', 'status', 'product_name', 'product_barcode', 'sku_code')->first();
+            $delete = '';
+            if ($Subitem->status != 1):
+                $delete = '(Delete)';
+            endif;
+            return strtoupper($Subitem->sku_code) . ' ' . $delete;
         else:
             return '';
         endif;
@@ -1509,12 +1512,12 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
 
             $Subitem = new Subitem();
             $Subitem = $Subitem->SetConnection('mysql2');
-            $Subitem = $Subitem->where('id', $id)->select('product_name','sub_ic','status')->first();
-            $delete='';
-            if ($Subitem && $Subitem->status!=1):
-                $delete='(Delete)';
+            $Subitem = $Subitem->where('id', $id)->select('product_name', 'sub_ic', 'status')->first();
+            $delete = '';
+            if ($Subitem && $Subitem->status != 1):
+                $delete = '(Delete)';
             endif;
-            return strtoupper(($Subitem && $Subitem->product_name != '' ? $Subitem->product_name :'')).' '.$delete;
+            return strtoupper(($Subitem && $Subitem->product_name != '' ? $Subitem->product_name : '')) . ' ' . $delete;
         else:
             return '';
         endif;
@@ -1529,28 +1532,28 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
     }
 
 
-   public static function get_product_sku($id)
+    public static function get_product_sku($id)
     {
         if ($id != 0):
 
             $Subitem = new Subitem();
             $Subitem = $Subitem->SetConnection('mysql2');
             $Subitem = $Subitem->where('id', $id)->select('sku_code')->first();
-        
-         return $Subitem->sku_code;
+
+            return $Subitem->sku_code;
         else:
             return '';
         endif;
     }
-   public static function product_barcode($id)
+    public static function product_barcode($id)
     {
         if ($id != 0):
 
             $Subitem = new Subitem();
             $Subitem = $Subitem->SetConnection('mysql2');
             $Subitem = $Subitem->where('id', $id)->select('product_barcode')->first();
-        
-         return $Subitem->product_barcode;
+
+            return $Subitem->product_barcode;
         else:
             return '';
         endif;
@@ -1564,29 +1567,32 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
             $Subitem = new Subitem();
             $Subitem = $Subitem->SetConnection('mysql2');
             $Subitem = $Subitem->where('id', $id)->select('mrp_price')->first();
-            $delete='';
-            if ($Subitem->status!=1):
-                $delete='(Delete)';
-                endif;
+            $delete = '';
+            if ($Subitem->status != 1):
+                $delete = '(Delete)';
+            endif;
             return $Subitem->mrp_price;
         else:
             return '';
         endif;
     }
 
-    public static function comparative_count() {
+    public static function comparative_count()
+    {
         $count = DB::connection("mysql2")->table("purchase_request")->count();
         return $count;
-     
+
     }
 
-    public static function get_types() {
-        $types = DB::connection("mysql2")->table("voucher_type")->where("status",1)->get();
+    public static function get_types()
+    {
+        $types = DB::connection("mysql2")->table("voucher_type")->where("status", 1)->get();
         return $types;
     }
 
-    public static function get_type($id) {
-        $type = DB::connection("mysql2")->table("voucher_type")->where("status",1)->where("id",$id)->first();
+    public static function get_type($id)
+    {
+        $type = DB::connection("mysql2")->table("voucher_type")->where("status", 1)->where("id", $id)->first();
         return $type;
     }
 
@@ -1595,9 +1601,9 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
         if ($id != 0):
             $uom = new UOM();
             $uom = $uom->where('status', 1)->where('id', $id)->select('uom_name')->first();
-            if($uom){
+            if ($uom) {
                 return strtoupper($uom->uom_name);
-            }else{
+            } else {
                 return '';
             }
         else:
@@ -1676,14 +1682,14 @@ public static function displayPrintButtonInBlade($param1, $param2, $param3)
     }
 
 
-    
-public static function get_supplier()
-{
-    $customer = new Supplier();
-    $customer = $customer->SetConnection('mysql2');
-    return $customer = $customer->where('status', 1)->get();
 
-}
+    public static function get_supplier()
+    {
+        $customer = new Supplier();
+        $customer = $customer->SetConnection('mysql2');
+        return $customer = $customer->where('status', 1)->get();
+
+    }
 
     public static function get_account_code($id)
     {
@@ -1701,11 +1707,11 @@ public static function get_supplier()
         if ($name != ''):
             $account = new Account();
             $account = $account->SetConnection('mysql2');
-            $account = $account->where('status', 1)->where('name', 'like','%'.$name.'%')->select('code')->first();
+            $account = $account->where('status', 1)->where('name', 'like', '%' . $name . '%')->select('code')->first();
 
-            if($account){
+            if ($account) {
                 return $account['code'];
-            }else{
+            } else {
                 return 'fail';
             }
         endif;
@@ -1714,7 +1720,8 @@ public static function get_supplier()
     public static function get_account_name_by_code($code)
     {
         if ($code != ""):
-            $account = new Account();;
+            $account = new Account();
+            ;
             $account = $account->SetConnection('mysql2');
             $account = $account->where('status', 1)->where('code', $code)->select('name')->first();
             return ucwords($account['name']);
@@ -1729,13 +1736,14 @@ public static function get_supplier()
             return $account;
         endif;
     }
-    
+
 
     public static function get_dept_name($id)
     {
 
         if ($id != 0):
-            $dept = new FinanceDepartment();;
+            $dept = new FinanceDepartment();
+            ;
             $dept = $dept->SetConnection('mysql2');
             $dept = $dept->where('status', 1)->where('id', $id)->select('name')->first();
             return strtoupper($dept->name);
@@ -1747,7 +1755,8 @@ public static function get_supplier()
     {
 
         if ($id != 0):
-            $dept = new CostCenter();;
+            $dept = new CostCenter();
+            ;
             $dept = $dept->SetConnection('mysql2');
             $dept = $dept->where('status', 1)->where('id', $id)->select('name')->first();
             return strtoupper($dept->name);
@@ -1772,7 +1781,7 @@ public static function get_supplier()
         return $item->type;
     }
 
-    public static function get_opening_bal($from,$to,$id)
+    public static function get_opening_bal($from, $to, $id)
     {
 
         $transactions = new Transactions();
@@ -1794,34 +1803,34 @@ public static function get_supplier()
         return $GoodsReceiptNote->count();
     }
 
-    public static  function  get_opening_ball($from,$to,$acc_id,$m,$code,$paid_to_clause=null)
+    public static function get_opening_ball($from, $to, $acc_id, $m, $code, $paid_to_clause = null)
     {
-        $level=explode('-',$code);
-        $level=$level[0];
-        $amount=0;
-        $data=  DB::table('company')->where('id',Session::get('run_company'))->first();
-         $new_from=$data->accyearfrom;
+        $level = explode('-', $code);
+        $level = $level[0];
+        $amount = 0;
+        $data = DB::table('company')->where('id', Session::get('run_company'))->first();
+        $new_from = $data->accyearfrom;
 
 
 
-         $from.'   .....'.$new_from;
-        if ($from==$new_from):
+        $from . '   .....' . $new_from;
+        if ($from == $new_from):
 
 
             CommonHelper::companyDatabaseConnection($m);
-            $opening_data=DB::table('transactions')->where('opening_bal',1)->where('acc_id',$acc_id)->
-            where('status',1)->first();
+            $opening_data = DB::table('transactions')->where('opening_bal', 1)->where('acc_id', $acc_id)->
+                where('status', 1)->first();
 
             CommonHelper::reconnectMasterDatabase();
 
 
             if (isset($opening_data->debit_credit)):
-                 $opening_data->debit_credit;
-                if ($opening_data->debit_credit==1):
-                    $amount=$opening_data->amount;
+                $opening_data->debit_credit;
+                if ($opening_data->debit_credit == 1):
+                    $amount = $opening_data->amount;
                 else:
-                    $amount=$opening_data->amount;
-                    $amount=$amount*-1;
+                    $amount = $opening_data->amount;
+                    $amount = $amount * -1;
                 endif;
             endif;
 
@@ -1829,23 +1838,23 @@ public static function get_supplier()
         else:
 
 
-             $new_to = date('Y-m-d',strtotime($from . " - 1 day"));
+            $new_to = date('Y-m-d', strtotime($from . " - 1 day"));
 
 
 
             CommonHelper::companyDatabaseConnection($m);
-             $debit=	DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="'.$acc_id.'"
-		    	and v_date between "'.$from.'" and "'.$to.'"  and debit_credit=1')->amount;
+            $debit = DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="' . $acc_id . '"
+		    	and v_date between "' . $from . '" and "' . $to . '"  and debit_credit=1')->amount;
 
-            $credit=	DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="'.$acc_id.'"
-			    and v_date between "'.$from.'" and "'.$to.'"  and debit_credit=0')->amount;
-
-
+            $credit = DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="' . $acc_id . '"
+			    and v_date between "' . $from . '" and "' . $to . '"  and debit_credit=0')->amount;
 
 
 
 
-            $amount=$debit-$credit;
+
+
+            $amount = $debit - $credit;
 
 
             CommonHelper::reconnectMasterDatabase();
@@ -1858,23 +1867,24 @@ public static function get_supplier()
     public static function get_account_name_by_id($id)
     {
         if ($id != ""):
-            $account = new Account();;
+            $account = new Account();
+            ;
             $account = $account->SetConnection('mysql2');
             $account = $account->where('status', 1)->where('id', $id)->select('name')->first();
             return ucwords($account['name']);
         endif;
     }
 
-    public static function income_statment($from,$to,$id,$m)
+    public static function income_statment($from, $to, $id, $m)
     {
         CommonHelper::companyDatabaseConnection($m);
-        $debit=	DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="'.$id.'"
-			and v_date between "'.$from.'" and "'.$to.'" and debit_credit=1 and opening_bal=0')->amount;
+        $debit = DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="' . $id . '"
+			and v_date between "' . $from . '" and "' . $to . '" and debit_credit=1 and opening_bal=0')->amount;
 
-        $credit=	DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="'.$id.'"
-			and v_date between "'.$from.'" and "'.$to.'" and debit_credit=0 and opening_bal=0')->amount;
+        $credit = DB::selectOne('select sum(amount)amount from transactions where status=1  and acc_id="' . $id . '"
+			and v_date between "' . $from . '" and "' . $to . '" and debit_credit=0 and opening_bal=0')->amount;
         CommonHelper::reconnectMasterDatabase();
-        return $amount=$debit-$credit;
+        return $amount = $debit - $credit;
     }
 
     public static function EstimateCount($JobOrderId)
@@ -1882,18 +1892,16 @@ public static function get_supplier()
 
         $JobOrderData = new JobOrderData();
         $JobOrderData = $JobOrderData->SetConnection('mysql2');
-        $JobOrderData  = $JobOrderData->where('job_order_id', $JobOrderId)->get();
+        $JobOrderData = $JobOrderData->where('job_order_id', $JobOrderId)->get();
 
         $MultiCount = 0;
 
-        foreach($JobOrderData as $DataFil)
-        {
+        foreach ($JobOrderData as $DataFil) {
             $JobOrderDataId = $DataFil->job_order_data_id;
             $Estimate = new Estimate();
             $Estimate = $Estimate->SetConnection('mysql2');
-            $Estimate  = $Estimate->where('job_order_data_id', $JobOrderId);
-            if($Estimate->count() > 0)
-            {
+            $Estimate = $Estimate->where('job_order_data_id', $JobOrderId);
+            if ($Estimate->count() > 0) {
                 $MultiCount += $Estimate->count();
             }
 
@@ -1904,7 +1912,8 @@ public static function get_supplier()
     public static function get_all_department()
     {
 
-        $dept = new FinanceDepartment();;
+        $dept = new FinanceDepartment();
+        ;
         $dept = $dept->SetConnection('mysql2');
         $dept = $dept->where('status', 1)->select('id', 'code', 'name')
             ->orderBy('level1', 'ASC')
@@ -1912,7 +1921,8 @@ public static function get_supplier()
             ->orderBy('level3', 'ASC')
             ->orderBy('level4', 'ASC')
             ->orderBy('level5', 'ASC')
-            ->get();;
+            ->get();
+        ;
         return $dept;
 
     }
@@ -1922,7 +1932,7 @@ public static function get_supplier()
 
 
         $cost_center = new CostCenter();
-        $cost_center = $cost_center->where('status', 1)->where('level1',$level)->select('*')
+        $cost_center = $cost_center->where('status', 1)->where('level1', $level)->select('*')
             ->orderBy('level1', 'ASC')
             ->orderBy('level2', 'ASC')
             ->orderBy('level3', 'ASC')
@@ -1930,9 +1940,9 @@ public static function get_supplier()
             ->orderBy('level5', 'ASC')
             ->get();
 
-            // echo '<pre>';
-            // print_r($cost_center);
-            // die;
+        // echo '<pre>';
+        // print_r($cost_center);
+        // die;
         return $cost_center;
 
     }
@@ -1991,36 +2001,35 @@ public static function get_supplier()
         return $name;
     }
 
-    public static function get_all_sub_category($id =null)
+    public static function get_all_sub_category($id = null)
     {
-      return DB::Connection('mysql2')->table('sub_category')->where('status',1)
-      ->when($id!=null , function ($query) use ($id){
-        $query->where('id',$id);
-      });
+        return DB::Connection('mysql2')->table('sub_category')->where('status', 1)
+            ->when($id != null, function ($query) use ($id) {
+                $query->where('id', $id);
+            });
     }
     public static function get_sub_category_name($id)
     {
-      $category = DB::connection('mysql2')->table('sub_category')
-      ->where('status',1)
-       ->where('id',$id)->first();
-       if(!empty($category))
-       {
-        return $category->sub_category_name;
-       }else{
-        return '-';
-       }
+        $category = DB::connection('mysql2')->table('sub_category')
+            ->where('status', 1)
+            ->where('id', $id)->first();
+        if (!empty($category)) {
+            return $category->sub_category_name;
+        } else {
+            return '-';
+        }
 
     }
     public static function get_sub_category()
     {
-        $categories_id = explode(',',Auth::user()->categories_id);
+        $categories_id = explode(',', Auth::user()->categories_id);
 
-        return DB::Connection('mysql2')->table('sub_category')->where('status',1)->whereIn('category_id',$categories_id);
+        return DB::Connection('mysql2')->table('sub_category')->where('status', 1)->whereIn('category_id', $categories_id);
     }
     public static function get_category()
     {
         return
-        DB::Connection('mysql2')->table('category')->where('status',1);
+            DB::Connection('mysql2')->table('category')->where('status', 1);
     }
 
     public static function sales_tax_allocation_data($id, $type)
@@ -2069,21 +2078,23 @@ public static function get_supplier()
         return $c_allocation;
     }
 
-    public static function get_comparative_number(array $pr_no) {
+    public static function get_comparative_number(array $pr_no)
+    {
         $purchase_request = DB::connection("mysql2")->table('demand')->select("comparative_number_new")->whereIn("demand_no", $pr_no)->get();
         return $purchase_request->pluck('comparative_number_new')->toArray();
     }
 
-    public static function get_single_comparative_number($pr_no) {
+    public static function get_single_comparative_number($pr_no)
+    {
         $purchase_request = DB::connection("mysql2")
-                                ->table('demand')
-                                ->select("comparative_number_new")
-                                ->where("demand_no", $pr_no)
-                                ->first();
+            ->table('demand')
+            ->select("comparative_number_new")
+            ->where("demand_no", $pr_no)
+            ->first();
         return $purchase_request->comparative_number_new;
     }
 
-    
+
 
     public static function get_item_name_from_cost_center($id)
     {
@@ -2112,17 +2123,17 @@ public static function get_supplier()
 
     public static function get_finish_goods($value)
     {
-     return    DB::Connection('mysql2')->table('subitem')->where('status',1)->where('finish_good',$value)->get();
+        return DB::Connection('mysql2')->table('subitem')->where('status', 1)->where('finish_good', $value)->get();
 
     }
 
     public static function get_mold()
     {
-        return DB::Connection('mysql2')->table('production_mold')->where('status',1)->get();
+        return DB::Connection('mysql2')->table('production_mold')->where('status', 1)->get();
     }
     public static function get_dai()
     {
-        return DB::Connection('mysql2')->table('production_dai')->where('status',1)->get();
+        return DB::Connection('mysql2')->table('production_dai')->where('status', 1)->get();
     }
     public static function get_all_currency()
     {
@@ -2133,86 +2144,91 @@ public static function get_supplier()
 
     }
 
-    public static function get_all_customers() {
+    public static function get_all_customers()
+    {
         return DB::connection("mysql2")->table("customers")->select("id", "name")->where("status", 1)->get();
     }
 
-    public static function get_buyer_detail($id){
-       return DB::Connection('mysql2')->table('customers')->find($id);
+    public static function get_buyer_detail($id)
+    {
+        return DB::Connection('mysql2')->table('customers')->find($id);
     }
 
 
-public static function getSubItemByBrand($id, $item_id = null)
-{
-    $html = '<option value="">Select</option>';
+    public static function getSubItemByBrand($id, $item_id = null)
+    {
+        $html = '<option value="">Select</option>';
 
-    $products = Subitem::where(['status' => 1, 'brand_id' => $id])->get();
+        $products = Subitem::where(['status' => 1, 'brand_id' => $id])->get();
 
-    foreach ($products as $product) {
-        $selected = $product->id == $item_id ? 'selected' : '';
-        $html .= '<option ' . $selected . ' value="' . $product->id . '" data-cat="' . $product->main_ic_id . '">'
-            . '(' . $product->sku_code . ') -' . $product->product_barcode . '-' . $product->product_name . '</option>';
+        foreach ($products as $product) {
+            $selected = $product->id == $item_id ? 'selected' : '';
+            $html .= '<option ' . $selected . ' value="' . $product->id . '" data-cat="' . $product->main_ic_id . '">'
+                . '(' . $product->sku_code . ') -' . $product->product_barcode . '-' . $product->product_name . '</option>';
+        }
+
+        return $html;
     }
 
-    return $html;
-}
 
 
+    public static function getSubItemByBrand_new($id, $item_id = null)
+    {
+        $html = '<option value="">Select</option>';
 
-public static function getSubItemByBrand_new($id, $item_id = null)
-{
-    $html = '<option value="">Select</option>';
+        $products = Subitem::where(['status' => 1, 'brand_id' => $id])->get();
 
-    $products = Subitem::where(['status' => 1, 'brand_id' => $id])->get();
+        foreach ($products as $product) {
+            $selected = $product->id == $item_id ? 'selected' : '';
+            $html .= '<option ' . $selected . ' value="' . $product->id . '" data-cat="' . $product->main_ic_id . '">'
+                . '(' . $product->sku_code . ') - ' . $product->product_name . '</option>';
+        }
 
-    foreach ($products as $product) {
-        $selected = $product->id == $item_id ? 'selected' : '';
-        $html .= '<option ' . $selected . ' value="' . $product->id . '" data-cat="' . $product->main_ic_id . '">'
-            . '(' . $product->sku_code . ') - ' . $product->product_name . '</option>';
+        return $html;
     }
 
-    return $html;
-}
 
 
-
-    public static function get_subitems() {
+    public static function get_subitems()
+    {
         return Subitem::select("id", "product_name")->get();
     }
-    public static function get_all_items() {
+    public static function get_all_items()
+    {
         $sub_item = DB::connection("mysql2")
-                            ->table("subitem")
-                            // ->where("status", 1)
-                            ->get();
+            ->table("subitem")
+            // ->where("status", 1)
+            ->get();
         return $sub_item;
     }
 
 
-public static function get_all_groups() {
+    public static function get_all_groups()
+    {
         $groups = DB::connection("mysql2")->table("company_groups")->select("id", "name")->where("status", 1)->get();
 
         return $groups;
     }
 
-    
+
     public static function get_all_subitem()
     {
 
         // $categories_id = explode(',',Auth::user()->categories_id);
 
         $sub_item = DB::Connection('mysql2')->table('category as c')
-                    ->join('sub_category as sc', 'c.id', '=', 'sc.category_id')
-                    ->join('subitem as s', 'sc.id', '=', 's.sub_category_id')
-                    ->join('inpl2erp_brands_master.uom as u', 's.uom', '=', 'u.id')
-                    ->where('sc.status', '=', 1)
-                    ->where('c.status', '=', 1)
-                    ->where('s.status', '=', 1)
-                    ->where('u.status', '=', 1)
-                    ->select('s.id', 's.sub_ic','s.product_name','s.uom','s.item_code','s.main_ic_id','u.uom_name','s.product_barcode','s.sku_code','s.product_type_id','s.product_classification_id','s.product_trend_id','s.mrp_price')
-                    // ->whereIn('c.id', $categories_id)
-                    ->get();
+            ->join('sub_category as sc', 'c.id', '=', 'sc.category_id')
+            ->join('subitem as s', 'sc.id', '=', 's.sub_category_id')
+            ->join('inpl2erp_brands_master.uom as u', 's.uom', '=', 'u.id')
+            ->where('sc.status', '=', 1)
+            ->where('c.status', '=', 1)
+            ->where('s.status', '=', 1)
+            ->where('u.status', '=', 1)
+            ->select('s.id', 's.sub_ic', 's.product_name', 's.uom', 's.item_code', 's.main_ic_id', 'u.uom_name', 's.product_barcode', 's.sku_code', 's.product_type_id', 's.product_classification_id', 's.product_trend_id', 's.mrp_price')
+            // ->whereIn('c.id', $categories_id)
+            ->get();
 
-               
+
 
         // $sub_item = new Subitem();
         // $sub_item = $sub_item->SetConnection('mysql2');
@@ -2222,42 +2238,46 @@ public static function get_all_groups() {
     }
 
 
-       public static function get_all_subitem_get()
+    public static function get_all_subitem_get()
     {
         $sub_item = new Subitem();
         // $sub_item = $sub_item->SetConnection('mysql2');
-        $sub_item = $sub_item::where('status', 1)->select('id', 'sub_ic', 'uom', 'item_code', 'pack_size', 'sku_code','product_name', 'product_barcode', 'brand_id')->get();
+        $sub_item = $sub_item::where('status', 1)->select('id', 'sub_ic', 'uom', 'item_code', 'pack_size', 'sku_code', 'product_name', 'product_barcode', 'brand_id')->get();
         return $sub_item;
     }
-public static function get_all_subitems()
-{
-    $products = Subitem::where(['status' => 1])->select('product_name','sku_code','id')->get();
+    public static function get_all_subitems()
+    {
+        $products = Subitem::where(['status' => 1])->select('product_name', 'sku_code', 'id')->get();
 
-    return $products;
-}
-    public static function get_all_to_types(){
-        $all_to_type = DB::Connection('mysql2')->table('to_types')->where('status','1')->select('id','name')->get();
+        return $products;
+    }
+    public static function get_all_to_types()
+    {
+        $all_to_type = DB::Connection('mysql2')->table('to_types')->where('status', '1')->select('id', 'name')->get();
         return $all_to_type;
     }
-    public static function get_international_to_types(){
-        $all_to_type = DB::Connection('mysql2')->table('to_types')->where('name','International')->where('status','1')->select('id','name')->get();
+    public static function get_international_to_types()
+    {
+        $all_to_type = DB::Connection('mysql2')->table('to_types')->where('name', 'International')->where('status', '1')->select('id', 'name')->get();
         return $all_to_type;
     }
-    public static function get_international_to_types_direct(){
-        $all_to_type = DB::Connection('mysql2')->table('to_types')->where('status','1')->select('id','name')->get();
+    public static function get_international_to_types_direct()
+    {
+        $all_to_type = DB::Connection('mysql2')->table('to_types')->where('status', '1')->select('id', 'name')->get();
         return $all_to_type;
     }
 
-    
-    public static function get_local_to_types(){
-        $all_to_type = DB::Connection('mysql2')->table('to_types')->where('name','Local')->where('status','1')->select('id','name')->get();
+
+    public static function get_local_to_types()
+    {
+        $all_to_type = DB::Connection('mysql2')->table('to_types')->where('name', 'Local')->where('status', '1')->select('id', 'name')->get();
         return $all_to_type;
     }
     public static function get_all_prospect()
     {
         $Prospect = new Prospect();
         $Prospect = $Prospect->SetConnection('mysql2');
-        $Prospect = $Prospect->where('status', 1)->where('prospect_type',1)->get();
+        $Prospect = $Prospect->where('status', 1)->where('prospect_type', 1)->get();
         return $Prospect;
 
     }
@@ -2265,12 +2285,13 @@ public static function get_all_subitems()
     {
         $sub_item = new Subitem();
         $sub_item = $sub_item->SetConnection('mysql2');
-        $sub_item = $sub_item->where('status', 1)->where('stockType',2)->select('id', 'sub_ic','uom')->get();
+        $sub_item = $sub_item->where('status', 1)->where('stockType', 2)->select('id', 'sub_ic', 'uom')->get();
         return $sub_item;
 
     }
 
-    public static function get_additional_sales_tax($so_no) {
+    public static function get_additional_sales_tax($so_no)
+    {
         return DB::connection("mysql2")->table("sales_order")->select("id", "sale_taxes_amount_rate")->where("so_no", $so_no)->first();
     }
 
@@ -2279,9 +2300,9 @@ public static function get_all_subitems()
         $sub_item = new Subitem();
         $sub_item = $sub_item->SetConnection('mysql2');
         $sub_item = $sub_item->where('status', 1)
-        ->where('itemType', $type)
-        ->with('uomData')
-       ->get();
+            ->where('itemType', $type)
+            ->with('uomData')
+            ->get();
         return $sub_item;
 
     }
@@ -2302,28 +2323,32 @@ public static function get_all_subitems()
         return $name;
     }
 
-    public static function get_username($user_id) {
+    public static function get_username($user_id)
+    {
         $user = User::select("id", "name")->find($user_id);
         return $user ? $user->name : 'N/A';
     }
 
-    public static function get_users_companies() {
-        if(auth()->user()->acc_type !== 'user') return;
-        
+    public static function get_users_companies()
+    {
+        if (auth()->user()->acc_type !== 'user')
+            return;
+
         $user_companies = DB::table("menu_privileges")
-                        ->select("compnay_id")
-                        ->where("emp_code", auth()->user()->id)
-                        ->groupBy("compnay_id")
-                        ->get()
-                        ->pluck("compnay_id")
-                        ->toArray();
+            ->select("compnay_id")
+            ->where("emp_code", auth()->user()->id)
+            ->groupBy("compnay_id")
+            ->get()
+            ->pluck("compnay_id")
+            ->toArray();
         // return $user_companies;
 
         $companies = DB::table("company")->whereIn("id", $user_companies)->get();
         return $companies;
     }
 
-    public static function get_current_company_id() {
+    public static function get_current_company_id()
+    {
         $current_company_id = session()->get("run_company");
         return $current_company_id;
     }
@@ -2350,7 +2375,8 @@ public static function get_all_subitems()
         return $currency->get();
     }
 
-    public static function createNotification($message, $heading) {
+    public static function createNotification($message, $heading)
+    {
         DB::connection("mysql2")->table("notification")->insert([
             "message" => $message,
             "heading" => $heading,
@@ -2361,10 +2387,11 @@ public static function get_all_subitems()
         ]);
     }
 
-    public static function markAllAsRead() {
+    public static function markAllAsRead()
+    {
         $notification = DB::connection("mysql2")
             ->table("notification")
-            ->when(auth()->user()->acc_type != "client", function($query) {
+            ->when(auth()->user()->acc_type != "client", function ($query) {
                 $query->where("user_id", auth()->user()->id);
             })
             ->where("is_read", 0)
@@ -2372,7 +2399,7 @@ public static function get_all_subitems()
                 "is_read" => 1
             ]);
     }
-    
+
     // public static function pendingDocuments(
     //     $table_name, 
     //     $column_name, 
@@ -2401,133 +2428,140 @@ public static function get_all_subitems()
     //     return $query->count();
     // }
 
-public static function pendingDocuments(
-    $table_name,
-    $column_name,
-    $pending_status,
-    $conditional_column = null,
-    $conditional_status = null,
-    $is_st_invoice = false,
-    $extra_conditions = []
-) {
-    // Agar extra_conditions array mein nested arrays hain to unhe handle karein
-    if (!empty($extra_conditions) && is_array($extra_conditions)) {
-        // Check karein ke array associative hai ya sequential
-        $is_associative = array_keys($extra_conditions) !== range(0, count($extra_conditions) - 1);
-        
-        if (!$is_associative) {
-            // Ye wo case hai jab aap [[ 'vendor', '!=', 0 ]] type array de rahe hain
-            $new_conditions = [];
-            foreach ($extra_conditions as $condition) {
-                if (is_array($condition) && count($condition) >= 2) {
-                    if (count($condition) == 3) {
-                        // ['column', 'operator', 'value']
-                        $new_conditions[$condition[0]] = [$condition[1], $condition[2]];
-                    } else {
-                        // ['column', 'value'] ya ['column', '=', 'value'] format
-                        $new_conditions[$condition[0]] = $condition[1];
+    public static function pendingDocuments(
+        $table_name,
+        $column_name,
+        $pending_status,
+        $conditional_column = null,
+        $conditional_status = null,
+        $is_st_invoice = false,
+        $extra_conditions = []
+    ) {
+        // Agar extra_conditions array mein nested arrays hain to unhe handle karein
+        if (!empty($extra_conditions) && is_array($extra_conditions)) {
+            // Check karein ke array associative hai ya sequential
+            $is_associative = array_keys($extra_conditions) !== range(0, count($extra_conditions) - 1);
+
+            if (!$is_associative) {
+                // Ye wo case hai jab aap [[ 'vendor', '!=', 0 ]] type array de rahe hain
+                $new_conditions = [];
+                foreach ($extra_conditions as $condition) {
+                    if (is_array($condition) && count($condition) >= 2) {
+                        if (count($condition) == 3) {
+                            // ['column', 'operator', 'value']
+                            $new_conditions[$condition[0]] = [$condition[1], $condition[2]];
+                        } else {
+                            // ['column', 'value'] ya ['column', '=', 'value'] format
+                            $new_conditions[$condition[0]] = $condition[1];
+                        }
                     }
                 }
-            }
-            $extra_conditions = $new_conditions;
-        }
-    }
-
-    $query = DB::connection("mysql2")
-        ->table($table_name)
-        ->where($column_name, $pending_status);
-
-    // old single condition
-    if ($conditional_column !== null && $conditional_status !== null) {
-        $query->where($conditional_column, $conditional_status);
-    }
-
-    // multiple extra conditions
-    if (!empty($extra_conditions)) {
-        foreach ($extra_conditions as $column => $value) {
-            if (is_array($value) && count($value) == 2) {
-                // Handle ['operator', 'value'] format
-                $query->where($column, $value[0], $value[1]);
-            } else {
-                // Simple equality condition
-                $query->where($column, $value);
+                $extra_conditions = $new_conditions;
             }
         }
+
+        $query = DB::connection("mysql2")
+            ->table($table_name)
+            ->where($column_name, $pending_status);
+
+        // old single condition
+        if ($conditional_column !== null && $conditional_status !== null) {
+            $query->where($conditional_column, $conditional_status);
+        }
+
+        // multiple extra conditions
+        if (!empty($extra_conditions)) {
+            foreach ($extra_conditions as $column => $value) {
+                if (is_array($value) && count($value) == 2) {
+                    // Handle ['operator', 'value'] format
+                    $query->where($column, $value[0], $value[1]);
+                } else {
+                    // Simple equality condition
+                    $query->where($column, $value);
+                }
+            }
+        }
+
+        if ($is_st_invoice) {
+            $query->where(function ($query) {
+                $query->where('sales_tax_invoice.pre_status', '!=', 1)
+                    ->orWhereNull('sales_tax_invoice.pre_status');
+            });
+        }
+
+        return $query->count();
     }
 
-    if ($is_st_invoice) {
-        $query->where(function ($query) {
-            $query->where('sales_tax_invoice.pre_status', '!=', 1)
-                ->orWhereNull('sales_tax_invoice.pre_status');
-        });
+    public static function getPendingStockInCount()
+    {
+        $user = Auth::user();
+        if (!$user)
+            return 0;
+
+        // $territory_ids = json_decode($user->territory_id, true);
+        // if (!is_array($territory_ids)) {
+        //     $territory_ids = [$user->territory_id];
+        // }
+
+        // Find warehouses for these territories
+        $warehouse_ids = DB::connection('mysql2')->table('warehouse')
+            // ->whereIn('territory_id', $territory_ids)
+            ->where('status', 1)
+            ->pluck('id');
+
+        if ($warehouse_ids->isEmpty())
+            return 0;
+
+        // Count pending stock outs to these warehouses
+        $count = DB::connection('mysql2')->table('stock_out_data')
+            ->whereIn('warehouse_to', $warehouse_ids)
+            ->where('si_status', 0)
+            ->whereRaw('qty > received_qty')
+            ->where('status', 1)
+            ->count();
+
+        return $count;
     }
-
-    return $query->count();
-}
-
-public static function getPendingStockInCount() {
-    $user = Auth::user();
-    if (!$user) return 0;
-    
-    // $territory_ids = json_decode($user->territory_id, true);
-    // if (!is_array($territory_ids)) {
-    //     $territory_ids = [$user->territory_id];
-    // }
-
-    // Find warehouses for these territories
-    $warehouse_ids = DB::connection('mysql2')->table('warehouse')
-        // ->whereIn('territory_id', $territory_ids)
-        ->where('status', 1)
-        ->pluck('id');
-
-    if ($warehouse_ids->isEmpty()) return 0;
-
-    // Count pending stock outs to these warehouses
-    $count = DB::connection('mysql2')->table('stock_out_data')
-        ->whereIn('warehouse_to', $warehouse_ids)
-        ->where('si_status', 0)
-        ->whereRaw('qty > received_qty')
-        ->where('status', 1)
-        ->count();
-
-    return $count;
-}
-// In CommonHelper.php
-public static function pendingPurchaseOrdersCreation() {
-    return DB::connection("mysql2")
-        ->table('quotation_data')
-        ->where('vendor', '!=', 0)
-        ->where('status', 1)
-        ->where('quotation_status', '!=', 2)
-        ->count();
-}
-    public static function getUnreadNotifications() {
+    // In CommonHelper.php
+    public static function pendingPurchaseOrdersCreation()
+    {
+        return DB::connection("mysql2")
+            ->table('quotation_data')
+            ->where('vendor', '!=', 0)
+            ->where('status', 1)
+            ->where('quotation_status', '!=', 2)
+            ->count();
+    }
+    public static function getUnreadNotifications()
+    {
         $acc_type = auth()->user()->acc_type;
 
         $notifications = DB::connection("mysql2")
-                                ->table("notification")
-                                ->when($acc_type != "client", function($query) {
-                                    $query->where("user_id", auth()->user()->id);
-                                })
-                                ->orderBy("id", "desc")
-                                ->where("is_read", 0)
-                                ->get();
+            ->table("notification")
+            ->when($acc_type != "client", function ($query) {
+                $query->where("user_id", auth()->user()->id);
+            })
+            ->orderBy("id", "desc")
+            ->where("is_read", 0)
+            ->get();
 
 
         return $notifications;
     }
-    public static function countOfUnreadMessages() {
+    public static function countOfUnreadMessages()
+    {
         $notifications = DB::connection("mysql2")
-                                ->table("notification")
-                                ->where("is_read", 0)
-                                ->when(auth()->user()->acc_type != "client", function($query) {
-                                    $query->where("user_id", auth()->user()->id);
-                                })
-                                ->count();
+            ->table("notification")
+            ->where("is_read", 0)
+            ->when(auth()->user()->acc_type != "client", function ($query) {
+                $query->where("user_id", auth()->user()->id);
+            })
+            ->count();
 
         return $notifications;
     }
-    public static function markAsRead($notification_id) {
+    public static function markAsRead($notification_id)
+    {
         $notification = DB::connection("mysql2")->table("notification")->find($notification_id);
         $notification->is_read = true;
         $notification->save();
@@ -2537,38 +2571,41 @@ public static function pendingPurchaseOrdersCreation() {
     {
         $sub_iteme = new Subitem();
         $sub_iteme = $sub_iteme->SetConnection('mysql2');
-        $sub_iteme = $sub_iteme->where('id', $id)->select('uom', 'pack_size', 'rate', 'description','sub_ic','main_ic_id','item_code','product_name','packing','mrp_price','product_barcode','product_type_id','product_classification_id','product_trend_id')->first();
-       
-        return $sub_iteme->uom . ',' . $sub_iteme->packing . ',' . $sub_iteme->mrp_price . ',' . $sub_iteme->product_barcode.','.$sub_iteme->sub_ic.','.$sub_iteme->main_ic_id.','.$sub_iteme->product_name.','.$sub_iteme->product_type_id.','.$sub_iteme->product_classification_id.','.$sub_iteme->product_trend_id;
+        $sub_iteme = $sub_iteme->where('id', $id)->select('uom', 'pack_size', 'rate', 'description', 'sub_ic', 'main_ic_id', 'item_code', 'product_name', 'packing', 'mrp_price', 'product_barcode', 'product_type_id', 'product_classification_id', 'product_trend_id')->first();
+
+        return $sub_iteme->uom . ',' . $sub_iteme->packing . ',' . $sub_iteme->mrp_price . ',' . $sub_iteme->product_barcode . ',' . $sub_iteme->sub_ic . ',' . $sub_iteme->main_ic_id . ',' . $sub_iteme->product_name . ',' . $sub_iteme->product_type_id . ',' . $sub_iteme->product_classification_id . ',' . $sub_iteme->product_trend_id;
     }
     public static function get_item_by_id($id)
     {
         $sub_iteme = new Subitem();
         $sub_iteme = $sub_iteme->SetConnection('mysql2')
-        ->join('uom', 'uom.id', '=', 'subitem.uom')  // Corrected join syntax with '=' operator
-        ->where('subitem.id', $id)  // Move the where clause after the join
-        ->select('uom.uom_name', 'subitem.*')
-        ->first();
-   
+            ->join('uom', 'uom.id', '=', 'subitem.uom')  // Corrected join syntax with '=' operator
+            ->where('subitem.id', $id)  // Move the where clause after the join
+            ->select('uom.uom_name', 'subitem.*')
+            ->first();
+
         return $sub_iteme;
     }
-    public static function get_item_by_brand_id($brand_id) {
+    public static function get_item_by_brand_id($brand_id)
+    {
         $subitems = Subitem::where("brand_id", $brand_id)->get();
         return $subitems;
     }
 
-    public static function get_all_subitem_by_brand($brand_id) {
+    public static function get_all_subitem_by_brand($brand_id)
+    {
         $subitems = Subitem::where("brand_id", $brand_id)->get();
         return $subitems;
     }
 
-    public static function get_item_with_special_price(){
+    public static function get_item_with_special_price()
+    {
 
     }
     public static function get_product_type_by_id($id)
     {
         $product_type = ProductType::find($id);
-        if($product_type){
+        if ($product_type) {
             return $product_type->type;
         }
         return "N/A";
@@ -2577,29 +2614,29 @@ public static function pendingPurchaseOrdersCreation() {
 
 
     public static function get_product_type_by_id_subitem($id)
-{
-   
-    $subitem = DB::connection('mysql2')
-        ->table('subitem')
-        ->where('id', $id)
-        ->first();
+    {
 
-    if (!$subitem) {
-        return "N/A";
+        $subitem = DB::connection('mysql2')
+            ->table('subitem')
+            ->where('id', $id)
+            ->first();
+
+        if (!$subitem) {
+            return "N/A";
+        }
+
+
+        $productType = DB::connection('mysql2')
+            ->table('product_type')
+            ->where('product_type_id', $subitem->product_type_id)
+            ->first();
+
+        return $productType->type ?? "N/A";
     }
-
-  
-    $productType = DB::connection('mysql2')
-        ->table('product_type')
-        ->where('product_type_id', $subitem->product_type_id)
-        ->first();
-
-    return $productType->type ?? "N/A";
-}
     public static function get_classification_by_id($id)
     {
         $product_classification = ProductClassification::find($id);
-        if($product_classification){
+        if ($product_classification) {
             return $product_classification->name;
         }
         return "First Class";
@@ -2607,7 +2644,7 @@ public static function pendingPurchaseOrdersCreation() {
     public static function get_product_trend_by_id($id)
     {
         $product_trend = ProductTrend::find($id);
-        if($product_trend){
+        if ($product_trend) {
             return $product_trend->name;
         }
         return "Product Trend First";
@@ -2632,12 +2669,12 @@ public static function pendingPurchaseOrdersCreation() {
         $supplier_info = new SupplierInfo();
         $supplier_info = $supplier_info->SetConnection('mysql2');
         $supplier_info = $supplier_info->where('supp_id', $id)->select('address');
-        if($supplier_info->count() > 0):
+        if ($supplier_info->count() > 0):
 
-        return $supplier_info->first()->address;
-            else:
-                return "";
-                endif;
+            return $supplier_info->first()->address;
+        else:
+            return "";
+        endif;
     }
 
     public static function get_all_demand_type()
@@ -2656,21 +2693,23 @@ public static function pendingPurchaseOrdersCreation() {
         return $demand_type->name;
     }
 
-    public static function get_profile_pic() {
+    public static function get_profile_pic()
+    {
         $profile_pic = Auth::user()->profile_image;
-        return  $profile_pic ? asset('uploads/profile_images/' . Auth::user()->profile_image) : asset("/assets/6596121.png");
+        return $profile_pic ? asset('uploads/profile_images/' . Auth::user()->profile_image) : asset("/assets/6596121.png");
     }
 
     public static function get_all_warehouse()
     {
         $warehouse = new Warehouse();
         $warehouse = $warehouse->SetConnection('mysql2');
-        $warehouse = $warehouse->where('status', 1)->where('is_virtual',0)->select('territory_id', 'name', 'id')->get();
+        $warehouse = $warehouse->where('status', 1)->where('is_virtual', 0)->select('territory_id', 'name', 'id')->get();
         return $warehouse;
     }
-    public static function get_territory_name($territory_id) {
+    public static function get_territory_name($territory_id)
+    {
         $territory = Territory::where("id", $territory_id)->first();
-        if($territory) {
+        if ($territory) {
             return $territory->name;
         } else {
             return "N/A";
@@ -2681,7 +2720,7 @@ public static function pendingPurchaseOrdersCreation() {
     {
         $warehouse = new Warehouse();
         $warehouse = $warehouse->SetConnection('mysql2');
-        $warehouse = $warehouse->where('status', 1)->where('is_virtual',1)->select('name', 'id')->get();
+        $warehouse = $warehouse->where('status', 1)->where('is_virtual', 1)->select('name', 'id')->get();
         return $warehouse;
     }
 
@@ -2692,52 +2731,50 @@ public static function pendingPurchaseOrdersCreation() {
         $warehouse = $warehouse->where('status', 1)->where('id', $id)->select('name')->first();
         return $warehouse->name ?? '';
     }
-    public static function get_id_from_db_by_name($name,$table = null)
+    public static function get_id_from_db_by_name($name, $table = null)
     {
-        if($table){
+        if ($table) {
             // dd($name,$table);
-            $data = DB::Connection('mysql2')->table($table)->where('name',$name)->first();
+            $data = DB::Connection('mysql2')->table($table)->where('name', $name)->first();
             return $data->id ?? 0;
-        }
-        else{
+        } else {
             return 0;
         }
-       
+
     }
-    public static function get_id_from_db_by_name_for_product($name,$table = null)
+    public static function get_id_from_db_by_name_for_product($name, $table = null)
     {
-        if($table){
-            if($table == "category"){
-                $data = DB::Connection('mysql2')->table($table)->where('main_ic',$name)->first();
+        if ($table) {
+            if ($table == "category") {
+                $data = DB::Connection('mysql2')->table($table)->where('main_ic', $name)->first();
                 return $data->id ?? 0;
             }
-            if($table == "sub_category"){
-                $data = DB::Connection('mysql2')->table($table)->where('sub_category_name',$name)->first();
+            if ($table == "sub_category") {
+                $data = DB::Connection('mysql2')->table($table)->where('sub_category_name', $name)->first();
                 return $data->id ?? 0;
             }
-            if($table == "product_type"){
-                $data = DB::Connection('mysql2')->table($table)->where('type',$name)->first();
+            if ($table == "product_type") {
+                $data = DB::Connection('mysql2')->table($table)->where('type', $name)->first();
                 return $data->product_type_id ?? 0;
             }
-            if($table == "uom"){
-                $data = UOM::where('uom_name',$name)->first();
+            if ($table == "uom") {
+                $data = UOM::where('uom_name', $name)->first();
                 return $data->id ?? 0;
             }
-            if($table == "hs_codes"){
-                $data = DB::Connection('mysql2')->table($table)->where('hs_code',$name)->first();
+            if ($table == "hs_codes") {
+                $data = DB::Connection('mysql2')->table($table)->where('hs_code', $name)->first();
                 return $data->id ?? 0;
             }
-            if($table == "products_principal_group"){
-                $data = DB::Connection('mysql2')->table($table)->where('products_principal_group',$name)->first();
+            if ($table == "products_principal_group") {
+                $data = DB::Connection('mysql2')->table($table)->where('products_principal_group', $name)->first();
                 return $data->id ?? 0;
             }
-            $data = DB::Connection('mysql2')->table($table)->where('name',$name)->first();
+            $data = DB::Connection('mysql2')->table($table)->where('name', $name)->first();
             return $data->id ?? 0;
-        }
-        else{
+        } else {
             return 0;
         }
-       
+
     }
 
 
@@ -2746,60 +2783,57 @@ public static function pendingPurchaseOrdersCreation() {
     //     return $principal_group->products_principal_group;
     // }
 
-    public static function get_principal_group_name($id) {
-    $principal_group = ProductsPrincipalGroup::select("id", "products_principal_group")
-        ->where("status", 1)
-        ->where("id", $id)
-        ->first();
+    public static function get_principal_group_name($id)
+    {
+        $principal_group = ProductsPrincipalGroup::select("id", "products_principal_group")
+            ->where("status", 1)
+            ->where("id", $id)
+            ->first();
 
-    // Agar record nahi milta to null ya default text return karo
-    return $principal_group ? $principal_group->products_principal_group : '-';
-}
+        // Agar record nahi milta to null ya default text return karo
+        return $principal_group ? $principal_group->products_principal_group : '-';
+    }
 
 
     public static function get_city_id_by_name($name)
     {
-        if($name){
-            $data = DB::Connection('mysql')->table('cities')->select('id','state_id')->where('name',$name)->first();
+        if ($name) {
+            $data = DB::Connection('mysql')->table('cities')->select('id', 'state_id')->where('name', $name)->first();
             return $data;
-        }
-        else{
+        } else {
             return 0;
         }
-       
+
     }
     public static function get_city_name_by_id($id)
     {
-        if($id){
-            $data = DB::Connection('mysql')->table('cities')->select('id','state_id', 'name')->where('id',$id)->first();
+        if ($id) {
+            $data = DB::Connection('mysql')->table('cities')->select('id', 'state_id', 'name')->where('id', $id)->first();
             return $data;
-        }
-        else{
+        } else {
             return 0;
         }
-       
+
     }
     public static function get_country_id_by_state_id($id)
     {
-        if($id){
+        if ($id) {
             $data = DB::Connection('mysql')->table('states')->find($id);
             return $data->country_id ?? 0;
-        }
-        else{
+        } else {
             return 0;
         }
-       
+
     }
     public static function get_warehouse_id_by_name($name)
     {
-        if($name){
-            $data = DB::Connection('mysql2')->table('warehouse')->where('name',$name)->first();
+        if ($name) {
+            $data = DB::Connection('mysql2')->table('warehouse')->where('name', $name)->first();
             return $data->id ?? 0;
-        }
-        else{
+        } else {
             return 0;
         }
-       
+
     }
 
     public static function get_all_supplier()
@@ -2814,7 +2848,8 @@ public static function pendingPurchaseOrdersCreation() {
     {
 
         if ($id != 0):
-            $account = new Account();;
+            $account = new Account();
+            ;
             $account = $account->SetConnection('mysql2');
             $account_parent_id = $account->where('status', 1)->where('id', $id)->select('parent_code')->first();
             $parent_code = $account_parent_id->parent_code;
@@ -2828,12 +2863,12 @@ public static function pendingPurchaseOrdersCreation() {
 
         $goodreciptnote = new GoodsReceiptNote();
         $goodreciptnote = $goodreciptnote->SetConnection('mysql2');
-        $goodreciptnote = $goodreciptnote->where('status', 1)->where('id', $id)->select('id', 'grn_no', 'grn_date', 'supplier_invoice_no', 'supplier_id', 'type', 'po_no', 'bill_date','sub_department_id','p_type')->first();
+        $goodreciptnote = $goodreciptnote->where('status', 1)->where('id', $id)->select('id', 'grn_no', 'grn_date', 'supplier_invoice_no', 'supplier_id', 'type', 'po_no', 'bill_date', 'sub_department_id', 'p_type')->first();
 
 
         $PurchaseRequest = new PurchaseRequest();
         $PurchaseRequest = $PurchaseRequest->SetConnection('mysql2');
-        $PurchaseRequest = $PurchaseRequest->where('status', 1)->where('purchase_request_no', $goodreciptnote->po_no)->select('currency_id', 'currency_rate', 'purchase_request_date','sales_tax_acc_id','sales_tax','sales_tax_amount','terms_of_paym')->first();
+        $PurchaseRequest = $PurchaseRequest->where('status', 1)->where('purchase_request_no', $goodreciptnote->po_no)->select('currency_id', 'currency_rate', 'purchase_request_date', 'sales_tax_acc_id', 'sales_tax', 'sales_tax_amount', 'terms_of_paym')->first();
 
         $data[0] = $goodreciptnote;
         $data[1] = $PurchaseRequest;
@@ -2853,7 +2888,7 @@ public static function pendingPurchaseOrdersCreation() {
 
         $grn_data = new GRNData();
         $grn_data = $grn_data->SetConnection('mysql2');
-        $grn_data = $grn_data->where('master_id', $master_id)->select('id', 'grn_no', 'sub_item_id', 'purchase_recived_qty','qc_qty', 'po_data_id','rate','amount','discount_percent','discount_amount','net_amount','description')->get();
+        $grn_data = $grn_data->where('master_id', $master_id)->select('id', 'grn_no', 'sub_item_id', 'purchase_recived_qty', 'qc_qty', 'po_data_id', 'rate', 'amount', 'discount_percent', 'discount_amount', 'net_amount', 'description')->get();
         return $grn_data;
     }
 
@@ -2920,11 +2955,11 @@ public static function pendingPurchaseOrdersCreation() {
         endif;
 
         return $register_no . ',' . $supplier_info->filer . ',' . $supplier_info->business_type . ',' . $supplier_info->register_sales_tax . ',' . $supplier_info->strn . ',' . $supplier_info->register_pra
-        . ',' . $supplier_info->pra . ',' . $supplier_info->srb . ',' . $supplier_info->register_srb;
+            . ',' . $supplier_info->pra . ',' . $supplier_info->srb . ',' . $supplier_info->register_srb;
     }
 
 
-    public static function  get_income_txt_nature($txt_nature)
+    public static function get_income_txt_nature($txt_nature)
     {
 
         $nature = 'No Define';
@@ -2973,7 +3008,7 @@ public static function pendingPurchaseOrdersCreation() {
         //  return $income_txt_data;
     }
 
-    public static function  sales_tax_nature($sales_tax_nature)
+    public static function sales_tax_nature($sales_tax_nature)
     {
 
         $nature = 'No Define';
@@ -3007,12 +3042,12 @@ public static function pendingPurchaseOrdersCreation() {
         $acc_id = DB::Connection('mysql2')->table('pv_data as d')
             ->join('accounts as a', 'a.id', '=', 'd.acc_id')
             ->join('supplier  as s', 'a.id', '=', 's.acc_id')
-            ->select('a.id', 'a.name', 's.name as supp_name', 's.id', 'd.amount', 'a.id as acc_id','d.master_id')
+            ->select('a.id', 'a.name', 's.name as supp_name', 's.id', 'd.amount', 'a.id as acc_id', 'd.master_id')
             ->where('a.type', 1)
             ->where('d.master_id', $id)
             ->first();
 
-        return $acc_id->supp_name . '*' . $acc_id->id . '*' . $acc_id->amount . '*' . $acc_id->acc_id.'*'.$acc_id->master_id;
+        return $acc_id->supp_name . '*' . $acc_id->id . '*' . $acc_id->amount . '*' . $acc_id->acc_id . '*' . $acc_id->master_id;
     }
 
     public static function get_po_type($type)
@@ -3059,21 +3094,21 @@ public static function pendingPurchaseOrdersCreation() {
     {
 
 
-             $id  = DB::Connection('mysql2')->selectOne('SELECT MAX(id) as id  FROM `purchase_request` where po_type =  '.$type.'')->id;
-        if ($id!=''):
-              $MaxNo  = DB::Connection('mysql2')->selectOne('SELECT purchase_request_no  FROM `purchase_request` where id =  '.$id.'')->purchase_request_no;
-              $MaxNo= substr($MaxNo,2);
-            else:
-                $MaxNo=0;
-                endif;
-            $str = $MaxNo + 1;
-            $str = sprintf("%'03d", $str);
+        $id = DB::Connection('mysql2')->selectOne('SELECT MAX(id) as id  FROM `purchase_request` where po_type =  ' . $type . '')->id;
+        if ($id != ''):
+            $MaxNo = DB::Connection('mysql2')->selectOne('SELECT purchase_request_no  FROM `purchase_request` where id =  ' . $id . '')->purchase_request_no;
+            $MaxNo = substr($MaxNo, 2);
+        else:
+            $MaxNo = 0;
+        endif;
+        $str = $MaxNo + 1;
+        $str = sprintf("%'03d", $str);
 
         if ($type == 1):
             $purchaseRequestNo = 'pl' . $str;
         endif;
         if ($type == 2):
-            $purchaseRequestNo = 'pS' .  $str;
+            $purchaseRequestNo = 'pS' . $str;
         endif;
         if ($type == 3):
             $purchaseRequestNo = 'pI' . $str;
@@ -3095,11 +3130,11 @@ public static function pendingPurchaseOrdersCreation() {
         return $EvNo;
     }
 
-    public static function get_unique_import_no($year,$month)
+    public static function get_unique_import_no($year, $month)
     {
 
 
-//        $MaxNo = DB::Connection('mysql2')->selectOne('SELECT MAX(voucher_no) as voucher_no  FROM `import_po` where status = 1')->voucher_no;
+        //        $MaxNo = DB::Connection('mysql2')->selectOne('SELECT MAX(voucher_no) as voucher_no  FROM `import_po` where status = 1')->voucher_no;
 //
 //        $str = $MaxNo + 1;
 //        $str = sprintf("%'03d", $str);
@@ -3144,7 +3179,7 @@ public static function pendingPurchaseOrdersCreation() {
         $sub_charge = new SubItemCharges();
         $sub_charge = $sub_charge->SetConnection('mysql2');
         return $sub_charge = $sub_charge->where('grn_data_id', $id);
-//        if ($sub_charge->count() >0):
+        //        if ($sub_charge->count() >0):
 //            $exists=1;
 //
 //            endif;
@@ -3175,14 +3210,14 @@ public static function pendingPurchaseOrdersCreation() {
     public static function get_all_department_po($m)
     {
         $departments = new Department();
-        return $departments = $departments::where([['company_id', '=', $m], ['status', '=', '1'], ])->select('id','department_name')->orderBy('id')->get();
+        return $departments = $departments::where([['company_id', '=', $m], ['status', '=', '1'],])->select('id', 'department_name')->orderBy('id')->get();
     }
 
-    public static function get_dept_name_hr($m,$Id)
+    public static function get_dept_name_hr($m, $Id)
     {
-//        $departments = new Department();
+        //        $departments = new Department();
 //        $departments = $departments::where([['company_id', '=', $m],['id', '=', $Id], ['status', '=', '1']])->select('id','department_name')->first();
-        $departments=  DB::table('department')->where('company_id',$m)->where('id',$Id)->first();
+        $departments = DB::table('department')->where('company_id', $m)->where('id', $Id)->first();
         return $departments;
     }
 
@@ -3209,61 +3244,62 @@ public static function pendingPurchaseOrdersCreation() {
         return $sub_department = $sub_department->where('status', 1)->get();
 
     }
-    public static function get_all_stocks() {
+    public static function get_all_stocks()
+    {
 
         $stocks = Stock::select(
-                'sub_item_id',
-                DB::raw('SUM(CAST(qty AS DECIMAL(10,2))) as total_qty')
-            )
+            'sub_item_id',
+            DB::raw('SUM(CAST(qty AS DECIMAL(10,2))) as total_qty')
+        )
             ->groupBy('sub_item_id')
             ->get();
 
         return $stocks;
     }
- public static function get_sub_department($id)
-{
-    return SubDepartment::where('status', 1)
-        ->where('id', $id)
-        ->value('sub_department_name'); // direct column ka value return karega
-}
-public static function getCustomerAssignedWarehouse($cusId, $itemid)
-{
-    $customer = DB::Connection('mysql2')
-        ->table('customers')
-        ->where('id', $cusId)
-        ->first();
+    public static function get_sub_department($id)
+    {
+        return SubDepartment::where('status', 1)
+            ->where('id', $id)
+            ->value('sub_department_name'); // direct column ka value return karega
+    }
+    public static function getCustomerAssignedWarehouse($cusId, $itemid)
+    {
+        $customer = DB::Connection('mysql2')
+            ->table('customers')
+            ->where('id', $cusId)
+            ->first();
 
-    if (!$customer) {
-        return 0; // agar customer hi nahi mila
+        if (!$customer) {
+            return 0; // agar customer hi nahi mila
+        }
+
+        $company_warehouse = DB::connection('mysql2')
+            ->table('warehouse')
+            ->where('is_virtual', 0)
+            ->when($customer->warehouse_from != 0, function ($query) use ($customer) {
+                return $query->where('warehouse.id', $customer->warehouse_from);
+            })
+            ->select('warehouse.id', 'warehouse.name')
+            ->groupBy('warehouse.id', 'warehouse.name')
+            ->get();
+
+        $company_total_quantity = 0;
+        foreach ($company_warehouse as $cw) {
+            $qty = ReuseableCode::get_stock($itemid, $cw->id);
+            $company_total_quantity += $qty;
+        }
+
+        return $company_total_quantity; // 👈 ab direct quantity return hogi
     }
 
-    $company_warehouse = DB::connection('mysql2')
-        ->table('warehouse')
-        ->where('is_virtual', 0)
-        ->when($customer->warehouse_from != 0, function ($query) use ($customer) {
-            return $query->where('warehouse.id', $customer->warehouse_from);
-        })
-        ->select('warehouse.id', 'warehouse.name')
-        ->groupBy('warehouse.id', 'warehouse.name')
-        ->get();
-
-    $company_total_quantity = 0;
-    foreach ($company_warehouse as $cw) {
-        $qty = ReuseableCode::get_stock($itemid, $cw->id);
-        $company_total_quantity += $qty;
-    }
-
-    return $company_total_quantity; // 👈 ab direct quantity return hogi
-}
-
-// public static function getCustomerAssignedWarehouse($cusId, $itemid)
+    // public static function getCustomerAssignedWarehouse($cusId, $itemid)
 // {
 //     $customer = DB::Connection('mysql2')
 //         ->table('customers')
 //         ->where('id', $cusId)
 //         ->first();
 
-//     $company_warehouse = DB::connection('mysql2')
+    //     $company_warehouse = DB::connection('mysql2')
 //         ->table('warehouse')
 //         ->where('is_virtual', 0)
 //         ->when($customer->warehouse_from != 0, function ($query) use ($customer) {
@@ -3273,7 +3309,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 //         ->groupBy('warehouse.id', 'warehouse.name')
 //         ->get();
 
-//     $store_warehouse = DB::connection('mysql2')
+    //     $store_warehouse = DB::connection('mysql2')
 //         ->table('warehouse')
 //         ->where('is_virtual', 1)
 //         ->leftJoin('stock', function ($join) use ($itemid) {
@@ -3287,7 +3323,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 //         ->groupBy('warehouse.id', 'warehouse.name')
 //         ->get();
 
-//     $store_warehouses = [];
+    //     $store_warehouses = [];
 //     foreach ($store_warehouse as $sw) {
 //         $qty = ReuseableCode::get_stock($itemid, $sw->id);
 //         $store_warehouses[] = [
@@ -3297,9 +3333,9 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 //         ];
 //     }
 
-//     $store_total_quantity = array_sum(array_column($store_warehouses, 'total_qty'));
+    //     $store_total_quantity = array_sum(array_column($store_warehouses, 'total_qty'));
 
-//     $company_warehouses = [];
+    //     $company_warehouses = [];
 //     $company_total_quantity = 0;
 //     foreach ($company_warehouse as $cw) {
 //         $qty = ReuseableCode::get_stock($itemid, $cw->id);
@@ -3311,14 +3347,14 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 //         ];
 //     }
 
-//     $data = [
+    //     $data = [
 //         'company_warehouse' => $company_warehouses,
 //         'store_warehouse' => $store_warehouses,
 //         'company_total_quantity' => $company_total_quantity,
 //         'store_total_quantity' => $store_total_quantity,
 //     ];
 
-//     return response()->json($data);
+    //     return response()->json($data);
 // }
 
 
@@ -3366,56 +3402,57 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         $customer = new Customer();
         $customer = $customer->SetConnection('mysql2');
-        return $customer = $customer->where('status',1)->get();
+        return $customer = $customer->where('status', 1)->get();
 
     }
 
-    public static function get_all_territories() {
+    public static function get_all_territories()
+    {
         return Territory::all();
     }
-  public static function get_customer_territory()
-{
-    $user = Auth::user();
+    public static function get_customer_territory()
+    {
+        $user = Auth::user();
 
-    if (!$user) {
-        return collect(); 
-    }
-
-    $customer = new Customer();
-    $customer = $customer->setConnection('mysql2');
-
-    // If user is of a type that needs territory filter (e.g., TSO, sales, etc.)
-    if (in_array($user->acc_type, ['user',])) {
-
-        // Decode and normalize territory IDs
-        $territory_ids = json_decode($user->territory_id, true);
-        if (!is_array($territory_ids)) {
-            $territory_ids = [$user->territory_id];
+        if (!$user) {
+            return collect();
         }
 
+        $customer = new Customer();
+        $customer = $customer->setConnection('mysql2');
+
+        // If user is of a type that needs territory filter (e.g., TSO, sales, etc.)
+        if (in_array($user->acc_type, ['user',])) {
+
+            // Decode and normalize territory IDs
+            $territory_ids = json_decode($user->territory_id, true);
+            if (!is_array($territory_ids)) {
+                $territory_ids = [$user->territory_id];
+            }
+
+            return $customer
+                ->where('status', 1)
+                ->whereIn('territory_id', $territory_ids)
+                ->get();
+        }
+
+        // For admins or other unrestricted acc_types: return all active customers
         return $customer
             ->where('status', 1)
-            ->whereIn('territory_id', $territory_ids)
             ->get();
     }
-
-    // For admins or other unrestricted acc_types: return all active customers
-    return $customer
-        ->where('status', 1)
-        ->get();
-}
 
 
     public static function client_name($id)
     {
         $client = new Client();
         $client = $client->SetConnection('mysql2');
-        return $client = $client->where('id', $id)->select('id','client_name', 'address', 'ntn', 'strn')->first();
+        return $client = $client->where('id', $id)->select('id', 'client_name', 'address', 'ntn', 'strn')->first();
 
     }
     public static function get_purchase_amount($id)
     {
-        return DB::Connection('mysql2')->selectOne("select sum(`amount`) total from new_purchase_voucher_data  where `master_id` = '".$id."'")->total;
+        return DB::Connection('mysql2')->selectOne("select sum(`amount`) total from new_purchase_voucher_data  where `master_id` = '" . $id . "'")->total;
     }
 
 
@@ -3438,23 +3475,24 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         return $dept_allocation = $dept_allocation->where('Main_master_id', $id)->where('type', $type)->count();
     }
 
-    public static function deliveryNoteCreatable() {
-        
-      $territory_ids = json_decode(auth()->user()->territory_id);
-  $whereTerritories = array_map('intval', $territory_ids);
-      
+    public static function deliveryNoteCreatable()
+    {
+
+        $territory_ids = json_decode(auth()->user()->territory_id);
+        $whereTerritories = array_map('intval', $territory_ids);
+
         $sale_order = new Sales_Order();
         $sale_order = $sale_order
-        // ->where("status", 0)
-        ->join("customers", 'customers.id', "=", "sales_order.buyers_id")
-        // ->whereIn("customers.id", $territory_ids)
-        ->where("sales_order.status", "!=", 2)
-         ->whereIn("customers.territory_id", $whereTerritories) 
-   
-        ->where("sales_order.delivery_note_status", "!=", 1)
-        ->select('sales_order.*') // <-- explicitly select sales_order columns
-        ->orderBy('sales_order.id', 'desc')
-        ->count();
+            // ->where("status", 0)
+            ->join("customers", 'customers.id', "=", "sales_order.buyers_id")
+            // ->whereIn("customers.id", $territory_ids)
+            ->where("sales_order.status", "!=", 2)
+            ->whereIn("customers.territory_id", $whereTerritories)
+
+            ->where("sales_order.delivery_note_status", "!=", 1)
+            ->select('sales_order.*') // <-- explicitly select sales_order columns
+            ->orderBy('sales_order.id', 'desc')
+            ->count();
         return $sale_order;
     }
 
@@ -3476,7 +3514,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     public static function settings()
     {
-//        $UserData['UserId'] = Auth::user()->id;
+        //        $UserData['UserId'] = Auth::user()->id;
 //        $UserData['UserName'] = Auth::user()->name;
         //Storage::disk('local')->put('file.txt', "asdfasd");
         Storage::put('file.txt', 'contents is written inside file.txt');
@@ -3495,78 +3533,78 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         endif;
     }
 
-    public static function check_amount_in_ledger($voucher_no,$master_id,$type)
+    public static function check_amount_in_ledger($voucher_no, $master_id, $type)
     {
-        return   DB::Connection('mysql2')->table('transactions')->where('master_id',$master_id)->where('voucher_no',$voucher_no)->where('voucher_type',$type)->count();
+        return DB::Connection('mysql2')->table('transactions')->where('master_id', $master_id)->where('voucher_no', $voucher_no)->where('voucher_type', $type)->count();
     }
 
-    public static function dayBookQuery($table,$voucher_no,$voucher_date,$date)
+    public static function dayBookQuery($table, $voucher_no, $voucher_date, $date)
     {
-        return   DB::Connection('mysql2')->table($table)->where('status',1)->where($voucher_date,$date)->select("$voucher_no as voucher_no","$voucher_date as voucher_date",'slip_no','id')->get()->toArray();
+        return DB::Connection('mysql2')->table($table)->where('status', 1)->where($voucher_date, $date)->select("$voucher_no as voucher_no", "$voucher_date as voucher_date", 'slip_no', 'id')->get()->toArray();
     }
 
-    public static function debit_credit_amount($table,$id)
+    public static function debit_credit_amount($table, $id)
     {
 
-        $d_acc = DB::Connection('mysql2')->selectOne('select accounts.name name from '.$table.' as data
-		inner join `accounts` on accounts.id = data.acc_id where data.debit_credit = 1 and data.master_id = \''.$id.'\'');
+        $d_acc = DB::Connection('mysql2')->selectOne('select accounts.name name from ' . $table . ' as data
+		inner join `accounts` on accounts.id = data.acc_id where data.debit_credit = 1 and data.master_id = \'' . $id . '\'');
         $d_acc = (!empty($d_acc)) ? $d_acc->name : '';
-        $c_acc = DB::Connection('mysql2')->selectOne('select accounts.name name from '.$table.' as data
-		inner join `accounts` on accounts.id = data.acc_id where data.debit_credit = 0 and data.master_id = \''.$id.'\'');
+        $c_acc = DB::Connection('mysql2')->selectOne('select accounts.name name from ' . $table . ' as data
+		inner join `accounts` on accounts.id = data.acc_id where data.debit_credit = 0 and data.master_id = \'' . $id . '\'');
         $c_acc = (!empty($c_acc)) ? $c_acc->name : '';
 
-        $debit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table  where `debit_credit` = 1 and `master_id` = '".$id."'");
+        $debit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table  where `debit_credit` = 1 and `master_id` = '" . $id . "'");
 
         $debit_amount = (!empty($debit_amount)) ? $debit_amount->total : 0;
 
 
-        $credit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table where `debit_credit` = 0 and `master_id` = '".$id."'");
+        $credit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table where `debit_credit` = 0 and `master_id` = '" . $id . "'");
         $credit_amount = (!empty($credit_amount)) ? $credit_amount->total : 0;
 
-        return 'Dr = '.$d_acc.'&nbsp;&nbsp;&nbsp;'.' '.' '.number_format($debit_amount,2).''.'</br>'.' Cr = '.$c_acc.'&nbsp;&nbsp;&nbsp;'.' '.' '.number_format($credit_amount,2);
+        return 'Dr = ' . $d_acc . '&nbsp;&nbsp;&nbsp;' . ' ' . ' ' . number_format($debit_amount, 2) . '' . '</br>' . ' Cr = ' . $c_acc . '&nbsp;&nbsp;&nbsp;' . ' ' . ' ' . number_format($credit_amount, 2);
 
 
     }
-    public static function get_credit_amount($table,$id)
+    public static function get_credit_amount($table, $id)
     {
 
-        $d_acc = DB::Connection('mysql2')->selectOne('select accounts.name name from '.$table.' as data
-		inner join `accounts` on accounts.id = data.acc_id where data.debit_credit = 1 and data.master_id = \''.$id.'\'');
+        $d_acc = DB::Connection('mysql2')->selectOne('select accounts.name name from ' . $table . ' as data
+		inner join `accounts` on accounts.id = data.acc_id where data.debit_credit = 1 and data.master_id = \'' . $id . '\'');
         $d_acc = (!empty($d_acc)) ? $d_acc->name : '';
-        $c_acc = DB::Connection('mysql2')->selectOne('select accounts.name name from '.$table.' as data
-		inner join `accounts` on accounts.id = data.acc_id where data.debit_credit = 0 and data.master_id = \''.$id.'\'');
+        $c_acc = DB::Connection('mysql2')->selectOne('select accounts.name name from ' . $table . ' as data
+		inner join `accounts` on accounts.id = data.acc_id where data.debit_credit = 0 and data.master_id = \'' . $id . '\'');
         $c_acc = (!empty($c_acc)) ? $c_acc->name : '';
 
-        $debit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table  where `debit_credit` = 1 and `master_id` = '".$id."'");
+        $debit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table  where `debit_credit` = 1 and `master_id` = '" . $id . "'");
 
         $debit_amount = (!empty($debit_amount)) ? $debit_amount->total : 0;
 
 
-        $credit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table where `debit_credit` = 0 and `master_id` = '".$id."'");
+        $credit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table where `debit_credit` = 0 and `master_id` = '" . $id . "'");
         $credit_amount = (!empty($credit_amount)) ? $credit_amount->total : 0;
 
-        return number_format($credit_amount,2);
+        return number_format($credit_amount, 2);
 
 
     }
 
 
-    public static function GetAmount($table,$id)
+    public static function GetAmount($table, $id)
     {
-        $debit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table  where `debit_credit` = 1 and `master_id` = '".$id."'")->total;
+        $debit_amount = DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table  where `debit_credit` = 1 and `master_id` = '" . $id . "'")->total;
         return $debit_amount;
     }
-    public static function total_amount_for_book_day($table,$id)
+    public static function total_amount_for_book_day($table, $id)
     {
-        return DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table where `debit_credit` = 0 and `master_id` = '".$id."'")->total;
+        return DB::Connection('mysql2')->selectOne("select sum(`amount`) total from $table where `debit_credit` = 0 and `master_id` = '" . $id . "'")->total;
     }
 
-    public static  function check_status($table,$id)
+    public static function check_status($table, $id)
     {
-        $process=0;
-        if ($table=='jvs'):
-            $process=   DB::Connection('mysql2')->table($table)->where('status',1)->where('id',$id)->select('paid')->first();
-            $process=  $process->paid;
+        $process = 0;
+        if ($table == 'jvs'):
+            $process = DB::Connection('mysql2')->table($table)->where('status', 1)->where('id', $id)->select('paid')->first();
+            $process = $process->paid;
         endif;
 
         return $process;
@@ -3574,38 +3612,38 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     public static function check_payment($jv_id)
     {
-        return  DB::Connection('mysql2')->selectOne('select sum(amount)amount from breakup_data where jv_id="'.$jv_id.'"
+        return DB::Connection('mysql2')->selectOne('select sum(amount)amount from breakup_data where jv_id="' . $jv_id . '"
       ')->amount;
     }
 
-    public static function get_breakup_amount($main_id,$debit_credit,$supplier_id)
+    public static function get_breakup_amount($main_id, $debit_credit, $supplier_id)
     {
-        return  DB::Connection('mysql2')->selectOne('select sum(amount)amount from breakup_data where main_id="'.$main_id.'"
-      and debit_credit="'.$debit_credit.'" and supplier_id="'.$supplier_id.'" and status=1')->amount;
+        return DB::Connection('mysql2')->selectOne('select sum(amount)amount from breakup_data where main_id="' . $main_id . '"
+      and debit_credit="' . $debit_credit . '" and supplier_id="' . $supplier_id . '" and status=1')->amount;
     }
 
-    public static function get_amount_to_be_paid($main_id,$supplier_id)
+    public static function get_amount_to_be_paid($main_id, $supplier_id)
     {
 
 
 
-        $credit=  DB::Connection('mysql2')->selectOne('select sum(amount)amount from breakup_data where main_id="'.$main_id.'"
-      and debit_credit=0 and supplier_id="'.$supplier_id.'" and status=1')->amount;
+        $credit = DB::Connection('mysql2')->selectOne('select sum(amount)amount from breakup_data where main_id="' . $main_id . '"
+      and debit_credit=0 and supplier_id="' . $supplier_id . '" and status=1')->amount;
 
-        $debit=  DB::Connection('mysql2')->selectOne('select sum(amount)amount from breakup_data where main_id="'.$main_id.'"
-      and debit_credit=1 and supplier_id="'.$supplier_id.'" and status=1')->amount;
+        $debit = DB::Connection('mysql2')->selectOne('select sum(amount)amount from breakup_data where main_id="' . $main_id . '"
+      and debit_credit=1 and supplier_id="' . $supplier_id . '" and status=1')->amount;
 
-        $credit-$debit;
-        return $credit-$debit;
+        $credit - $debit;
+        return $credit - $debit;
     }
 
 
     public static function supplier_account_exists($id)
     {
-        $return_value=false;
-        $count=  DB::Connection('mysql2')->table('supplier')->where('acc_id',$id)->count();
-        if ($count>0):
-            $return_value =true;
+        $return_value = false;
+        $count = DB::Connection('mysql2')->table('supplier')->where('acc_id', $id)->count();
+        if ($count > 0):
+            $return_value = true;
         endif;
         return $return_value;
     }
@@ -3613,48 +3651,48 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     public static function get_supplier_id_by_account($id)
     {
 
-        return  $supplier=  DB::Connection('mysql2')->table('supplier')->where('acc_id',$id)->select('id')->first();
+        return $supplier = DB::Connection('mysql2')->table('supplier')->where('acc_id', $id)->select('id')->first();
 
     }
 
     public static function get_all_clients()
     {
         $client = new Client();
-        $client=$client->SetConnection('mysql2');
-        return  $client=$client->where('status',1)->get();
+        $client = $client->SetConnection('mysql2');
+        return $client = $client->where('status', 1)->get();
     }
     public static function get_all_users()
     {
         $user = new User();
-        return  $user=$user->where('acc_type','user')->get();
+        return $user = $user->where('acc_type', 'user')->get();
     }
 
     public static function get_all_surveryBy()
     {
         $survey = new SurveryBy();
-        $survey=$survey->SetConnection('mysql2');
-        return  $survey=$survey->where('status',1)->get();
+        $survey = $survey->SetConnection('mysql2');
+        return $survey = $survey->where('status', 1)->get();
     }
 
     public static function get_client_name_by_id($id)
     {
         $client = new Client();
-        $client=$client->SetConnection('mysql2');
-        $client=$client->where('status',1)->where('id',$id)->first();
+        $client = $client->SetConnection('mysql2');
+        $client = $client->where('status', 1)->where('id', $id)->first();
         return $client->client_name;
     }
     public static function get_client_data_by_id($id)
     {
         $client = new Client();
-        $client=$client->SetConnection('mysql2');
-        return  $client=$client->where('status',1)->where('id',$id)->first();
+        $client = $client->SetConnection('mysql2');
+        return $client = $client->where('status', 1)->where('id', $id)->first();
 
     }
     public static function gey_survey_by_name($id)
     {
         $suvey = new SurveryBy();
-        $suvey=$suvey->SetConnection('mysql2');
-        $suvey=$suvey->where('status',1)->where('id',$id)->first();
+        $suvey = $suvey->SetConnection('mysql2');
+        $suvey = $suvey->where('status', 1)->where('id', $id)->first();
         return $suvey->name;
     }
 
@@ -3664,82 +3702,80 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         // $region = $region->SetConnection('mysql2');
         // return  $region=$region->where('status',1)->get();
 
-       return DB::Connection('mysql2')->table('territories')->where('status',1)->get();
+        return DB::Connection('mysql2')->table('territories')->where('status', 1)->get();
     }
 
     public static function get_rgion_name_by_id($id)
     {
         $region = new Region();
         $region = $region->SetConnection('mysql2');
-        return  $region=$region->where('status',1)->where('id',$id)->first();
+        return $region = $region->where('status', 1)->where('id', $id)->first();
     }
 
     public static function get_all_type()
     {
         $type = new Type();
         $type = $type->SetConnection('mysql2');
-        return  $type=$type->where('status',1)->get();
+        return $type = $type->where('status', 1)->get();
     }
 
     public static function get_all_product_type()
     {
         $productType = new ProductType();
         $productType = $productType->SetConnection('mysql2');
-        return  $productType=$productType->where('status',1)->get();
+        return $productType = $productType->where('status', 1)->get();
     }
 
     public static function get_all_product_type_byID($id)
     {
 
         $productType = new ProductType();
-        $productType=$productType->SetConnection('mysql2');
-        return $productType=$productType->where('status',1)->where('product_type_id',$id)->first();
+        $productType = $productType->SetConnection('mysql2');
+        return $productType = $productType->where('status', 1)->where('product_type_id', $id)->first();
     }
 
     public static function get_all_type_by_id($id)
     {
         $type = new Type();
         $type = $type->SetConnection('mysql2');
-        return  $type=$type->where('status',1)->where('type_id',$id)->select('name')->first();
+        return $type = $type->where('status', 1)->where('type_id', $id)->select('name')->first();
     }
 
     public static function get_all_cities()
     {
         $cities = new Cities();
-        return $cities = $cities->where('status',1)->whereIn('state_id', array(2723, 2724, 2725,2726,2727,2728,2729))->get();
+        return $cities = $cities->where('status', 1)->whereIn('state_id', array(2723, 2724, 2725, 2726, 2727, 2728, 2729))->get();
     }
 
     public static function get_all_cities_by_id($id)
     {
         $cities = new Cities();
-        return $cities = $cities->where('status',1)->where('id',$id)->select('name')->first();
+        return $cities = $cities->where('status', 1)->where('id', $id)->select('name')->first();
     }
-   
+
 
     public static function get_all_country_by_id($id)
     {
         $country = new Countries();
-        return $cities = $country->where('status',1)->where('id',$id)->select('name')->first();
+        return $cities = $country->where('status', 1)->where('id', $id)->select('name')->first();
     }
     public static function get_sale_tax_persentage_by_id($id)
     {
-          $SaleTax = new SaleTax();
-        $SaleTax = $SaleTax->where('status',1)->where('id',$id)->select('name')->first();
-        if($SaleTax){
+        $SaleTax = new SaleTax();
+        $SaleTax = $SaleTax->where('status', 1)->where('id', $id)->select('name')->first();
+        if ($SaleTax) {
             return $SaleTax->name;
-        }
-        else{
+        } else {
             return "-";
         }
     }
     public static function get_country_name_by_id($id)
     {
         $country = new Countries();
-        $country = $country->where('status',1)->where('id',$id)->select('name')->first();
-        if($country){
+        $country = $country->where('status', 1)->where('id', $id)->select('name')->first();
+        if ($country) {
             return $country->name;
-        }
-        else{
+        } else {
             return "-";
         }
     }
@@ -3748,7 +3784,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         $account = new Account();
         $account = $account->SetConnection('mysql2');
-        return $account = $account->where('status', 1)->where('operational',1)->select('id','name','code')
+        return $account = $account->where('status', 1)->where('operational', 1)->select('id', 'name', 'code')
             ->orderBy('level1', 'ASC')
             ->orderBy('level2', 'ASC')
             ->orderBy('level3', 'ASC')
@@ -3761,27 +3797,27 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     }
     public static function get_all_account_level_wise()
     {
-      return  DB::Connection('mysql2')->table('accounts')
-        ->where('status',1)
-        ->select('id','name','code')
-        ->orderBy('level1', 'ASC')
-        ->orderBy('level2', 'ASC')
-        ->orderBy('level3', 'ASC')
-        ->orderBy('level4', 'ASC')
-        ->orderBy('level5', 'ASC')
-        ->orderBy('level6', 'ASC')
-        ->orderBy('level7', 'ASC')
-        ->get();
+        return DB::Connection('mysql2')->table('accounts')
+            ->where('status', 1)
+            ->select('id', 'name', 'code')
+            ->orderBy('level1', 'ASC')
+            ->orderBy('level2', 'ASC')
+            ->orderBy('level3', 'ASC')
+            ->orderBy('level4', 'ASC')
+            ->orderBy('level5', 'ASC')
+            ->orderBy('level6', 'ASC')
+            ->orderBy('level7', 'ASC')
+            ->get();
     }
 
 
-    public  static function get_amount_from_stock($voucher_type,$item,$warehouse,$batch_code=null)
+    public static function get_amount_from_stock($voucher_type, $item, $warehouse, $batch_code = null)
     {
 
 
-        $data= $stock=DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
-        where status=1  and voucher_type="'.$voucher_type.'" and sub_item_id="'.$item.'" and warehouse_id="'.$warehouse.'"  group by sub_item_id');
-        if(!empty($data->qty)):
+        $data = $stock = DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
+        where status=1  and voucher_type="' . $voucher_type . '" and sub_item_id="' . $item . '" and warehouse_id="' . $warehouse . '"  group by sub_item_id');
+        if (!empty($data->qty)):
 
             return $data->qty;
         else:
@@ -3789,13 +3825,13 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         endif;
     }
 
-    public  static function get_value_stock($voucher_type,$item,$warehouse)
+    public static function get_value_stock($voucher_type, $item, $warehouse)
     {
 
 
-        $data= $stock=DB::Connection('mysql2')->selectOne('select sum(amount)amount from stock
-        where status=1  and voucher_type="'.$voucher_type.'" and sub_item_id="'.$item.'" and warehouse_id="'.$warehouse.'"  group by sub_item_id');
-        if(!empty($data->amount)):
+        $data = $stock = DB::Connection('mysql2')->selectOne('select sum(amount)amount from stock
+        where status=1  and voucher_type="' . $voucher_type . '" and sub_item_id="' . $item . '" and warehouse_id="' . $warehouse . '"  group by sub_item_id');
+        if (!empty($data->amount)):
 
             return $data->amount;
         else:
@@ -3803,15 +3839,15 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         endif;
     }
 
-    public  static function get_amount_from_stock_batch_wise($voucher_type,$item,$warehouse,$batch_code)
+    public static function get_amount_from_stock_batch_wise($voucher_type, $item, $warehouse, $batch_code)
     {
 
 
-        $data= $stock=DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
-        where status=1  and voucher_type="'.$voucher_type.'" and sub_item_id="'.$item.'" and warehouse_id="'.$warehouse.'"
-          and batch_code="'.$batch_code.'"
+        $data = $stock = DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
+        where status=1  and voucher_type="' . $voucher_type . '" and sub_item_id="' . $item . '" and warehouse_id="' . $warehouse . '"
+          and batch_code="' . $batch_code . '"
           group by sub_item_id');
-        if(!empty($data->qty)):
+        if (!empty($data->qty)):
 
             return $data->qty;
         else:
@@ -3823,31 +3859,31 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         $resuor = new ResourceAssigned();
         $resuor = $resuor->SetConnection('mysql2');
-        return  $resuor=$resuor->where('status',1)->get();
+        return $resuor = $resuor->where('status', 1)->get();
     }
 
     public static function get_all_uom()
     {
         $uom = new UOM();
-        return $uom = $uom->where('status',1)->get();
+        return $uom = $uom->where('status', 1)->get();
     }
 
-    public static function get_single_row($TableName,$TableId,$DataId)
+    public static function get_single_row($TableName, $TableId, $DataId)
     {
-        return DB::Connection('mysql2')->table($TableName)->where($TableId,$DataId)->where('status',1)->first();
+        return DB::Connection('mysql2')->table($TableName)->where($TableId, $DataId)->where('status', 1)->first();
     }
 
 
-    public static function get_single_row_prodcut($TableName,$TableId,$DataId)
+    public static function get_single_row_prodcut($TableName, $TableId, $DataId)
     {
-        return DB::Connection('mysql2')->table($TableName)->where($TableId,$DataId)->where('p_status',1)->first();
+        return DB::Connection('mysql2')->table($TableName)->where($TableId, $DataId)->where('p_status', 1)->first();
     }
-    public static function get_single_row_uom($TableName,$TableId,$DataId)
+    public static function get_single_row_uom($TableName, $TableId, $DataId)
     {
-        return DB::table($TableName)->where($TableId,$DataId)->where('status',1)->first();
+        return DB::table($TableName)->where($TableId, $DataId)->where('status', 1)->first();
     }
 
-       public static function getWarehouseName($deliveryNoteId)
+    public static function getWarehouseName($deliveryNoteId)
     {
         if (empty($deliveryNoteId)) {
             return '-';
@@ -3861,64 +3897,64 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
         return $row->name ?? '-';
     }
-    public static function get_data_from_survey_tracking($id,$type)
+    public static function get_data_from_survey_tracking($id, $type)
     {
-        $client_job='';
-        $contact_person='';
-        $branch_name='';
-        if ($type==1):
-            $data=DB::Connection('mysql2')->table('quotation')->where('id',$id)->select('tracking_no')->first();
-            $tracking_no=$data->tracking_no;
+        $client_job = '';
+        $contact_person = '';
+        $branch_name = '';
+        if ($type == 1):
+            $data = DB::Connection('mysql2')->table('quotation')->where('id', $id)->select('tracking_no')->first();
+            $tracking_no = $data->tracking_no;
         endif;
         if (!empty($tracking_no)):
-            $client_job = DB::Connection('mysql2')->table('job_tracking')->where('job_tracking_no',$tracking_no)->select('customer_job')->first();
+            $client_job = DB::Connection('mysql2')->table('job_tracking')->where('job_tracking_no', $tracking_no)->select('customer_job')->first();
             if (!empty($client_job->customer_job)):
-                $client_job=$client_job->customer_job;
+                $client_job = $client_job->customer_job;
             endif;
-            $contact_person_data = DB::Connection('mysql2')->table('survey')->where('tracking_no',$tracking_no)->select('contact_person','branch_name')->first();
-            $branch_name=$contact_person_data->branch_name;
-            $contact_person=$contact_person_data->contact_person;
+            $contact_person_data = DB::Connection('mysql2')->table('survey')->where('tracking_no', $tracking_no)->select('contact_person', 'branch_name')->first();
+            $branch_name = $contact_person_data->branch_name;
+            $contact_person = $contact_person_data->contact_person;
         endif;
 
-        return $client_job.','.$contact_person.','.$branch_name;
+        return $client_job . ',' . $contact_person . ',' . $branch_name;
     }
 
     public static function get_depth_from_survey($id)
     {
-        return  DB::Connection('mysql2')->table('survey_data')->where('survey_data_id',$id)->select('depth')->first()->depth;
+        return DB::Connection('mysql2')->table('survey_data')->where('survey_data_id', $id)->select('depth')->first()->depth;
     }
 
-    public static function get_complete_stock($item,$region)
+    public static function get_complete_stock($item, $region)
     {
 
-        $grn= $stock=DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
-        where region_id="'.$region.'" and voucher_type="1" and sub_item_id="'.$item.'" group by sub_item_id');
+        $grn = $stock = DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
+        where region_id="' . $region . '" and voucher_type="1" and sub_item_id="' . $item . '" group by sub_item_id');
 
         if (!empty($grn->qty)):
-            $grn=$grn->qty;
+            $grn = $grn->qty;
         endif;
 
-        $return= $stock=DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
-        where region_id="'.$region.'" and voucher_type="3" and sub_item_id="'.$item.'" group by sub_item_id');
+        $return = $stock = DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
+        where region_id="' . $region . '" and voucher_type="3" and sub_item_id="' . $item . '" group by sub_item_id');
 
         if (!empty($return->qty)):
-            $return=$return->qty;
+            $return = $return->qty;
         endif;
 
-        $grn=$grn+$return;
-        $issuence= $stock=DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
-        where region_id="'.$region.'" and voucher_type="2" and sub_item_id="'.$item.'" group by sub_item_id');
+        $grn = $grn + $return;
+        $issuence = $stock = DB::Connection('mysql2')->selectOne('select sum(qty)qty from stock
+        where region_id="' . $region . '" and voucher_type="2" and sub_item_id="' . $item . '" group by sub_item_id');
 
 
         if (!empty($issuence->qty)):
-            $issuence=$issuence->qty;
+            $issuence = $issuence->qty;
         endif;
-        return   $total=$grn-$issuence;
+        return $total = $grn - $issuence;
     }
 
     public static function check_job_order_data_count($id)
     {
-        return  $job_order_data = DB::Connection('mysql2')->table('job_order_data')
+        return $job_order_data = DB::Connection('mysql2')->table('job_order_data')
             ->where('job_order_id', '=', $id)
             ->count();
     }
@@ -3928,13 +3964,25 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         $DeliveryCount = 0;
         $SalesTCount = 0;
         $CreditNCount = 0;
-        $DeliveryNote = DB::Connection('mysql2')->table('delivery_note')->where('master_id', '=', $id)->where('status',1)->count();
-        $SalesTaxInvoice = DB::Connection('mysql2')->table('sales_tax_invoice')->where('so_id', '=', $id)->where('status',1)->count();
-        $CreditNote = DB::Connection('mysql2')->table('credit_note')->where('so_id', '=', $id)->where('status',1)->count();
-        if($DeliveryNote > 0): $DeliveryCount  = $DeliveryNote; else: $DeliveryCount = 0; endif;
-        if($SalesTaxInvoice > 0): $SalesTCount  = $SalesTaxInvoice; else: $SalesTCount = 0; endif;
-        if($CreditNote > 0): $CreditNCount  = $CreditNote; else: $CreditNCount = 0; endif;
-        return $DeliveryCount.','.$SalesTCount.','.$CreditNCount;
+        $DeliveryNote = DB::Connection('mysql2')->table('delivery_note')->where('master_id', '=', $id)->where('status', 1)->count();
+        $SalesTaxInvoice = DB::Connection('mysql2')->table('sales_tax_invoice')->where('so_id', '=', $id)->where('status', 1)->count();
+        $CreditNote = DB::Connection('mysql2')->table('credit_note')->where('so_id', '=', $id)->where('status', 1)->count();
+        if ($DeliveryNote > 0):
+            $DeliveryCount = $DeliveryNote;
+        else:
+            $DeliveryCount = 0;
+        endif;
+        if ($SalesTaxInvoice > 0):
+            $SalesTCount = $SalesTaxInvoice;
+        else:
+            $SalesTCount = 0;
+        endif;
+        if ($CreditNote > 0):
+            $CreditNCount = $CreditNote;
+        else:
+            $CreditNCount = 0;
+        endif;
+        return $DeliveryCount . ',' . $SalesTCount . ',' . $CreditNCount;
 
 
     }
@@ -3943,20 +3991,20 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     public static function get_ids_delivery($id)
     {
         $DeliveryIds = "";
-        $DeliveryNote = DB::Connection('mysql2')->table('delivery_note')->where('master_id', '=', $id)->where('status',1);
-        $SalesTaxInvoice = DB::Connection('mysql2')->table('sales_tax_invoice')->where('so_id', '=', $id)->where('status',1);
-        $CreditNote = DB::Connection('mysql2')->table('credit_note')->where('so_id', '=', $id)->where('status',1);
-        foreach($DeliveryNote->get() as $DFil)
-        {
-            $DeliveryIds .= $DFil->id.',';
+        $DeliveryNote = DB::Connection('mysql2')->table('delivery_note')->where('master_id', '=', $id)->where('status', 1);
+        $SalesTaxInvoice = DB::Connection('mysql2')->table('sales_tax_invoice')->where('so_id', '=', $id)->where('status', 1);
+        $CreditNote = DB::Connection('mysql2')->table('credit_note')->where('so_id', '=', $id)->where('status', 1);
+        foreach ($DeliveryNote->get() as $DFil) {
+            $DeliveryIds .= $DFil->id . ',';
         }
-        return rtrim($DeliveryIds,',');
+        return rtrim($DeliveryIds, ',');
 
     }
 
 
-    public static function get_so_by_SONO($so_no){
-        return DB::connection('mysql2')->table('sales_order')->where('so_no',$so_no)->first();
+    public static function get_so_by_SONO($so_no)
+    {
+        return DB::connection('mysql2')->table('sales_order')->where('so_no', $so_no)->first();
     }
 
 
@@ -3965,65 +4013,63 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     public static function get_ids_sales_tax_invoice($id)
     {
         $DeliveryIds = "";
-        $DeliveryNote = DB::Connection('mysql2')->table('sales_tax_invoice')->where('so_id', '=', $id)->where('status',1);
-        foreach($DeliveryNote->get() as $DFil)
-        {
-            $DeliveryIds .= $DFil->id.',';
+        $DeliveryNote = DB::Connection('mysql2')->table('sales_tax_invoice')->where('so_id', '=', $id)->where('status', 1);
+        foreach ($DeliveryNote->get() as $DFil) {
+            $DeliveryIds .= $DFil->id . ',';
         }
-        return rtrim($DeliveryIds,',');
+        return rtrim($DeliveryIds, ',');
 
     }
 
     public static function get_ids_credit_note($id)
     {
         $DeliveryIds = "";
-        $DeliveryNote = DB::Connection('mysql2')->table('credit_note')->where('so_id', '=', $id)->where('status',1);
+        $DeliveryNote = DB::Connection('mysql2')->table('credit_note')->where('so_id', '=', $id)->where('status', 1);
 
-        foreach($DeliveryNote->get() as $DFil)
-        {
-            $DeliveryIds .= $DFil->id.',';
+        foreach ($DeliveryNote->get() as $DFil) {
+            $DeliveryIds .= $DFil->id . ',';
         }
-        return rtrim($DeliveryIds,',');
+        return rtrim($DeliveryIds, ',');
 
     }
 
     public static function job_order()
     {
-        $JobOrder=new JobOrder();
-        $JobOrder=$JobOrder->SetConnection('mysql2');
-        $JobOrder=$JobOrder->where('status',1)->get();
-        foreach($JobOrder as $row){
+        $JobOrder = new JobOrder();
+        $JobOrder = $JobOrder->SetConnection('mysql2');
+        $JobOrder = $JobOrder->where('status', 1)->get();
+        foreach ($JobOrder as $row) {
             ?>
-            <option value="<?php echo $row['job_order_no'];?>" > <?php echo $row['job_order_no'];?> </option>
+            <option value="<?php echo $row['job_order_no']; ?>"> <?php echo $row['job_order_no']; ?> </option>
             <?php
         }
     }
 
     public static function JobOrderNoData($joborderno)
     {
-        $JobOrder=new JobOrder();
-        $JobOrder=$JobOrder->SetConnection('mysql2');
-        return $JobOrder=$JobOrder->where('status',1)->where('job_order_no',$joborderno)->value('job_order_id');
+        $JobOrder = new JobOrder();
+        $JobOrder = $JobOrder->SetConnection('mysql2');
+        return $JobOrder = $JobOrder->where('status', 1)->where('job_order_no', $joborderno)->value('job_order_id');
     }
 
-    public  static function get_all_employe()
+    public static function get_all_employe()
     {
-        $employe= new Employee();
-        $employe=$employe->SetConnection('mysql2');
-        return $employe=$employe->where('status',1)->get();
+        $employe = new Employee();
+        $employe = $employe->SetConnection('mysql2');
+        return $employe = $employe->where('status', 1)->get();
     }
 
-    public static function table_counting($table,$column,$colum_val)
+    public static function table_counting($table, $column, $colum_val)
     {
 
-        return   DB::Connection('mysql2')->table($table)->where('status',1)->where($column,$colum_val)->count();
+        return DB::Connection('mysql2')->table($table)->where('status', 1)->where($column, $colum_val)->count();
 
     }
     public static function get_all_client_job()
     {
-        $ClientJob= new ClientJob();
-        $ClientJob=$ClientJob->SetConnection('mysql2');
-        return $ClientJob=$ClientJob->where('status',1)->get();
+        $ClientJob = new ClientJob();
+        $ClientJob = $ClientJob->SetConnection('mysql2');
+        return $ClientJob = $ClientJob->where('status', 1)->get();
     }
 
     public static function logActivity($voucher_no, $voucher_date, $action_type, $client_id, $table_name)
@@ -4032,14 +4078,14 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         date_default_timezone_set("Asia/Karachi");
 
         $data['voucher_no'] = $voucher_no;
-        $data['v_date']     = $voucher_date;
-        $data['action']     = $action_type;
+        $data['v_date'] = $voucher_date;
+        $data['action'] = $action_type;
         $data['table_name'] = $table_name;
-        $data['client_id']  = $client_id;
-        $data['status']     = 1;
-        $data['username']   = Auth::user()->name;
-        $data['date']       = date('Y-m-d');
-        $data['time']       = date('h:i:sa');
+        $data['client_id'] = $client_id;
+        $data['status'] = 1;
+        $data['username'] = Auth::user()->name;
+        $data['date'] = date('Y-m-d');
+        $data['time'] = date('h:i:sa');
         DB::Connection('mysql2')->table('logactivity')->insert($data);
     }
 
@@ -4047,7 +4093,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         $variable = 100;
         $str = DB::Connection('mysql2')->selectOne("SELECT MAX(SUBSTR(pv_no, 8, 3)) AS ExtractString
-        FROM new_pv  where substr(`pv_no`,4,2) = " . $year . " and substr(`pv_no`,6,2) = " . $month . " and payment_type=".$type."")->ExtractString;
+        FROM new_pv  where substr(`pv_no`,4,2) = " . $year . " and substr(`pv_no`,6,2) = " . $month . " and payment_type=" . $type . "")->ExtractString;
 
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
@@ -4064,7 +4110,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         $variable = 100;
         $str = DB::Connection('mysql2')->selectOne("SELECT MAX(SUBSTR(bill_no, 8, 3)) AS ExtractString
-        FROM new_pv  where substr(`bill_no`,4,2) = " . $year . " and substr(`bill_no`,6,2) = " . $month . " and payment_type=".$type."")->ExtractString;
+        FROM new_pv  where substr(`bill_no`,4,2) = " . $year . " and substr(`bill_no`,6,2) = " . $month . " and payment_type=" . $type . "")->ExtractString;
 
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
@@ -4083,7 +4129,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         from `new_pvv` where substr(`pv_no`,3,2) = " . $year . " and substr(`pv_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $pvno = 'pv' . $year . $month . $str;
+        return $pvno = 'pv' . $year . $month . $str;
     }
 
     public static function uniqe_no_for_jv($year, $month)
@@ -4107,14 +4153,14 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         from `new_purchase_voucher` where substr(`pv_no`,3,2) = " . $year . " and substr(`pv_no`,5,2) = " . $month . "")->reg;
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
-        return  $purchaseRequestNo = 'pi' . $year . $month . $str;
+        return $purchaseRequestNo = 'pi' . $year . $month . $str;
     }
 
     public static function uniqe_no_for_rvs($year, $month, $type)
     {
         $variable = 100;
         $str = DB::Connection('mysql2')->selectOne("SELECT MAX(SUBSTR(rv_no, 8, 3)) AS ExtractString
-        FROM new_rvs  where substr(`rv_no`,4,2) = " . $year . " and substr(`rv_no`,6,2) = " . $month . " and rv_type=".$type." ")->ExtractString;
+        FROM new_rvs  where substr(`rv_no`,4,2) = " . $year . " and substr(`rv_no`,6,2) = " . $month . " and rv_type=" . $type . " ")->ExtractString;
 
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
@@ -4130,18 +4176,20 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     public static function get_accounts_by_parent_code($code)
     {
         if ($code != ""):
-            $account = new Account();;
+            $account = new Account();
+            ;
             $account = $account->SetConnection('mysql2');
-            return  $account = $account->where('status', 1)->where('parent_code', $code)->get();
+            return $account = $account->where('status', 1)->where('parent_code', $code)->get();
 
         endif;
     }
-     public static function get_accounts_by_code($code)
+    public static function get_accounts_by_code($code)
     {
         if ($code != ""):
-            $account = new Account();;
+            $account = new Account();
+            ;
             $account = $account->SetConnection('mysql2');
-            return  $account = $account->where('status', 1)->where('code', $code)->get();
+            return $account = $account->where('status', 1)->where('code', $code)->get();
 
         endif;
     }
@@ -4150,7 +4198,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         return $acc_id = DB::Connection('mysql2')->table('pvs as p')
             ->join('pv_data as d', 'd.master_id', '=', 'p.id')
-            ->select('p.*',DB::raw('SUM(d.amount) as amount'),'d.acc_id')
+            ->select('p.*', DB::raw('SUM(d.amount) as amount'), 'd.acc_id')
             ->where('d.debit_credit', 1)
             ->where('p.status', 1)
             ->take(5)
@@ -4159,10 +4207,10 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     public static function income_tax($pv_no)
     {
 
-        $income_tax= new IncomeTaxDeduction();
-        $income_tax=$income_tax->SetConnection('mysql2');
-        $income_tax=$income_tax->where('pvs_id',$pv_no)->where('status',1);
-        if ($income_tax->count() >0):
+        $income_tax = new IncomeTaxDeduction();
+        $income_tax = $income_tax->SetConnection('mysql2');
+        $income_tax = $income_tax->where('pvs_id', $pv_no)->where('status', 1);
+        if ($income_tax->count() > 0):
             return $income_tax->get();
         else:
             return [];
@@ -4171,46 +4219,46 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     public static function get_nature_name($id)
     {
-        $nature='';
-        if ($id==1):
-            $nature='ALL GOODS';
-        elseif($id==2):
-            $nature='IN CASE OF RICE,COTTON,SEED,EDIBLE OIL';
-        elseif($id==3):
-            $nature='DISTRIBUTORS OF FAST MOVING CONSUMER GOODS';
-        elseif($id==4):
-            $nature='SERVICES';
-        elseif($id==5):
-            $nature='TRANSPORT SERVICES';
-        elseif($id==6):
-            $nature='ELECTRONIC AND PRINT MEDIA FOR ADVERTISING';
-        elseif($id==7):
-            $nature='CONTRACTS';
-        elseif($id==8):
-            $nature='SPORT PERSON';
-        elseif($id==9):
-            $nature='Services of Stitching , Dyeing , Printing , Embroidery etc';
+        $nature = '';
+        if ($id == 1):
+            $nature = 'ALL GOODS';
+        elseif ($id == 2):
+            $nature = 'IN CASE OF RICE,COTTON,SEED,EDIBLE OIL';
+        elseif ($id == 3):
+            $nature = 'DISTRIBUTORS OF FAST MOVING CONSUMER GOODS';
+        elseif ($id == 4):
+            $nature = 'SERVICES';
+        elseif ($id == 5):
+            $nature = 'TRANSPORT SERVICES';
+        elseif ($id == 6):
+            $nature = 'ELECTRONIC AND PRINT MEDIA FOR ADVERTISING';
+        elseif ($id == 7):
+            $nature = 'CONTRACTS';
+        elseif ($id == 8):
+            $nature = 'SPORT PERSON';
+        elseif ($id == 9):
+            $nature = 'Services of Stitching , Dyeing , Printing , Embroidery etc';
         endif;
         return $nature;
     }
 
     public static function get_filer_and_percentage($id)
     {
-        return  DB::Connection('mysql2')->table('income_tax_slab')->where('id',$id)->first();
+        return DB::Connection('mysql2')->table('income_tax_slab')->where('id', $id)->first();
     }
 
-    public static function fbr_tax($id,$index)
+    public static function fbr_tax($id, $index)
     {
-        $new_pv_data=new NewPvData();
-        $new_pv_data=$new_pv_data->SetConnection('mysql2');
-        $new_pv_data=$new_pv_data->where('tax_nature',2)->where('master_id',$id);
-        if ($new_pv_data->count()>0):
-            $fbr_slab_id=  $new_pv_data->first()->slab_id;
-            $fb_data= DB::Connection('mysql2')->table('sindh_sales_tax_withholding')->where('id',$fbr_slab_id)->first();
-            $pv_data=$new_pv_data->first();
+        $new_pv_data = new NewPvData();
+        $new_pv_data = $new_pv_data->SetConnection('mysql2');
+        $new_pv_data = $new_pv_data->where('tax_nature', 2)->where('master_id', $id);
+        if ($new_pv_data->count() > 0):
+            $fbr_slab_id = $new_pv_data->first()->slab_id;
+            $fb_data = DB::Connection('mysql2')->table('sindh_sales_tax_withholding')->where('id', $fbr_slab_id)->first();
+            $pv_data = $new_pv_data->first();
 
-            $data[0]=$fb_data;
-            $data[1]=$pv_data;
+            $data[0] = $fb_data;
+            $data[1] = $pv_data;
 
             return $data[$index];
 
@@ -4220,18 +4268,18 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     }
 
 
-    public static function srb_tax($id,$index)
+    public static function srb_tax($id, $index)
     {
-        $new_pv_data=new NewPvData();
-        $new_pv_data=$new_pv_data->SetConnection('mysql2');
-        $new_pv_data=$new_pv_data->where('tax_nature',3)->where('master_id',$id);
-        if ($new_pv_data->count()>0):
-            $srb_slab_id=  $new_pv_data->first()->slab_id;
-            $srb_data= DB::Connection('mysql2')->table('srb')->where('id',$srb_slab_id)->first();
-            $pv_data=$new_pv_data->first();
+        $new_pv_data = new NewPvData();
+        $new_pv_data = $new_pv_data->SetConnection('mysql2');
+        $new_pv_data = $new_pv_data->where('tax_nature', 3)->where('master_id', $id);
+        if ($new_pv_data->count() > 0):
+            $srb_slab_id = $new_pv_data->first()->slab_id;
+            $srb_data = DB::Connection('mysql2')->table('srb')->where('id', $srb_slab_id)->first();
+            $pv_data = $new_pv_data->first();
 
-            $data[0]=$srb_data;
-            $data[1]=$pv_data;
+            $data[0] = $srb_data;
+            $data[1] = $pv_data;
 
             return $data[$index];
 
@@ -4245,7 +4293,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         return DB::Connection('mysql2')->table('new_purchase_voucher_payment')
             ->select(DB::raw('SUM(amount) as total_amount'))
             ->where('new_purchase_voucher_id', $new_purchase_voucher_id)
-            ->where('status',1)
+            ->where('status', 1)
             ->groupBy('new_purchase_voucher_id')
             ->value('total_amount');
     }
@@ -4255,23 +4303,23 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
         return DB::Connection('mysql2')->table('received_paymet')
             ->select(DB::raw('SUM(received_amount) as total_amount'))
             ->where('sales_tax_invoice_id', $si_id)
-            ->where('status',1)
+            ->where('status', 1)
             ->groupBy('sales_tax_invoice_id')
             ->value('total_amount');
     }
 
 
 
-    public static function PaymentPurchaseAmountCheck_aging($new_purchase_voucher_id,$from,$to)
+    public static function PaymentPurchaseAmountCheck_aging($new_purchase_voucher_id, $from, $to)
     {
         return DB::Connection('mysql2')->table('new_purchase_voucher_payment as a')
             ->select(DB::raw('SUM(a.amount) as total_amount'))
-            ->join('new_pv as b','a.new_pv','=','b.id')
+            ->join('new_pv as b', 'a.new_pv', '=', 'b.id')
             ->where('a.new_purchase_voucher_id', $new_purchase_voucher_id)
-            ->where('a.status',1)
-            ->where('b.status',1)
-            ->where('b.pv_status',2)
-            ->whereBetween('b.pv_date',[$from,$to])
+            ->where('a.status', 1)
+            ->where('b.status', 1)
+            ->where('b.pv_status', 2)
+            ->whereBetween('b.pv_date', [$from, $to])
             ->groupBy('a.new_purchase_voucher_id')
             ->value('total_amount');
     }
@@ -4279,38 +4327,38 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         return DB::Connection('mysql2')->table('new_purchase_voucher_payment as a')
             ->select(DB::raw('SUM(a.amount) as total_amount'))
-            ->join('new_pv as b','a.new_pv','=','b.id')
+            ->join('new_pv as b', 'a.new_pv', '=', 'b.id')
             ->where('a.new_purchase_voucher_id', $new_purchase_voucher_id)
-            ->where('a.status',1)
-            ->where('b.status',1)
-            ->where('b.pv_status',2)
+            ->where('a.status', 1)
+            ->where('b.status', 1)
+            ->where('b.pv_status', 2)
             ->groupBy('a.new_purchase_voucher_id')
             ->value('total_amount');
     }
 
 
-    public static function PaymentSalesTaxInvoiceAmountCheck($SalesTaxInvoiceId,$from,$to)
+    public static function PaymentSalesTaxInvoiceAmountCheck($SalesTaxInvoiceId, $from, $to)
     {
         return DB::Connection('mysql2')->table('received_paymet as a')
             ->select(DB::raw('SUM(a.received_amount) as total_amount'))
-            ->join('new_rvs as b','a.receipt_id','b.id')
+            ->join('new_rvs as b', 'a.receipt_id', 'b.id')
             ->where('a.sales_tax_invoice_id', $SalesTaxInvoiceId)
-            ->where('a.status',1)
-            ->whereBetween('b.rv_date',[$from,$to])
+            ->where('a.status', 1)
+            ->whereBetween('b.rv_date', [$from, $to])
             ->groupBy('a.sales_tax_invoice_id')
             ->value('total_amount');
     }
 
- public static function PurchaseAmountCheck($new_purchase_voucher_id)
-{
+    public static function PurchaseAmountCheck($new_purchase_voucher_id)
+    {
 
-    return DB::Connection('mysql2')->table('new_purchase_voucher as a')
-        ->join('new_purchase_voucher_data as b','a.id','b.master_id')
-        ->select(DB::raw('SUM(b.net_amount) - a.sales_tax_amount as total_amount'))
-        ->where('a.id', $new_purchase_voucher_id)
-        ->groupBy('a.id')
-        ->value('total_amount');
-}
+        return DB::Connection('mysql2')->table('new_purchase_voucher as a')
+            ->join('new_purchase_voucher_data as b', 'a.id', 'b.master_id')
+            ->select(DB::raw('SUM(b.net_amount) - a.sales_tax_amount as total_amount'))
+            ->where('a.id', $new_purchase_voucher_id)
+            ->groupBy('a.id')
+            ->value('total_amount');
+    }
 
     public static function PurchaseAmountAndPayment()
     {
@@ -4326,79 +4374,69 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         $NewPurchaseVoucher = new NewPurchaseVoucher();
         $NewPurchaseVoucher = $NewPurchaseVoucher->SetConnection('mysql2');
-        $NewPurchaseVoucher = $NewPurchaseVoucher->where('status','=','1')
-        ->where('pv_status',2)
-        ->where('supplier','=',$supplier_id)->get();
+        $NewPurchaseVoucher = $NewPurchaseVoucher->where('status', '=', '1')
+            ->where('pv_status', 2)
+            ->where('supplier', '=', $supplier_id)->get();
         return $NewPurchaseVoucher;
     }
 
-    public static function get_paid_to_name($id,$Type)
+    public static function get_paid_to_name($id, $Type)
     {
-        if ($id!=''):
-            if($Type == 1)
-            {
-                $Emp=new Employee();
-                $Emp=$Emp->SetConnection('mysql2');
-                $Emp=$Emp->where('id',$id)->first();
+        if ($id != ''):
+            if ($Type == 1) {
+                $Emp = new Employee();
+                $Emp = $Emp->SetConnection('mysql2');
+                $Emp = $Emp->where('id', $id)->first();
                 return $Emp->emp_name;
-            }
-            else if($Type == 2)
-            {
-                $Supplier=new Supplier();
-                $Supplier=$Supplier->SetConnection('mysql2');
-                $Supplier=$Supplier->where('id',$id)->where('status',1)->first();
+            } else if ($Type == 2) {
+                $Supplier = new Supplier();
+                $Supplier = $Supplier->SetConnection('mysql2');
+                $Supplier = $Supplier->where('id', $id)->where('status', 1)->first();
                 return $Supplier->name;
-            }
-            else if($Type == 3)
-            {
-                $Client=new Client();
-                $Client=$Client->SetConnection('mysql2');
-                $Client=$Client->where('id',$id)->where('status',1)->first();
-                return  $Client->client_name;
-            }
-            else if($Type == 4)
-            {
-                $PaidTo=new PaidTo();
-                $PaidTo=$PaidTo->SetConnection('mysql2');
-                $PaidTo=$PaidTo->where('id',$id)->where('status',1)->first();
-                return  $PaidTo->name;
-            }
-            else
-            {
-                $Branch=new Branch();
-                $Branch=$Branch->SetConnection('mysql2');
-                $Branch=$Branch->where('id',$id)->where('status',1)->first();
-                return  $Branch->branch_name;
+            } else if ($Type == 3) {
+                $Client = new Client();
+                $Client = $Client->SetConnection('mysql2');
+                $Client = $Client->where('id', $id)->where('status', 1)->first();
+                return $Client->client_name;
+            } else if ($Type == 4) {
+                $PaidTo = new PaidTo();
+                $PaidTo = $PaidTo->SetConnection('mysql2');
+                $PaidTo = $PaidTo->where('id', $id)->where('status', 1)->first();
+                return $PaidTo->name;
+            } else {
+                $Branch = new Branch();
+                $Branch = $Branch->SetConnection('mysql2');
+                $Branch = $Branch->where('id', $id)->where('status', 1)->first();
+                return $Branch->branch_name;
             }
         endif;
     }
 
     //zamzama income statement
-    public static function get_ledger_amount($code,$databse,$nature_of_debit_credit,$nature_of_debit_credit_other,$from,$to)
+    public static function get_ledger_amount($code, $databse, $nature_of_debit_credit, $nature_of_debit_credit_other, $from, $to)
     {
-
         static::companyDatabaseConnection($databse);
-        $debit= DB::selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="'.$nature_of_debit_credit.'" and acc_code = "'.$code.'"
-         and v_date between "'.$from.'" and "'.$to.'"')->amount;
-        if (!empty($debit)):
-            $debit=$debit;
-        else:
-            $debit=0;
-        endif;
 
-        $credit= DB::selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="'.$nature_of_debit_credit_other.'" and acc_code = "'.$code.'"
-        and v_date between "'.$from.'" and "'.$to.'"')->amount;
-        if (!empty($credit)):
-            $credit=$credit;
-        else:
-            $credit=0;
-        endif;
+        // Resolve code to id to handle transactions that might be missing acc_code but have acc_id
+        $acc = DB::table('accounts')->where('code', $code)->where('status', 1)->first();
+        $acc_id = $acc ? $acc->id : 0;
+
+        // Sum debits and credits up to the $to date to match the Ledger Report's final balance logic.
+        // Using both acc_id and acc_code for maximum compatibility with all transaction types.
+        $debit = DB::selectOne('select sum(amount) as amount from transactions where status=1 and debit_credit="' . $nature_of_debit_credit . '" 
+            and (acc_id = "' . $acc_id . '" OR acc_code = "' . $code . '")
+            and v_date <= "' . $to . '"')->amount;
+
+        $credit = DB::selectOne('select sum(amount) as amount from transactions where status=1 and debit_credit="' . $nature_of_debit_credit_other . '" 
+            and (acc_id = "' . $acc_id . '" OR acc_code = "' . $code . '")
+            and v_date <= "' . $to . '"')->amount;
+
         static::reconnectMasterDatabase();
-        return $debit-$credit;
+        return ($debit ?? 0) - ($credit ?? 0);
     }
     public static function get_client_job_by_id($id)
     {
-        if ($id!=0 && $id!=''):
+        if ($id != 0 && $id != ''):
             $client_job = new ClientJob();
             $client_job = $client_job->SetConnection('mysql2');
             $client_job = $client_job->where('id', $id)->select('client_job')->first();
@@ -4410,154 +4448,154 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     }
 
-    public static function get_parent_amount($m,$from_date,$to_date,$code,$operation)
+    public static function get_parent_amount($m, $from_date, $to_date, $code, $operation)
     {
-        $code=$code.'-%';
+        $code = $code . '-%';
 
         $debit = DB::Connection('mysql2')->selectOne(' select sum(amount) as amount from transactions where status=1
-			 and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and acc_code like "'.$code.'"
+			 and  v_date BETWEEN "' . $from_date . '" and "' . $to_date . '" and acc_code like "' . $code . '"
 			 and debit_credit=1 ')->amount;
 
         $credit = DB::Connection('mysql2')->selectOne('select sum(amount) as amount from transactions where status=1
-			 and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and acc_code like "'.$code.'"
+			 and  v_date BETWEEN "' . $from_date . '" and "' . $to_date . '" and acc_code like "' . $code . '"
 			 and debit_credit=0 ')->amount;
 
-        return	$total=$debit-$credit;
+        return $total = $debit - $credit;
 
     }
 
-    public static function get_parent_and_account_amount($m,$from_date,$to_date,$code,$operation,$debit_credit_nature,$debit_credit_nature_)
+    public static function get_parent_and_account_amount($m, $from_date, $to_date, $code, $operation, $debit_credit_nature, $debit_credit_nature_)
     {
 
 
-        $array = explode('-',$code);
+        $array = explode('-', $code);
         $level = count($array);
-//       echo  'select sum(amount) as amount from transactions where status=1
+        //       echo  'select sum(amount) as amount from transactions where status=1
 //    and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(acc_code,"-","'.$level.'") = "'.$code.'"
 //    and debit_credit=1';
 //        echo '</br>';
         $debit = DB::Connection('mysql2')->selectOne('select sum(amount) as amount from transactions where status =1
-			 and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(acc_code,"-","'.$level.'") = "'.$code.'"
-			 and debit_credit="'.$debit_credit_nature.'"')->amount;
+			 and  v_date BETWEEN "' . $from_date . '" and "' . $to_date . '" and substring_index(acc_code,"-","' . $level . '") = "' . $code . '"
+			 and debit_credit="' . $debit_credit_nature . '"')->amount;
 
 
         $credit = DB::Connection('mysql2')->selectOne('select sum(amount) as amount from transactions where status=1
-			 and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(`acc_code`,"-","'.$level.'") = "'.$code.'"
-			 and debit_credit="'.$debit_credit_nature_.'"')->amount;
+			 and  v_date BETWEEN "' . $from_date . '" and "' . $to_date . '" and substring_index(`acc_code`,"-","' . $level . '") = "' . $code . '"
+			 and debit_credit="' . $debit_credit_nature_ . '"')->amount;
 
-        return	$total=$debit-$credit;
+        return $total = $debit - $credit;
     }
-    public static function get_parent_and_account_amount_copy($m,$from_date,$to_date,$code,$operation,$debit_credit_nature,$debit_credit_nature_)
+    public static function get_parent_and_account_amount_copy($m, $from_date, $to_date, $code, $operation, $debit_credit_nature, $debit_credit_nature_)
     {
 
 
-        $array = explode('-',$code);
+        $array = explode('-', $code);
         $level = count($array);
-//       echo  'select sum(amount) as amount from transactions where status=1
+        //       echo  'select sum(amount) as amount from transactions where status=1
 //    and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(acc_code,"-","'.$level.'") = "'.$code.'"
 //    and debit_credit=1';
 //        echo '</br>';
         $debit = DB::Connection('mysql2')->selectOne('select sum(amount) as amount from transactions where status in (1,1993)
-			 and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(acc_code,"-","'.$level.'") = "'.$code.'"
-			 and debit_credit="'.$debit_credit_nature.'"')->amount;
+			 and  v_date BETWEEN "' . $from_date . '" and "' . $to_date . '" and substring_index(acc_code,"-","' . $level . '") = "' . $code . '"
+			 and debit_credit="' . $debit_credit_nature . '"')->amount;
 
 
         $credit = DB::Connection('mysql2')->selectOne('select sum(amount) as amount from transactions where status in (1,1993)
-			 and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(`acc_code`,"-","'.$level.'") = "'.$code.'"
-			 and debit_credit="'.$debit_credit_nature_.'"')->amount;
+			 and  v_date BETWEEN "' . $from_date . '" and "' . $to_date . '" and substring_index(`acc_code`,"-","' . $level . '") = "' . $code . '"
+			 and debit_credit="' . $debit_credit_nature_ . '"')->amount;
 
-        return	$total=$debit-$credit;
+        return $total = $debit - $credit;
     }
 
-    public static function get_debit_credit_amount($code,$nature_of_debit_credit,$nature_of_debit_credit_other,$from,$to)
+    public static function get_debit_credit_amount($code, $nature_of_debit_credit, $nature_of_debit_credit_other, $from, $to)
     {
 
-        $debit= DB::Connection('mysql2')->selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="'.$nature_of_debit_credit.'" and acc_code= "'.$code.'"
-            and v_date between "'.$from.'" and "'.$to.'"')->amount;
+        $debit = DB::Connection('mysql2')->selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="' . $nature_of_debit_credit . '" and acc_code= "' . $code . '"
+            and v_date between "' . $from . '" and "' . $to . '"')->amount;
         if (!empty($debit)):
-            $debit=$debit;
+            $debit = $debit;
         else:
-            $debit=0;
+            $debit = 0;
         endif;
 
-        $credit= DB::Connection('mysql2')->selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="'.$nature_of_debit_credit_other.'" and acc_code = "'.$code.'"
-              and v_date between "'.$from.'" and "'.$to.'"')->amount;
+        $credit = DB::Connection('mysql2')->selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="' . $nature_of_debit_credit_other . '" and acc_code = "' . $code . '"
+              and v_date between "' . $from . '" and "' . $to . '"')->amount;
         if (!empty($credit)):
-            $credit=$credit;
+            $credit = $credit;
         else:
-            $credit=0;
+            $credit = 0;
         endif;
 
-        return $debit.','.$credit;
+        return $debit . ',' . $credit;
     }
 
 
-    public static function get_parent_and_account_amount_flow($m,$from_date,$to_date,$code,$operation,$debit_credit_nature,$debit_credit_nature_)
+    public static function get_parent_and_account_amount_flow($m, $from_date, $to_date, $code, $operation, $debit_credit_nature, $debit_credit_nature_)
     {
 
 
-        $array = explode('-',$code);
+        $array = explode('-', $code);
         $level = count($array);
-//       echo  'select sum(amount) as amount from transactions where status=1
+        //       echo  'select sum(amount) as amount from transactions where status=1
 //    and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(acc_code,"-","'.$level.'") = "'.$code.'"
 //    and debit_credit=1';
 //        echo '</br>';
         $debit = DB::Connection('mysql2')->selectOne('select sum(amount) as amount from transactions where status =1
-			 and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(acc_code,"-","'.$level.'") = "'.$code.'"
-			 and debit_credit="'.$debit_credit_nature.'" and opening_bal=0')->amount;
+			 and  v_date BETWEEN "' . $from_date . '" and "' . $to_date . '" and substring_index(acc_code,"-","' . $level . '") = "' . $code . '"
+			 and debit_credit="' . $debit_credit_nature . '" and opening_bal=0')->amount;
 
 
         $credit = DB::Connection('mysql2')->selectOne('select sum(amount) as amount from transactions where status=1
-			 and  v_date BETWEEN "'.$from_date.'" and "'.$to_date.'" and substring_index(`acc_code`,"-","'.$level.'") = "'.$code.'"
-			 and debit_credit="'.$debit_credit_nature_.'" and opening_bal=0')->amount;
+			 and  v_date BETWEEN "' . $from_date . '" and "' . $to_date . '" and substring_index(`acc_code`,"-","' . $level . '") = "' . $code . '"
+			 and debit_credit="' . $debit_credit_nature_ . '" and opening_bal=0')->amount;
 
-        return	$total=$debit-$credit;
+        return $total = $debit - $credit;
     }
 
 
-    public static function get_advance($id,$nature1,$nature2)
+    public static function get_advance($id, $nature1, $nature2)
     {
 
-        $debit= DB::Connection('mysql2')->selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="'.$nature1.'" and acc_id= "'.$id.'"')->amount;
+        $debit = DB::Connection('mysql2')->selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="' . $nature1 . '" and acc_id= "' . $id . '"')->amount;
         if (!empty($debit)):
-            $debit=$debit;
+            $debit = $debit;
         else:
-            $debit=0;
+            $debit = 0;
         endif;
 
 
 
-        $credit= DB::Connection('mysql2')->selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="'.$nature2.'" and acc_id = "'.$id.'"
+        $credit = DB::Connection('mysql2')->selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="' . $nature2 . '" and acc_id = "' . $id . '"
              ')->amount;
         if (!empty($credit)):
-            $credit=$credit;
+            $credit = $credit;
         else:
-            $credit=0;
+            $credit = 0;
         endif;
 
-        return $debit-$credit;
+        return $debit - $credit;
     }
 
 
     public static function get_transaction_enry($voucher_no)
     {
-        $transaction=new Transactions();
-        $transaction=$transaction->SetConnection('mysql2');
-        return $transaction=$transaction->where('voucher_no',$voucher_no)->where('status',1)->count();
+        $transaction = new Transactions();
+        $transaction = $transaction->SetConnection('mysql2');
+        return $transaction = $transaction->where('voucher_no', $voucher_no)->where('status', 1)->count();
     }
 
-    public static  function check_entry_in_transactions($voucher_no,$table,$date,$type,$voucher_txt)
+    public static function check_entry_in_transactions($voucher_no, $table, $date, $type, $voucher_txt)
     {
 
 
-        $check_entry=   static::get_transaction_enry($voucher_no);
+        $check_entry = static::get_transaction_enry($voucher_no);
 
 
-        if ($check_entry>0):
-            DB::Connection('mysql2')->table('transactions')->where('voucher_no',$voucher_no)->delete();
-            $detail_data=DB::Connection('mysql2')->select('select * from '.$table.' where status=1 and '.$voucher_txt.'="'.$voucher_no.'"');
+        if ($check_entry > 0):
+            DB::Connection('mysql2')->table('transactions')->where('voucher_no', $voucher_no)->delete();
+            $detail_data = DB::Connection('mysql2')->select('select * from ' . $table . ' where status=1 and ' . $voucher_txt . '="' . $voucher_no . '"');
 
-            foreach($detail_data as $row):
+            foreach ($detail_data as $row):
 
                 $trans1 = new Transactions();
                 $trans1 = $trans1->SetConnection('mysql2');
@@ -4584,52 +4622,52 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     }
 
 
-    public static function get_ledger_amount_paid_to($code,$databse,$nature_of_debit_credit,$nature_of_debit_credit_other,$from,$to,$paid_to,$type)
+    public static function get_ledger_amount_paid_to($code, $databse, $nature_of_debit_credit, $nature_of_debit_credit_other, $from, $to, $paid_to, $type)
     {
 
         static::companyDatabaseConnection($databse);
-        $debit= DB::selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="'.$nature_of_debit_credit.'" and acc_code = "'.$code.'"
-         and v_date between "'.$from.'" and "'.$to.'" and paid_to="'.$paid_to.'" and paid_to_type="'.$type.'"')->amount;
+        $debit = DB::selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="' . $nature_of_debit_credit . '" and acc_code = "' . $code . '"
+         and v_date between "' . $from . '" and "' . $to . '" and paid_to="' . $paid_to . '" and paid_to_type="' . $type . '"')->amount;
         if (!empty($debit)):
-            $debit=$debit;
+            $debit = $debit;
         else:
-            $debit=0;
+            $debit = 0;
         endif;
 
-        $credit= DB::selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="'.$nature_of_debit_credit_other.'" and acc_code = "'.$code.'"
-        and v_date between "'.$from.'" and "'.$to.'" and paid_to="'.$paid_to.'" and paid_to_type="'.$type.'"')->amount;
+        $credit = DB::selectOne('select sum(amount)amount from transactions where status=1 and debit_credit="' . $nature_of_debit_credit_other . '" and acc_code = "' . $code . '"
+        and v_date between "' . $from . '" and "' . $to . '" and paid_to="' . $paid_to . '" and paid_to_type="' . $type . '"')->amount;
         if (!empty($credit)):
-            $credit=$credit;
+            $credit = $credit;
         else:
-            $credit=0;
+            $credit = 0;
         endif;
         static::reconnectMasterDatabase();
-        return $debit-$credit;
+        return $debit - $credit;
     }
 
     public static function bill_wise_remaining_amount($supplier_id)
     {
-        $purchase_amount=DB::Connection('mysql2')->selectOne('select COALESCE(sum(b.amount),0)amount from new_purchase_voucher a
+        $purchase_amount = DB::Connection('mysql2')->selectOne('select COALESCE(sum(b.amount),0)amount from new_purchase_voucher a
         inner join new_purchase_voucher_data b
         ON
         a.id=b.master_id
-        where a.status=1 and a.pv_status=2 and a.supplier="'.$supplier_id.'"')->amount;
+        where a.status=1 and a.pv_status=2 and a.supplier="' . $supplier_id . '"')->amount;
 
 
 
-        $paid_amount=DB::Connection('mysql2')->selectOne('select COALESCE(sum(a.amount),0)amount from  new_purchase_voucher_payment a
+        $paid_amount = DB::Connection('mysql2')->selectOne('select COALESCE(sum(a.amount),0)amount from  new_purchase_voucher_payment a
         inner join new_purchase_voucher b
         ON
         a.new_purchase_voucher_id=b.id
-        where a.status=1 and b.status=1 and a.supplier_id="'.$supplier_id.'"')->amount;
+        where a.status=1 and b.status=1 and a.supplier_id="' . $supplier_id . '"')->amount;
 
-            $total=$purchase_amount-$paid_amount;
-        if ($total==0):
-            $adjust=DB::Connection('mysql2')->selectOne('select COALESCE(sum(amount),0)amount from  new_purchase_voucher_payment where status=1 and supplier_id="'.$supplier_id.'" and type in (2)')->amount;
-            $advance=DB::Connection('mysql2')->selectOne('select COALESCE(sum(amount),0)amount from  new_purchase_voucher_payment where status=1 and supplier_id="'.$supplier_id.'" and type in (3)')->amount;
-            $total=$adjust-$advance;
-            endif;
-//        $pay_and_direct=DB::Connection('mysql2')->selectOne('select COALESCE(sum(amount),0)amount from  new_purchase_voucher_payment where status=1 and supplier_id="'.$supplier_id.'" and type in (0)')->amount;
+        $total = $purchase_amount - $paid_amount;
+        if ($total == 0):
+            $adjust = DB::Connection('mysql2')->selectOne('select COALESCE(sum(amount),0)amount from  new_purchase_voucher_payment where status=1 and supplier_id="' . $supplier_id . '" and type in (2)')->amount;
+            $advance = DB::Connection('mysql2')->selectOne('select COALESCE(sum(amount),0)amount from  new_purchase_voucher_payment where status=1 and supplier_id="' . $supplier_id . '" and type in (3)')->amount;
+            $total = $adjust - $advance;
+        endif;
+        //        $pay_and_direct=DB::Connection('mysql2')->selectOne('select COALESCE(sum(amount),0)amount from  new_purchase_voucher_payment where status=1 and supplier_id="'.$supplier_id.'" and type in (0)')->amount;
 //
 //
 //        $advance=DB::Connection('mysql2')->selectOne('select COALESCE(sum(amount),0)amount from  new_purchase_voucher_payment where status=1 and supplier_id="'.$supplier_id.'" and type in (3)')->amount;
@@ -4638,13 +4676,13 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 //        $total=$adjusting-$advance;
 
 
-        return  $total;
+        return $total;
     }
 
     public static function departmentRights($company_id)
     {
         $department_array = array();
-//        if(Auth::user()->acc_type == 'user'):
+        //        if(Auth::user()->acc_type == 'user'):
 //            $departments = MenuPrivileges::select('department_permission')->where([['emp_code','=',Auth::user()->emp_code]])->get()->toArray();
 //            if(!empty($departments)):
 //                $department_array = (explode(",",$departments[0]['department_permission']));
@@ -4652,14 +4690,14 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 //        else:
 //            $department_array = Department::select('id')->where([['company_id', '=',$company_id], ['status', '=', '1']])->get()->toArray();
 //        endif;
-        $department_array = Department::select('id')->where([['company_id', '=',$company_id], ['status', '=', '1']])->get()->toArray();
+        $department_array = Department::select('id')->where([['company_id', '=', $company_id], ['status', '=', '1']])->get()->toArray();
         return $department_array;
     }
 
     public static function regionRights($company_id)
     {
         $emp_regions_array = array();
-//        if(Auth::user()->acc_type == 'user'):
+        //        if(Auth::user()->acc_type == 'user'):
 //            $emp_regions = MenuPrivileges::select('regions_permission')->where([['emp_code','=',Auth::user()->emp_code]])->get()->toArray();
 //            if(!empty($emp_regions)):
 //                $emp_regions_array = (explode(",",$emp_regions[0]['regions_permission']));
@@ -4667,45 +4705,45 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 //        else:
 //            $emp_regions_array = Regions::select('id')->where([['company_id', '=',$company_id], ['status', '=', '1']])->get()->toArray();
 //        endif;
-        $emp_regions_array = Regions::select('id')->where([['company_id', '=',$company_id], ['status', '=', '1']])->get()->toArray();
+        $emp_regions_array = Regions::select('id')->where([['company_id', '=', $company_id], ['status', '=', '1']])->get()->toArray();
         return $emp_regions_array;
     }
 
     public static function operations_rights()
     {
-        if(Auth::user()->acc_type == 'user'):
+        if (Auth::user()->acc_type == 'user'):
             static::reconnectMasterDatabase();
 
-            $user_rights = MenuPrivileges::where([['emp_code','=',Auth::user()->emp_code]]);
-            $crud_permission[]='';
-            if($user_rights->count() > 0):
-                $crud_rights  = explode(",",$user_rights->value('crud_rights'));
+            $user_rights = MenuPrivileges::where([['emp_code', '=', Auth::user()->emp_code]]);
+            $crud_permission[] = '';
+            if ($user_rights->count() > 0):
+                $crud_rights = explode(",", $user_rights->value('crud_rights'));
 
                 $link = $link = request()->segment(1);
-                $getTitle = $user_rights = Menu::where([['m_controller_name','=',$link]])->value('m_main_title');
+                $getTitle = $user_rights = Menu::where([['m_controller_name', '=', $link]])->value('m_main_title');
 
-                if(in_array('view_'.$getTitle,$crud_rights)):
+                if (in_array('view_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "view";
                 endif;
-                if(in_array('edit_'.$getTitle,$crud_rights)):
+                if (in_array('edit_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "edit";
                 endif;
-                if(in_array('repost_'.$getTitle,$crud_rights)):
+                if (in_array('repost_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "repost";
                 endif;
-                if(in_array('delete_'.$getTitle,$crud_rights)):
+                if (in_array('delete_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "delete";
                 endif;
-                if(in_array('print_'.$getTitle,$crud_rights)):
+                if (in_array('print_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "print";
                 endif;
-                if(in_array('export_'.$getTitle,$crud_rights)):
+                if (in_array('export_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "export";
                 endif;
-                if(in_array('approve_'.$getTitle,$crud_rights)):
+                if (in_array('approve_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "approve";
                 endif;
-                if(in_array('reject_'.$getTitle,$crud_rights)):
+                if (in_array('reject_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "reject";
                 endif;
 
@@ -4728,36 +4766,36 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     public static function operations_rights_ajax_pages($url)
     {
-        if(Auth::user()->acc_type == 'user'):
+        if (Auth::user()->acc_type == 'user'):
 
-            $user_rights = MenuPrivileges::where([['emp_code','=',Auth::user()->emp_code]]);
-            $crud_permission[]='';
-            if($user_rights->count() > 0):
-                $crud_rights  = explode(",",$user_rights->value('crud_rights'));
-                $getTitle = $user_rights = Menu::where([['m_controller_name','=',$url]])->value('m_main_title');
+            $user_rights = MenuPrivileges::where([['emp_code', '=', Auth::user()->emp_code]]);
+            $crud_permission[] = '';
+            if ($user_rights->count() > 0):
+                $crud_rights = explode(",", $user_rights->value('crud_rights'));
+                $getTitle = $user_rights = Menu::where([['m_controller_name', '=', $url]])->value('m_main_title');
 
-                if(in_array('view_'.$getTitle,$crud_rights)):
+                if (in_array('view_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "view";
                 endif;
-                if(in_array('edit_'.$getTitle,$crud_rights)):
+                if (in_array('edit_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "edit";
                 endif;
-                if(in_array('repost_'.$getTitle,$crud_rights)):
+                if (in_array('repost_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "repost";
                 endif;
-                if(in_array('delete_'.$getTitle,$crud_rights)):
+                if (in_array('delete_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "delete";
                 endif;
-                if(in_array('print_'.$getTitle,$crud_rights)):
+                if (in_array('print_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "print";
                 endif;
-                if(in_array('export_'.$getTitle,$crud_rights)):
+                if (in_array('export_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "export";
                 endif;
-                if(in_array('approve_'.$getTitle,$crud_rights)):
+                if (in_array('approve_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "approve";
                 endif;
-                if(in_array('reject_'.$getTitle,$crud_rights)):
+                if (in_array('reject_' . $getTitle, $crud_rights)):
                     $crud_permission[] = "reject";
                 endif;
 
@@ -4779,80 +4817,80 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     }
     public static function get_advancee_from_outstanding($supplier_id)
     {
-        return   $data=DB::Connection('mysql2')->select('select * from  new_purchase_voucher_payment where status=1 and supplier_id="'.$supplier_id.'" group by new_pv_no');
+        return $data = DB::Connection('mysql2')->select('select * from  new_purchase_voucher_payment where status=1 and supplier_id="' . $supplier_id . '" group by new_pv_no');
 
     }
 
-    public static function get_debit_credit_from_outstanding($supplier_id,$pv_no)
+    public static function get_debit_credit_from_outstanding($supplier_id, $pv_no)
     {
 
 
         // get credit amount  amount
-        $purchase_amount=  DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status',1)->where('supplier_id',$supplier_id)->
-        where('Payment_nature',0)->where('new_pv_no',$pv_no)->sum('amount');
+        $purchase_amount = DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status', 1)->where('supplier_id', $supplier_id)->
+            where('Payment_nature', 0)->where('new_pv_no', $pv_no)->sum('amount');
 
         // get debit_amount
-        $recive_amount=  DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status',1)->where('supplier_id',$supplier_id)->where('Payment_nature',1)
-            ->where('new_pv_no',$pv_no)->sum('amount');
+        $recive_amount = DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status', 1)->where('supplier_id', $supplier_id)->where('Payment_nature', 1)
+            ->where('new_pv_no', $pv_no)->sum('amount');
 
-        return $purchase_amount-$recive_amount;
+        return $purchase_amount - $recive_amount;
 
     }
-    public static function   check_entry_in_outstanding($pv_no)
+    public static function check_entry_in_outstanding($pv_no)
     {
-        return  DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status',1)->where('new_pv_no',$pv_no)->count();
+        return DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status', 1)->where('new_pv_no', $pv_no)->count();
     }
-    public static function update_outstanding($pv_no,$type)
+    public static function update_outstanding($pv_no, $type)
     {
-        $count=static::check_entry_in_outstanding($pv_no);
-        if ($count>0):
+        $count = static::check_entry_in_outstanding($pv_no);
+        if ($count > 0):
 
-            $data= DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status',1)->where('new_pv_no',$pv_no)->where('type',3)->delete();
+            $data = DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status', 1)->where('new_pv_no', $pv_no)->where('type', 3)->delete();
 
 
-            if ($type==1):
+            if ($type == 1):
                 $data_purchase_voucher = DB::Connection('mysql2')->table('new_jv_data as a')
                     ->join('new_jvs as b', 'a.jv_no', '=', 'b.jv_no')
                     ->join('accounts as c', 'c.id', '=', 'a.acc_id')
                     ->join('supplier as d', 'd.acc_id', '=', 'c.id')
-                    ->select('a.*','d.id as supp_id')
+                    ->select('a.*', 'd.id as supp_id')
                     ->where('a.jv_no', $pv_no)
                     ->get();
-                $table=1;
-            elseif($type==2):
+                $table = 1;
+            elseif ($type == 2):
                 $data_purchase_voucher = DB::Connection('mysql2')->table('new_pv_data as a')
                     ->join('new_pv as b', 'a.pv_no', '=', 'b.pv_no')
                     ->join('accounts as c', 'c.id', '=', 'a.acc_id')
                     ->join('supplier as d', 'd.acc_id', '=', 'c.id')
-                    ->select('a.*','d.id as supp_id')
+                    ->select('a.*', 'd.id as supp_id')
                     ->where('a.pv_no', $pv_no)
                     ->where('b.type', 1)
                     ->get();
-                $table=2;
+                $table = 2;
 
             endif;
-            foreach($data_purchase_voucher as $row1):
+            foreach ($data_purchase_voucher as $row1):
 
 
-                $amount=  DB::Connection('mysql2')->selectOne('select sum(amount)amount from new_purchase_voucher_payment where status=1 and new_pv_no="'.$pv_no.'" and type=2')->amount;
+                $amount = DB::Connection('mysql2')->selectOne('select sum(amount)amount from new_purchase_voucher_payment where status=1 and new_pv_no="' . $pv_no . '" and type=2')->amount;
                 $row1->amount;
-                if ($amount>$row1->amount):
+                if ($amount > $row1->amount):
 
-                    $updated['status']=0;
-                    DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status',1)->where('new_pv_no',$pv_no)->where('type',2)->update($updated);
+                    $updated['status'] = 0;
+                    DB::Connection('mysql2')->table('new_purchase_voucher_payment')->where('status', 1)->where('new_pv_no', $pv_no)->where('type', 2)->update($updated);
 
                 endif;
 
-                $breakup=new NewPurchaseVoucherPayment();
-                $breakup=$breakup->SetConnection('mysql2');
-                $breakup->table=2;
-                $breakup->new_pv_no=$pv_no;
-                $breakup->supplier_id=$row1->supp_id;
-                $breakup->amount=$row1->amount;
-                $breakup->Payment_nature =$row1->debit_credit;
-                $breakup->status=1;
-                $breakup->type=$table;
-                $breakup->username=Auth::user()->username;
+                $breakup = new NewPurchaseVoucherPayment();
+                $breakup = $breakup->SetConnection('mysql2');
+                $breakup->table = 2;
+                $breakup->new_pv_no = $pv_no;
+                $breakup->supplier_id = $row1->supp_id;
+                $breakup->amount = $row1->amount;
+                $breakup->Payment_nature = $row1->debit_credit;
+                $breakup->status = 1;
+                $breakup->type = $table;
+                $breakup->username = Auth::user()->username;
                 $breakup->save();
 
             endforeach;
@@ -4861,19 +4899,19 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     }
 
-    public static function get_paid_to_type($paid_to,$paiid_to_type)
+    public static function get_paid_to_type($paid_to, $paiid_to_type)
     {
-        $data='';
-        if ($paiid_to_type==1):
-            $data=  DB::Connection('mysql2')->table('employee')->where('id',$paid_to)->select('emp_name')->first()->emp_name;
-        elseif($paiid_to_type==3):
-            $data=   DB::Connection('mysql2')->table('client')->where('id',$paid_to)->select('client_name')->first()->client_name;
+        $data = '';
+        if ($paiid_to_type == 1):
+            $data = DB::Connection('mysql2')->table('employee')->where('id', $paid_to)->select('emp_name')->first()->emp_name;
+        elseif ($paiid_to_type == 3):
+            $data = DB::Connection('mysql2')->table('client')->where('id', $paid_to)->select('client_name')->first()->client_name;
 
-        elseif($paiid_to_type==5):
-            $data=   DB::Connection('mysql2')->table('branch')->where('id',$paid_to)->select('branch_name')->first();
+        elseif ($paiid_to_type == 5):
+            $data = DB::Connection('mysql2')->table('branch')->where('id', $paid_to)->select('branch_name')->first();
 
-        if (isset($data->branch_name)):
-            $data=$data->branch_name;
+            if (isset($data->branch_name)):
+                $data = $data->branch_name;
             endif;
         endif;
 
@@ -4882,29 +4920,29 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     public static function AllEmployee()
     {
-        return $data =  DB::Connection('mysql2')->table('employee')->where('status',1)->select('id','emp_name')->get();
+        return $data = DB::Connection('mysql2')->table('employee')->where('status', 1)->select('id', 'emp_name')->get();
     }
 
 
-    public static function get_paid_to_type_for_edit($paid_to,$paiid_to_type)
+    public static function get_paid_to_type_for_edit($paid_to, $paiid_to_type)
     {
 
-        if ($paiid_to_type==1):
-            $data=  DB::Connection('mysql2')->table('employee')->where('id',$paid_to)->select('id','emp_name')->first();
+        if ($paiid_to_type == 1):
+            $data = DB::Connection('mysql2')->table('employee')->where('id', $paid_to)->select('id', 'emp_name')->first();
 
-        elseif($paiid_to_type==2):
-            $data=   DB::Connection('mysql2')->table('supplier')->where('id',$paid_to)->select('id','name')->first();
-
-
-        elseif($paiid_to_type==3):
-            $data=   DB::Connection('mysql2')->table('client')->where('id',$paid_to)->select('id','client_name')->first();
+        elseif ($paiid_to_type == 2):
+            $data = DB::Connection('mysql2')->table('supplier')->where('id', $paid_to)->select('id', 'name')->first();
 
 
-        elseif($paiid_to_type==4):
-            $data=   DB::Connection('mysql2')->table('paid_to')->where('id',$paid_to)->select('id','name')->first();
+        elseif ($paiid_to_type == 3):
+            $data = DB::Connection('mysql2')->table('client')->where('id', $paid_to)->select('id', 'client_name')->first();
 
-        elseif($paiid_to_type==5):
-            $data=   DB::Connection('mysql2')->table('branch')->where('id',$paid_to)->select('id','branch_name')->first();
+
+        elseif ($paiid_to_type == 4):
+            $data = DB::Connection('mysql2')->table('paid_to')->where('id', $paid_to)->select('id', 'name')->first();
+
+        elseif ($paiid_to_type == 5):
+            $data = DB::Connection('mysql2')->table('branch')->where('id', $paid_to)->select('id', 'branch_name')->first();
 
 
         endif;
@@ -4916,7 +4954,7 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     {
         $account = new Account();
         $account = $account->SetConnection('mysql2');
-        return $account = $account->where('status', 1)->select('id','name','code')->where('code','like', '1-2-6-3%')
+        return $account = $account->where('status', 1)->select('id', 'name', 'code')->where('code', 'like', '1-2-6-3%')
             ->orderBy('level1', 'ASC')
             ->orderBy('level2', 'ASC')
             ->orderBy('level3', 'ASC')
@@ -4926,23 +4964,26 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
             ->orderBy('level7', 'ASC')
             ->get();
     }
-    public static function get_bank_account_by_id($id) {
+    public static function get_bank_account_by_id($id)
+    {
         $bank = DB::connection("mysql2")->table("bank_detail")->where("id", $id)->first();
         return $bank;
     }
-    public static function get_bank_accounts() {
-        
+    public static function get_bank_accounts()
+    {
+
         $account = new Account();
         $account = $account->SetConnection('mysql2');
-        
-        $account = $account = $account
-                ->whereRaw('LOWER(name) LIKE ?', ['%bank%'])
-                ->get();
 
-    return $account;
-   
+        $account = $account = $account
+            ->whereRaw('LOWER(name) LIKE ?', ['%bank%'])
+            ->get();
+
+        return $account;
+
     }
-    public static function get_cash_accounts() {
+    public static function get_cash_accounts()
+    {
         $cash_accounts = DB::connection('mysql2')
             ->table('accounts')
             ->whereRaw('LOWER(name) LIKE ?', ['%cash in hand%'])
@@ -4951,26 +4992,26 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     }
     public static function get_all_category()
     {
-        $categories_id = explode(',',Auth::user()->categories_id);
+        $categories_id = explode(',', Auth::user()->categories_id);
 
-        $category=new Category();
-        $category=$category->SetConnection('mysql2');
+        $category = new Category();
+        $category = $category->SetConnection('mysql2');
         // return  $category=$category->where('status',1)->whereIn('id',$categories_id)->get();
-        return  $category=$category->where('status',1)->get();
+        return $category = $category->where('status', 1)->get();
     }
 
-    public static function generic($table,$filter_colum,$select_colum)
+    public static function generic($table, $filter_colum, $select_colum)
     {
-      
-      return   DB::Connection('mysql2')->table($table)->where($filter_colum)->select($select_colum);
+
+        return DB::Connection('mysql2')->table($table)->where($filter_colum)->select($select_colum);
     }
 
 
-    public static function batch_code_edit($warehouse,$item)
+    public static function batch_code_edit($warehouse, $item)
     {
-        return $in= DB::Connection('mysql2')->table('stock')->where('status',1)
-            ->where('sub_item_id',$item)
-            ->where('warehouse_id',$warehouse)
+        return $in = DB::Connection('mysql2')->table('stock')->where('status', 1)
+            ->where('sub_item_id', $item)
+            ->where('warehouse_id', $warehouse)
             ->select('batch_code')
             ->groupBy('batch_code')
             ->get();
@@ -5009,10 +5050,11 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     //         return $qty;
     //     endif;
     // }
-        public static function get_vouchers($voucher_id) {
-            $vouchers = DB::connection("mysql2")->table("voucher_type")->where("id", $voucher_id)->get();
-            return $vouchers;
-        }
+    public static function get_vouchers($voucher_id)
+    {
+        $vouchers = DB::connection("mysql2")->table("voucher_type")->where("id", $voucher_id)->get();
+        return $vouchers;
+    }
 
     public static function in_stock_edit($item, $warehouse, $batch_code)
     {
@@ -5061,75 +5103,75 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
 
     public static function stock_in_hand($item)
     {
-        $in= DB::Connection('mysql2')->table('stock')->where('status',1)
-            ->where('voucher_type',1)
-            ->where('sub_item_id',$item)
-            ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+        $in = DB::Connection('mysql2')->table('stock')->where('status', 1)
+            ->where('voucher_type', 1)
+            ->where('sub_item_id', $item)
+            ->select(DB::raw('SUM(qty) As qty'), DB::raw('SUM(amount) As amount'))
             ->first();
 
 
 
-        $oout=  DB::Connection('mysql2')->table('stock')->where('status',1)
-            ->whereIn('voucher_type',[2,3,5])
-            ->where('sub_item_id',$item)
-            ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+        $oout = DB::Connection('mysql2')->table('stock')->where('status', 1)
+            ->whereIn('voucher_type', [2, 3, 5])
+            ->where('sub_item_id', $item)
+            ->select(DB::raw('SUM(qty) As qty'), DB::raw('SUM(amount) As amount'))
             ->first();
 
-        $qty=$in->qty-$oout->qty;
-        $amount=$in->amount;
-        $rate=0;
-        if ($qty>0):
+        $qty = $in->qty - $oout->qty;
+        $amount = $in->amount;
+        $rate = 0;
+        if ($qty > 0):
 
-            $rate=number_format($amount / $in->qty,2, '.', '');
+            $rate = number_format($amount / $in->qty, 2, '.', '');
             return $qty;
         else:
-            $qty=0;
-            $amount=0;
+            $qty = 0;
+            $amount = 0;
             return $qty;
         endif;
     }
 
     public static function subitem_stock($item)
     {
-        $in= DB::Connection('mysql2')->table('stock')->where('status',1)
-            ->whereIn('voucher_type',[1,4,6,10,11])
-            ->where('sub_item_id',$item)
-            ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+        $in = DB::Connection('mysql2')->table('stock')->where('status', 1)
+            ->whereIn('voucher_type', [1, 4, 6, 10, 11])
+            ->where('sub_item_id', $item)
+            ->select(DB::raw('SUM(qty) As qty'), DB::raw('SUM(amount) As amount'))
             ->first();
 
 
 
-        $oout=  DB::Connection('mysql2')->table('stock')->where('status',1)
-            ->whereIn('voucher_type',[2,5,3,9])
-            ->where('sub_item_id',$item)
-            ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+        $oout = DB::Connection('mysql2')->table('stock')->where('status', 1)
+            ->whereIn('voucher_type', [2, 5, 3, 9])
+            ->where('sub_item_id', $item)
+            ->select(DB::raw('SUM(qty) As qty'), DB::raw('SUM(amount) As amount'))
             ->first();
 
-        $qty=$in->qty-$oout->qty;
-        $amount=$in->amount;
-        $rate=0;
-        if ($qty>0):
+        $qty = $in->qty - $oout->qty;
+        $amount = $in->amount;
+        $rate = 0;
+        if ($qty > 0):
 
-            $rate=number_format($amount / $in->qty,2, '.', '');
+            $rate = number_format($amount / $in->qty, 2, '.', '');
             return $qty;
         else:
-            $qty=0;
-            $amount=0;
+            $qty = 0;
+            $amount = 0;
             return $qty;
         endif;
-        
+
     }
 
     public static function get_sod_qty($id)
     {
-        $Sod = DB::Connection('mysql2')->table('sales_order_data')->where('status',1)->where('id',$id)->first();
+        $Sod = DB::Connection('mysql2')->table('sales_order_data')->where('status', 1)->where('id', $id)->first();
         return $Sod->qty;
 
     }
 
     public static function get_item_detials($id)
     {
-        $get_item_detials = DB::Connection('mysql2')->table('sales_order_data')->where('status',1)->where('id',$id)->first();
+        $get_item_detials = DB::Connection('mysql2')->table('sales_order_data')->where('status', 1)->where('id', $id)->first();
         return $get_item_detials;
 
     }
@@ -5137,175 +5179,169 @@ public static function getCustomerAssignedWarehouse($cusId, $itemid)
     public function get_stock_location_wise(Request $request)
     {
 
-        $warehouse= $request->warehouse;
-        $item= $request->item;
-        $bacth_code=$request->batch_code;
+        $warehouse = $request->warehouse;
+        $item = $request->item;
+        $bacth_code = $request->batch_code;
 
 
-        if ($bacth_code==''):
+        if ($bacth_code == ''):
 
 
-            $in= DB::Connection('mysql2')->table('stock')->where('status',1)
-                ->where('sub_item_id',$item)
-                ->where('warehouse_id',$warehouse)
+            $in = DB::Connection('mysql2')->table('stock')->where('status', 1)
+                ->where('sub_item_id', $item)
+                ->where('warehouse_id', $warehouse)
                 ->select('batch_code')
                 ->groupBy('batch_code')
-                ->get();?>
+                ->get(); ?>
 
 
 
             <option value="">Select</option>
             <?php foreach ($in as $row): ?>
-            <option value="<?php echo $row->batch_code  ?>"><?php echo $row->batch_code ?></option><?php
-        endforeach; ?>
-            <?php
+                <option value="<?php echo $row->batch_code ?>"><?php echo $row->batch_code ?></option><?php
+            endforeach; ?>
+        <?php
 
         else:
-            $in= DB::Connection('mysql2')->table('stock')->where('status',1)
-                ->where('voucher_type',1)
-                ->where('sub_item_id',$item)
-                ->where('warehouse_id',$warehouse)
-                ->where('batch_code',$bacth_code)
-                ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+            $in = DB::Connection('mysql2')->table('stock')->where('status', 1)
+                ->where('voucher_type', 1)
+                ->where('sub_item_id', $item)
+                ->where('warehouse_id', $warehouse)
+                ->where('batch_code', $bacth_code)
+                ->select(DB::raw('SUM(qty) As qty'), DB::raw('SUM(amount) As amount'))
                 ->first();
 
 
 
-            $oout=  DB::Connection('mysql2')->table('stock')->where('status',1)
-                ->whereIn('voucher_type',[2,3,5])
-                ->where('sub_item_id',$item)
-                ->where('warehouse_id',$warehouse)
-                ->where('batch_code',$bacth_code)
-                ->select(DB::raw('SUM(qty) As qty'),DB::raw('SUM(amount) As amount'))
+            $oout = DB::Connection('mysql2')->table('stock')->where('status', 1)
+                ->whereIn('voucher_type', [2, 3, 5])
+                ->where('sub_item_id', $item)
+                ->where('warehouse_id', $warehouse)
+                ->where('batch_code', $bacth_code)
+                ->select(DB::raw('SUM(qty) As qty'), DB::raw('SUM(amount) As amount'))
                 ->first();
 
-            $qty=$in->qty-$oout->qty;
-            $amount=$in->amount;
-            $rate=0;
-            if ($qty>0):
+            $qty = $in->qty - $oout->qty;
+            $amount = $in->amount;
+            $rate = 0;
+            if ($qty > 0):
 
-                $rate=number_format($amount / $in->qty,2, '.', '');
-                echo $qty.'/'.$rate;
+                $rate = number_format($amount / $in->qty, 2, '.', '');
+                echo $qty . '/' . $rate;
             else:
-                $qty=0;
-                $amount=0;
-                echo $qty.'/'.$rate;
+                $qty = 0;
+                $amount = 0;
+                echo $qty . '/' . $rate;
             endif;
         endif;
 
     }
 
-    public static function get_voucher_type($type,$opening)
+    public static function get_voucher_type($type, $opening)
     {
-        $purchase_type='';
-        if ($type==1 && $opening==0):
-            $purchase_type='GRN';
+        $purchase_type = '';
+        if ($type == 1 && $opening == 0):
+            $purchase_type = 'GRN';
 
-        elseif($type==1 && $opening==1):
-            $purchase_type='Opening';
-            elseif($type==2):
-                $purchase_type='GRN Return';
-        elseif($type==5):
-            $purchase_type='DN';
+        elseif ($type == 1 && $opening == 1):
+            $purchase_type = 'Opening';
+        elseif ($type == 2):
+            $purchase_type = 'GRN Return';
+        elseif ($type == 5):
+            $purchase_type = 'DN';
 
 
-    elseif($type==6):
-            $purchase_type='Sales Return';
-            endif;
+        elseif ($type == 6):
+            $purchase_type = 'Sales Return';
+        endif;
         return $purchase_type;
     }
 
 
-    public static  function  get_po($po_no)
+    public static function get_po($po_no)
     {
-            return DB::Connection('mysql2')->table('purchase_request')->where('status',1)->where('purchase_request_no',$po_no)->first();
+        return DB::Connection('mysql2')->table('purchase_request')->where('status', 1)->where('purchase_request_no', $po_no)->first();
     }
 
-public static function get_customer_advance($customerId)
-{
+    public static function get_customer_advance($customerId)
+    {
 
-    if (empty($customerId)) {
-        return collect();
-    }
+        if (empty($customerId)) {
+            return collect();
+        }
 
-    $m = (new AdvancePayment())->setConnection('mysql2');
+        $m = (new AdvancePayment())->setConnection('mysql2');
 
-    // Get all parents for supplier
-    $parents = $m->where('customer_id', $customerId)
-        ->whereNull('parent_id') // only parent records
-        ->where('amount_issued_status', 0)
-        ->get();
+        // Get all parents for supplier
+        $parents = $m->where('customer_id', $customerId)
+            ->whereNull('parent_id') // only parent records
+            ->where('amount_issued_status', 0)
+            ->get();
 
-    // Attach remaining balance for each parent
-    foreach ($parents as $parent) {
-        $parent->balance = $m->where(function ($q) use ($parent) {
+        // Attach remaining balance for each parent
+        foreach ($parents as $parent) {
+            $parent->balance = $m->where(function ($q) use ($parent) {
                 $q->where('id', $parent->id)
-                  ->orWhere('parent_id', $parent->id);
+                    ->orWhere('parent_id', $parent->id);
             })->sum('amount');
+        }
+
+        return $parents;
+
+
+
+    }
+    public static function get_customer_name($id)
+    {
+        $customer = new Customer();
+        $customer = $customer->SetConnection('mysql2');
+        $customer = $customer->where('status', 1)->where('id', $id)->first();
+        if (!empty($customer)) {
+            $delete = '';
+            if ($customer->status != 1):
+                $delete = '(Delete)';
+            endif;
+            return strtoupper($customer->name) . ' ' . $delete;
+        } else {
+
+            return '';
+        }
+
     }
 
-    return $parents;
-
-
- 
-}
-public static function get_customer_name($id)
-{
-    $customer = new Customer();
-    $customer = $customer->SetConnection('mysql2');
-    $customer = $customer->where('status', 1)->where('id',$id)->first();
-    if(!empty($customer))
-        {
-            $delete='';
-            if ($customer->status!=1):
-                $delete='(Delete)';
+    public static function get_customer_address($id)
+    {
+        $customer = new Customer();
+        $customer = $customer->SetConnection('mysql2');
+        $customer = $customer->where('status', 1)->where('id', $id)->first();
+        if (!empty($customer)) {
+            $delete = '';
+            if ($customer->status != 1):
+                $delete = '(Delete)';
             endif;
-            return strtoupper($customer->name).' '.$delete;
-        }
-        else
-        {
+            return strtoupper($customer->address) . ' ' . $delete;
+        } else {
 
             return '';
         }
 
-}
-
-public static function get_customer_address($id)
-{
-    $customer = new Customer();
-    $customer = $customer->SetConnection('mysql2');
-    $customer = $customer->where('status', 1)->where('id',$id)->first();
-    if(!empty($customer))
-        {
-            $delete='';
-            if ($customer->status!=1):
-                $delete='(Delete)';
-            endif;
-            return strtoupper($customer->address).' '.$delete;
-        }
-        else
-        {
-
-            return '';
-        }
-
-}
+    }
 
 
-public static function get_customer_acc_id($id)
-{
-    $customer = new Customer();
-    $customer = $customer->SetConnection('mysql2');
-    $customer = $customer->where('status', 1)->where('id',$id)->first();
+    public static function get_customer_acc_id($id)
+    {
+        $customer = new Customer();
+        $customer = $customer->SetConnection('mysql2');
+        $customer = $customer->where('status', 1)->where('id', $id)->first();
 
-    return $customer->acc_id;
-}
+        return $customer->acc_id;
+    }
 
     public static function get_all_account_operat()
     {
         $account = new Account();
         $account = $account->SetConnection('mysql2');
-        return $account = $account->where('status', 1)->select('id','name','code')->where('operational',1)
+        return $account = $account->where('status', 1)->select('id', 'name', 'code')->where('operational', 1)
             ->orderBy('level1', 'ASC')
             ->orderBy('level2', 'ASC')
             ->orderBy('level3', 'ASC')
@@ -5320,19 +5356,19 @@ public static function get_customer_acc_id($id)
     public static function get_specific_account_operat($name)
     {
         $account = new Account();
-    $account = $account->SetConnection('mysql2');
-    return $account = $account->where('status', 1)
-    ->select('id', 'name', 'code')
-    ->where('operational', 1)
-    ->whereRaw('name COLLATE utf8_general_ci = ?', [$name])
-    ->orderBy('level1', 'ASC')
-    ->orderBy('level2', 'ASC')
-    ->orderBy('level3', 'ASC')
-    ->orderBy('level4', 'ASC')
-    ->orderBy('level5', 'ASC')
-    ->orderBy('level6', 'ASC')
-    ->orderBy('level7', 'ASC')
-    ->first();
+        $account = $account->SetConnection('mysql2');
+        return $account = $account->where('status', 1)
+            ->select('id', 'name', 'code')
+            ->where('operational', 1)
+            ->whereRaw('name COLLATE utf8_general_ci = ?', [$name])
+            ->orderBy('level1', 'ASC')
+            ->orderBy('level2', 'ASC')
+            ->orderBy('level3', 'ASC')
+            ->orderBy('level4', 'ASC')
+            ->orderBy('level5', 'ASC')
+            ->orderBy('level6', 'ASC')
+            ->orderBy('level7', 'ASC')
+            ->first();
 
     }
 
@@ -5340,28 +5376,31 @@ public static function get_customer_acc_id($id)
     {
 
 
-      return   $account =DB::Connection('mysql2')->table('accounts as a')
-         ->select('a.id','a.name','a.code',
-         DB::raw('(SELECT SUM(CASE
+        return $account = DB::Connection('mysql2')->table('accounts as a')
+            ->select(
+                'a.id',
+                'a.name',
+                'a.code',
+                DB::raw('(SELECT SUM(CASE
                          WHEN b.debit_credit = 1 THEN b.amount
                          WHEN b.debit_credit = 0 THEN -b.amount
                          ELSE 0
                      END) FROM transactions as b
                      WHERE b.acc_id = a.id
                      and b.status=1) AS balance')
-     )
-         ->where('a.parent_code', $code)
-         ->where('a.status', 1)
-         ->where('operational',1)
-             ->orderBy('a.level1', 'ASC')
-             ->orderBy('a.level2', 'ASC')
-             ->orderBy('a.level3', 'ASC')
-             ->orderBy('a.level4', 'ASC')
-             ->orderBy('a.level5', 'ASC')
-             ->orderBy('a.level6', 'ASC')
-             ->orderBy('a.level7', 'ASC')
-             ->groupBy('a.id')
-             ->get();
+            )
+            ->where('a.parent_code', $code)
+            ->where('a.status', 1)
+            ->where('operational', 1)
+            ->orderBy('a.level1', 'ASC')
+            ->orderBy('a.level2', 'ASC')
+            ->orderBy('a.level3', 'ASC')
+            ->orderBy('a.level4', 'ASC')
+            ->orderBy('a.level5', 'ASC')
+            ->orderBy('a.level6', 'ASC')
+            ->orderBy('a.level7', 'ASC')
+            ->groupBy('a.id')
+            ->get();
 
 
 
@@ -5373,60 +5412,60 @@ public static function get_customer_acc_id($id)
         $account = new Account();
         $account = $account->SetConnection('mysql2');
         return $account = $account->where('status', 1)
-        ->select('id','name','code')
-        ->where('id',$code )
-        ->where('operational',1)
+            ->select('id', 'name', 'code')
+            ->where('id', $code)
+            ->where('operational', 1)
             ->value('name');
     }
 
-    public static	function  inventory_activity($voucher_no,$voucher_date,$amount,$table,$action)
+    public static function inventory_activity($voucher_no, $voucher_date, $amount, $table, $action)
     {
 
         date_default_timezone_set("Asia/Karachi");
-        $data=array
+        $data = array
         (
-            'voucher_no'=>$voucher_no,
-            'voucher_date'=>$voucher_date,
-            'amount'=>$amount,
-            'table_name'=>$table,
-            'action'=>$action,
-            'action_date'=>date('Y-m-d'),
-            'username'=>Auth::user()->name,
-            'action_time'=>date('h:i:sa'),
+            'voucher_no' => $voucher_no,
+            'voucher_date' => $voucher_date,
+            'amount' => $amount,
+            'table_name' => $table,
+            'action' => $action,
+            'action_date' => date('Y-m-d'),
+            'username' => Auth::user()->name,
+            'action_time' => date('h:i:sa'),
         );
 
         DB::Connection('mysql2')->table('inventory_activity')->insert($data);
     }
 
-    public static function all_vouchers_amount_app_unapp($AccId,$AppUnApp,$Main,$Detail,$Status,$nature)
+    public static function all_vouchers_amount_app_unapp($AccId, $AppUnApp, $Main, $Detail, $Status, $nature)
     {
 
 
-        $Amount = DB::Connection('mysql2')->selectOne('select SUM(b.amount) amount from '.$Main.' a
-        INNER JOIN '.$Detail.' b ON b.master_id = a.id
-        WHERE a.'.$Status.' = '.$AppUnApp.'
-        AND b.acc_id = '.$AccId.'
+        $Amount = DB::Connection('mysql2')->selectOne('select SUM(b.amount) amount from ' . $Main . ' a
+        INNER JOIN ' . $Detail . ' b ON b.master_id = a.id
+        WHERE a.' . $Status . ' = ' . $AppUnApp . '
+        AND b.acc_id = ' . $AccId . '
         AND a.status = 1
-        AND b.debit_credit = '.$nature.'
+        AND b.debit_credit = ' . $nature . '
         ');
 
         return $Amount;
 
     }
 
-    public static function bearkup_receievd($SalesTaxInvoiceId,$from,$to)
+    public static function bearkup_receievd($SalesTaxInvoiceId, $from, $to)
     {
 
-         $data = DB::Connection('mysql2')->selectOne('
+        $data = DB::Connection('mysql2')->selectOne('
         select sum(total_amount) as total_amount from (
             select sum(a.received_amount) as total_amount
             from brige_table_sales_receipt a
             inner join new_rvs b on a.rv_id = b.id
-            where a.si_id = "'.$SalesTaxInvoiceId.'"
+            where a.si_id = "' . $SalesTaxInvoiceId . '"
             and a.status = 1
             and b.status = 1
             and b.rv_status = 2
-            and b.rv_date between "'.$from.'" and "'.$to.'"
+            and b.rv_date between "' . $from . '" and "' . $to . '"
             group by a.si_id
 
             union all
@@ -5434,31 +5473,31 @@ public static function get_customer_acc_id($id)
             select sum(a.received_amount) as total_amount
             from brige_table_sales_receipt a
             inner join credits_data c on a.rv_no = c.rv_no
-            where a.si_id = "'.$SalesTaxInvoiceId.'"
+            where a.si_id = "' . $SalesTaxInvoiceId . '"
             and a.status = 1
             and c.status = 1
             and c.rv_status = 2
-            and c.rv_date between "'.$from.'" and "'.$to.'"
+            and c.rv_date between "' . $from . '" and "' . $to . '"
             group by a.si_id
         ) as combined
     ');
 
-    if (!empty($data->total_amount)):
-        return $data->total_amount;
-    else:
-        return 0;
-    endif;
+        if (!empty($data->total_amount)):
+            return $data->total_amount;
+        else:
+            return 0;
+        endif;
 
     }
 
-     public static function bearkup_receievd_all($SalesTaxInvoiceId)
+    public static function bearkup_receievd_all($SalesTaxInvoiceId)
     {
-         $data = DB::Connection('mysql2')->selectOne('
+        $data = DB::Connection('mysql2')->selectOne('
         select sum(total_amount) as total_amount from (
             select sum(a.received_amount) as total_amount
             from brige_table_sales_receipt a
             inner join new_rvs b on a.rv_id = b.id
-            where a.si_id = "'.$SalesTaxInvoiceId.'"
+            where a.si_id = "' . $SalesTaxInvoiceId . '"
             and a.status = 1
             and b.status = 1
             and b.rv_status = 2
@@ -5469,37 +5508,37 @@ public static function get_customer_acc_id($id)
             select sum(a.received_amount) as total_amount
             from brige_table_sales_receipt a
             inner join credits_data c on a.rv_no = c.rv_no
-            where a.si_id = "'.$SalesTaxInvoiceId.'"
+            where a.si_id = "' . $SalesTaxInvoiceId . '"
             and a.status = 1
             and c.status = 1
             and c.rv_status = 2
             group by a.si_id
         ) as combined
     ');
-    if (!empty($data->total_amount)):
-        return $data->total_amount;
-    else:
-        return 0;
-    endif;
+        if (!empty($data->total_amount)):
+            return $data->total_amount;
+        else:
+            return 0;
+        endif;
 
     }
 
-    
 
-    public static function bearkup_receievd_approved($SalesTaxInvoiceId,$from,$to)
+
+    public static function bearkup_receievd_approved($SalesTaxInvoiceId, $from, $to)
     {
 
-        $data=DB::Connection('mysql2')->selectOne('select sum(a.received_amount) as total_amount
+        $data = DB::Connection('mysql2')->selectOne('select sum(a.received_amount) as total_amount
         from brige_table_sales_receipt a
         inner join
         new_rvs b
         on
         a.rv_id=b.id
-        where a.si_id="'.$SalesTaxInvoiceId.'"
+        where a.si_id="' . $SalesTaxInvoiceId . '"
         and a.status=1
         and b.status=1
         and b.rv_status=2
-        and b.rv_date between "'.$from.'" and "'.$to.'"
+        and b.rv_date between "' . $from . '" and "' . $to . '"
         group by a.si_id');
 
         if (!empty($data->total_amount)):
@@ -5513,13 +5552,13 @@ public static function get_customer_acc_id($id)
     public static function bearkup_receievd_use_for_balance($SalesTaxInvoiceId)
     {
 
-        $data=DB::Connection('mysql2')->selectOne('select sum(a.received_amount) as total_amount
+        $data = DB::Connection('mysql2')->selectOne('select sum(a.received_amount) as total_amount
         from brige_table_sales_receipt a
         inner join
         new_rvs b
         on
         a.rv_id=b.id
-        where a.si_id="'.$SalesTaxInvoiceId.'"
+        where a.si_id="' . $SalesTaxInvoiceId . '"
         and a.status=1
         and b.status=1
         group by a.si_id');
@@ -5542,7 +5581,7 @@ public static function get_customer_acc_id($id)
         $str = $str + 1;
         $str = sprintf("%'03d", $str);
 
-       $pv_no = 'stp' . $year . $month . $str;
+        $pv_no = 'stp' . $year . $month . $str;
 
 
         return $pv_no;
@@ -5550,38 +5589,38 @@ public static function get_customer_acc_id($id)
 
     public static function get_uom($id)
     {
-       $uom_id= DB::Connection('mysql2')->table('subitem')->where('status',1)->where('id',$id)->select('uom')->value('uom');
-      return $uom_id= DB::table('uom')->where('status',1)->where('id',$uom_id)->select('uom_name')->value('uom_name');
+        $uom_id = DB::Connection('mysql2')->table('subitem')->where('status', 1)->where('id', $id)->select('uom')->value('uom');
+        return $uom_id = DB::table('uom')->where('status', 1)->where('id', $uom_id)->select('uom_name')->value('uom_name');
 
     }
     public static function get_location($id)
     {
-        return DB::Connection('mysql2')->table('warehouse')->where('status',1)->where('id',$id)->select('name')->value('name');
+        return DB::Connection('mysql2')->table('warehouse')->where('status', 1)->where('id', $id)->select('name')->value('name');
     }
 
     public static function get_make_type($type)
     {
-        $data='';
-        if ($type==1):
-       $data='Cutting';
-       elseif($type==2):
-        $data='Welding';
-        elseif($type==3):
-            $data='Machining';
-        elseif($type==4):
-            $data='Thread';
-        elseif($type==5):
-            $data='Jointing';
-        elseif($type==6):
-            $data='APS';
-        elseif($type==7):
-            $data='Galvanise';
-        elseif($type==8):
-            $data='Service & Marking';
-        elseif($type==9):
-            $data='Service';
-        elseif($type==10):
-            $data='Marking';
+        $data = '';
+        if ($type == 1):
+            $data = 'Cutting';
+        elseif ($type == 2):
+            $data = 'Welding';
+        elseif ($type == 3):
+            $data = 'Machining';
+        elseif ($type == 4):
+            $data = 'Thread';
+        elseif ($type == 5):
+            $data = 'Jointing';
+        elseif ($type == 6):
+            $data = 'APS';
+        elseif ($type == 7):
+            $data = 'Galvanise';
+        elseif ($type == 8):
+            $data = 'Service & Marking';
+        elseif ($type == 9):
+            $data = 'Service';
+        elseif ($type == 10):
+            $data = 'Marking';
         endif;
 
 
@@ -5591,46 +5630,46 @@ public static function get_customer_acc_id($id)
 
     public static function get_all_agent()
     {
-      return  DB::Connection('mysql2')->table('sales_agent')->get();
+        return DB::Connection('mysql2')->table('sales_agent')->get();
     }
 
-    public static function  get_item_des($so_data_id)
+    public static function get_item_des($so_data_id)
     {
-     return   DB::Connection('mysql2')->table('sales_order_data')->where('id',$so_data_id)->select('desc')->value('desc');
+        return DB::Connection('mysql2')->table('sales_order_data')->where('id', $so_data_id)->select('desc')->value('desc');
     }
 
-    public static function  internal_consumtion_list()
+    public static function internal_consumtion_list()
     {
-        return   DB::Connection('mysql2')->table('internal_consumtion')->where('status',1)->get();
+        return DB::Connection('mysql2')->table('internal_consumtion')->where('status', 1)->get();
     }
 
-    public static function  internal_consumtion_list_by_id($id)
+    public static function internal_consumtion_list_by_id($id)
     {
-        return   DB::Connection('mysql2')->table('internal_consumtion')->where('status',1)->where('id',$id)->get();
+        return DB::Connection('mysql2')->table('internal_consumtion')->where('status', 1)->where('id', $id)->get();
     }
 
-    public static function  internal_consumtion_data($id)
+    public static function internal_consumtion_data($id)
     {
-        return   DB::Connection('mysql2')->table('internal_consumtion_data')->where('status',1)->where('master_id',$id)->get();
+        return DB::Connection('mysql2')->table('internal_consumtion_data')->where('status', 1)->where('master_id', $id)->get();
     }
 
-    public static function get_opening_for_trial($from,$to,$m,$code,$t_nature)
+    public static function get_opening_for_trial($from, $to, $m, $code, $t_nature)
     {
-        $amount=0;
-        $data=  DB::table('company')->where('id',$m)->first();
+        $amount = 0;
+        $data = DB::table('company')->where('id', $m)->first();
         CommonHelper::companyDatabaseConnection($m);
-        $acc_year=$data->accyearfrom;
+        $acc_year = $data->accyearfrom;
 
 
-        $array = explode('-',$code);
+        $array = explode('-', $code);
         $level = count($array);
 
 
-        if ($from==$acc_year):
+        if ($from == $acc_year):
 
             $amount = DB::selectOne('select sum(amount) as amount from transactions where status =1
-			  and substring_index(acc_code,"-","'.$level.'") = "'.$code.'"
-			 and debit_credit="'.$t_nature.'" and opening_bal=1')->amount;
+			  and substring_index(acc_code,"-","' . $level . '") = "' . $code . '"
+			 and debit_credit="' . $t_nature . '" and opening_bal=1')->amount;
 
             $amount = DB::selectOne('select sum(amount) as amount from transactions as a
             inner join
@@ -5639,15 +5678,15 @@ public static function get_customer_acc_id($id)
             a.acc_id=b.id
             where a.status =1
 
-			and substring_index(a.acc_code,"-","'.$level.'") = "'.$code.'"
-			and a.debit_credit="'.$t_nature.'"
+			and substring_index(a.acc_code,"-","' . $level . '") = "' . $code . '"
+			and a.debit_credit="' . $t_nature . '"
 			and a.opening_bal=1
 			and b.status=1')->amount;
 
 
 
         else:
-            $new_to = date('Y-m-d',strtotime($from . " - 1 day"));
+            $new_to = date('Y-m-d', strtotime($from . " - 1 day"));
 
 
             $amount = DB::selectOne('select sum(amount) as amount from transactions as a
@@ -5656,9 +5695,9 @@ public static function get_customer_acc_id($id)
             on
             a.acc_id=b.id
             where a.status =1
-			and  a.v_date BETWEEN "'.$acc_year.'" and "'.$new_to.'"
-			and substring_index(a.acc_code,"-","'.$level.'") = "'.$code.'"
-			and a.debit_credit="'.$t_nature.'"
+			and  a.v_date BETWEEN "' . $acc_year . '" and "' . $new_to . '"
+			and substring_index(a.acc_code,"-","' . $level . '") = "' . $code . '"
+			and a.debit_credit="' . $t_nature . '"
 			and b.status=1')->amount;
 
 
@@ -5670,13 +5709,13 @@ public static function get_customer_acc_id($id)
         return $amount;
     }
 
-    public static function get_amount($from,$to,$m,$code,$t_nature)
+    public static function get_amount($from, $to, $m, $code, $t_nature)
     {
-        $amount=0;
-        $data=  DB::table('company')->where('id',$m)->first();
+        $amount = 0;
+        $data = DB::table('company')->where('id', $m)->first();
         CommonHelper::companyDatabaseConnection($m);
-        $acc_year=$data->accyearfrom;
-        $array = explode('-',$code);
+        $acc_year = $data->accyearfrom;
+        $array = explode('-', $code);
         $level = count($array);
 
 
@@ -5687,9 +5726,9 @@ public static function get_customer_acc_id($id)
             on
             a.acc_id=b.id
             where a.status =1
-			and  a.v_date BETWEEN "'.$from.'" and "'.$to.'"
-			and substring_index(a.acc_code,"-","'.$level.'") = "'.$code.'"
-			and a.debit_credit="'.$t_nature.'"
+			and  a.v_date BETWEEN "' . $from . '" and "' . $to . '"
+			and substring_index(a.acc_code,"-","' . $level . '") = "' . $code . '"
+			and a.debit_credit="' . $t_nature . '"
 			and a.opening_bal=0
 			and b.status=1')->amount;
 
@@ -5699,28 +5738,37 @@ public static function get_customer_acc_id($id)
     }
 
 
-    public static function get_acc_name_space_wise($code,$name)
+    public static function get_acc_name_space_wise($code, $name)
     {
-        $array = explode('-',$code);
+        $array = explode('-', $code);
         $level = count($array);
-        if($level ==1){ ?>	<p style="font-size: large;font-weight: bold"><?php echo   $name.'</p>';}
-        elseif($level ==2){?><p style="font-size: large;font-weight: 900"><?php echo '&emsp;'.$name.'</p>';}
-        elseif($level ==3){?><p style="font-size: large;font-weight: 700"><?php echo '&emsp;&emsp;'.$name.'</p>';}
-        elseif($level ==4){?><p><?php echo '&emsp;&emsp;&emsp;'.$name.'</p>';}
-        elseif($level ==5){?><p><?php echo '&emsp;&emsp;&emsp;&emsp;'.$name.'</p>';}
-        elseif($level ==6){?><p><?php echo '&emsp;&emsp;&emsp;&emsp;&emsp;'.$name.'</p>';}
-        elseif($level ==7){?><p><?php echo '&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;'.$name.'</p>'; }
+        if ($level == 1) { ?>
+            <p style="font-size: large;font-weight: bold"><?php echo $name . '</p>';
+        } elseif ($level == 2) { ?>
+            <p style="font-size: large;font-weight: 900"><?php echo '&emsp;' . $name . '</p>';
+        } elseif ($level == 3) { ?>
+            <p style="font-size: large;font-weight: 700"><?php echo '&emsp;&emsp;' . $name . '</p>';
+        } elseif ($level == 4) { ?>
+            <p><?php echo '&emsp;&emsp;&emsp;' . $name . '</p>';
+        } elseif ($level == 5) { ?>
+            <p><?php echo '&emsp;&emsp;&emsp;&emsp;' . $name . '</p>';
+        } elseif ($level == 6) { ?>
+            <p><?php echo '&emsp;&emsp;&emsp;&emsp;&emsp;' . $name . '</p>';
+        } elseif ($level == 7) { ?>
+            <p>
+                <?php echo '&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;' . $name . '</p>';
+        }
 
     }
 
-    public static function generateUniquePosNo($table,$field,$ref)
+    public static function generateUniquePosNo($table, $field, $ref)
     {
 
-        
+
 
         // Get the maximum POS number from the database
-        $maxPos =  DB::connection('mysql2')->table($table)->max($field);
- 
+        $maxPos = DB::connection('mysql2')->table($table)->max($field);
+
         if ($maxPos) {
             // Extract the numeric part of the maximum POS number
             $numericPart = preg_match('/\d+$/', $maxPos, $matches);
@@ -5731,19 +5779,19 @@ public static function get_customer_acc_id($id)
             // $numericPart = (int)substr($maxPos, 4);
             $nextNumericPart = $numericPart + 1;
 
-            $posNo = $ref.'-' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+            $posNo = $ref . '-' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
 
-         
+
         } else {
             // If no POS numbers exist in the database, start with "POS-001"
-            $posNo = $ref.'-001';
+            $posNo = $ref . '-001';
         }
 
         // Check if the generated POS number already exists in the database
         $existingPos = DB::connection('mysql2')->table($table)->where($field, $posNo)->first();
         if ($existingPos) {
             // If the POS number already exists, recursively call the function again to generate a new one
-            return self::generateUniquePosNo($table,$field,$ref);
+            return self::generateUniquePosNo($table, $field, $ref);
         }
         // Return the generated unique POS number
 
@@ -5751,14 +5799,15 @@ public static function get_customer_acc_id($id)
     }
 
 
- public static function generateUniqueNumber($prefix = null, $tableName, $uniqueColumn = 'unique_no') {
+    public static function generateUniqueNumber($prefix = null, $tableName, $uniqueColumn = 'unique_no')
+    {
         // If company_id is null, use the authenticated user's current company ID
-       
+
         // Get the latest record from the table
         $latestRecord = DB::connection('mysql2')->table($tableName)
-                        
-                          ->orderBy($uniqueColumn, 'desc')
-                          ->first();
+
+            ->orderBy($uniqueColumn, 'desc')
+            ->first();
 
         // Extract the last unique number
         if ($prefix) {
@@ -5781,16 +5830,16 @@ public static function get_customer_acc_id($id)
     }
 
 
-    
-    public static function generateUniquePosNoForMachine($table,$field,$ref)
+
+    public static function generateUniquePosNoForMachine($table, $field, $ref)
     {
 
         // Get the maximum POS number from the database
         // $maxPos =  DB::connection('mysql2')->table($table)->max($field);
- 
+
         $maxPos = DB::connection('mysql2')->table('machine_proccess_datas')
-                    ->where($field, 'like', "%$ref%")
-                    ->max($field);
+            ->where($field, 'like', "%$ref%")
+            ->max($field);
         if ($maxPos) {
             // Extract the numeric part of the maximum POS number
             $numericPart = preg_match('/\d+$/', $maxPos, $matches);
@@ -5801,31 +5850,31 @@ public static function get_customer_acc_id($id)
             // $numericPart = (int)substr($maxPos, 4);
             $nextNumericPart = $numericPart + 1;
 
-            $posNo = $ref.'-' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+            $posNo = $ref . '-' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
 
-         
+
         } else {
             // If no POS numbers exist in the database, start with "POS-001"
-            $posNo = $ref.'-001';
+            $posNo = $ref . '-001';
         }
 
         // Check if the generated POS number already exists in the database
         $existingPos = DB::connection('mysql2')->table($table)->where($field, $posNo)->first();
         if ($existingPos) {
             // If the POS number already exists, recursively call the function again to generate a new one
-            return self::generateUniquePosNo($table,$field,$ref);
+            return self::generateUniquePosNo($table, $field, $ref);
         }
         // Return the generated unique POS number
 
         return $posNo;
     }
 
-    public static function generateUniquePosNoWithStatusOne($table,$field,$ref)
+    public static function generateUniquePosNoWithStatusOne($table, $field, $ref)
     {
 
         // Get the maximum POS number from the database
-        $maxPos =  DB::connection('mysql2')->table($table)->where('status',1)->max($field);
- 
+        $maxPos = DB::connection('mysql2')->table($table)->where('status', 1)->max($field);
+
         if ($maxPos) {
             // Extract the numeric part of the maximum POS number
             $numericPart = preg_match('/\d+$/', $maxPos, $matches);
@@ -5836,19 +5885,19 @@ public static function get_customer_acc_id($id)
             // $numericPart = (int)substr($maxPos, 4);
             $nextNumericPart = $numericPart + 1;
 
-            $posNo = $ref.'-' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+            $posNo = $ref . '-' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
 
-         
+
         } else {
             // If no POS numbers exist in the database, start with "POS-001"
-            $posNo = $ref.'-001';
+            $posNo = $ref . '-001';
         }
 
         // Check if the generated POS number already exists in the database
-        $existingPos = DB::connection('mysql2')->table($table)->where('status',1)->where($field, $posNo)->first();
+        $existingPos = DB::connection('mysql2')->table($table)->where('status', 1)->where($field, $posNo)->first();
         if ($existingPos) {
             // If the POS number already exists, recursively call the function again to generate a new one
-            return self::generateUniquePosNoWithStatusOne($table,$field,$ref);
+            return self::generateUniquePosNoWithStatusOne($table, $field, $ref);
         }
         // Return the generated unique POS number
 
@@ -5857,146 +5906,144 @@ public static function get_customer_acc_id($id)
 
     public static function get_all_quotation()
     {
-      $saleQuotation =  SaleQuotation::where(['status'=>1,'so_status'=>0,'approved_status'=>1])->get();
-      return $saleQuotation;
+        $saleQuotation = SaleQuotation::where(['status' => 1, 'so_status' => 0, 'approved_status' => 1])->get();
+        return $saleQuotation;
     }
 
     public static function get_all_work_order()
     {
-     return ProductionWorkOrder::where('status',1)->get();
+        return ProductionWorkOrder::where('status', 1)->get();
     }
     public static function get_all_sale_order()
     {
-     return Sales_Order::where('status',1)->get();
+        return Sales_Order::where('status', 1)->get();
     }
 
     public static function get_comapny_location()
     {
-       return CompanyLocation::where('status',1)->get();
+        return CompanyLocation::where('status', 1)->get();
     }
-    public static  function get_company_group()
+    public static function get_company_group()
     {
-        return CompanyGroup::where('status',1)->get();
-    }
-
-    public static  function get_company_group_by($group_id)
-    {
-        return CompanyGroup::where("id", $group_id)->where('status',1)->value("name");
+        return CompanyGroup::where('status', 1)->get();
     }
 
-    public static function  get_total_issued_qty($id)
+    public static function get_company_group_by($group_id)
+    {
+        return CompanyGroup::where("id", $group_id)->where('status', 1)->value("name");
+    }
+
+    public static function get_total_issued_qty($id)
     {
 
-        $get_mr_data = MaterialRequisitionData::where('mr_id',$id)
-        ->select(DB::raw('sum(issuance_qty) as issuance_qty'))
-        ->groupBy('mr_id')
-        ->first();
-        $total =  isset($get_mr_data->issuance_qty)? $get_mr_data->issuance_qty : 0;
+        $get_mr_data = MaterialRequisitionData::where('mr_id', $id)
+            ->select(DB::raw('sum(issuance_qty) as issuance_qty'))
+            ->groupBy('mr_id')
+            ->first();
+        $total = isset($get_mr_data->issuance_qty) ? $get_mr_data->issuance_qty : 0;
         return $total;
     }
 
     public static function get_table_data($table)
     {
-       $tables  =  DB::connection('mysql2')->table($table)->where('status',1)->get();
-       return $tables;
+        $tables = DB::connection('mysql2')->table($table)->where('status', 1)->get();
+        return $tables;
     }
 
-     public static  function get_sale_tax_by_id($id)
-     {
+    public static function get_sale_tax_by_id($id)
+    {
 
-       $data =  SalesTaxGroup::find($id);
-       if(!empty($data))
-       {
-        return  $data->rate;
+        $data = SalesTaxGroup::find($id);
+        if (!empty($data)) {
+            return $data->rate;
 
-       }else{
+        } else {
 
-        return 0;
-       }
+            return 0;
+        }
 
-     }
-     public static function displayLatestSaleOrdersDetail()
-     {
+    }
+    public static function displayLatestSaleOrdersDetail()
+    {
 
-        $d = DB::selectOne('select `dbName` from `company` where `id` = '.request()->session()->get('run_company').'')->dbName;
+        $d = DB::selectOne('select `dbName` from `company` where `id` = ' . request()->session()->get('run_company') . '')->dbName;
         Config::set(['database.connections.mysql2.database' => $d]);
         DB::purge('mysql2');
-        $territory_ids = json_decode(auth()->user()->territory_id); 
-        
-      return  DB::Connection('mysql2')->table('sales_order')
-      ->join('customers','sales_order.buyers_id', 'customers.id')
-      ->whereIn('customers.territory_id', $territory_ids)
-    //   ->where("company_id", auth()->user()->company_id ?? 0)
-      ->where('sales_order.status',1)
-      ->select('sales_order.*','customers.name')
-      ->orderBy('sales_order.id','DESC')->limit('7')->get();
-     }
+        $territory_ids = json_decode(auth()->user()->territory_id);
 
-     public static  function getSaleSummaryAmount($monthStartDate,$monthEndDate)
-     {
+        return DB::Connection('mysql2')->table('sales_order')
+            ->join('customers', 'sales_order.buyers_id', 'customers.id')
+            ->whereIn('customers.territory_id', $territory_ids)
+            //   ->where("company_id", auth()->user()->company_id ?? 0)
+            ->where('sales_order.status', 1)
+            ->select('sales_order.*', 'customers.name')
+            ->orderBy('sales_order.id', 'DESC')->limit('7')->get();
+    }
+
+    public static function getSaleSummaryAmount($monthStartDate, $monthEndDate)
+    {
         // dd($monthStartDate,$monthEndDate);
-        $sale =   DB::Connection('mysql2')->table('sales_order')
-        ->where('sales_order.status',1)
-        ->whereBetween('sales_order.date',[$monthStartDate,$monthEndDate])
-        ->select(DB::raw('sum(sales_order.total_amount_after_sale_tax) as sale_amount'))
-        ->first();
+        $sale = DB::Connection('mysql2')->table('sales_order')
+            ->where('sales_order.status', 1)
+            ->whereBetween('sales_order.date', [$monthStartDate, $monthEndDate])
+            ->select(DB::raw('sum(sales_order.total_amount_after_sale_tax) as sale_amount'))
+            ->first();
 
-        if(!empty($sale))
-        {
+        if (!empty($sale)) {
             return $sale->sale_amount;
 
-        }else{
+        } else {
             return 0.00;
         }
-     }
+    }
 
-     public static  function get_gst_account()
-     {
-        return $data =   DB::Connection('mysql2')->table('gst as g')
-        ->join('accounts as a', 'g.acc_id', '=', 'a.id')
-        ->where('a.status', 1)
-        ->where('g.status', 1)
-        ->select('a.id', DB::raw('CONCAT(a.name, " -- ", g.rate, " %") as name'),'g.rate')
-        ->get();
+    public static function get_gst_account()
+    {
+        return $data = DB::Connection('mysql2')->table('gst as g')
+            ->join('accounts as a', 'g.acc_id', '=', 'a.id')
+            ->where('a.status', 1)
+            ->where('g.status', 1)
+            ->select('a.id', DB::raw('CONCAT(a.name, " -- ", g.rate, " %") as name'), 'g.rate')
+            ->get();
 
-     }
+    }
 
 
-     public static function displayLatestSaleOrdersDetailF()
-     {
+    public static function displayLatestSaleOrdersDetailF()
+    {
         // return  DB::Connection('mysql2')->table('sales_order')
         // ->join('customers','sales_order.buyers_id', 'customers.id')
         // ->where('sales_order.status',1)
         // ->select('sales_order.*','customers.name')
         // ->orderBy('sales_order.id','DESC')->limit('7')->get();
 
-        return  DB::Connection('mysql2')->table('sales_order as so')
-                ->join('sales_order_data as sod', 'sod.master_id', '=', 'so.id')
-                ->join('customers as c', 'so.buyers_id', '=', 'c.id')
-                ->leftJoin(DB::raw('(SELECT dn.master_id, SUM(dnd.qty) AS qty
+        return DB::Connection('mysql2')->table('sales_order as so')
+            ->join('sales_order_data as sod', 'sod.master_id', '=', 'so.id')
+            ->join('customers as c', 'so.buyers_id', '=', 'c.id')
+            ->leftJoin(DB::raw('(SELECT dn.master_id, SUM(dnd.qty) AS qty
                                     FROM delivery_note dn
                                     INNER JOIN delivery_note_data dnd ON dnd.master_id = dn.id
                                     WHERE dn.status = 1 AND dnd.status = 1
                                     GROUP BY dn.master_id) dn'), 'dn.master_id', '=', 'so.id')
-                ->leftJoin('sales_tax_invoice as sti', 'sti.so_id', '=', 'so.id')
-                ->where('so.status', 1)
-                ->groupBy('so.id','so.status')
-                ->orderByDesc('so.id')
-                ->limit(7)
-                ->select(
-                    'c.name',
-                    'so.so_no',
-                    'sti.gi_no',
-                    DB::raw('IFNULL(SUM(sod.qty), 0) as sale_qty'),
-                    DB::raw('IFNULL(SUM(dn.qty), 0) as delivery_qty'),
-                    DB::raw('(IFNULL(SUM(sod.qty), 0) - IFNULL(SUM(dn.qty), 0)) as remaining_qty'),
-                    DB::raw('so.status as so_status')
-                )
-                ->get();
-     }
+            ->leftJoin('sales_tax_invoice as sti', 'sti.so_id', '=', 'so.id')
+            ->where('so.status', 1)
+            ->groupBy('so.id', 'so.status')
+            ->orderByDesc('so.id')
+            ->limit(7)
+            ->select(
+                'c.name',
+                'so.so_no',
+                'sti.gi_no',
+                DB::raw('IFNULL(SUM(sod.qty), 0) as sale_qty'),
+                DB::raw('IFNULL(SUM(dn.qty), 0) as delivery_qty'),
+                DB::raw('(IFNULL(SUM(sod.qty), 0) - IFNULL(SUM(dn.qty), 0)) as remaining_qty'),
+                DB::raw('so.status as so_status')
+            )
+            ->get();
+    }
 
-     public static  function getSaleSummaryAmountF($monthStartDate,$monthEndDate)
-     {
+    public static function getSaleSummaryAmountF($monthStartDate, $monthEndDate)
+    {
         // dd($monthStartDate,$monthEndDate);
         // $sale =   DB::Connection('mysql2')->table('sales_order')
         // ->where('sales_order.status',1)
@@ -6009,114 +6056,112 @@ public static function get_customer_acc_id($id)
         // echo $monthEndDate;
         // exit();
         $sale = DB::Connection('mysql2')->table('sales_tax_invoice as sti')
-                        ->join('sales_tax_invoice_data as stid', 'sti.id', '=', 'stid.master_id')
-                        ->where('sti.status', 1)
-                        ->where('stid.status', 1)
-                        ->whereBetween('sti.gi_date',[$monthStartDate,$monthEndDate])
-                        ->sum('stid.amount');
+            ->join('sales_tax_invoice_data as stid', 'sti.id', '=', 'stid.master_id')
+            ->where('sti.status', 1)
+            ->where('stid.status', 1)
+            ->whereBetween('sti.gi_date', [$monthStartDate, $monthEndDate])
+            ->sum('stid.amount');
 
 
 
 
-        if(!empty($sale))
-        {
+        if (!empty($sale)) {
             return $sale;
 
-        }else{
+        } else {
             return 0.00;
         }
-     }
+    }
 
 
 
-     public static function getAllSlipNo()
-     {
-         return DB::Connection('mysql2')->table('new_purchase_voucher')->where('status',1)->where('slip_no','!=','')->pluck('slip_no')->toArray();
-     }
-
-
-     public static function numberToWords($number)
-     {
-         $words = array(
-             '',
-             'one',
-             'two',
-             'three',
-             'four',
-             'five',
-             'six',
-             'seven',
-             'eight',
-             'nine',
-             'ten',
-             'eleven',
-             'twelve',
-             'thirteen',
-             'fourteen',
-             'fifteen',
-             'sixteen',
-             'seventeen',
-             'eighteen',
-             'nineteen',
-             'twenty',
-             30 => 'thirty',
-             40 => 'forty',
-             50 => 'fifty',
-             60 => 'sixty',
-             70 => 'seventy',
-             80 => 'eighty',
-             90 => 'ninety'
-         );
-
-         if (!is_numeric($number)) {
-             return false;
-         }
-
-         if (($number >= 0 && (int)$number < 21) || $number == 30 || $number == 40 || $number == 50 || $number == 60 || $number == 70 || $number == 80 || $number == 90) {
-             return $words[$number];
-         }
-
-         if ($number < 100) {
-             return $words[10 * floor($number / 10)] . ' ' . $words[$number % 10];
-         }
-
-         if ($number < 1000) {
-             return $words[floor($number / 100)] . ' hundred ' . self::numberToWords($number % 100);
-         }
-
-         if ($number < 1000000) {
-             return self::numberToWords(floor($number / 1000)) . ' thousand ' . self::numberToWords($number % 1000);
-         }
-
-         if ($number < 1000000000) {
-             return self::numberToWords(floor($number / 1000000)) . ' million ' . self::numberToWords($number % 1000000);
-         }
-
-         return false;
-     }
-
-
-     public static function get_sub_category_by_item_id($id)
-     {
-        return $subcategories = DB::connection('mysql2')->table('subitem as s')
-                        ->select('sc.id', 'sc.sub_category_name')
-                        ->join('sub_category as sc', 's.sub_category_id', '=', 'sc.id')
-                        ->where('s.status', 1)
-                        ->where('sc.status', 1)
-                        ->where('s.id', $id)
-                        ->first();
-
-
-
-     }
-
-     public static function getCashFlowHead($id)
+    public static function getAllSlipNo()
     {
-        if($id)
-        {
-            $CashFlowHead = CashFlowHead::where('status',1)
-            ->where('id',$id)
+        return DB::Connection('mysql2')->table('new_purchase_voucher')->where('status', 1)->where('slip_no', '!=', '')->pluck('slip_no')->toArray();
+    }
+
+
+    public static function numberToWords($number)
+    {
+        $words = array(
+            '',
+            'one',
+            'two',
+            'three',
+            'four',
+            'five',
+            'six',
+            'seven',
+            'eight',
+            'nine',
+            'ten',
+            'eleven',
+            'twelve',
+            'thirteen',
+            'fourteen',
+            'fifteen',
+            'sixteen',
+            'seventeen',
+            'eighteen',
+            'nineteen',
+            'twenty',
+            30 => 'thirty',
+            40 => 'forty',
+            50 => 'fifty',
+            60 => 'sixty',
+            70 => 'seventy',
+            80 => 'eighty',
+            90 => 'ninety'
+        );
+
+        if (!is_numeric($number)) {
+            return false;
+        }
+
+        if (($number >= 0 && (int) $number < 21) || $number == 30 || $number == 40 || $number == 50 || $number == 60 || $number == 70 || $number == 80 || $number == 90) {
+            return $words[$number];
+        }
+
+        if ($number < 100) {
+            return $words[10 * floor($number / 10)] . ' ' . $words[$number % 10];
+        }
+
+        if ($number < 1000) {
+            return $words[floor($number / 100)] . ' hundred ' . self::numberToWords($number % 100);
+        }
+
+        if ($number < 1000000) {
+            return self::numberToWords(floor($number / 1000)) . ' thousand ' . self::numberToWords($number % 1000);
+        }
+
+        if ($number < 1000000000) {
+            return self::numberToWords(floor($number / 1000000)) . ' million ' . self::numberToWords($number % 1000000);
+        }
+
+        return false;
+    }
+
+
+    public static function get_sub_category_by_item_id($id)
+    {
+        return $subcategories = DB::connection('mysql2')->table('subitem as s')
+            ->select('sc.id', 'sc.sub_category_name')
+            ->join('sub_category as sc', 's.sub_category_id', '=', 'sc.id')
+            ->where('s.status', 1)
+            ->where('sc.status', 1)
+            ->where('s.id', $id)
             ->first();
+
+
+
+    }
+
+    public static function getCashFlowHead($id)
+    {
+        if ($id) {
+            $CashFlowHead = CashFlowHead::where('status', 1)
+                ->where('id', $id)
+                ->first();
             return $CashFlowHead;
         }
 
@@ -6142,7 +6187,8 @@ public static function get_customer_acc_id($id)
         return '-';
     }
 
-    public static function get_items_with_movements() {
+    public static function get_items_with_movements()
+    {
         return DB::connection('mysql2')->select('select a.id,a.product_name from subitem a
                                           INNER JOIN stock b ON b.sub_item_id = a.id
                                           WHERE a.status = 1

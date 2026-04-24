@@ -3278,11 +3278,12 @@ public function importData(Request $request)
 		$common['master_id'] = $advance->id;
 		$common['username'] = Auth::user()->name;
 
-		$data1 = array_merge($common, ['acc_id' => CommonHelper::get_customer_acc_id($advance->customer_id), 'debit_credit' => 0]);
+        $cust_acc_id = CommonHelper::get_customer_acc_id($advance->customer_id);
+		$data1 = array_merge($common, ['acc_id' => $cust_acc_id, 'acc_code' => FinanceHelper::getAccountCodeByAccId($cust_acc_id), 'debit_credit' => 0]);
 		if ($request->pay_mode == 1) {
-			$data2 = array_merge($common, ['acc_id' => $advance->bank_id, 'debit_credit' => 1]);
+			$data2 = array_merge($common, ['acc_id' => $advance->bank_id, 'acc_code' => FinanceHelper::getAccountCodeByAccId($advance->bank_id), 'debit_credit' => 1]);
 		} else {
-			$data2 = array_merge($common, ['acc_id' => $advance->account_recieve_id, 'debit_credit' => 1]);
+			$data2 = array_merge($common, ['acc_id' => $advance->account_recieve_id, 'acc_code' => FinanceHelper::getAccountCodeByAccId($advance->account_recieve_id), 'debit_credit' => 1]);
 		}
 
 		DB::connection('mysql2')->table('transactions')->insert($data1);
