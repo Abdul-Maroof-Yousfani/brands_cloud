@@ -1009,12 +1009,12 @@ class StoreAddDetailControler extends Controller
                     'acc_id' => config('accounts.inventory.main.id'),
                     'acc_code' => config('accounts.inventory.main.code'),
                     'particulars' => 'Opening Stock Item ID: ' . $request->sub_1,
-                    'opening_bal' => 1,
+                    'opening_bal' => 0,
                     'debit_credit' => 1,
                     'amount' => $total_amount,
                     'username' => Auth::user()->name,
                     'status' => 1,
-                    'voucher_type' => 1,
+                    'voucher_type' => 16,
                 ]);
 
                 // Entry for Opening Stock (Credit)
@@ -1024,12 +1024,12 @@ class StoreAddDetailControler extends Controller
                     'acc_id' => config('accounts.opening_stock.id'),
                     'acc_code' => config('accounts.opening_stock.code'),
                     'particulars' => 'Opening Stock Item ID: ' . $request->sub_1,
-                    'opening_bal' => 1,
+                    'opening_bal' => 0,
                     'debit_credit' => 0,
                     'amount' => $total_amount,
                     'username' => Auth::user()->name,
                     'status' => 1,
-                    'voucher_type' => 1,
+                    'voucher_type' => 16,
                 ]);
             }
 
