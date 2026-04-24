@@ -799,11 +799,11 @@ Route::group(['middleware' => 'mysql2','before' => 'csrf'], function () {
     Route::get("creditNote/customer/showReceipt", "CreditNoteController@showReceipt")->name("creditNote.receipt.show");
     Route::get("creditNote/create", "CreditNoteController@create")->name("creditNote.create");
     Route::post("creditNote/create", "CreditNoteController@store")->name("creditNote.store");
-    Route::get("creditNote/{debit}/update", "CreditNoteController@update")->name("creditNote.update");
-    Route::post("debitNote/{debit}/update", "CreditNoteController@edit")->name("creditNote.edit");
+    Route::get("creditNote/{credit}/update", "CreditNoteController@update")->name("creditNote.update");
+    Route::post("creditNote/{credit}/update", "CreditNoteController@edit")->name("creditNote.edit");
     Route::get("creditNotes", "CreditNoteController@show")->name("creditNote.list");
-    Route::get("creditNote/{debit}/delete", "CreditNoteController@destroy")->name("creditNote.delete");
-    Route::get("creditNote/{debit}/approve", "CreditNoteController@approve")->name("creditNote.approve");
+    Route::get("creditNote/{credit}/delete", "CreditNoteController@destroy")->name("creditNote.delete");
+    Route::get("creditNote/{credit}/approve", "CreditNoteController@approve")->name("creditNote.approve");
     Route::get("creditNote/submit_receipt", "CreditNoteController@submitReceiptData")->name("creditNote.receipt.create");
     Route::get("creditNote/accounting_preview", "CreditNoteController@getAccountingEntryPreview")->name("creditNote.accounting.preview");
 

@@ -13,7 +13,17 @@
         <td class="approve status{{ $credit->rv_no }}">{{ $rv && $rv->rv_status == 2 ? "Approved" : "Pending" }}</td>
         <td>
             <div class="dropdown">
-                <a onclick="showDetailModelOneParamerter('sdc/viewReceiptVoucherForDebit','<?php echo $credit->rv_no;?>','View Credit Note Detail','1','')" class="btn btn-xs btn-success">View</a>
+                <button class="btn btn-primary dropdown-toggle btn-xs" type="button" data-toggle="dropdown">
+                    Action <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a href="javascript:void(0)" onclick="showDetailModelOneParamerter('sdc/viewReceiptVoucherForDebit','<?php echo $credit->rv_no;?>','View Credit Note Detail','1','')"><i class="fa fa-eye"></i> View Detail</a></li>
+                    @if(!$rv || $rv->rv_status == 1)
+                        <li><a href="{{ route('creditNote.update', $credit->id) }}"><i class="fa fa-edit"></i> Edit</a></li>
+                        <li><a href="javascript:void(0)" onclick="approve_debit_note('credits_data','credits_item_data','rv_status','rv_date','rv_no','3','{{ $credit->rv_no }}')"><i class="fa fa-check"></i> Approve</a></li>
+                    @endif
+                    <li><a href="javascript:void(0)" onclick="deleteCredit(this, '{{ $credit->id }}')"><i class="fa fa-trash"></i> Delete</a></li>
+                </ul>
             </div>
         </td>
     </tr>

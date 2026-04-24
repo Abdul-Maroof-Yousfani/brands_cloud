@@ -26,6 +26,7 @@ $approved_user=$row->approved_user;
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
             @if ($row->rv_status==1)
                 <button onclick="approve_debit_note('credits_data','credits_item_data','rv_status','rv_date','rv_no','3','{{$row->rv_no}}')" type="button" class="btn btn-primary btn-xs">Approve</button>
+                <a href="{{ route('creditNote.update', $row->id) }}" class="btn btn-xs btn-warning">Edit</a>
             @endif
                 <button class="btn btn-xs btn-info" onclick="printView('viereceiptvoucher','','1')" style="">
                     <span class="glyphicon glyphicon-print"> Print</span>

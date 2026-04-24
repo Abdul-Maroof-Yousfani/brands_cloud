@@ -181,7 +181,7 @@
                         id="accounting-entry-preview"></div>
                     <div class="col-md-12" style="margin-top: 30px; padding-left: 0px;">
                         <button type="reset" class="btn btn-danger">Reset</button>
-                        <button type="submit" class="btn btn-success">Issue Voucher</button>
+                        <button type="submit" class="btn btn-success">Create Credit Note</button>
                     </div>
                 </form>
             </div>
