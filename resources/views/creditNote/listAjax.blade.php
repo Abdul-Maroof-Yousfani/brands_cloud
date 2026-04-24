@@ -22,7 +22,7 @@
                         <li><a href="{{ route('creditNote.update', $credit->id) }}"><i class="fa fa-edit"></i> Edit</a></li>
                         <li><a href="javascript:void(0)" onclick="approve_debit_note('credits_data','credits_item_data','rv_status','rv_date','rv_no','3','{{ $credit->rv_no }}')"><i class="fa fa-check"></i> Approve</a></li>
                     @endif
-                    <li><a href="javascript:void(0)" onclick="deleteCredit(this, '{{ $credit->id }}')"><i class="fa fa-trash"></i> Delete</a></li>
+
                 </ul>
             </div>
         </td>
