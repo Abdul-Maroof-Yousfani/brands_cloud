@@ -51,8 +51,7 @@ $currentMonthEndDate   = date('Y-m-t');
                             <input type="Date" name="to" id="to" max="<?php ?>" value="<?php echo $currentMonthEndDate;?>" class="form-control" />
                         </div>
                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12" style="margin-top: 30px">
-                            <label class="radio-inline"><input type="radio" name="optradio" id="radio1" value="1" checked>Invoice Wise</label>
-                            <label class="radio-inline"><input type="radio" name="optradio" id="radio2" value="2">Item Wise</label>
+                            <label class="radio-inline"><input type="radio" name="optradio" id="radio2" value="2" checked>Item Wise</label>
                         </div>
 
                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
