@@ -470,7 +470,7 @@ CommonHelper::reconnectMasterDatabase();
                             </a>
                         @endif
 
-                        @if($pending_stock_transfers > 0)
+                        <!-- @if($pending_stock_transfers > 0)
                             <a class="d-flex" href="/store/stock_transfer_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
@@ -482,14 +482,14 @@ CommonHelper::reconnectMasterDatabase();
                                     </div>
                                 </div>
                             </a>
-                        @endif
+                        @endif -->
 
                         @if($pending_stock_in > 0)
                             <a class="d-flex" href="/store/stock_in_form?m={{ request()->m ?? $m }}&parentCode={{ request()->parentCode ?? '264' }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
-                                            <span class="fw-bolder">Stock IN</span>
+                                            <span class="fw-bolder">Stock Transfer</span>
                                         </p>
                                         <small class="notification-text">{{ $pending_stock_in }} Stock IN are pending</small>
                                         <br>
