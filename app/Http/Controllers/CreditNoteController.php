@@ -455,7 +455,7 @@ class CreditNoteController extends Controller
 		$type = $request->type;
 		
 
-		$rv_no = \App\Helpers\CommonHelper::generateUniquePosNo("credits_data", "rv_no", "cvv");
+		$rv_no = \App\Helpers\CommonHelper::generateUniquePosNo("credits_data", "rv_no", "CN");
         $credit = Credit::create([
 			"rv_no" => $rv_no,
             "store" => $request->store,
