@@ -2441,6 +2441,9 @@ public function add_opening_import_post(Request $request)
         DB::beginTransaction();
 
         try {
+            $total_opening_amount = 0;
+            $import_voucher_no = 'OS-IMPORT-' . date('Ymd-His');
+
             while (($row = fgetcsv($handle, 1000, ",")) !== false) {
                 if (empty($row) || !isset($row[1])) continue;
 
@@ -2457,7 +2460,8 @@ public function add_opening_import_post(Request $request)
                             $qty = isset($row[$index]) ? trim($row[$index]) : 0;
                             
                             if (is_numeric($qty) && (float)$qty != 0) {
-                                $total_amount = (float)$qty * $unit_rate; // Calculate Amount
+                                $item_total_amount = (float)$qty * $unit_rate; // Calculate Amount
+                                $total_opening_amount += $item_total_amount;
 
                                 DB::connection('mysql2')->table('stock')->insert([
                                     'voucher_type'  => 1, // Opening
@@ -2465,7 +2469,7 @@ public function add_opening_import_post(Request $request)
                                     'batch_code'    => $subitem->batch_code,
                                     'qty'           => $qty,
                                     'rate'          => $unit_rate,
-                                    'amount'        => $total_amount, // Dynamic Amount
+                                    'amount'        => $item_total_amount, // Dynamic Amount
                                     'warehouse_id'  => $warehouse_id,
                                     'opening'       => 1,
                                     'voucher_date'  => date('Y-m-d'),
@@ -2480,6 +2484,40 @@ public function add_opening_import_post(Request $request)
                         $missingProducts[] = $product_name . ' (SKU: ' . $sku_code . ')';
                     }
                 }
+            }
+
+            if ($total_opening_amount > 0) {
+                // Entry for Inventory (Debit)
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => $import_voucher_no,
+                    'v_date' => date('Y-m-d'),
+                    'acc_id' => config('accounts.inventory.main.id'),
+                    'acc_code' => config('accounts.inventory.main.code'),
+                    'particulars' => 'Bulk Opening Stock Import',
+                    'opening_bal' => 0,
+                    'debit_credit' => 1,
+                    'amount' => $total_opening_amount,
+                    'username' => Auth::user()->name ?? 'System',
+                    'status' => 1,
+                    'voucher_type' => 16,
+                    'date' => date('Y-m-d'),
+                ]);
+
+                // Entry for Opening Stock (Credit)
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'voucher_no' => $import_voucher_no,
+                    'v_date' => date('Y-m-d'),
+                    'acc_id' => config('accounts.opening_stock.id'),
+                    'acc_code' => config('accounts.opening_stock.code'),
+                    'particulars' => 'Bulk Opening Stock Import',
+                    'opening_bal' => 0,
+                    'debit_credit' => 0,
+                    'amount' => $total_opening_amount,
+                    'username' => Auth::user()->name ?? 'System',
+                    'status' => 1,
+                    'voucher_type' => 16,
+                    'date' => date('Y-m-d'),
+                ]);
             }
 
             DB::commit();
