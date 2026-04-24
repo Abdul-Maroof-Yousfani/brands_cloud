@@ -76,25 +76,29 @@ echo Form::open(array('url' => 'finance/CreateReceiptVoucherForSales?m='.$m,'id'
             {{--<td class="text-center"><a href="{{ URL::asset('purchase/editPurchaseVoucherForm/'.$row->id) }}" class="btn btn-success btn-xs">Edit </a></td>--}}
             {{--<td class="text-center"><button onclick="delete_record('{{$row->id}}')" type="button" class="btn btn-danger btn-xs">DELETE</button></td>--}}
         </tr>
+        <?php
+        $total += $inv;
+        $received += $rece;
+        $remaining += $rema;
+        ?>
         <?php   endif; ?>
 
     @endforeach
 
 
-    <tr style="display: none;">
+    <tr>
         <td class="text-center" colspan="7" style="font-size: 20px;">Total</td>
-        <td class="text-right" colspan="1" style="font-size: 20px;color: white">{{number_format($total,2)}}</td>
+        <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($total,2)}}</td>
+        <td class="text-right" colspan="1" style="font-size: 20px;"></td> <!-- Return Amount -->
         <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($received,2)}}</td>
-        <td class="text-right" colspan="2" style="font-size: 20px;">{{number_format($remaining,2)}}</td>
+        <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($remaining,2)}}</td>
     </tr>
     <tr>
-        <td colspan="10">
+        <td colspan="11">
             <input type="submit" value="Create" class="btn btn-sm btn-primary BtnEnDs BtnSub" id="receiptCreate">
         </td>
     </tr>
     </tbody>
 </table>
 <?php Form::close(); ?>
-
-
 

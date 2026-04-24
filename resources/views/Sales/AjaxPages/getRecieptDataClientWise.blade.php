@@ -106,12 +106,14 @@ $remaining = 0;
 
         <tr>
             <td class="text-center" colspan="7" style="font-size: 20px;">Total</td>
-            <td class="text-right" colspan="1" style="font-size: 20px;color: white">{{number_format($total, 2)}}</td>
+            <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($total, 2)}}</td>
+            <td class="text-right" colspan="1" style="font-size: 20px;"></td>
             <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($received, 2)}}</td>
-            <td class="text-right" colspan="2" style="font-size: 20px;">{{number_format($remaining, 2)}}</td>
+            <td class="text-right" colspan="1" style="font-size: 20px;">{{number_format($remaining, 2)}}</td>
+            <td class="text-right" colspan="1" style="font-size: 20px;"></td>
         </tr>
         <tr>
-            <td colspan="10">
+            <td colspan="12">
                 <input type="submit" value="Create Receipt" class="btn btn-sm btn-primary BtnEnDs BtnSub" id="add">
             </td>
         </tr>
