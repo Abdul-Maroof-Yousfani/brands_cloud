@@ -109,7 +109,7 @@ if ($so_data_raw) {
                     </select>
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
-                    <label for="bank_detail_customer">Banks (Deposit To)</label>
+                    <label for="bank_detail_customer">Banks (Customer)</label>
                     <?php $bank = DB::Connection('mysql2')->table('bank_detail_customer')->get(); ?>
                     <select name="bank_detail_customer" class="form-control select2">
                         <option value="">Select Bank</option>
