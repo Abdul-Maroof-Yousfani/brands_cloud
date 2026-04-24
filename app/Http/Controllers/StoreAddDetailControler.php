@@ -894,60 +894,65 @@ class StoreAddDetailControler extends Controller
         DB::Connection('mysql2')->beginTransaction();
         try {
 
-            $warehouse = $request->warehouse;
-            DB::Connection('mysql2')->table('stock')->where('sub_item_id', $request->sub_1)->where('opening', 1)->delete();
-            foreach ($warehouse as $key => $row):
+            $warehouse_ids = $request->warehouse;
+            foreach ($warehouse_ids as $key => $warehouse_id) {
                 $qty = $request->input('closing_stock')[$key];
                 $amount = $request->input('closing_val')[$key];
 
-                $data = array(
-                    'voucher_type' => 1,
-                    'sub_item_id' => $request->sub_1,
-                    'batch_code' => $request->input('batch_code')[$key],
-                    'qty' => $request->input('closing_stock')[$key],
-                    'amount' => $request->input('closing_val')[$key],
-                    'warehouse_id' => $row,
-                    'opening' => 1,
-                    'created_date' => date('Y-m-d'),
-                    'username' => 'Amir Murshad',
-                    'status' => 1
+                $warehouse_info = DB::connection('mysql2')->table('warehouse')->where('id', $warehouse_id)->first();
 
-                );
-                DB::Connection('mysql2')->table('stock')->insertGetId($data);
+                if (is_numeric($qty) && (float)$qty != 0) {
+                    $stock_data = array(
+                        'voucher_type' => 1,
+                        'sub_item_id' => $request->sub_1,
+                        'batch_code' => $request->input('batch_code')[$key],
+                        'qty' => $qty,
+                        'amount' => $amount,
+                        'warehouse_id' => $warehouse_id,
+                        'opening' => 1,
+                        'created_date' => date('Y-m-d'),
+                        'username' => 'Amir Murshad',
+                        'status' => 1
+                    );
+                    DB::connection('mysql2')->table('stock')->insert($stock_data);
 
-            endforeach;
+                    $item_name = DB::connection('mysql2')->table('subitem')->where('id', $request->sub_1)->value('product_name');
+                    $voucher_no = 'OS-M-' . $request->sub_1 . '-' . $warehouse_id;
+                    $particulars = 'Opening Stock (Multi): ' . $item_name . ' (' . ($warehouse_info->name ?? $warehouse_id) . ')';
 
+                    // Entry for Inventory (Debit)
+                    DB::connection('mysql2')->table('transactions')->insert([
+                        'acc_id' => config('accounts.inventory.main.id'),
+                        'acc_code' => config('accounts.inventory.main.code'),
+                        'v_date' => date('Y-m-d'),
+                        'voucher_no' => $voucher_no,
+                        'particulars' => $particulars,
+                        'debit_credit' => 1,
+                        'amount' => $amount,
+                        'opening_bal' => 0,
+                        'status' => 1,
+                        'voucher_type' => 16,
+                        'username' => Auth::user()->name,
+                        'date' => date('Y-m-d'),
+                    ]);
 
-
-
-            // $year = $request->year;
-            // DB::Connection('mysql2')->table('year_wise_opening')->where('item_id', $request->sub_1)->delete();
-            // foreach ($year as $key => $row1) :
-
-
-            //     $data1 = array(
-            //         'item_id' => $request->sub_1,
-            //         'year' => $row1,
-            //         'sales_qty' => $request->input('sales_qty')[$key],
-            //         'purchase_qty' => $request->input('purchase_qty')[$key],
-            //         'date' => date('Y-m-d'),
-            //         'username' => Auth::user()->name,
-            //         'action' => 1,
-            //     );
-            //     DB::Connection('mysql2')->table('year_wise_opening')->insertGetId($data1);
-
-            // endforeach;
-
-
-            $amount = DB::Connection('mysql2')->table('stock')->where('status', 1)->where('opening', 1)->sum('amount');
-
-            $data2 = array(
-                'amount' => $amount,
-                'debit_credit' => 1,
-                'action' => 'update'
-            );
-
-            DB::Connection('mysql2')->table('transactions')->where('acc_id', 97)->where('opening_bal', 1)->update($data2);
+                    // Entry for Opening Stock (Credit)
+                    DB::connection('mysql2')->table('transactions')->insert([
+                        'acc_id' => config('accounts.opening_stock.id'),
+                        'acc_code' => config('accounts.opening_stock.code'),
+                        'v_date' => date('Y-m-d'),
+                        'voucher_no' => $voucher_no,
+                        'particulars' => $particulars,
+                        'debit_credit' => 0,
+                        'amount' => $amount,
+                        'opening_bal' => 0,
+                        'status' => 1,
+                        'voucher_type' => 16,
+                        'username' => Auth::user()->name,
+                        'date' => date('Y-m-d'),
+                    ]);
+                }
+            }
 
             DB::Connection('mysql2')->commit();
         } catch (\Exception $e) {
@@ -966,71 +971,71 @@ class StoreAddDetailControler extends Controller
             // DB::connection('mysql2')->table('stock')->where('sub_item_id', $request->sub_1)->where('opening', 1)->delete();
             // DB::connection('mysql2')->table('transactions')->where('voucher_no', 'OS-' . $request->sub_1)->delete();
 
-            $warehouse = $request->warehouse;
-            $total_amount = 0;
-            foreach ($warehouse as $key => $row) {
+            $warehouse_ids = $request->warehouse;
+            foreach ($warehouse_ids as $key => $warehouse_id) {
 
                 $qty = $request->input('closing_stock')[$key];
                 $amount = $request->input('closing_val')[$key];
 
-                $territory = DB::connection('mysql2')
+                $warehouse_info = DB::connection('mysql2')
                     ->table('warehouse')
-                    ->where('id', $row)
-                    ->value('territory_id');
+                    ->where('id', $warehouse_id)
+                    ->first();
 
                 if (is_numeric($qty) && $qty > 0) {
                     $unit_price = $request->input('unit_price')[$key];
-                    $total_amount += $amount;
-                    $data = [
+                    $stock_data = [
                         'voucher_type' => 1,
                         'sub_item_id' => $request->sub_1,
                         'batch_code' => $request->input('batch_code')[$key],
                         'qty' => $qty,
                         'rate' => $unit_price,
                         'amount' => $amount,
-                        'warehouse_id' => $row,
+                        'warehouse_id' => $warehouse_id,
                         'opening' => 1,
                         'created_date' => date('Y-m-d'),
                         'username' => Auth::user()->name,
                         'status' => 1,
                         'check_status' => 1,
-                        'Territory' => $territory ?? 0,
+                        'Territory' => $warehouse_info->territory_id ?? 0,
                     ];
 
-                    DB::connection('mysql2')->table('stock')->insert($data);
+                    DB::connection('mysql2')->table('stock')->insert($stock_data);
+
+                    $item_name = DB::connection('mysql2')->table('subitem')->where('id', $request->sub_1)->value('product_name');
+                    $voucher_no = 'OS-' . $request->sub_1 . '-' . $warehouse_id;
+                    $particulars = 'Opening Stock: ' . $item_name . ' (' . ($warehouse_info->name ?? $warehouse_id) . ')';
+
+                    // Entry for Inventory (Debit)
+                    DB::connection('mysql2')->table('transactions')->insert([
+                        'voucher_no' => $voucher_no,
+                        'v_date' => date('Y-m-d'),
+                        'acc_id' => config('accounts.inventory.main.id'),
+                        'acc_code' => config('accounts.inventory.main.code'),
+                        'particulars' => $particulars,
+                        'opening_bal' => 0,
+                        'debit_credit' => 1,
+                        'amount' => $amount,
+                        'username' => Auth::user()->name,
+                        'status' => 1,
+                        'voucher_type' => 16,
+                    ]);
+
+                    // Entry for Opening Stock (Credit)
+                    DB::connection('mysql2')->table('transactions')->insert([
+                        'voucher_no' => $voucher_no,
+                        'v_date' => date('Y-m-d'),
+                        'acc_id' => config('accounts.opening_stock.id'),
+                        'acc_code' => config('accounts.opening_stock.code'),
+                        'particulars' => $particulars,
+                        'opening_bal' => 0,
+                        'debit_credit' => 0,
+                        'amount' => $amount,
+                        'username' => Auth::user()->name,
+                        'status' => 1,
+                        'voucher_type' => 16,
+                    ]);
                 }
-            }
-
-            if ($total_amount > 0) {
-                // Entry for Inventory (Debit)
-                DB::connection('mysql2')->table('transactions')->insert([
-                    'voucher_no' => 'OS-' . $request->sub_1,
-                    'v_date' => date('Y-m-d'),
-                    'acc_id' => config('accounts.inventory.main.id'),
-                    'acc_code' => config('accounts.inventory.main.code'),
-                    'particulars' => 'Opening Stock Item ID: ' . $request->sub_1,
-                    'opening_bal' => 0,
-                    'debit_credit' => 1,
-                    'amount' => $total_amount,
-                    'username' => Auth::user()->name,
-                    'status' => 1,
-                    'voucher_type' => 16,
-                ]);
-
-                // Entry for Opening Stock (Credit)
-                DB::connection('mysql2')->table('transactions')->insert([
-                    'voucher_no' => 'OS-' . $request->sub_1,
-                    'v_date' => date('Y-m-d'),
-                    'acc_id' => config('accounts.opening_stock.id'),
-                    'acc_code' => config('accounts.opening_stock.code'),
-                    'particulars' => 'Opening Stock Item ID: ' . $request->sub_1,
-                    'opening_bal' => 0,
-                    'debit_credit' => 0,
-                    'amount' => $total_amount,
-                    'username' => Auth::user()->name,
-                    'status' => 1,
-                    'voucher_type' => 16,
-                ]);
             }
 
             DB::connection('mysql2')->commit();
