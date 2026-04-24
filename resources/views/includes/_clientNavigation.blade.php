@@ -470,7 +470,7 @@ CommonHelper::reconnectMasterDatabase();
                             </a>
                         @endif
 
-                        <!-- @if($pending_stock_transfers > 0)
+insert_opening_data_single                        <!-- @if($pending_stock_transfers > 0)
                             <a class="d-flex" href="/store/stock_transfer_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
