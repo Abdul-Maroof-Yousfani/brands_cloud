@@ -2769,6 +2769,7 @@ class FinanceAddDetailControler extends Controller
 			$rv_type=0;
 			$bank=0;
 			$pay_mode = 1;
+			$bank_detail_customer = null;
 			if ($request->pay_mode=='1,1'):
 				$rv_no = CommonHelper::uniqe_no_for_rvs(date('y'),date('m'),1);
 				$rv_type=2;

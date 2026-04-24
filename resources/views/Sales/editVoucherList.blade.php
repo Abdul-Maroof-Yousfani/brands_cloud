@@ -21,6 +21,7 @@ use App\Helpers\ReuseableCode;
 
     @php
         $id = request()->id;
+        $hide_style = $NewRvs->pay_mode == 2 ? 'display: none;' : '';
     @endphp
 
     <?php echo Form::open(['url' => 'fad/updateSalesReceipt/' . $id . '?m=' . $_GET['m'] . '', 'id' => 'createSalesOrder', 'class' => 'stop']); ?>
@@ -88,7 +89,7 @@ use App\Helpers\ReuseableCode;
                                     value="{{ ($customer->name ?? 'N/A') . ' (' . ($cust_acc->name ?? 'N/A') . ' - ' . ($cust_acc->code ?? 'N/A') . ')' }}">
                             </div>
 
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee" style="{{ $hide_style }}">
                                 <label for="bank">Banks (Company Bank)</label>
                                 <?php $bank = DB::Connection('mysql2')->table('bank_detail')->get(); ?>
                                 <select name="bank" class="form-control select2">
@@ -100,7 +101,7 @@ use App\Helpers\ReuseableCode;
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee" style="{{ $hide_style }}">
                                 <label for="bank_detail_customer">Banks (Customer)</label>
                                 <?php $bank = DB::Connection('mysql2')->table('bank_detail_customer')->get(); ?>
                                 <select name="bank_detail_customer" class="form-control select2">
@@ -113,7 +114,7 @@ use App\Helpers\ReuseableCode;
                                 </select>
                             </div>
 
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee" style="{{ $hide_style }}">
                                 <label for="cheque">Cheque No:</label>
                                 <input type="text" class="form-control" id="cheque" name="cheque"
                                     value="{{ $NewRvs->cheque_no }}">
@@ -121,7 +122,7 @@ use App\Helpers\ReuseableCode;
                         </div>
 
                         <div class="row" style="margin-top: 15px;">
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee" style="{{ $hide_style }}">
                                 <label for="cheque_date">Cheque Date:</label>
                                 <input value="{{ $NewRvs->cheque_date }}" class="form-control" name="cheque_date"
                                     type="date">
@@ -183,12 +184,12 @@ use App\Helpers\ReuseableCode;
                                 </select>
                             </div>
 
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee" style="{{ $hide_style }}">
                                 <label for="cheque">Cheque No Advance payment:</label>
                                 @php
                                     $selected_cheques = explode(',', $NewRvs->cheque_list ?? '');
                                 @endphp
-                                <select style="width: 100%" class="form-control select2" name="cheque_list[]" id="cheque"
+                                <select style="width: 100%" class="form-control select2" name="cheque_list[]" id="cheque_list"
                                     onchange="calculateTotalAmount()" multiple>
                                     @foreach($chequed as $key_C => $val_C)
                                         <option value="{{ $val_C->id }}" data-amount="{{ $val_C->amount }}" {{ in_array($val_C->id, $selected_cheques) ? 'selected' : '' }}>
@@ -448,11 +449,11 @@ use App\Helpers\ReuseableCode;
                 if (pay_mode == '2,2') {
                     $(".hidee").hide();
                     $('#use_advance').closest('.col-lg-3').show();
-                    $('#cheque').closest('.col-lg-3').hide();
+                    $('#cheque_list').closest('.col-lg-3').hide();
                 } else {
                     $(".hidee").show();
                     $('#use_advance').closest('.col-lg-3').hide();
-                    $('#cheque').closest('.col-lg-3').show();
+                    $('#cheque_list').closest('.col-lg-3').show();
                 }
             }
 
@@ -465,7 +466,7 @@ use App\Helpers\ReuseableCode;
             function calculateTotalAmount() {
                 let current = 0;
                 let chequeTotal = 0;
-                $('#cheque option:selected').each(function () {
+                $('#cheque_list option:selected').each(function () {
                     chequeTotal += Number($(this).data('amount'));
                 });
                 $('#amount_received').val(current + chequeTotal).trigger('keyup');
