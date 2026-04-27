@@ -177,32 +177,26 @@ use App\Helpers\ReuseableCode;
                                     onchange="calculateTotalAmountAdv()">
                                     <option value="">Select Advance</option>
                                     @foreach (CommonHelper::get_customer_advance($buyers_id_arr) as $val_C)
-                                        <option value="{{ $val_C->id }}" data-amount="{{ $val_C->balance }}" {{ ($NewRvs->use_advance ?? '') == $val_C->id ? 'selected' : '' }}>
-                                            {{ $val_C->payment_no . ' -- ' . number_format($val_C->balance, 2) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee" style="{{ $hide_style }}">
-                                <label for="cheque">Cheque No Advance payment:</label>
-                                @php
-                                    $selected_cheques = explode(',', $NewRvs->cheque_list ?? '');
-                                @endphp
-                                <select style="width: 100%" class="form-control select2" name="cheque_list[]" id="cheque_list"
-                                    onchange="calculateTotalAmount()" multiple>
-                                    @foreach($chequed as $key_C => $val_C)
-                                        <option value="{{ $val_C->id }}" data-amount="{{ $val_C->amount }}" {{ in_array($val_C->id, $selected_cheques) ? 'selected' : '' }}>
-                                            {{ $val_C->cheque_no . '--' . $val_C->amount}}
+                                        <option value="{{ $val_C->id }}" 
+                                                data-amount="{{ $val_C->balance }}"
+                                                data-cheque="{{ $val_C->cheque_no ?? 'N/A' }}"
+                                                {{ ($NewRvs->use_advance ?? '') == $val_C->id ? 'selected' : '' }}>
+                                            {{ $val_C->payment_no }} -- {{ $val_C->cheque_no ?? 'No Cheque' }} -- {{ number_format($val_C->balance, 2) }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                <label for="adv_cheque_no">Advance Cheque No:</label>
+                                <input type="text" readonly class="form-control" id="adv_cheque_no" 
+                                       value="{{ CommonHelper::get_advance_cheque_no($NewRvs->use_advance ?? 0) }}">
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                 <label for="amount_received">Amount:</label>
                                 <input type="number" name="amount_received" id="amount_received" class="form-control"
-                                    step="any" value="{{ $NewRvs->amount_received ?? 0 }}">
+                                    onkeyup="calculateLeftover()" step="any" value="{{ $NewRvs->amount_received ?? 0 }}">
                             </div>
 
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
@@ -361,6 +355,9 @@ use App\Helpers\ReuseableCode;
                 $("#cheque").select2();
                 $('.comma_seprated').number(true, 2);
                 hide_unhide();
+                if ($('#use_advance').val() != '') {
+                    calculateTotalAmountAdv();
+                }
             });
 
             $('#amount_received').on('keyup', function () {
@@ -458,9 +455,32 @@ use App\Helpers\ReuseableCode;
             }
 
             function calculateTotalAmountAdv() {
-                let current = 0;
-                let adv = Number($('#use_advance option:selected').data('amount')) || 0;
-                $('#amount_received').val(current + adv).trigger('keyup');
+                let selected = $('#use_advance option:selected');
+                let debt = Number($('#net_total').val()) || 0;
+                let available_adv = Number(selected.data('amount')) || 0;
+                let cheque_no = selected.data('cheque') || '';
+                
+                // Populate cheque no field
+                $('#adv_cheque_no').val(cheque_no);
+
+                // Propose only what's needed to cover the debt, up to available advance
+                let propose = Math.min(debt, available_adv);
+                $('#amount_received').val(propose).trigger('keyup');
+                
+                // Calculate and show leftover in Advance Amount field
+                calculateLeftover();
+            }
+
+            function calculateLeftover() {
+                let available_adv = Number($('#use_advance option:selected').data('amount')) || 0;
+                let used_now = Number($('#amount_received').val()) || 0;
+                let leftover = available_adv - used_now;
+                
+                if (leftover > 0) {
+                    $('#advance_amount').val(leftover);
+                } else {
+                    $('#advance_amount').val(0);
+                }
             }
 
             function calculateTotalAmount() {

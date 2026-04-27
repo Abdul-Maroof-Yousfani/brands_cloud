@@ -19,25 +19,23 @@ if($accType == 'client'){
         <td class="text-center">{{$payment->cheque_no ?? "N/A"}}</td>
         <td class="text-center">{{CommonHelper::get_customer_name($payment->customer_id)}}</td>
         <td class="text-center">{{CommonHelper::get_account_name($payment->account_recieve_id) ?? '----'}}</td>
-        <td class="text-center">{{$payment->amount ?? '--'}}</td>
-        <td class="text-center">{{$payment->adv_date ?? '--'}}</td>
+        <td class="text-right">{{number_format($payment->amount, 2)}}</td>
+        <td class="text-right" style="font-weight: bold; color: green;">{{number_format($payment->remaining_amount, 2)}}</td>
+        <td class="text-center">{{$payment->adv_date ? FinanceHelper::changeDateFormat($payment->adv_date) : '--'}}</td>
         <td class="text-center">{{$payment->amount_recieved_no ?? '--'}}</td>
-        <td class="text-center">{{$payment->amount_issued_no ?? '--'}}</td>
         <td class="text-center">{{$payment->description ?? '--'}}</td>
         <td class="text-center">
-            {!! 
-            $payment->parent_id != null
-            ? '-'
-            : ($payment->amount_issued_status == 1
-                ? "<span style='color:green'>Issued</span>"
-                : "<span style='color:red'>Not Issued</span>"
-            )
-        !!}
+            @if($payment->remaining_amount <= 0)
+                <span class="label label-success">Completed</span>
+            @elseif($payment->remaining_amount == $payment->amount)
+                <span class="label label-info">Not Issued</span>
+            @else
+                <span class="label label-warning">Partial</span>
+            @endif
         </td>
-        <td>
+        <td class="text-center">
                <a onclick="showDetailModelOneParamerter('finance/showadvancepayment','{{$payment->id}}','View Advance Payment Detail','{{Session::get('run_company')}}','')" 
                class="btn btn-xs btn-success">View</a>                                                                          
         </td>
-
     </tr>
 @endforeach

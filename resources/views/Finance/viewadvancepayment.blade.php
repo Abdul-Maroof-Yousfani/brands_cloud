@@ -79,13 +79,13 @@ use App\Helpers\ReuseableCode;
                                                                     <th class="text-center">Payment No</th>
                                                                     <th class="text-center">Cheque No</th>
                                                                     <th class="text-center">Customer Name</th>
-                                                                    <th class="text-center">Account Recieved Name</th>
-                                                                    <th class="text-center">Amount </th>
-                                                                    <th class="text-center">Advance Date </th>
-                                                                    <th class="text-center">Amount Recieved No</th>
-                                                                    <th class="text-center">Amount Issued No</th>
+                                                                    <th class="text-center">Account Name</th>
+                                                                    <th class="text-center">Amount</th>
+                                                                    <th class="text-center">Remaining Amount</th>
+                                                                    <th class="text-center">Advance Date</th>
+                                                                    <th class="text-center">Ref No</th>
                                                                     <th class="text-center">Description</th>
-                                                                    <th class="text-center">Issued Status</th>
+                                                                    <th class="text-center" style="width: 100px;">Status</th>
                                                                      <th class="text-center">Action</th> 
                                                                     </thead>
                                                                     <tbody id="data">

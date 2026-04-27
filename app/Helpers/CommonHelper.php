@@ -157,14 +157,19 @@ class CommonHelper
 
     public static function get_unadjusted_advance($customer_id, $toDate)
     {
-        // Calculate remaining advance from advance_payments table
-        // Parent rows are positive, child rows (adjustments) are negative.
-        // sum('amount') gives the net unadjusted amount.
+        // Now using the dedicated remaining_amount column for real-time balance tracking
         return DB::connection('mysql2')->table('advance_payments')
             ->where('customer_id', $customer_id)
             ->where('adv_date', '<=', $toDate)
             ->where('status', 1)
-            ->sum('amount');
+            ->whereNull('parent_id') // Ensure we only count main advance records
+            ->sum('remaining_amount');
+    }
+
+    public static function get_advance_cheque_no($id)
+    {
+        $adv = DB::connection('mysql2')->table('advance_payments')->where('id', $id)->first();
+        return $adv ? $adv->cheque_no : '';
     }
 
     public static function get_unadjusted_outstanding_si($customer_id, $toDate)
@@ -5272,18 +5277,14 @@ class CommonHelper
 
         $m = (new AdvancePayment())->setConnection('mysql2');
 
-        // Get all parents for supplier
+        // Now using the dedicated remaining_amount column for real-time balance tracking
         $parents = $m->where('customer_id', $customerId)
             ->whereNull('parent_id') // only parent records
-            ->where('amount_issued_status', 0)
+            ->where('remaining_amount', '>', 0) // Only show advances with balance
             ->get();
 
-        // Attach remaining balance for each parent
         foreach ($parents as $parent) {
-            $parent->balance = $m->where(function ($q) use ($parent) {
-                $q->where('id', $parent->id)
-                    ->orWhere('parent_id', $parent->id);
-            })->sum('amount');
+            $parent->balance = $parent->remaining_amount;
         }
 
         return $parents;

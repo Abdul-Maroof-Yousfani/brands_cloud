@@ -103,6 +103,8 @@ use App\Helpers\ReuseableCode;
 																<th class="text-center">Issue Code</th>
 																<th class="text-center">Issue Date</th>
 																<th class="text-center">Amount</th>
+																<th class="text-center">Remaining</th>
+																<th class="text-center">Tracking Status</th>
 																<th class="text-center">Issue Status</th>
 																<th class="text-center hidden-print">Action</th>
 																</thead>

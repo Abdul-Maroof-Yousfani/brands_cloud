@@ -40,6 +40,30 @@
         {{ number_format($item->amount , 2) }}
     </td>
     <td class="text-center">
+        @if(isset($item->remaining_amount))
+            {{ number_format($item->remaining_amount , 2) }}
+        @else
+            -
+        @endif
+    </td>
+    <td class="text-center">
+        @if(isset($item->remaining_amount))
+            @php
+                $rem = $item->remaining_amount;
+                $tot = $item->amount;
+            @endphp
+            @if($rem == $tot)
+                <span class="label label-danger">Not Issued</span>
+            @elseif($rem > 0 && $rem < $tot)
+                <span class="label label-warning">Partial</span>
+            @elseif($rem == 0)
+                <span class="label label-success">Completed</span>
+            @endif
+        @else
+            -
+        @endif
+    </td>
+    <td class="text-center">
         {{ strtoupper($item->issue_status) }}
     </td>
 

@@ -3170,6 +3170,7 @@ public function importData(Request $request)
 		$advance->payment_no = $paymentNo;
 		$advance->supplier_id = $validated['supplier_id'];
 		$advance->amount = $validated['amount'];
+		$advance->remaining_amount = $validated['amount']; // Initialize balance
 		$advance->payment_type = $validated['pay_mode'];
 		$advance->account_recieve_id = $validated['account_recieve_id'] ?? 0;
 		$advance->bank_id = $validated['bank'] ?? null;
@@ -3254,6 +3255,7 @@ public function importData(Request $request)
 		$advance->payment_no = $paymentNo;
 		$advance->customer_id = $validated['customer_id'];
 		$advance->amount = $validated['amount'];
+		$advance->remaining_amount = $validated['amount']; // Initialize balance
 		if ($request->pay_mode == 1) {
 			$advance->bank_id = $validated['bank'];
 			$advance->account_recieve_id = 0;
@@ -3360,19 +3362,24 @@ public function importData(Request $request)
 					DB::raw('IFNULL(ch.issue_against_code, "-") as issue_code'),
 					DB::raw('IFNULL(ch.issue_against_date, "-") as issue_date'),
 					'ch.amount',
+					'adv.remaining_amount',
 					DB::raw("CASE 
 							WHEN ch.issued = 0 THEN 'CHEQUE IN HAND'
 							WHEN ch.issued = 1 THEN 'Issued'
 							WHEN ch.issued = 2 THEN 'CHEQUE RETURN FROM SUPPLIER'
 							WHEN ch.issued = 3 THEN 'CHEQUE RETURN TO CUSTOMER'
 							WHEN ch.issued = 4 THEN 'CONVERT TO CASH'
-							
 							ELSE 'undefined'
 						END as issue_status"),
 					'ch.issued',
 				])
 				->join('customers as c', 'ch.customer_id', '=', 'c.id')
 				->leftJoin('supplier as s', 'ch.supplier_id', '=', 's.id')
+				->leftJoin('advance_payments as adv', function($join) {
+					$join->on('ch.cheque_no', '=', 'adv.cheque_no')
+						 ->on('ch.customer_id', '=', 'adv.customer_id')
+						 ->whereNull('adv.parent_id');
+				})
 				->where('ch.status', 1)
 				->where('ch.approved', 1)
 				->where('c.status', 1)

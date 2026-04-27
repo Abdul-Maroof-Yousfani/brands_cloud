@@ -3107,124 +3107,58 @@ class FinanceAddDetailControler extends Controller
             //     // DB::connection('mysql2')->table('transactions')->insert($data14);
 
             // }
+			// --- ADVANCE USAGE LOGIC (Single Row Management) ---
 			if ($request->use_advance) {
+				$advance_old = AdvancePayment::find($request->use_advance);
+				if ($advance_old && $advance_old->remaining_amount > 0) {
+					// Use only required amount, capped by available balance
+					$use_amount = min($net_amount, $advance_old->remaining_amount);
 
+					// Deduct from existing record (No new row created)
+					$new_balance = $advance_old->remaining_amount - $use_amount;
+					$advance_old->remaining_amount = $new_balance;
+					
+					// Status: 1 = Completed (0 balance), 0 = Partial (remaining balance)
+					if ($new_balance <= 0) {
+						$advance_old->amount_issued_status = 1;
+						$advance_old->amount_issued_no = $rv_no;
+					} else {
+						$advance_old->amount_issued_status = 0;
+					}
+					$advance_old->save();
 
+					// Track usage against this transaction
+					DB::connection('mysql2')->table('new_rvs')->where('id', $master_id)
+						->update([
+							'is_advnace_used' => 1,
+							'advance_amount_id' => -1 * $use_amount,
+						]);
+				}
+			}
 
-                $advance_old = AdvancePayment::find($request->use_advance);
-                $cal_credit_debit_amount = AdvancePayment::where(function ($q) use ($advance_old) {
-                    $q->where('id', $advance_old->id)
-                        ->orWhere('parent_id', $advance_old->id);
-                })->sum('amount');
+			// --- NEW ADVANCE CREATION LOGIC (Excess New Payment Only) ---
+			// Important: If we are using an existing advance, the rollover is handled by 'remaining_amount'
+			// so we ONLY create a new record if it's a FRESH payment (not using an old advance).
+			if ($request->advance_amount > 0 && !$request->use_advance) {
+				$last = AdvancePayment::orderBy('id', 'desc')->first();
+				$nextId = $last ? $last->id + 1 : 1;
+				$paymentNo = 'ADV' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
 
+				$advance_new = new AdvancePayment();
+				$advance_new->payment_no = $paymentNo;
+				$advance_new->customer_id = $request->buyers_id;
+				$advance_new->supplier_id = $request->supplier_id;
+				$advance_new->bank_id = $request->bank_id; 
+				$advance_new->account_recieve_id = $request->ref_bill_no;
+				$advance_new->adv_date = date('Y-m-d');
+				$advance_new->amount = CommonHelper::check_str_replace($request->advance_amount);
+				$advance_new->remaining_amount = CommonHelper::check_str_replace($request->advance_amount); // Set initial balance
+				$advance_new->amount_recieved_no = $rv_no;
+				$advance_new->description = "Advance amount received from Receipt: $rv_no";
+				$advance_new->user_name = Auth::user()->name;
+				$advance_new->save();
+			}
 
-                if ($advance_old->amount_issued_status != 1) {
-
-                    $advance = new AdvancePayment();
-                    $advance->parent_id = $advance_old->id;
-                    $advance->payment_no = $advance_old->payment_no;
-                    $advance->supplier_id = $advance_old->supplier_id;
-                    $advance->account_recieve_id = $advance_old->account_recieve_id;
-                    $advance->amount = -1 * min($net_amount, $cal_credit_debit_amount);
-
-                    $advance->amount_recieved_no = $advance_old->amount_recieved_no;
-                    $advance->amount_issued_no = $rv_no;
-                    $advance->description = $advance_old->description;
-                    $advance->user_name = $advance_old->user_name;
-                    $advance->save();
-
-
-                }
-
-                db::connection('mysql2')->table('new_rvs')->where('id', $master_id)
-                    ->update([
-                        'is_advnace_used' => 1,
-                        'advance_amount_id' => -1 * min($net_amount, $cal_credit_debit_amount),
-                    ]);
-
-                $parentAmount = $advance_old->amount;
-                $childrenSum = AdvancePayment::where('parent_id', $advance_old->id)->sum('amount'); // -2000
-
-                $cal_credit_debit = ($parentAmount + $childrenSum) == 0;
-
-                if ($cal_credit_debit) {
-                    $advance_old = AdvancePayment::find($request->use_advance);
-                    $advance_old->amount_issued_status = 1;
-                    $advance_old->amount_issued_no = $rv_no;
-                    $advance_old->save();
-                }
-
-
-
-                if ($request->advance_amount > 0 && $cal_credit_debit) {
-
-                    $last = AdvancePayment::orderBy('id', 'desc')->first();
-                    $nextId = $last ? $last->id + 1 : 1;
-                    $paymentNo = 'ADV' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-
-                    $advance = new AdvancePayment();
-                    $advance->payment_no = $paymentNo;
-                    $advance->supplier_id = $request->supplier;
-                    $advance->account_recieve_id = $request->ref_bill_no;
-                    $advance->amount = $request->advance_amount;
-                    $advance->amount_recieved_no = $rv_no;
-                    $advance->description = "advance amount recieved from again this voucher no {$rv_no}";
-                    $advance->user_name = Auth::user()->name;
-                    $advance->save();
-
-                    // $data14 = array
-                    // (
-                    //     'voucher_no' => $paymentNo,
-                    //     'voucher_type' => 33,
-                    //     'date' => date('Y-m-d'),
-                    //     'v_date' => date('Y-m-d'),
-                    //     'time' => date("H:i:s"),
-                    //     'master_id' => $advance->id,
-                    //     'username' => Auth::user()->name,
-                    //     'acc_id' => $customer_acc_id,
-                    //     'amount' => $request->advance_amount,
-                    //     'debit_credit' => 1,
-                    //     'status' => 1
-                    // );
-
-                    // DB::connection('mysql2')->table('transactions')->insert($data14);
-
-                }
-            }
-
-            if (!isset($request->use_advance) && ($request->advance_amount > 0)) {
-                $last = AdvancePayment::orderBy('id', 'desc')->first();
-                $nextId = $last ? $last->id + 1 : 1;
-                $paymentNo = 'ADV' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-
-                $advance = new AdvancePayment();
-                $advance->payment_no = $paymentNo;
-                $advance->supplier_id = $request->supplier;
-                $advance->account_recieve_id = $request->ref_bill_no;
-                $advance->amount = $request->advance_amount;
-                $advance->amount_recieved_no = $rv_no;
-                $advance->description = "advance amount recieved from again this voucher no {$rv_no}";
-                $advance->user_name = Auth::user()->name;
-                $advance->save();
-
-                // $data14 = array
-                // (
-                //     'voucher_no' => $paymentNo,
-                //     'voucher_type' => 33,
-                //     'date' => date('Y-m-d'),
-                //     'v_date' => date('Y-m-d'),
-                //     'time' => date("H:i:s"),
-                //     'master_id' => $advance->id,
-                //     'username' => Auth::user()->name,
-                //     'acc_id' => $customer_acc_id,
-                //     'amount' => $request->advance_amount,
-                //     'debit_credit' => 1,
-                //     'status' => 1
-                // );
-
-                // DB::connection('mysql2')->table('transactions')->insert($data14);
-
-            }
 
 			SalesHelper::sales_activity($rv_no,$request->v_date,$total_amount,5,'Insert');
 
