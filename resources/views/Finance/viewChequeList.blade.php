@@ -108,7 +108,7 @@ use App\Helpers\ReuseableCode;
 																		<th class="text-center">Amount</th>
 																		<th class="text-center">Remaining</th>
 																		<th class="text-center">Consumption Status</th>
-																		<th class="text-center">Issue Status</th>
+																		<th class="text-center">Cheques Status</th>
 																		<th class="text-center hidden-print">Action</th>
 																	</thead>
 																	<tbody id="data">
@@ -170,6 +170,37 @@ use App\Helpers\ReuseableCode;
 			});
 
 
+		}
+		var previous_status = "";
+		function setPrevStatus(obj) {
+			previous_status = $(obj).val();
+		}
+
+		function changeStatus(obj, id) {
+			let status = $(obj).val();
+			let statusText = $(obj).find('option:selected').text();
+			
+			if (confirm('Are you sure you want to change status to "' + statusText + '"?')) {
+				$.ajax({
+					url: '{{ url("finance/updateChequeStatus") }}',
+					type: "POST",
+					data: {
+						_token: '{{ csrf_token() }}',
+						id: id,
+						status: status
+					},
+					success: function (data) {
+						if (data.success) {
+							toastr.success(data.message);
+						} else {
+							toastr.error(data.message);
+							$(obj).val(previous_status); // Revert on server error
+						}
+					}
+				});
+			} else {
+				$(obj).val(previous_status); // Revert on cancel
+			}
 		}
 	</script>
 @endsection

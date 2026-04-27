@@ -3397,11 +3397,12 @@ class FinanceController extends Controller
 					'adv.remaining_amount',
 					DB::raw("CASE 
 							WHEN adv.payment_type = 2 THEN 'CASH / IN HAND'
-							WHEN ch.issued = 0 THEN 'CHEQUE IN HAND'
-							WHEN ch.issued = 1 THEN 'Issued'
-							WHEN ch.issued = 2 THEN 'CHEQUE RETURN FROM SUPPLIER'
-							WHEN ch.issued = 3 THEN 'CHEQUE RETURN TO CUSTOMER'
-							WHEN ch.issued = 4 THEN 'CONVERT TO CASH'
+							WHEN ch.issued = 0 THEN 'Cheque In Hand'
+							WHEN ch.issued = 1 THEN 'Deposit in Bank'
+							WHEN ch.issued = 2 THEN 'Bounce'
+							WHEN ch.issued = 3 THEN 'Return to Customer'
+							WHEN ch.issued = 4 THEN 'Cancel'
+							WHEN ch.issued = 5 THEN 'Clear'
 							ELSE 'CASH / IN HAND'
 						END as issue_status"),
 					'ch.issued',
@@ -3414,6 +3415,7 @@ class FinanceController extends Controller
 				->leftJoin('supplier as s', 'ch.supplier_id', '=', 's.id')
 				->where('adv.status', 1)
 				->where('c.status', 1)
+				->whereNotNull('adv.cheque_no')
 				->whereNotNull('adv.customer_id');
 
 			if ($customer_id) {
@@ -3422,7 +3424,7 @@ class FinanceController extends Controller
 			if ($supplier_id) {
 				$cheque = $cheque->where('ch.supplier_id', $supplier_id);
 			}
-			if ($issued != '') {
+			if ($issued != "") {
 				$cheque = $cheque->where('ch.issued', $issued);
 			}
 			if ($request->pay_mode) {
@@ -3438,5 +3440,18 @@ class FinanceController extends Controller
 		return view('Finance.viewChequeList', compact('customers', 'supplier'));
 	}
 
+	public function updateChequeStatus(Request $request)
+	{
+		$id = $request->id;
+		$status = $request->status;
 
+		$cheque = DB::connection('mysql2')->table('cheque')->where('id', $id)->first();
+		if (!$cheque) {
+			return response()->json(['success' => false, 'message' => 'Cheque not found.']);
+		}
+
+		DB::connection('mysql2')->table('cheque')->where('id', $id)->update(['issued' => $status]);
+
+		return response()->json(['success' => true, 'message' => 'Cheque status updated successfully.']);
+	}
 }

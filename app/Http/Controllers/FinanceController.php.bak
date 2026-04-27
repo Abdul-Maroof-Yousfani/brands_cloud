@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Helpers\CommonHelper;
+use App\Helpers\FinanceHelper;
+use App\Models\AdvancePayment;
+use Auth;
+use DB;
+use Illuminate\Http\Request;
+
+class FinanceController extends Controller
+{
+	// Existing methods before viewChequeList (omitted for brevity, but I should probably keep them if I want to be safe)
+	// Actually, I should only edit the relevant part.
+	
+	// Wait, I don't have the whole file. I only have the last part from git show.
+	// I'll use replace_file_content to fix the mess I made.
+}

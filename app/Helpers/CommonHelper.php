@@ -5277,12 +5277,20 @@ class CommonHelper
             return collect();
         }
 
-        $m = (new AdvancePayment())->setConnection('mysql2');
-
-        // Now using the dedicated remaining_amount column for real-time balance tracking
-        $parents = $m->where('customer_id', $customerId)
-            ->whereNull('parent_id') // only parent records
-            ->where('remaining_amount', '>', 0) // Only show advances with balance
+        // Only show advances that are already 'Clear' (status 5 for cheques) or are Cash payments
+        $parents = DB::Connection('mysql2')->table('advance_payments as adv')
+            ->leftJoin('cheque as ch', 'adv.payment_no', '=', 'ch.code')
+            ->where('adv.customer_id', $customerId)
+            ->whereNull('adv.parent_id')
+            ->where('adv.remaining_amount', '>', 0)
+            ->where(function ($query) {
+                $query->where('adv.payment_type', 2) // Cash is always available
+                    ->orWhere(function ($q) {
+                        $q->where('adv.payment_type', 1)
+                            ->where('ch.issued', 5); // Only Cleared Cheques
+                    });
+            })
+            ->select('adv.*')
             ->get();
 
         foreach ($parents as $parent) {
@@ -5290,9 +5298,6 @@ class CommonHelper
         }
 
         return $parents;
-
-
-
     }
     public static function get_customer_name($id)
     {

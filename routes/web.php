@@ -360,6 +360,7 @@ Route::group(['prefix' => 'finance', 'middleware' => 'mysql2', 'before' => 'csrf
     Route::post('/insertadvancepaymentsupplier', 'FinanceController@insertadvancepaymentsupplier');
 
     Route::get('/viewChequeList', 'FinanceController@viewChequeList');
+    Route::post('/updateChequeStatus', 'FinanceController@updateChequeStatus');
 
     // Route::get('/viewBankEditForm', 'BankController@viewBankEditForm');
     Route::resource('bankFacility', 'BankFacilityController');

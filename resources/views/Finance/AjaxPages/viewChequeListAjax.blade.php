@@ -64,7 +64,18 @@
             @endif
         </td>
         <td class="text-center">
-            {{ strtoupper($item->issue_status) }}
+            @if(isset($item->cheque_id))
+                <select class="form-control" onfocus="setPrevStatus(this)" onchange="changeStatus(this, {{ $item->cheque_id }})" style="width: 150px; margin: 0 auto;">
+                    <option value="0" {{ $item->issued == 0 ? 'selected' : '' }}>Cheque In Hand</option>
+                    <option value="1" {{ $item->issued == 1 ? 'selected' : '' }}>Deposit in Bank</option>
+                    <option value="2" {{ $item->issued == 2 ? 'selected' : '' }}>Bounce</option>
+                    <option value="3" {{ $item->issued == 3 ? 'selected' : '' }}>Return to Customer</option>
+                    <option value="4" {{ $item->issued == 4 ? 'selected' : '' }}>Cancel</option>
+                    <option value="5" {{ $item->issued == 5 ? 'selected' : '' }}>Clear</option>
+                </select>
+            @else
+                {{ strtoupper($item->issue_status) }}
+            @endif
         </td>
 
 
