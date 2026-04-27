@@ -329,7 +329,13 @@ $m=Session::get('run_company');
                 <td class="text-center" colspan="5"><b style="font-size: large;">TOTAL</b></td>
                 <td class="text-right" colspan="1"><b style="font-size: large;"><?php echo  number_format($total_debit,2) ?></b></td>
                 <td class="text-right" colspan="1"><b style="font-size: large;"><?php echo  number_format($total_credit,2) ?></b></td>
-                <td  class="text-center" colspan="1"><b style="font-size: large;color: #ff9999"><?php // echo  number_format($total_debit-$total_credit) ?></b></td>
+                <td class="text-right" colspan="1"><b style="font-size: large;"><?php
+                    if ($balance >= 0) {
+                        echo number_format($balance, 2);
+                    } else {
+                        echo '(' . number_format($balance * -1, 2) . ')';
+                    }
+                ?></b></td>
 
             </tr>
 
