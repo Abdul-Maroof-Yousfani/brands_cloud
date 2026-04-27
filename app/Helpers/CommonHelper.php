@@ -195,9 +195,9 @@ class CommonHelper
                 inner join credit_note c on a.master_id=c.id
                 inner join sales_tax_invoice_data b on a.voucher_data_id=b.id
                 where a.status=1 and a.type=2 and b.master_id="' . $inv->id . '"');
-            
+
             $returns = $return_data->amount ?? 0;
-            
+
             $freight = DB::Connection('mysql2')->table('addional_expense_sales_tax_invoice')
                 ->where('main_id', $inv->id)
                 ->where('status', 1)
@@ -1127,7 +1127,8 @@ class CommonHelper
             <option value="<?php echo $row['id']; ?>" <?php if ($param2 == $row['id']) {
                    echo 'selected';
                } ?>>
-                <?php echo $row['main_ic']; ?></option>
+                <?php echo $row['main_ic']; ?>
+            </option>
             <?php
         }
     }
@@ -1144,7 +1145,8 @@ class CommonHelper
             <option value="<?php echo $row['id']; ?>" <?php if ($param2 == $row['id']) {
                    echo 'selected';
                } ?>>
-                <?php echo $row['sub_ic']; ?></option>
+                <?php echo $row['sub_ic']; ?>
+            </option>
             <?php
         }
     }

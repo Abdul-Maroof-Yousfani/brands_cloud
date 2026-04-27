@@ -25,13 +25,13 @@ Route::auth();
 
 Route::get('teste', function () {
 
-    
-  $sales_order_data = DB::connection("mysql2")->table("sales_order_data")
-                            ->where("item_id", 4258)
-                            ->where('date', '>=', '2025-10-01')
-                            ->where('date', '<=', '2025-10-31')
-                            ->get();
-                            dd($sales_order_data);
+
+    $sales_order_data = DB::connection("mysql2")->table("sales_order_data")
+        ->where("item_id", 4258)
+        ->where('date', '>=', '2025-10-01')
+        ->where('date', '<=', '2025-10-31')
+        ->get();
+    dd($sales_order_data);
 });
 
 
@@ -46,15 +46,15 @@ Route::get('/migrate-specific/{id}', function ($id) {
     return 'Migration executed successfully.';
 });
 
-Route::get("privileges", function() {
+Route::get("privileges", function () {
     dd(\App\Helpers\CommonHelper::get_users_companies());
     // dd($privileges);
 });
 
-Route::get("link-to-master", function() {
+Route::get("link-to-master", function () {
     $suppliers = DB::connection("mysql2")->table("supplier")->get();
 
-    foreach($suppliers as $supplier) {
+    foreach ($suppliers as $supplier) {
         $account_id = $supplier->acc_id;
 
         $account = DB::connection("mysql2")->table("accounts")->where("id", $account_id)->update([
@@ -63,11 +63,11 @@ Route::get("link-to-master", function() {
     }
 });
 
-Route::get("add-head-account", function() {
+Route::get("add-head-account", function () {
     $suppliers = DB::connection("mysql2")->table("supplier")->get();
 
     $index = 1;
-    foreach($suppliers as $supplier) {
+    foreach ($suppliers as $supplier) {
         $account_id = $supplier->acc_id;
         $account = DB::connection("mysql2")->table("accounts")->where("id", $account_id)->first();
         DB::connection("mysql2")->table("accounts")->where("id", $account_id)->update([
@@ -82,19 +82,19 @@ Route::get("add-head-account", function() {
 
 
 Route::get('testing', function () {
-    
+
     $suppliers = Supplier::all();
     $account = DB::connection("mysql2")
-                        ->table("accounts")
-                        ->where("level1", 2)
-                        ->orderBy("level2", "desc")
-                        ->first();
-                        
+        ->table("accounts")
+        ->where("level1", 2)
+        ->orderBy("level2", "desc")
+        ->first();
+
     $latest_level = $account->level2;
-   
+
     DB::beginTransaction();
     try {
-        foreach($suppliers as $supplier) {
+        foreach ($suppliers as $supplier) {
             $level = $latest_level++;
             $code = "2-$level";
             $accountId = DB::connection("mysql2")->table("accounts")->insertGetId([
@@ -107,21 +107,21 @@ Route::get('testing', function () {
                 "username" => "Amir",
                 "operational" => 1
             ]);
-    
+
             $supplier->acc_id = $accountId;
             $supplier->acc_code = $code;
             $supplier->save();
         }
-    } catch(Exception $e) {
+    } catch (Exception $e) {
         DB::rollBack();
         dd($e);
     }
-    
+
     dd("COA created");
-    
+
 });
 
-Route::get("test", function() {
+Route::get("test", function () {
     $branches = Branch::all();
     $mapper = [
         "Test" => "DELETE",
@@ -129,15 +129,15 @@ Route::get("test", function() {
         "Karachi head office" => "Karachi"
     ];
 
-    foreach($branches as $branch) {
-        if($mapper[$branch->branch_name] == "DELETE") {
+    foreach ($branches as $branch) {
+        if ($mapper[$branch->branch_name] == "DELETE") {
             $branch->delete();
         } else {
             $branch->update([
                 "branch_name" => $mapper[$branch->branch_name]
             ]);
         }
-    }  
+    }
 });
 
 
@@ -166,7 +166,7 @@ Route::get('migrate', function () {
 Route::get('/abc', function () {
     $nexmo = app('Nexmo\Client');
     $nexmo->message()->send([
-        'to'   => '923368980737',
+        'to' => '923368980737',
         'from' => '923368980737',
         'text' => 'Using the instance to send a message.'
     ]);
@@ -182,9 +182,12 @@ Route::get('/', function () {
         return view('Visitor.visitorDashboard');
     }
 });
-Route::get('login', array('as' => 'login', function () {
-    return view('Visitor.visitorDashboard');
-}));
+Route::get('login', array(
+    'as' => 'login',
+    function () {
+        return view('Visitor.visitorDashboard');
+    }
+));
 /* Visitor Module Starts Here*/
 
 Route::group(['prefix' => 'visitor', 'before' => 'csrf'], function () {
@@ -207,7 +210,7 @@ Route::group(['prefix' => 'vad', 'before' => 'csrf'], function () {
 
 Route::get('/dMaster', 'MasterController@index');
 Route::get('/dClient', 'ClientController@index')->name('dClient');
-Route::get("markAllAsRead", function() {
+Route::get("markAllAsRead", function () {
     App\Helpers\CommonHelper::markAllAsRead();
     return response()->json("Marked all as read!");
 })->name("markAsRead");
@@ -330,14 +333,14 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
 
 
 Route::group(['prefix' => 'branch', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {
-    Route::get("/view", function() {
-        $branches=new Branch();
-        $branches=$branches->SetConnection('mysql2');
-        $branches=$branches->where('status',1)->get();
-        return view('Purchase.viewWarehouseList',compact('branches'));   
+    Route::get("/view", function () {
+        $branches = new Branch();
+        $branches = $branches->SetConnection('mysql2');
+        $branches = $branches->where('status', 1)->get();
+        return view('Purchase.viewWarehouseList', compact('branches'));
     });
 
-    Route::get("/create", function() {
+    Route::get("/create", function () {
         return view("Purchase.createBranchForm");
     });
 });
@@ -346,17 +349,17 @@ Route::group(['prefix' => 'branch', 'middleware' => 'mysql2', 'before' => 'csrf'
 Route::group(['prefix' => 'finance', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {
     Route::resource('bank', 'BankController');
 
- Route::get('/createadvancepayment', 'FinanceController@createadvancepayment');
+    Route::get('/createadvancepayment', 'FinanceController@createadvancepayment');
     Route::get('/createadvancepaymentsupplier', 'FinanceController@createadvancepaymentsupplier');
     Route::get('/viewadvancepayment', 'FinanceController@viewadvancepayment');
 
-     Route::get('/showadvancepayment', 'FinanceDataCallController@showadvancepayment');
+    Route::get('/showadvancepayment', 'FinanceDataCallController@showadvancepayment');
     Route::get('/viewadvancepaymentsupplier', 'FinanceController@viewadvancepaymentsupplier');
     Route::get('/viewAdvanceDetail', 'FinanceController@viewAdvanceDetail');
     Route::post('/insertadvancepayment', 'FinanceController@insertadvancepayment');
     Route::post('/insertadvancepaymentsupplier', 'FinanceController@insertadvancepaymentsupplier');
 
-  Route::get('/viewChequeList', 'FinanceController@viewChequeList');
+    Route::get('/viewChequeList', 'FinanceController@viewChequeList');
 
     // Route::get('/viewBankEditForm', 'BankController@viewBankEditForm');
     Route::resource('bankFacility', 'BankFacilityController');
@@ -541,7 +544,7 @@ Route::group(['prefix' => 'finance', 'middleware' => 'mysql2', 'before' => 'csrf
     Route::get('/viewOutstanding_bills_through_jvs', 'FinanceController@viewOutstanding_bills_through_jvs');
     //for sales receipt voucher
     Route::post('/CreateReceiptVoucherForSales/{id?}', 'FinanceController@CreateReceiptVoucherForSales');
-    
+
     Route::post('/CreateReceiptVoucherForDebit/{id?}', 'FinanceController@CreateReceiptVoucherForDebit');
 
     // Route::get("createadvancepayment", )
@@ -785,7 +788,7 @@ Route::group(['prefix' => 'fdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
 });
 //End Finance
 
-Route::group(['middleware' => 'mysql2','before' => 'csrf'], function () {
+Route::group(['middleware' => 'mysql2', 'before' => 'csrf'], function () {
     Route::get("debitNote/create", "DebitNoteController@create")->name("debitnote.create");
     Route::post("debitNote/create", "DebitNoteController@store")->name("debitnote.store");
     Route::get("debitNote/{debit}/update", "DebitNoteController@update")->name("debitnote.update");
@@ -932,7 +935,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
     Route::get('/viewSubItemListWithoutEditing', 'PurchaseController@viewSubItemListWithoutEditing');
     Route::resource('specialPrice', 'SpecialPriceController');
 
-  Route::delete('/special-price/{id}', 'SpecialPriceController@destroy')->name('specialPrice.destroy');
+    Route::delete('/special-price/{id}', 'SpecialPriceController@destroy')->name('specialPrice.destroy');
 
 
     Route::resource('customerDiscount', 'CustomerDiscountController');
@@ -950,7 +953,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
     Route::resource('brands', 'BrandController');
     Route::get('/get_brand_by_principal_group', 'BrandController@get_brand_by_principal_group')->name('get_brand_by_principal_group');
 
-    Route::get("/get_subitems_against_brand_id", function() {
+    Route::get("/get_subitems_against_brand_id", function () {
         $brand_id = request()->brand_id;
         return CommonHelper::get_item_by_brand_id($brand_id);
     })->name("brand.subitems");
@@ -963,7 +966,7 @@ Route::group(['prefix' => 'purchase', 'middleware' => 'mysql2', 'before' => 'csr
 
     Route::get('/createUOMForm', 'PurchaseController@createUOMForm');
     Route::get('/viewUOMList', 'PurchaseController@viewUOMList');
-    
+
 
     Route::get('/createDemandForm', 'PurchaseController@createDemandForm');
     Route::get('/viewDemandList', 'PurchaseController@viewDemandList');
@@ -1531,16 +1534,16 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get('/stockReportView', 'StoreController@stockReportView');
     Route::get("/outstanding-again-report", "OutstandingAgainController@show");
     Route::get('/closingReportView', 'StoreController@closingReportView')->name('closingReportView');
-    
+
     Route::get('/BAclosingReport', 'StoreController@BAclosingReportView')->name('baClosingReportView');
     Route::get('/stores-product-stock', 'StoreController@BAclosingReportViewClone')->name('baClosingReportViewClone');
-    
+
     // Route::get('/ajax/search-product', 'StoreController@searchProduct')->name('ajax.search.product');
     Route::get('/ajax/search-product', 'StoreController@searchProduct')->name('ajax.search.product');
-Route::get('/ajax/get-warehouses-by-territory','StoreController@getWarehousesByTerritory')->name('ajax.get.warehouses');
-Route::get('/ajax/get-warehouses-by-territory-stock','StoreController@getWarehousesByTerritory_stocktasfer')->name('ajax.get.warehouses.stocktarasfer');
-Route::get('/ajax/get-warehouses-by-other-territory-stock','StoreController@getWarehousesByOtherTerritories')->name('ajax.get.warehouses.other.stocktarasfer');
-Route::get('/ajax/get-brands-by-warehouse', 'StoreController@getBrandsByWarehouse')->name('ajax.get.brands');
+    Route::get('/ajax/get-warehouses-by-territory', 'StoreController@getWarehousesByTerritory')->name('ajax.get.warehouses');
+    Route::get('/ajax/get-warehouses-by-territory-stock', 'StoreController@getWarehousesByTerritory_stocktasfer')->name('ajax.get.warehouses.stocktarasfer');
+    Route::get('/ajax/get-warehouses-by-other-territory-stock', 'StoreController@getWarehousesByOtherTerritories')->name('ajax.get.warehouses.other.stocktarasfer');
+    Route::get('/ajax/get-brands-by-warehouse', 'StoreController@getBrandsByWarehouse')->name('ajax.get.brands');
 
 
     Route::get('/stockReportBatchWiseView', 'StoreController@stockReportBatchWiseView');
@@ -1779,24 +1782,24 @@ Route::group(['prefix' => 'sales', 'middleware' => 'mysql2', 'before' => 'csrf']
 
     Route::get('/undertaking/{id?}', 'SalesController@undertaking');
 
-    Route::get("/getDropdown", function() {
+    Route::get("/getDropdown", function () {
         $brand_id = request()->brand_id;
         $items = App\Helpers\CommonHelper::get_item_by_brand_id($brand_id);
 
         $list = "";
 
-        foreach($items as $item) {
-            $list .= '<option data-brand="'.$item->brand_id.'" value="'.$item->id.'" data-cat="'.$item->main_ic_id.'">'.'('.$item->sku_code.') '.$item->product_name.'</option>';
-        } 
+        foreach ($items as $item) {
+            $list .= '<option data-brand="' . $item->brand_id . '" value="' . $item->id . '" data-cat="' . $item->main_ic_id . '">' . '(' . $item->sku_code . ') ' . $item->product_name . '</option>';
+        }
 
         $html = '
         <select style="width: 150px;" onChange="item_change(this); getCustomerAssignedWarehouse(this)"
             name="product_id[]" class="form-control itemsclass select2"
             id="">
-            ' 
-            . 
-                $list
-            . 
+            '
+            .
+            $list
+            .
             '
         </select>';
 
@@ -1903,7 +1906,7 @@ Route::group(['prefix' => 'sales', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::match(['GET', 'POST'], '/assignDicount', 'SalesController@assignDicount');
     Route::match(['GET', 'POST'], '/editAssignDicount', 'SalesController@editAssignDicount');
     Route::get('/assignDicountList', 'SalesController@assignDicountList');
-    Route::get('/get-stores-by-territory', 'SalesController@getStoresByTerritory')->name('getStoresByTerritory');  
+    Route::get('/get-stores-by-territory', 'SalesController@getStoresByTerritory')->name('getStoresByTerritory');
     Route::get('/deleteAssignDicount', 'SalesController@deleteAssignDicount');
 
     Route::get('/import/discount', 'SalesController@showImportForm')->name('special-prices.import.form');
@@ -2418,7 +2421,7 @@ Route::group(['prefix' => '', 'middleware' => 'mysql2', 'before' => 'csrf'], fun
     Route::get('/approve_voucher', 'PaymentVoucherDetails@approve_voucher')->name('approve_voucher');
     Route::get("/approve_debit_note", "PaymentVoucherDetails@approve_credit_note")->name("approve_debit_note");
     // Route::get('/verify_voucher', 'PaymentVoucherDetails@verify_voucher');
-Route::get('/verify_voucher', 'PaymentVoucherDetails@verify_voucher')->name('verify_voucher');
+    Route::get('/verify_voucher', 'PaymentVoucherDetails@verify_voucher')->name('verify_voucher');
 
     Route::get('/DeletePVoucherActivity', 'PaymentVoucherDetails@DeletePVoucherActivity');
     Route::get('/payment_return', 'PaymentVoucherDetails@payment_return');

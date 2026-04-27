@@ -67,12 +67,13 @@ use App\Helpers\CommonHelper;
                                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 hidee">
                                                 <label> Banks </label>
                                                 @php
-                                                    $bank = CommonHelper::get_bank_accounts();
+                                                    $bank = CommonHelper::get_all_account();
                                                 @endphp
                                                 <select style="width: 100%" name="bank" id="bank_id"
                                                     class="form-control select2">
+                                                    <option value="">Select Bank Account</option>
                                                     @foreach ($bank as $row)
-                                                        <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                                        <option value="{{ $row->id }}">{{ $row->code . ' ---- ' . $row->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -98,7 +99,7 @@ use App\Helpers\CommonHelper;
                                                 <select class="form-control requiredField select2" name="account_recieve_id"
                                                     id="account_recieve_id">
                                                     <option value="">Select Account</option>
-                                                    @foreach(CommonHelper::get_all_account_operat() as $key => $y)
+                                                    @foreach(CommonHelper::get_all_account() as $key => $y)
                                                         <option {{$y->id == 1235 ? 'selected' : ''}} value="{{$y->id}}">
                                                             {{ $y->code . ' ---- ' . $y->name}}</option>
                                                     @endforeach
@@ -144,6 +145,7 @@ use App\Helpers\CommonHelper;
     <script>
         $('#customer_id').select2();
         $('#account_recieve_id').select2();
+        $('#bank_id').select2();
     </script>
     <script src="{{ URL::asset('assets/js/select2/js_tabindex.js') }}"></script>
     <script>

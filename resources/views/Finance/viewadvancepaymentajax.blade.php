@@ -18,7 +18,15 @@ if($accType == 'client'){
         <td class="text-center">{{$payment->payment_no}}</td>
         <td class="text-center">{{$payment->cheque_no ?? "N/A"}}</td>
         <td class="text-center">{{CommonHelper::get_customer_name($payment->customer_id)}}</td>
-        <td class="text-center">{{CommonHelper::get_account_name($payment->account_recieve_id) ?? '----'}}</td>
+        <td class="text-center">
+            @if($payment->bank_id)
+                {{CommonHelper::get_account_name($payment->bank_id)}}
+            @elseif($payment->account_recieve_id)
+                {{CommonHelper::get_account_name($payment->account_recieve_id)}}
+            @else
+                ----
+            @endif
+        </td>
         <td class="text-right">{{number_format($payment->amount, 2)}}</td>
         <td class="text-right" style="font-weight: bold; color: green;">{{number_format($payment->remaining_amount, 2)}}</td>
         <td class="text-center">{{$payment->adv_date ? FinanceHelper::changeDateFormat($payment->adv_date) : '--'}}</td>
