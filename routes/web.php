@@ -315,6 +315,7 @@ Route::group(['prefix' => 'auth', 'middleware' => 'mysql2', 'before' => 'csrf'],
 Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {
     Route::resource('baFormation', 'BAFormationController');
     Route::post('listbaFormation', 'BAFormationController@getList')->name('list.baFormation');
+    Route::post('baFormation/import', 'BAFormationController@import')->name('baFormation.import');
     Route::post('/sync-employee', 'BAFormationController@syncEmployee')->name('syncEmployee');
 
     Route::resource('baUser', 'BAUserController');
@@ -328,7 +329,7 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
     Route::get("target-report", "BaTargetsController@targetReport")->name("target.report");
 
     Route::get("opening-inventory", "OpeningInventoryController@index");
-    Route::post("opening-inventory", "OpeningInventoryController@import")->name("baFormation.import");
+    Route::post("opening-inventory", "OpeningInventoryController@import")->name("openingInventory.import");
 });
 
 

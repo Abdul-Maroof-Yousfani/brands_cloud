@@ -245,4 +245,156 @@ class BAFormationController extends Controller
             return response()->json(['message' => 'Failed to sync employees.'], 500);
         }
     }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|mimes:csv,txt,xlsx,xls'
+        ]);
+
+        $file = $request->file('import_file');
+        $path = $file->getRealPath();
+        $handle = fopen($path, 'r');
+
+        // Skip header row
+        $header = fgetcsv($handle);
+
+        $successCount = 0;
+        $errorRows = [];
+        $rowNum = 1;
+
+        DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                $rowNum++;
+                
+                // Expected columns: Employee Name/ID, Customer Name/ID, Brands (comma-separated Names/IDs), Status (Active/Deactive)
+                $empVal = trim($row[0] ?? '');
+                $custVal = trim($row[1] ?? '');
+                $brandsStr = trim($row[2] ?? '');
+                $statusVal = trim($row[3] ?? 'Active');
+
+                if (empty($empVal) || empty($custVal) || empty($brandsStr)) {
+                    $errorRows[] = "Row $rowNum: Missing required data (Employee, Customer, or Brands).";
+                    continue;
+                }
+
+                // 1. Resolve Employee ID
+                $empVal = preg_replace('/[[:^print:]]/u', '', $empVal); 
+                $empVal = html_entity_decode($empVal);
+                $empVal = trim(preg_replace('/\s+/', ' ', $empVal)); 
+                
+                $employeeQ = DB::connection('mysql2')->table('employees');
+                if (is_numeric($empVal)) {
+                    $employeeQ->where('emp_id', $empVal);
+                } else {
+                    $searchEmp = str_replace(' ', '%', $empVal);
+                    $employeeQ->where('name', 'LIKE', $searchEmp);
+                }
+                $employee = $employeeQ->first();
+
+                if (!$employee) {
+                    $errorRows[] = "Row $rowNum: Employee '$empVal' not found.";
+                    continue;
+                }
+                $empId = $employee->emp_id;
+
+                // 2. Resolve Customer ID
+                $custVal = preg_replace('/[[:^print:]]/u', '', $custVal);
+                $custVal = html_entity_decode($custVal);
+                $custVal = trim(preg_replace('/\s+/', ' ', $custVal));
+
+                $customerQ = DB::connection('mysql2')->table('customers');
+                if (is_numeric($custVal)) {
+                    $customerQ->where('id', $custVal);
+                } else {
+                    $searchCust = str_replace(' ', '%', $custVal);
+                    $customerQ->where('name', 'LIKE', $searchCust);
+                }
+                $customer = $customerQ->first();
+
+                if (!$customer) {
+                    $errorRows[] = "Row $rowNum: Customer '$custVal' not found.";
+                    continue;
+                }
+                $custId = $customer->id;
+
+                // Check if employee already exists in BA Formation
+                $exists = BAFormation::where('employee_id', $empId)->first();
+                if ($exists) {
+                    $errorRows[] = "Row $rowNum: Employee '$empId' (" . ($employee->name ?? '') . ") already has a record.";
+                    continue;
+                }
+
+                // Generate BA No
+                $lastBaNo = BAFormation::orderBy('ba_no', 'desc')->first();
+                $baNo = '0001';
+                if ($lastBaNo) {
+                    $lastBaNoNumber = (int) substr($lastBaNo->ba_no, 1);
+                    $baNo = str_pad($lastBaNoNumber + 1, 4, '0', STR_PAD_LEFT);
+                }
+
+                // 3. Resolve Brands IDs
+                $brandsInput = array_map('trim', explode(',', $brandsStr));
+                $brandsIds = [];
+                foreach ($brandsInput as $bVal) {
+                    $bVal = preg_replace('/[[:^print:]]/u', '', $bVal);
+                    $bVal = html_entity_decode($bVal);
+                    $bVal = trim(preg_replace('/\s+/', ' ', $bVal));
+                    
+                    $brandQ = DB::connection('mysql2')->table('brands');
+                    if (is_numeric($bVal)) {
+                        $brandQ->where('id', $bVal);
+                    } else {
+                        $searchBrand = str_replace(' ', '%', $bVal);
+                        $brandQ->where('name', 'LIKE', $searchBrand);
+                    }
+                    $brand = $brandQ->first();
+
+                    if ($brand) {
+                        $brandsIds[] = (string)$brand->id;
+                    }
+                }
+
+                if (empty($brandsIds)) {
+                    $errorRows[] = "Row $rowNum: No valid brands found for '$brandsStr'.";
+                    continue;
+                }
+
+                // 4. Resolve Status
+                $finalStatus = 1;
+                $statusValLower = strtolower($statusVal);
+                if ($statusValLower == 'deactive' || $statusValLower == 'inactive' || $statusValLower == '0') {
+                    $finalStatus = 0;
+                }
+
+                BAFormation::create([
+                    'ba_no' => $baNo,
+                    'customer_id' => $custId,
+                    'employee_id' => $empId,
+                    'brands_ids' => json_encode($brandsIds),
+                    'status' => $finalStatus,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $successCount++;
+            }
+
+            fclose($handle);
+            DB::commit();
+
+            $message = "Successfully imported $successCount records.";
+            if (!empty($errorRows)) {
+                $message .= " Errors: " . implode(' | ', $errorRows);
+            }
+
+            return response()->json(['success' => true, 'message' => $message]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            return response()->json(['success' => false, 'message' => 'Import failed: ' . $e->getMessage()]);
+        }
+    }
 }

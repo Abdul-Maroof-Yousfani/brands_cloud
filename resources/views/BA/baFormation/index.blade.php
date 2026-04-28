@@ -17,6 +17,7 @@
             color: #2d3436 !important;
             font-size: 14px !important;
         }
+
         .custom-filter-input:focus {
             border-color: #6c5ce7 !important;
             box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1) !important;
@@ -83,6 +84,9 @@
                 <button type="button" class="btn btn-danger mb-4" id="exportPdfBtn" onclick="exportPdf()"
                     style="border-radius: 8px; font-weight: 600;">
                     <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#importModal">
+                    <i class="fas fa-file-import"></i> Import BA
                 </button>
                 <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     Create
@@ -229,6 +233,44 @@
         </div>
 
 
+        <!-- Import Modal -->
+        <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="importModalLabel">Import BA Formations</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="importBAForm" action="{{ route('baFormation.import') }}" method="POST"
+                        enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <input type="hidden" value="{{csrf_token()}}" name="_token">
+                            <div class="mb-3">
+                                <label for="import_file" class="form-label">Select Excel/CSV File</label>
+                                <input type="file" name="import_file" id="import_file" class="form-control" required>
+                            </div>
+                            <div class="alert alert-info py-2">
+                                <small><strong>Note:</strong> Columns: Employee, Customer, Brands, <b>Status (Active/Inactive)</b>.</small>
+                                <br>
+                                <a href="{{ asset('public/samples/ba_formation_sample.csv') }}"
+                                    class="text-primary font-weight-bold" download>
+                                    <i class="fas fa-download mt-2"></i> Download Sample CSV
+                                </a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="importSubmitBtn">
+                                <span id="importIcon"><i class="fas fa-upload"></i> Import Data</span>
+                                <span id="importLoader" style="display:none"><i class="fas fa-spinner fa-spin"></i>
+                                    Processing...</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div id="filteredData">
             <div class="text-center spinnerparent">
                 <div class="spinner-border" role="status">
@@ -267,6 +309,59 @@
         }
 
         $(document).ready(function () {
+            $('#importBAForm').submit(function (e) {
+                e.preventDefault();
+
+                let formData = new FormData(this);
+                $('#importSubmitBtn').attr('disabled', true);
+                $('#importIcon').hide();
+                $('#importLoader').show();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        $('#importSubmitBtn').attr('disabled', false);
+                        $('#importIcon').show();
+                        $('#importLoader').hide();
+
+                        if (response.success) {
+                            $('#importModal').modal('hide');
+                            $('#importBAForm')[0].reset();
+                            
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                html: response.message,
+                                showConfirmButton: true,
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                applyFilters(); // Refresh the list only after user clicks OK
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                html: response.message,
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        $('#importSubmitBtn').attr('disabled', false);
+                        $('#importIcon').show();
+                        $('#importLoader').hide();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong. Please try again.',
+                        });
+                    }
+                });
+            });
+
             $('#submitadv').submit(function (e) {
                 e.preventDefault();
 
@@ -291,16 +386,18 @@
                     success: function (response) {
                         Swal.close();
                         if (response.success) {
+                            $('.modal').modal('hide');
+                            
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success',
                                 text: response.message,
-                                timer: 2000,
-                                showConfirmButton: false
+                                showConfirmButton: true,
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                // Refresh the list with filterForm only after user clicks OK
+                                filterationCommonGlobal($('#listRefresh').val(), false, 'filteredData', '#filterForm');
                             });
-                            $('.modal').modal('hide');
-                            // Refresh the list with filterForm
-                            filterationCommonGlobal($('#listRefresh').val(), false, 'filteredData', '#filterForm');
                         } else {
                             Swal.fire({
                                 icon: 'error',
