@@ -3381,57 +3381,100 @@ class FinanceController extends Controller
 			$customer_id = $request->customer_id;
 			$supplier_id = $request->supplier_id;
 			$issued = $request->issued;
+			$list_type = $request->list_type ?? 'advance';
 
-			$cheque = DB::Connection('mysql2')->table('advance_payments as adv')
-				->select([
-					'adv.id as adv_id',
-					'c.name as customer_name',
-					'adv.payment_no as reci_code',
-					'adv.cheque_no as cheque_no',
-					'adv.cheque_date',
-					'adv.adv_date as reci_date',
-					DB::raw('IFNULL(s.name, "-") as supplier_name'),
-					DB::raw('IFNULL(ch.issue_against_code, "-") as issue_code'),
-					DB::raw('IFNULL(ch.issue_against_date, "-") as issue_date'),
-					'adv.amount',
-					'adv.remaining_amount',
-					DB::raw("CASE 
-							WHEN adv.payment_type = 2 THEN 'CASH / IN HAND'
-							WHEN ch.issued = 0 THEN 'Cheque In Hand'
-							WHEN ch.issued = 1 THEN 'Deposit in Bank'
-							WHEN ch.issued = 2 THEN 'Bounce'
-							WHEN ch.issued = 3 THEN 'Return to Customer'
-							WHEN ch.issued = 4 THEN 'Cancel'
-							WHEN ch.issued = 5 THEN 'Clear'
-							ELSE 'CASH / IN HAND'
-						END as issue_status"),
-					'ch.issued',
-					'ch.id as cheque_id'
-				])
-				->join('customers as c', 'adv.customer_id', '=', 'c.id')
-				->leftJoin('cheque as ch', function ($join) {
-					$join->on('adv.payment_no', '=', 'ch.code');
-				})
-				->leftJoin('supplier as s', 'ch.supplier_id', '=', 's.id')
-				->where('adv.status', 1)
-				->where('c.status', 1)
-				->whereNotNull('adv.cheque_no')
-				->whereNotNull('adv.customer_id');
+			if ($list_type == 'rv') {
+				$cheque = DB::Connection('mysql2')->table('cheque as ch')
+					->select([
+						'ch.id as adv_id',
+						DB::raw('COALESCE(c.name, s.name, "-") as customer_name'),
+						'ch.code as reci_code',
+						'ch.cheque_no',
+						'ch.cheque_date',
+						'ch.date as reci_date',
+						DB::raw('IFNULL(s.name, "-") as supplier_name'),
+						DB::raw('IFNULL(ch.issue_against_code, "-") as issue_code'),
+						DB::raw('IFNULL(ch.issue_against_date, "-") as issue_date'),
+						'ch.amount',
+						DB::raw('NULL as remaining_amount'),
+						DB::raw("CASE 
+								WHEN ch.issued = 0 THEN 'Cheque In Hand'
+								WHEN ch.issued = 1 THEN 'Deposit in Bank'
+								WHEN ch.issued = 2 THEN 'Bounce'
+								WHEN ch.issued = 3 THEN 'Return to Customer'
+								WHEN ch.issued = 4 THEN 'Cancel'
+								WHEN ch.issued = 5 THEN 'Clear'
+								ELSE 'Cheque In Hand'
+							END as issue_status"),
+						'ch.issued',
+						'ch.id as cheque_id'
+					])
+					->leftJoin('customers as c', 'ch.customer_id', '=', 'c.id')
+					->leftJoin('supplier as s', 'ch.supplier_id', '=', 's.id')
+					->where('ch.status', 1)
+					->whereNotExists(function ($query) {
+						$query->select(DB::raw(1))
+							->from('advance_payments')
+							->whereRaw('advance_payments.payment_no = ch.code');
+					});
 
-			if ($customer_id) {
-				$cheque = $cheque->where('adv.customer_id', $customer_id);
-			}
-			if ($supplier_id) {
-				$cheque = $cheque->where('ch.supplier_id', $supplier_id);
-			}
-			if ($issued != "") {
-				$cheque = $cheque->where('ch.issued', $issued);
-			}
-			if ($request->pay_mode) {
-				$cheque = $cheque->where('adv.payment_type', $request->pay_mode);
-			}
+				if ($customer_id) {
+					$cheque = $cheque->where('ch.customer_id', $customer_id);
+				}
+				if ($issued != "") {
+					$cheque = $cheque->where('ch.issued', $issued);
+				}
 
+			} else {
+				$cheque = DB::Connection('mysql2')->table('advance_payments as adv')
+					->select([
+						'adv.id as adv_id',
+						'c.name as customer_name',
+						'adv.payment_no as reci_code',
+						'adv.cheque_no as cheque_no',
+						'adv.cheque_date',
+						'adv.adv_date as reci_date',
+						DB::raw('IFNULL(s.name, "-") as supplier_name'),
+						DB::raw('IFNULL(ch.issue_against_code, "-") as issue_code'),
+						DB::raw('IFNULL(ch.issue_against_date, "-") as issue_date'),
+						'adv.amount',
+						'adv.remaining_amount',
+						DB::raw("CASE 
+								WHEN adv.payment_type = 2 THEN 'CASH / IN HAND'
+								WHEN ch.issued = 0 THEN 'Cheque In Hand'
+								WHEN ch.issued = 1 THEN 'Deposit in Bank'
+								WHEN ch.issued = 2 THEN 'Bounce'
+								WHEN ch.issued = 3 THEN 'Return to Customer'
+								WHEN ch.issued = 4 THEN 'Cancel'
+								WHEN ch.issued = 5 THEN 'Clear'
+								ELSE 'CASH / IN HAND'
+							END as issue_status"),
+						'ch.issued',
+						'ch.id as cheque_id'
+					])
+					->join('customers as c', 'adv.customer_id', '=', 'c.id')
+					->leftJoin('cheque as ch', function ($join) {
+						$join->on('adv.payment_no', '=', 'ch.code');
+					})
+					->leftJoin('supplier as s', 'ch.supplier_id', '=', 's.id')
+					->where('adv.status', 1)
+					->where('c.status', 1)
+					->whereNotNull('adv.cheque_no')
+					->whereNotNull('adv.customer_id');
 
+				if ($customer_id) {
+					$cheque = $cheque->where('adv.customer_id', $customer_id);
+				}
+				if ($supplier_id) {
+					$cheque = $cheque->where('ch.supplier_id', $supplier_id);
+				}
+				if ($issued != "") {
+					$cheque = $cheque->where('ch.issued', $issued);
+				}
+				if ($request->pay_mode) {
+					$cheque = $cheque->where('adv.payment_type', $request->pay_mode);
+				}
+			}
 
 			$cheque = $cheque->get();
 

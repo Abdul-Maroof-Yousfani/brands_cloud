@@ -38,6 +38,19 @@ use App\Helpers\ReuseableCode;
 								</div>
 
 								<div class="row">
+									<div class="col-lg-12">
+										<div class="form-group" style="margin-left: 15px;">
+											<label style="margin-right: 20px;">
+												<input type="radio" name="list_type" value="advance" checked onchange="viewChequeListAjax()"> Advance Cheque List
+											</label>
+											<label>
+												<input type="radio" name="list_type" value="rv" onchange="viewChequeListAjax()"> Voucher Cheque List
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
 
 									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 										<label>Customer</label>
@@ -51,27 +64,6 @@ use App\Helpers\ReuseableCode;
 										</select>
 									</div>
 
-									<!-- <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-										<label>supplier</label>
-										<select id="supplier_id" class="form-control select2">
-											<option value="">Select supplier</option>
-											<?php foreach ($supplier as $key => $val):?>
-												<option value="<?php echo $val->id?>">
-													<?php echo $val->name; ?>
-												</option>
-											<?php endforeach;?>
-										</select>
-									</div> -->
-
-									<!-- <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-										<label>Voucher Status</label>
-										<select id="issued" class="form-control select2">
-											<option value="">Select issued Status</option>
-											<option value="0">Cheque In Hand</option>
-											<option value="1">Issued</option>
-											<option value="2">Return</option>
-										</select>
-									</div> -->
 									<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 text-right">
 										<input type="button" value="Get Data" class="btn btn-primary"
 											onclick="viewChequeListAjax();" style="margin-top: 32px;" />
@@ -153,7 +145,7 @@ use App\Helpers\ReuseableCode;
 			$('#data').empty();
 			let customer_id = $('#customer_id').val();
 			let supplier_id = $('#supplier_id').val();
-			let issued = $('#issued').val();
+			let list_type = $('input[name="list_type"]:checked').val();
 
 			$.ajax({
 				url: 'viewChequeList',
@@ -161,15 +153,13 @@ use App\Helpers\ReuseableCode;
 				data: {
 					customer_id,
 					supplier_id,
-					issued
+					list_type
 				},
 				success: function (data) {
 					$('#data').empty();
 					$('#data').append(data)
 				}
 			});
-
-
 		}
 		var previous_status = "";
 		function setPrevStatus(obj) {
