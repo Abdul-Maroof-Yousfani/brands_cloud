@@ -177,9 +177,11 @@ use App\Helpers\ReuseableCode;
                                     onchange="calculateTotalAmountAdv()">
                                     <option value="">Select Advance</option>
                                     @foreach (CommonHelper::get_customer_advance($buyers_id_arr) as $val_C)
+                                        <?php $is_cash = empty($val_C->cheque_no) ? 'cash' : 'cheque'; ?>
                                         <option value="{{ $val_C->id }}" 
                                                 data-amount="{{ $val_C->balance }}"
-                                                data-cheque="{{ $val_C->cheque_no ?? 'N/A' }}"
+                                                data-type="{{ $is_cash }}"
+                                                data-cheque="{{ $val_C->cheque_no ?? 'No Cheque' }}"
                                                 {{ ($NewRvs->use_advance ?? '') == $val_C->id ? 'selected' : '' }}>
                                             {{ $val_C->payment_no }} -- {{ $val_C->cheque_no ?? 'No Cheque' }} -- {{ number_format($val_C->balance, 2) }}
                                         </option>
@@ -351,9 +353,13 @@ use App\Helpers\ReuseableCode;
         {{ Form::close() }}
         <script>
             $(document).ready(function () {
+                // Save original options as cloned DOM elements BEFORE select2 initialization
+                window.original_advance_options = $('#use_advance option').clone();
+
                 $('.select2').select2();
                 $("#cheque").select2();
                 $('.comma_seprated').number(true, 2);
+
                 hide_unhide();
                 if ($('#use_advance').val() != '') {
                     calculateTotalAmountAdv();
@@ -443,14 +449,41 @@ use App\Helpers\ReuseableCode;
 
             function hide_unhide() {
                 var pay_mode = $('#pay_mode').val();
+                var filter_type = (pay_mode == '1,1') ? 'cheque' : 'cash';
+
+                // Preserve existing selection if applicable
+                var currentSelection = $('#use_advance').val();
+
+                if (window.original_advance_options) {
+                    $('#use_advance').empty();
+                    window.original_advance_options.each(function() {
+                        var opt = $(this);
+                        if (opt.val() == '') {
+                             $('#use_advance').append(opt.clone());
+                             return;
+                        }
+                        // Only append the options that match the payment mode
+                        if (opt.attr('data-type') == filter_type) {
+                             $('#use_advance').append(opt.clone());
+                        }
+                    });
+                }
+                
+                // Restore selection if it still exists in the new list, otherwise reset
+                if ($('#use_advance option[value="'+currentSelection+'"]').length) {
+                    $('#use_advance').val(currentSelection);
+                } else {
+                    $('#use_advance').val('');
+                }
+
+                $('#use_advance').select2();
+
                 if (pay_mode == '2,2') {
                     $(".hidee").hide();
                     $('#use_advance').closest('.col-lg-3').show();
-                    $('#cheque_list').closest('.col-lg-3').hide();
                 } else {
-                    $(".hidee").show();
-                    $('#use_advance').closest('.col-lg-3').hide();
-                    $('#cheque_list').closest('.col-lg-3').show();
+                    $(".hidee").show(); // This shows bank strings...
+                    $('#use_advance').closest('.col-lg-3').show(); 
                 }
             }
 
