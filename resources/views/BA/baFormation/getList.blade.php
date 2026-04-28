@@ -91,6 +91,27 @@
 
    <script>
 $("#TableExportToCsv").DataTable({
+    dom: 'Bfrtip',
+    buttons: [
+        {
+            extend: 'excelHtml5',
+            text: '<i class="fas fa-file-excel"></i> Excel',
+            title: 'BA Formation Report',
+            className: 'btn btn-success btn-sm mb-3',
+            exportOptions: {
+                columns: [0, 1, 2, 3]
+            }
+        },
+        {
+            extend: 'pdfHtml5',
+            text: '<i class="fas fa-file-pdf"></i> PDF',
+            title: 'BA Formation Report',
+            className: 'btn btn-danger btn-sm mb-3',
+            exportOptions: {
+                columns: [0, 1, 2, 3]
+            }
+        }
+    ],
     ordering: true,
     searching: true,
     paging: true,
@@ -102,4 +123,5 @@ $("#TableExportToCsv").DataTable({
     ]
 });
 
-</script>
+// Hide original DT buttons since we moved them to header
+$('.dt-buttons').hide();</script>

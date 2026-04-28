@@ -24,11 +24,33 @@ class BAFormationController extends Controller
 
     public function getList(Request $request)
     {
-        $data['BAFormations'] = BAFormation::leftJoin('employees', 'employees.emp_id', '=', 'b_a_formations.employee_id')
-            ->leftJoin('customers', 'customers.id', '=', 'b_a_formations.customer_id')
-            ->select('b_a_formations.id', 'b_a_formations.status', 'b_a_formations.ba_no', 'b_a_formations.brands_ids', 'b_a_formations.employee_id', 'employees.name as employee_name', 'b_a_formations.customer_id', 'customers.name as customer_name')
-            // ->paginate(10);
-            ->get();
+        $query = BAFormation::leftJoin('employees', 'employees.emp_id', '=', 'b_a_formations.employee_id')
+            ->leftJoin('customers', 'customers.id', '=', 'b_a_formations.customer_id');
+
+        // Apply Filters
+        if ($request->has('filter_customer') && $request->filter_customer != '') {
+            $query->where('b_a_formations.customer_id', $request->filter_customer);
+        }
+
+        if ($request->has('filter_employee') && $request->filter_employee != '') {
+            $query->where('b_a_formations.employee_id', $request->filter_employee);
+        }
+
+        if ($request->has('filter_status') && $request->filter_status != '') {
+            $query->where('b_a_formations.status', $request->filter_status);
+        }
+
+        $data['BAFormations'] = $query->select(
+            'b_a_formations.id',
+            'b_a_formations.status',
+            'b_a_formations.ba_no',
+            'b_a_formations.brands_ids',
+            'b_a_formations.employee_id',
+            'employees.name as employee_name',
+            'b_a_formations.customer_id',
+            'customers.name as customer_name'
+        )->orderBy('b_a_formations.id', 'desc')->get();
+
         return view('BA.baFormation.getList', $data);
     }
     /**
