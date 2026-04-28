@@ -5284,11 +5284,13 @@ class CommonHelper
             ->whereNull('adv.parent_id')
             ->where('adv.remaining_amount', '>', 0)
             ->where(function ($query) {
-                $query->where('adv.payment_type', 2) // Cash is always available
-                    ->orWhere(function ($q) {
-                        $q->where('adv.payment_type', 1)
-                            ->where('ch.issued', 5); // Only Cleared Cheques
-                    });
+                $query->whereNull('adv.cheque_no') // Cash
+                      ->orWhere('adv.cheque_no', '')
+                      ->orWhere(function ($q) { // Cleared check
+                          $q->whereNotNull('adv.cheque_no')
+                            ->where('adv.cheque_no', '!=', '')
+                            ->where('ch.issued', 5);
+                      });
             })
             ->select('adv.*')
             ->get();

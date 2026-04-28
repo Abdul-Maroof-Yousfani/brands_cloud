@@ -160,9 +160,11 @@ if ($so_data_raw) {
                         onchange="calculateTotalAmountAdv()">
                         <option value="">Select Advance</option>
                         @foreach (CommonHelper::get_customer_advance($buyers_id_arr) as $val_C)
+                            <?php $is_cash = empty($val_C->cheque_no) ? 'cash' : 'cheque'; ?>
                             <option value="{{ $val_C->id }}" 
                                     data-amount="{{ $val_C->balance }}"
-                                    data-cheque="{{ $val_C->cheque_no ?? 'N/A' }}">
+                                    data-type="{{ $is_cash }}"
+                                    data-cheque="{{ $val_C->cheque_no ?? 'No Cheque' }}">
                                 {{ $val_C->payment_no }} -- {{ $val_C->cheque_no ?? 'No Cheque' }} -- {{ number_format($val_C->balance, 2) }}
                             </option>
                         @endforeach
@@ -344,6 +346,9 @@ if ($so_data_raw) {
             $('.select2').select2();
             $("#cheque").select2();
             $('.comma_seprated').number(true, 0); // Using 0 decimals per user request for int rounding
+            
+            // Save the original options so we can dynamically add/remove them later
+            window.original_advance_options = $('#use_advance option').clone();
 
             // Initial calculation
             $('.receive_amount').each(function() {
@@ -430,11 +435,42 @@ if ($so_data_raw) {
 
         function hide_unhide() {
             var pay_mode = $('#pay_mode').val();
+            // 1,1 is Cheque, 2,2 is Cash
+            var filter_type = (pay_mode == '1,1') ? 'cheque' : 'cash';
+            
+            // Preserve existing selection if applicable
+            var currentSelection = $('#use_advance').val();
+
+            // Restore original options to start fresh
+            if (window.original_advance_options) {
+                $('#use_advance').empty();
+                window.original_advance_options.each(function() {
+                    var opt = $(this);
+                    if (opt.val() == '') {
+                         $('#use_advance').append(opt.clone());
+                         return;
+                    }
+                    if (opt.data('type') == filter_type) {
+                         $('#use_advance').append(opt.clone());
+                    }
+                });
+            }
+
+            // Restore selection if it still exists in the new list, otherwise reset
+            if ($('#use_advance option[value="'+currentSelection+'"]').length) {
+                $('#use_advance').val(currentSelection);
+            } else {
+                $('#use_advance').val('');
+            }
+
+            $('#use_advance').select2(); // refresh select2 UI
+
             if (pay_mode == '2,2') {
                 $(".hidee").hide();
                 $('#use_advance').closest('.col-lg-3').show();
             } else {
                 $(".hidee").show();
+                $('#use_advance').closest('.col-lg-3').show();
             }
         }
 
