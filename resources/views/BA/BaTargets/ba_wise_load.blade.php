@@ -125,11 +125,43 @@
                     @endforeach
                 </div>
             @endforeach
+
+            <!-- Integrated Grand Total Section AT BOTTOM -->
+            <div class="mt-4 p-4 border-top" style="background: #f8f9fc; border-radius: 0 0 15px 15px;">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h4 class="mb-0 font-weight-bold text-dark">
+                            <i class="fas fa-calculator mr-2 text-primary"></i>
+                            Grand Total ({{ strtoupper($target_type) }})
+                        </h4>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <span class="h1 mb-0 font-weight-bold text-primary" id="overallTotalDisplay" style="letter-spacing: -1.5px;">0.00</span>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 </div>
 
 <script>
+    function calculateGrandTotal() {
+        let grandTotal = 0;
+        $('.target-input').each(function() {
+            let val = parseFloat($(this).val()) || 0;
+            grandTotal += val;
+        });
+        $('#overallTotalDisplay').text(grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+
+    // Initial calculation
+    calculateGrandTotal();
+
+    // Recalculate on input change
+    $('.target-input').on('input change', function() {
+        calculateGrandTotal();
+    });
+
     $('#saveTargetsBtn').click(function (e) {
         e.preventDefault();
         let btn = $(this);
