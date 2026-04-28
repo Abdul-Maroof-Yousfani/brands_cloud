@@ -1,55 +1,132 @@
 @extends('layouts.default')
 @section('content')
-    <div class="well_N">
-        <div class="row" style="display: flex; align-items: center;">
-            <div class="col-md-3">
-                <label>Month</label>
-                <input class="form-control" type="month" name="month" id="month">
-            </div>
-            <button style="
-                margin-top: 23px;
-            " class="btn btn-primary waves-effect waves-float waves-light" onclick="getCustomers()" type="button">Get</button>
+    <style>
+        .premium-filter-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .filter-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4e73df;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .setup-title {
+            font-weight: 800;
+            color: #2e3b4e;
+            letter-spacing: -1px;
+            margin-bottom: 25px;
+        }
+        .well_N {
+            background: #f4f7fc;
+            min-height: 100vh;
+            padding: 30px;
+        }
+    </style>
 
+    <div class="well_N">
+        <h1 class="setup-title"><i class="fas fa-layer-group text-primary mr-2"></i> BA Target Setup</h1>
+        
+        <div class="premium-filter-card">
+            <form id="filterForm">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="filter-label">Target Month</label>
+                        <select id="month" name="month" class="form-select select2">
+                            @for($m=1; $m<=12; $m++)
+                                <option value="{{ sprintf('%02d', $m) }}" {{ date('m') == $m ? 'selected' : '' }}>
+                                    {{ date('F', mktime(0, 0, 0, $m, 1)) }}
+                                </option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="filter-label">Target Year</label>
+                        <select id="year" name="year" class="form-select select2">
+                            @for($y=date('Y')-1; $y<=date('Y')+1; $y++)
+                                <option value="{{ $y }}" {{ date('Y') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="filter-label">Business Associate</label>
+                        <select class="form-select select2" id="employee_id" name="employee_id">
+                            <option value="">Search BA name or ID...</option>
+                            @foreach(App\Employees::whereIn('emp_id', App\BAFormation::pluck('employee_id')->unique())->get() as $emp)
+                                <option value="{{ $emp->emp_id }}">{{ $emp->name }} ({{ $emp->emp_id }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="filter-label">Tracking Mode</label>
+                        <select class="form-select select2" id="target_type" name="target_type">
+                            <option value="amount">Amount (Revenue) wise</option>
+                            <option value="qty">Quantity (Units) wise</option>
+                        </select>
+                    </div>
                 </div>
-                <div id="table" style="margin-top: 20px;"></div>
+            </form>
         </div>
 
-        <script>
-            function getCustomers() {
-                $.ajax({
-                    url: '{{ route("get.customers") }}',
-                    type: 'GET',
-                    data: {
-                        "month": $("#month").val()
-                    },  
-                    beforeSend: function () {
+        <div id="baTargetData">
+            <div class="card p-5 text-center text-muted" style="border: 2px dashed #cbd5e0; border-radius: 20px; background: transparent;">
+                <div class="mb-3"><i class="fas fa-mouse-pointer fa-3x opacity-2"></i></div>
+                <h4 class="font-weight-bold" style="color: #a0aec0;">Select a BA & Period to begin setup</h4>
+            </div>
+        </div>
+    </div>
 
-                        Swal.fire({
-                            title: 'Loading...',
-                            html: 'Please wait while we fetch the data.',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading(); // show spinner
-                            }
-                        });
-                    },
-                    success: function (response) {
-                        // handle success
-                        Swal.close();
-                        $("#table").empty();
-                        $("#table").append(response);
-                    },
-                    error: function (xhr, status, error) {
-                        // handle error
-                        console.error(xhr.responseText);
-                    },
-                    complete: function () {
-                        // runs after success/error
-                        console.log('Request finished');
-                    }
+    <input type="hidden" id="loadBaTargetRoute" value="{{ route('baTargets.loadBaWise') }}">
+
+
+        <script>
+            $(document).ready(function () {
+                $('.select2').select2({
+                    theme: 'bootstrap-5'
                 });
-        
-            }
-           
+
+                function loadBaData() {
+                    let employee_id = $('#employee_id').val();
+                    let month = $('#month').val();
+                    let year = $('#year').val();
+                    let month_year = year + '-' + month;
+                    let target_type = $('#target_type').val();
+
+                    if (!employee_id || !month || !year) {
+                        $('#baTargetData').html('<div class="card p-5 text-center text-muted" style="border: 2px dashed #ddd;"><h4>Please select BA and Date to setup targets</h4></div>');
+                        return;
+                    }
+
+                    $('#baTargetData').html('<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading BA Setup...</p></div>');
+
+                    $.ajax({
+                        url: $('#loadBaTargetRoute').val(),
+                        type: 'GET',
+                        data: {
+                            employee_id: employee_id,
+                            month_year: month_year,
+                            target_type: target_type
+                        },
+                        success: function (res) {
+                            $('#baTargetData').html(res);
+                        },
+                        error: function (err) {
+                            $('#baTargetData').html('<div class="alert alert-danger">Error loading data. Please try again.</div>');
+                        }
+                    });
+                }
+
+                $('#employee_id, #month, #year, #target_type').on('change', function () {
+                    loadBaData();
+                });
+            });
         </script>
 @endsection

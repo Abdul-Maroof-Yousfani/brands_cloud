@@ -322,6 +322,8 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
     Route::post('listbaUser', 'BAUserController@getList')->name('list.baUser');
 
 
+    Route::get('baTargets/loadBaWise', 'BaTargetsController@loadBaWise')->name('baTargets.loadBaWise');
+    Route::post('baTargets/saveBaWise', 'BaTargetsController@saveBaWise')->name('baTargets.saveBaWise');
     Route::resource('baTargets', 'BaTargetsController');
     Route::get("/ba/getCustomers", "BaTargetsController@getCustomers")->name("get.customers");
     Route::post("/ba/insertTarget", "BaTargetsController@insertTarget")->name("insert.target");

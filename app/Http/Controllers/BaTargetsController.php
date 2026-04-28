@@ -10,14 +10,15 @@ use App\TargetItems;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 
 class BaTargetsController extends Controller
 {
-  public function index()
+    public function index()
     {
-        $data['customers'] = \App\Helpers\SalesHelper::get_all_customer_only_distributors();
-        $data['brands'] = \App\Helpers\CommonHelper::get_all_brand();
+        // Get all Business Associates (Employees) from formations
+        $data['employees'] = \App\Employees::whereIn('emp_id', \App\BAFormation::pluck('employee_id')->unique())->get();
         return view('BA.BaTargets.index', $data);
     }
 
@@ -363,4 +364,93 @@ class BaTargetsController extends Controller
     ));
 }
 
+    public function loadBaWise(Request $request)
+    {
+        $employee_id = $request->employee_id;
+        $month_year = $request->month_year;
+        $target_type = $request->target_type;
+        
+        if (empty($month_year) || strpos($month_year, '-') === false) {
+            return '<div class="alert alert-warning">Invalid Date selected.</div>';
+        }
+
+        [$year, $month] = explode('-', $month_year);
+
+        // Ensure target_type column exists
+        try {
+            if (!Schema::connection('mysql2')->hasColumn('target_items', 'target_type')) {
+                DB::connection('mysql2')->statement("ALTER TABLE target_items ADD COLUMN target_type VARCHAR(20) DEFAULT 'qty' AFTER brand_id");
+            }
+        } catch (\Exception $e) {
+            // Log or ignore if cannot alter
+        }
+
+        // Get all formations for this BA (which define assigned stores and brands)
+        $formations = \App\BAFormation::where('employee_id', $employee_id)
+            ->with(['customer'])
+            ->get();
+
+        // Get existing targets to pre-fill (FILTERED BY TYPE)
+        $existing_targets = \App\TargetItems::where('year', $year)
+            ->where('month', (int)$month)
+            ->where('employee_id', $employee_id)
+            ->where('target_type', $target_type)
+            ->get()
+            ->keyBy(function($item) {
+                return $item->customer_id . '_' . $item->brand_id;
+            });
+
+        // Resolve Brands for each formation
+        foreach ($formations as $f) {
+            $brandIds = json_decode($f->brands_ids, true) ?? [];
+            $f->assigned_brands = \App\Models\Brand::whereIn('id', $brandIds)->get();
+        }
+
+        return view('BA.BaTargets.ba_wise_load', compact('formations', 'target_type', 'month_year', 'employee_id', 'existing_targets'));
+    }
+
+    public function saveBaWise(Request $request) 
+    {
+        try {
+            $employee_id = $request->employee_id;
+            $month_year = $request->month_year;
+            $target_type = $request->target_type;
+            $targets = $request->targets ?? [];
+
+            if (empty($month_year) || strpos($month_year, '-') === false) {
+                return response()->json(['success' => false, 'message' => 'Invalid Date.']);
+            }
+
+            [$year, $month] = explode('-', $month_year);
+
+            DB::beginTransaction();
+
+            foreach ($targets as $cust_id => $brands) {
+                foreach ($brands as $brand_id => $value) {
+                    if ($value === null || $value === '') continue;
+
+                    \App\TargetItems::updateOrCreate(
+                        [
+                            'year'        => $year,
+                            'month'       => (int)$month,
+                            'employee_id' => $employee_id,
+                            'customer_id' => $cust_id,
+                            'brand_id'    => $brand_id,
+                            'target_type' => $target_type // Use target_type in key to separate them
+                        ],
+                        [
+                            'target'      => $value,
+                            'updated_at'  => now()
+                        ]
+                    );
+                }
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Targets saved successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }
