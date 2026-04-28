@@ -23,7 +23,7 @@ use App\Helpers\ReuseableCode;
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 
-												<span class="subHeadingLabelClass">Cheque List</span>
+												<span class="subHeadingLabelClass">Advance Cheque List</span>
 											</div>
 											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right">
 												<?php echo CommonHelper::displayPrintButtonInBlade('PrintPanel', '', '1');?>
@@ -109,7 +109,7 @@ use App\Helpers\ReuseableCode;
 																		<th class="text-center">Remaining</th>
 																		<th class="text-center">Consumption Status</th>
 																		<th class="text-center">Cheques Status</th>
-																		<th class="text-center hidden-print">Action</th>
+																		<!-- <th class="text-center hidden-print">Action</th> -->
 																	</thead>
 																	<tbody id="data">
 
