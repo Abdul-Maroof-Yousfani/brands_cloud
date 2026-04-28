@@ -2,6 +2,126 @@
 @section('content')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    /* Premium Select2 Styling */
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #d1dcec !important;
+        border-radius: 8px !important;
+        padding: 2px 8px !important;
+        min-height: 48px !important;
+        height: auto !important;
+        transition: all 0.3s ease;
+        background: #f8fbff !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+    }
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: #6c5ce7 !important;
+        box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1) !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%) !important;
+        border: none !important;
+        border-radius: 6px !important;
+        color: #fff !important;
+        padding: 5px 12px !important;
+        margin: 4px 4px !important;
+        font-weight: 500 !important;
+        font-size: 13px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        box-shadow: 0 2px 4px rgba(108, 92, 231, 0.2) !important;
+    }
+    /* Hide native X text and style the remove container */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: rgba(255, 255, 255, 0.8) !important;
+        cursor: pointer !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        transition: all 0.2s ease !important;
+        order: -1 !important; /* Move to left */
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #fff !important;
+        transform: scale(1.2) !important;
+    }
+    /* Hide any extra 'x' characters rendered by some Select2 versions */
+    .select2-selection__choice__remove span, 
+    .select2-selection__choice__display {
+        display: inline-block !important;
+    }
+    /* Ensure no duplicate indicators */
+    .select2-selection__choice__remove::before {
+        display: none !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-search--inline {
+        margin-top: 0 !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-search__field {
+        margin-top: 7px !important;
+        height: 26px !important;
+    }
+    /* Single Select Design */
+    .select2-container--default .select2-selection--single {
+        border: 1px solid #d1dcec !important;
+        border-radius: 8px !important;
+        height: 45px !important;
+        padding: 8px 10px !important;
+        background: #f8fbff !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 28px !important;
+        color: #2d3436 !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 43px !important;
+    }
+    .form-label {
+        font-weight: 600 !important;
+        color: #2d3436 !important;
+        margin-bottom: 8px !important;
+        display: inline-block !important;
+    }
+    .modal-content {
+        border-radius: 15px !important;
+        border: none !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+    .modal-header {
+        background: #fdfdff !important;
+        border-bottom: 1px solid #f1f4f8 !important;
+        border-radius: 15px 15px 0 0 !important;
+    }
+    .modal-title {
+        color: #2d3436 !important;
+        font-weight: 700 !important;
+    }
+    .btn-primary {
+        background: #6c5ce7 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 10px 25px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-primary:hover {
+        background: #5b4bc4 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4) !important;
+    }
+</style>
     <div class="well_N">
         <div class="row align-items-center ">
             <div class="col-md-6">
@@ -23,20 +143,19 @@
         </div>
 
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Create BA Formation</h5>
-                        {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>--}}
                     </div>
                     <div class="modal-body">
-                        <form id="submitadv" action="{{route('baFormation.store')}}" method="POST">
+                        <form id="submitadv" action="{{route('baFormation.store')}}" method="POST" class="baFormationForm underfieldvalidation">
                             <input type="hidden" value="{{csrf_token()}}" name="_token">
                             <input type="hidden" id="listRefresh" value="{{route('list.baFormation')}}">
                             <div class="mb-3">
                                 <label for="customers" class="form-label">Customers</label>
-                                <select multiple class="form-select select2" id="customers" name="customer"  style="width: 100%;">
-                                    {{-- <option value="">Select Customers</option> --}}
+                                <select class="form-select select2 requiredv" id="customers" name="customer"  style="width: 100%;" data-message="Customer">
+                                    <option value="">Select Customers</option>
                                     @foreach(App\Helpers\SalesHelper::get_all_customer_only_distributors() as $row)
                                         <option value="{{$row->id}}">{{$row->name}}</option>
                                     @endforeach
@@ -44,7 +163,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="employee" class="form-label">Employee</label>
-                                <select multiple class="form-select select2" id="employee" name="employee"  style="width: 100%;">
+                                <select class="form-select select2 requiredv" id="employee" name="employee"  style="width: 100%;" data-message="Employee">
                                     <option value="">Select Employee</option>
                                     @foreach(App\Helpers\SalesHelper::get_all_employees() as $row)
                                         <option value="{{$row->id}}">{{$row->name}}</option>
@@ -53,7 +172,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="brands" class="form-label">Brands</label>
-                                <select multiple class="form-select select2" id="brands" name="brands[]"  style="width: 100%;">
+                                <select multiple class="form-select select2 requiredv" id="brands" name="brands[]"  style="width: 100%;" data-message="Brands">
                                     @foreach(App\Helpers\CommonHelper::get_all_brand() as $item)
                                         <option value="{{$item->id}}">
                                             {{$item->name}}
@@ -62,8 +181,8 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="customers" class="form-label">status</label>
-                                <select  multiple class="form-select select2"  name="status"   id="status"  style="width: 100%;">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select select2 requiredv" name="status" id="status" style="width: 100%;" data-message="Status">
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
@@ -96,7 +215,7 @@
 
 
         $(document).ready(function () {
-            $('#SubmitForm').submit(function (e) {
+            $('#submitadv').submit(function (e) {
                 e.preventDefault();
 
                 let formData = new FormData(this);
@@ -122,12 +241,14 @@
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Import Successful!',
-                                text: response.message
-                            }).then(() => {
-                                // Refresh the page after the alert is closed
-                                location.reload();
+                                title: 'Success',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
                             });
+                            $('.modal').modal('hide');
+                            // Refresh the list
+                            filterationCommonGlobal($('#listRefresh').val());
                         } else {
                             Swal.fire({
                                 icon: 'error',

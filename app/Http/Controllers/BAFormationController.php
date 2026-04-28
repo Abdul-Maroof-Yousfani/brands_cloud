@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\BAFormation;
 use App\Employees;
-use Doctrine\DBAL\Query\QueryException;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-
+use Exception;
 
 class BAFormationController extends Controller
 {
@@ -20,17 +19,17 @@ class BAFormationController extends Controller
      */
     public function index()
     {
-        return  view('BA.baFormation.index');
+        return view('BA.baFormation.index');
     }
 
     public function getList(Request $request)
     {
-      $data['BAFormations'] = BAFormation::leftJoin('employees', 'employees.emp_id', '=', 'b_a_formations.employee_id')
-          ->leftJoin('customers', 'customers.id', '=', 'b_a_formations.customer_id')
-            ->select('b_a_formations.id','b_a_formations.status','b_a_formations.ba_no','b_a_formations.brands_ids','b_a_formations.employee_id','employees.name as employee_name','b_a_formations.customer_id','customers.name as customer_name')
+        $data['BAFormations'] = BAFormation::leftJoin('employees', 'employees.emp_id', '=', 'b_a_formations.employee_id')
+            ->leftJoin('customers', 'customers.id', '=', 'b_a_formations.customer_id')
+            ->select('b_a_formations.id', 'b_a_formations.status', 'b_a_formations.ba_no', 'b_a_formations.brands_ids', 'b_a_formations.employee_id', 'employees.name as employee_name', 'b_a_formations.customer_id', 'customers.name as customer_name')
             // ->paginate(10);
-            ->get();  
-        return  view('BA.baFormation.getList',$data);
+            ->get();
+        return view('BA.baFormation.getList', $data);
     }
     /**
      * Show the form for creating a new resource.
@@ -51,11 +50,20 @@ class BAFormationController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'customer' => 'nullable|integer', // Check customer ID in the mysql2 database connection
+            'customer' => 'nullable|integer',
             'brands' => 'required',
-            'employee' => 'required|integer|unique:b_a_formations,employee_id', // Check employee ID in the mysql2 database connection
+            'employee' => 'required|integer|unique:mysql2.b_a_formations,employee_id',
             'status' => 'required|integer',
+        ], [
+            'employee.unique' => 'This employee already has a BA Formation record.'
         ]);
+
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => implode('<br>', $validator->errors()->all())]);
+            }
+            return redirect()->back()->with(["error" => implode('<br>', $validator->errors()->all())]);
+        }
 
         DB::beginTransaction();
         try {
@@ -81,20 +89,17 @@ class BAFormationController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with(["success" => "Successfully saved"]);
-            return response()->json(['success' => 'Successfully Saved.', 'data' => $baFormation]);
-        } catch(\Illuminate\Database\QueryException $e) { 
-            DB::rollBack();
-            
-            if($e->errorInfo[1] == 1062) {
-                return back()->with("error", 'This record is already created');
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Successfully Saved.']);
             }
 
-            return back()->with(["error", "Database error occured"]);
-
+            return redirect()->back()->with(["success" => "Successfully saved"]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()]);
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()]);
+            }
+            return back()->with("error", $e->getMessage());
         }
     }
 
@@ -130,13 +135,18 @@ class BAFormationController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'customer' => 'nullable|integer', // Check customer ID in the mysql2 database connection
+            'customer' => 'nullable|integer',
             'brands' => 'required',
-            'employee' => 'required|integer', // Check employee ID in the mysql2 database connection
+            'employee' => 'required|integer|unique:mysql2.b_a_formations,employee_id,' . $id,
             'status' => 'required|integer',
+        ], [
+            'employee.unique' => 'This employee already has a BA Formation record.'
         ]);
 
         if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => implode('<br>', $validator->errors()->all())]);
+            }
             return redirect()->back()->with(["error" => implode('<br>', $validator->errors()->all()), "status" => 404]);
         }
 
@@ -150,15 +160,21 @@ class BAFormationController extends Controller
                 'status' => $request->input('status'),
             ];
 
-            $baFormation = BAFormation::findorfail($id)->update($data);
+            BAFormation::findorfail($id)->update($data);
 
             DB::commit();
-      return redirect()->back()->with(["success" => "Successfully saved"]);
-      
-            return response()->json(['success' => 'Successfully Saved.', 'data' => $baFormation]);
-        } catch (Exception $e) {
+
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Successfully Updated.']);
+            }
+
+            return redirect()->back()->with(["success" => "Successfully saved"]);
+        } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()]);
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()]);
+            }
+            return redirect()->back()->with(['error' => $e->getMessage()]);
         }
     }
 
@@ -182,13 +198,13 @@ class BAFormationController extends Controller
         $client = new Client();
 
         // Make the GET request to the external API
-        
+
         $response = $client->get('https://brands.smrsoftwares.com/api/getEmployeesList');
 
         if ($response->getStatusCode() === 200) {
             $employees = json_decode($response->getBody()->getContents(), true);
             $employees = $employees['data'];
-        // dd($employees);
+            // dd($employees);
             // Insert or update employee data in the database
             foreach ($employees ?? [] as $employeeData) {
                 Employees::updateOrCreate(
