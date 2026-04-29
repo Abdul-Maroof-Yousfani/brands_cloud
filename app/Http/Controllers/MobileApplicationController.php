@@ -1900,9 +1900,11 @@ public function get_stock(Request $request)
         }
 
         $validator = Validator::make($request->all(), [
+            'date'         => 'nullable|date_format:Y-m',
             'year'         => 'nullable|integer|min:2000',
             'month'        => 'nullable|integer|min:1|max:12',
             'user_id'      => 'nullable|integer|exists:mysql.users,id',
+            'customer_id'  => 'nullable|integer',
             'target_basis' => 'nullable|string|in:qty,amount'
         ]);
 
@@ -1917,17 +1919,28 @@ public function get_stock(Request $request)
             $targetUser = $user;
         }
 
-        $year = $request->year ?? date('Y');
-        $month = $request->month ?? date('n');
+        // Handle Date/Year/Month
+        if ($request->date) {
+            [$year, $month] = explode('-', $request->date);
+        } else {
+            $year = $request->year ?? date('Y');
+            $month = $request->month ?? date('n');
+        }
+
         $target_basis = $request->target_basis; // qty or amount or null
         $emp_id = $targetUser->emp_id;
 
         try {
             // 1. Get assigned formations (Stores & Brands)
-            $formations = DB::connection('mysql2')
+            $formationQuery = DB::connection('mysql2')
                 ->table('b_a_formations')
-                ->where('employee_id', $emp_id)
-                ->get();
+                ->where('employee_id', $emp_id);
+
+            if ($request->customer_id) {
+                $formationQuery->where('customer_id', $request->customer_id);
+            }
+
+            $formations = $formationQuery->get();
 
             $customerIds = $formations->pluck('customer_id')->unique();
             
@@ -1966,24 +1979,48 @@ public function get_stock(Request $request)
                 ->groupBy('so.distributor_id', 'sod.brand_id')
                 ->get();
 
+            // 4. Returns - Brand Wise (Tertiary)
+            $tertiaryReturns = DB::connection('mysql2')
+                ->table('retail_sale_order_returns as rsor')
+                ->join('retail_sale_order_return_details as rsord', 'rsor.id', '=', 'rsord.retail_sale_order_return_id')
+                ->where('rsor.user_id', $targetUser->id)
+                ->whereYear('rsor.created_at', $year)
+                ->whereMonth('rsor.created_at', $month)
+                ->selectRaw('rsor.distributor_id, rsord.brand_id, SUM(rsord.quantity) as total_qty')
+                ->groupBy('rsor.distributor_id', 'rsord.brand_id')
+                ->get();
+
+            // Eager load customer and brand names to avoid N+1 queries
+            $allBrandIds = [];
+            foreach ($formations as $f) {
+                $allBrandIds = array_merge($allBrandIds, json_decode($f->brands_ids, true) ?? []);
+            }
+            $allBrandIds = array_unique($allBrandIds);
+
+            $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $allBrandIds)->pluck('name', 'id');
+            $customerNames = DB::connection('mysql2')->table('customers')->whereIn('id', $customerIds)->pluck('name', 'id');
+
             // Format Data
             $reportData = [];
             foreach ($formations as $f) {
                 $storeTargets = $targets->where('customer_id', $f->customer_id);
-                $storeName = DB::connection('mysql2')->table('customers')->where('id', $f->customer_id)->value('name');
+                $storeName = $customerNames[$f->customer_id] ?? 'Unknown Store';
                 
                 $brandDetails = [];
                 $brandIds = json_decode($f->brands_ids, true) ?? [];
                 
                 foreach ($brandIds as $bId) {
-                    $brandName = DB::connection('mysql2')->table('brands')->where('id', $bId)->value('name');
+                    $brandName = $brandNames[$bId] ?? 'Unknown Brand';
                     
-                    $qtyTarget = $storeTargets->where('brand_id', $bId)->where('target_type', 'qty')->first()->target ?? 0;
-                    $amountTarget = $storeTargets->where('brand_id', $bId)->where('target_type', 'amount')->first()->target ?? 0;
+                    $qtyTarget = (float)($storeTargets->where('brand_id', $bId)->where('target_type', 'qty')->first()->target ?? 0);
+                    $amountTarget = (float)($storeTargets->where('brand_id', $bId)->where('target_type', 'amount')->first()->target ?? 0);
 
                     // Brand-wise Achievements
                     $secAchieved = $secondarySales->where('buyers_id', $f->customer_id)->where('brand_id', $bId)->first();
                     $terAchieved = $tertiarySales->where('distributor_id', $f->customer_id)->where('brand_id', $bId)->first();
+                    $terReturned = $tertiaryReturns->where('distributor_id', $f->customer_id)->where('brand_id', $bId)->first();
+
+                    $netAchievedQty = (float)($terAchieved->total_qty ?? 0) - (float)($terReturned->total_qty ?? 0);
 
                     $item = [
                         'brand_id' => $bId,
@@ -1992,13 +2029,18 @@ public function get_stock(Request $request)
 
                     // Only include the requested basis, or both if null
                     if (!$target_basis || $target_basis == 'qty') {
-                        $item['qty_target'] = (float)$qtyTarget;
-                        $item['achieved_qty'] = (float)($terAchieved->total_qty ?? 0);
+                        $item['qty_target'] = $qtyTarget;
+                        $item['achieved_qty'] = $netAchievedQty;
                         $item['secondary_qty'] = (float)($secAchieved->total_qty ?? 0);
+                        $item['percentage'] = $qtyTarget > 0 ? round(($netAchievedQty / $qtyTarget) * 100, 2) : 0;
                     }
+                    
                     if (!$target_basis || $target_basis == 'amount') {
-                        $item['amount_target'] = (float)$amountTarget;
-                        $item['achieved_amount'] = (float)($secAchieved->total_amount ?? 0); // Amount usually from secondary
+                        $item['amount_target'] = $amountTarget;
+                        $item['achieved_amount'] = (float)($secAchieved->total_amount ?? 0);
+                        if ($target_basis == 'amount') {
+                            $item['percentage'] = $amountTarget > 0 ? round(($item['achieved_amount'] / $amountTarget) * 100, 2) : 0;
+                        }
                     }
 
                     $brandDetails[] = $item;
