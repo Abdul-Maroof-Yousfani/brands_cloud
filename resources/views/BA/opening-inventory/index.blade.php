@@ -92,7 +92,7 @@
 
                 
                 $.ajax({
-                    url: "{{ route('baFormation.import') }}",
+                    url: "{{ route('openingInventory.import') }}",
                     method: "POST",
                     data: formData,
                     contentType: false,

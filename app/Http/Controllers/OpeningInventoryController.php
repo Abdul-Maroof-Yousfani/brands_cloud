@@ -25,85 +25,111 @@ class OpeningInventoryController extends Controller
     }
 
     public function import(Request $request)
-{
-    // 1. Get uploaded file
-    $file = $request->file('xlsx_file');
+    {
+        // 1. Validate request
+        $validator = Validator::make($request->all(), [
+            'xlsx_file' => 'required|mimes:xlsx,xls'
+        ]);
 
-    try {
+        if ($validator->fails()) {
+            return response()->json(['message' => implode('<br>', $validator->errors()->all())], 422);
+        }
 
-        // 2. Read Excel into array
-        // Structure: [sheet][row][column]
-        $data = Excel::toArray([], $file);
+        // 2. Get uploaded file
+        $file = $request->file('xlsx_file');
 
-        // 3. First sheet
-        $sheet = $data[0];
+        DB::beginTransaction();
+        try {
 
-        // 4. Header row
-        $header = $sheet[0];
+            // 3. Read Excel into array
+            // Structure: [sheet][row][column]
+            $data = Excel::toArray([], $file);
 
-        // 5. Remaining rows (actual data)
-        $rows = array_slice($sheet, 1);
-
-        // 6. Map customers from header (skip first 4 columns)
-        $customer_ids = [];
-        $no_customers = [];
-
-        foreach ($header as $colIndex => $customerName) {
-            if ($colIndex < 4) continue;
-
-            $customer_ids[$colIndex] = Customer::where('name', $customerName)->value('id');
-            if(!$customer_ids[$colIndex]) {
-                $no_customers[] = $customerName;
+            if (empty($data) || empty($data[0])) {
+                return response()->json(['message' => 'The uploaded file is empty.'], 400);
             }
-        }
 
-        // 7. Get virtual warehouse
-        $warehouse = DB::connection('mysql2')
-            ->table('warehouse')
-            ->where('is_virtual', 1)
-            ->first();
+            // 4. First sheet
+            $sheet = $data[0];
 
-        // Optional: safety check
-        if (!$warehouse) {
-            return response()->json('Virtual warehouse not found', 404);
-        }
+            // 5. Header row
+            $header = $sheet[0];
 
-        // 8. Loop through rows
-        foreach ($rows as $rowIndex => $row) {
+            // 6. Remaining rows (actual data)
+            $rows = array_slice($sheet, 1);
 
-            // SKU is first column
-            $sku = $row[0] ?? null;
-            if (!$sku) continue;
+            // 7. Map customers from header (skip first 4 columns)
+            $customer_ids = [];
+            $no_customers = [];
 
-            $sub_item_id = Subitem::where('sku_code', $sku)->value('id');
-            if (!$sub_item_id) continue;
+            foreach ($header as $colIndex => $customerName) {
+                if ($colIndex < 4) continue;
+                if (empty($customerName)) continue;
 
-            // 9. Loop customer quantity columns
-            foreach ($row as $colIndex => $qty) {
-
-                if ($colIndex < 4) continue;       // skip SKU, barcode, brand, item
-                if (!isset($customer_ids[$colIndex])) continue;
-                
-
-               
-              DB::Connection('mysql2')->table('ba_stock')->insert([
-    'customer_id'  => $customer_ids[$colIndex],
-    'voucher_type' => 9,
-    'sub_item_id'  => $sub_item_id,
-    'qty'          => $qty,
-    'warehouse_id' => $warehouse->id,
-    'status'       => 1,
-    'created_date' => now(),
-    'username'     => auth()->user()->username,
-    'opening'      => 1,
-]);
+                $customer = Customer::where('name', $customerName)->first();
+                if ($customer) {
+                    $customer_ids[$colIndex] = $customer->id;
+                } else {
+                    $no_customers[] = $customerName;
+                }
             }
+
+            // 8. Get virtual warehouse
+            $warehouse = DB::connection('mysql2')
+                ->table('warehouse')
+                ->where('is_virtual', 1)
+                ->first();
+
+            // Optional: safety check
+            if (!$warehouse) {
+                return response()->json(['message' => 'Virtual warehouse not found'], 404);
+            }
+
+            // 9. Loop through rows
+            $success_count = 0;
+            foreach ($rows as $rowIndex => $row) {
+
+                // SKU is first column
+                $sku = $row[0] ?? null;
+                if (!$sku) continue;
+
+                $sub_item_id = Subitem::where('sku_code', $sku)->value('id');
+                if (!$sub_item_id) continue;
+
+                // 10. Loop customer quantity columns
+                foreach ($row as $colIndex => $qty) {
+
+                    if ($colIndex < 4) continue;       // skip SKU, barcode, brand, item
+                    if (!isset($customer_ids[$colIndex])) continue;
+                    if (empty($qty) || $qty == 0) continue;
+
+                    DB::connection('mysql2')->table('ba_stock')->insert([
+                        'customer_id'  => $customer_ids[$colIndex],
+                        'voucher_type' => 9,
+                        'sub_item_id'  => $sub_item_id,
+                        'qty'          => $qty,
+                        'warehouse_id' => $warehouse->id,
+                        'status'       => 1,
+                        'created_date' => now(),
+                        'username'     => auth()->user()->username,
+                        'opening'      => 1,
+                    ]);
+                    $success_count++;
+                }
+            }
+
+            DB::commit();
+
+            $message = "Successfully processed $success_count records.";
+            if (!empty($no_customers)) {
+                $message .= "<br><br><b>Note:</b> These customers were not found: " . implode(', ', array_unique($no_customers));
+            }
+
+            return response()->json(['message' => $message], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Import failed: ' . $e->getMessage()], 500);
         }
-
-        return response()->json($no_customers, 200);
-
-    } catch (\Exception $e) {
-        return response()->json($e->getMessage(), 500);
-    }
-} 
+    } 
 }
