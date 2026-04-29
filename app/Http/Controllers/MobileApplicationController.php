@@ -111,6 +111,11 @@ public function login(Request $request)
         return response()->json(['message' => 'Unauthorized account type'], 403);
     }
 
+    // ✅ Status check (1 = Active, 0 = Inactive)
+    if ($user->status == '0') {
+        return response()->json(['message' => 'Account is inactive. Please contact administrator.'], 401);
+    }
+
     // ✅ Generate token
     $token = $user->generateApiToken();
 
@@ -145,6 +150,11 @@ public function loginById(Request $request)
     // ✅ Account type check
     if ($user->acc_type !== 'ba') {
         return response()->json(['message' => 'Unauthorized account type'], 403);
+    }
+
+    // ✅ Status check (1 = Active, 0 = Inactive)
+    if ($user->status == '0') {
+        return response()->json(['message' => 'Account is inactive. Please contact administrator.'], 401);
     }
 
     // ✅ Generate token
@@ -1882,4 +1892,132 @@ public function get_stock(Request $request)
     ]);
 }
 
+    public function getBaTargetProgressApi(Request $request)
+    {
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof \Illuminate\Http\JsonResponse) {
+            return $user;
+        }
+
+        $validator = Validator::make($request->all(), [
+            'year'         => 'nullable|integer|min:2000',
+            'month'        => 'nullable|integer|min:1|max:12',
+            'user_id'      => 'nullable|integer|exists:mysql.users,id',
+            'target_basis' => 'nullable|string|in:qty,amount'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        // If user_id is passed, use it, otherwise use authenticated user
+        if ($request->user_id) {
+            $targetUser = \App\User::find($request->user_id);
+        } else {
+            $targetUser = $user;
+        }
+
+        $year = $request->year ?? date('Y');
+        $month = $request->month ?? date('n');
+        $target_basis = $request->target_basis; // qty or amount or null
+        $emp_id = $targetUser->emp_id;
+
+        try {
+            // 1. Get assigned formations (Stores & Brands)
+            $formations = DB::connection('mysql2')
+                ->table('b_a_formations')
+                ->where('employee_id', $emp_id)
+                ->get();
+
+            $customerIds = $formations->pluck('customer_id')->unique();
+            
+            // 2. Get Targets (Filtered by basis if provided)
+            $targetQuery = DB::connection('mysql2')
+                ->table('target_items')
+                ->where('employee_id', $emp_id)
+                ->where('year', $year)
+                ->where('month', $month);
+
+            if ($target_basis) {
+                $targetQuery->where('target_type', $target_basis);
+            }
+
+            $targets = $targetQuery->get();
+
+            // 3. Achievements (Secondary & Tertiary)
+            $secondarySales = DB::connection('mysql2')
+                ->table('sales_order')
+                ->whereIn('buyers_id', $customerIds)
+                ->whereYear('so_date', $year)
+                ->whereMonth('so_date', $month)
+                ->selectRaw('buyers_id, SUM(total_amount) as total_amount, SUM(total_qty) as total_qty')
+                ->groupBy('buyers_id')
+                ->get()
+                ->keyBy('buyers_id');
+
+            $tertiarySales = DB::connection('mysql2')
+                ->table('retail_sale_orders as so')
+                ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
+                ->where('so.user_id', $targetUser->id)
+                ->whereYear('so.sale_order_date', $year)
+                ->whereMonth('so.sale_order_date', $month)
+                ->selectRaw('so.distributor_id, SUM(sod.qty) as total_qty')
+                ->groupBy('so.distributor_id')
+                ->get()
+                ->keyBy('distributor_id');
+
+            // Format Data
+            $reportData = [];
+            foreach ($formations as $f) {
+                $storeTargets = $targets->where('customer_id', $f->customer_id);
+                $storeName = DB::connection('mysql2')->table('customers')->where('id', $f->customer_id)->value('name');
+                
+                $brandDetails = [];
+                $brandIds = json_decode($f->brands_ids, true) ?? [];
+                
+                foreach ($brandIds as $bId) {
+                    $brandName = DB::connection('mysql2')->table('brands')->where('id', $bId)->value('name');
+                    
+                    $qtyTarget = $storeTargets->where('brand_id', $bId)->where('target_type', 'qty')->first()->target ?? 0;
+                    $amountTarget = $storeTargets->where('brand_id', $bId)->where('target_type', 'amount')->first()->target ?? 0;
+
+                    $item = [
+                        'brand_id' => $bId,
+                        'brand_name' => $brandName
+                    ];
+
+                    // Only include the requested basis, or both if null
+                    if (!$target_basis || $target_basis == 'qty') $item['qty_target'] = $qtyTarget;
+                    if (!$target_basis || $target_basis == 'amount') $item['amount_target'] = $amountTarget;
+
+                    $brandDetails[] = $item;
+                }
+
+                $reportData[] = [
+                    'store_id' => $f->customer_id,
+                    'store_name' => $storeName,
+                    'brands' => $brandDetails,
+                    'achievement_secondary' => [
+                        'amount' => $secondarySales[$f->customer_id]->total_amount ?? 0,
+                        'qty' => $secondarySales[$f->customer_id]->total_qty ?? 0
+                    ],
+                    'achievement_tertiary' => [
+                        'qty' => $tertiarySales[$f->customer_id]->total_qty ?? 0
+                    ]
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'year' => $year,
+                'month' => $month,
+                'target_basis' => $target_basis ?? 'all',
+                'employee' => $targetUser->name,
+                'data' => $reportData
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 }
