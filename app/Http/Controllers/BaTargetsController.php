@@ -453,4 +453,76 @@ class BaTargetsController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function import()
+    {
+        return view('BA.BaTargets.import');
+    }
+
+    public function exportTemplate(Request $request)
+    {
+        $filters = $request->only(['year', 'month', 'target_type']);
+        $monthName = date('F', mktime(0, 0, 0, ($filters['month'] ?? date('m')), 1));
+        $fileName = 'BA_Targets_Template_' . ($filters['year'] ?? date('Y')) . '_' . $monthName . '_' . ($filters['target_type'] ?? 'qty') . '.xlsx';
+        
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\BaTargetsExport($filters), $fileName);
+    }
+
+    public function importExcel(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'xlsx_file' => 'required|mimes:xlsx,xls'
+        ]);
+
+        if ($validator->fails()) {
+            return back()->with('error', 'Please upload a valid Excel file.');
+        }
+
+        try {
+            $data = \Maatwebsite\Excel\Facades\Excel::toArray([], $request->file('xlsx_file'));
+            if (empty($data) || empty($data[0])) {
+                return back()->with('error', 'The uploaded file is empty.');
+            }
+
+            $rows = array_slice($data[0], 1); // skip header
+            $success_count = 0;
+
+            DB::beginTransaction();
+            foreach ($rows as $row) {
+                $employee_id = $row[0] ?? null;
+                $customer_id = $row[2] ?? null;
+                $brand_id    = $row[4] ?? null;
+                $year         = $row[6] ?? null;
+                $month        = $row[7] ?? null;
+                $target_type = $row[8] ?? 'qty';
+                $target_value = $row[9] ?? null;
+
+                if (!$employee_id || !$customer_id || !$brand_id || $target_value === null || $target_value === '') {
+                    continue;
+                }
+
+                TargetItems::updateOrCreate(
+                    [
+                        'year'        => $year,
+                        'month'       => (int)$month,
+                        'employee_id' => $employee_id,
+                        'customer_id' => $customer_id,
+                        'brand_id'    => $brand_id,
+                        'target_type' => $target_type
+                    ],
+                    [
+                        'target'      => $target_value,
+                        'updated_at'  => now()
+                    ]
+                );
+                $success_count++;
+            }
+            DB::commit();
+
+            return back()->with('success', "Successfully imported $success_count target records.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Import failed: ' . $e->getMessage());
+        }
+    }
 }

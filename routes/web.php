@@ -324,6 +324,9 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
 
     Route::get('baTargets/loadBaWise', 'BaTargetsController@loadBaWise')->name('baTargets.loadBaWise');
     Route::post('baTargets/saveBaWise', 'BaTargetsController@saveBaWise')->name('baTargets.saveBaWise');
+    Route::get('baTargets/import', 'BaTargetsController@import')->name('baTargets.import');
+    Route::get('baTargets/exportTemplate', 'BaTargetsController@exportTemplate')->name('baTargets.exportTemplate');
+    Route::post('baTargets/importExcel', 'BaTargetsController@importExcel')->name('baTargets.importExcel');
     Route::resource('baTargets', 'BaTargetsController');
     Route::get("/ba/getCustomers", "BaTargetsController@getCustomers")->name("get.customers");
     Route::post("/ba/insertTarget", "BaTargetsController@insertTarget")->name("insert.target");

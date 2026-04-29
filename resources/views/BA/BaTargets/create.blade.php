@@ -33,7 +33,12 @@
     </style>
 
     <div class="well_N">
-        <h1 class="setup-title"><i class="fas fa-layer-group text-primary mr-2"></i> BA Target Setup</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="setup-title mb-0"><i class="fas fa-layer-group text-primary mr-2"></i> BA Target Setup</h1>
+            <a href="{{ route('baTargets.import') }}" class="btn btn-outline-primary rounded-pill px-4 font-weight-bold">
+                <i class="fas fa-file-import mr-2"></i> Bulk Import Targets
+            </a>
+        </div>
         
         <div class="premium-filter-card">
             <form id="filterForm">
