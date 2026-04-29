@@ -126,17 +126,20 @@
                 </div>
             @endforeach
 
-            <!-- Integrated Grand Total Section AT BOTTOM -->
-            <div class="mt-4 p-4 border-top" style="background: #f8f9fc; border-radius: 0 0 15px 15px;">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h4 class="mb-0 font-weight-bold text-dark">
-                            <i class="fas fa-calculator mr-2 text-primary"></i>
-                            Grand Total ({{ strtoupper($target_type) }})
-                        </h4>
+            <!-- Redesigned Grand Total Section -->
+            <div class="mt-4" style="background: linear-gradient(to right, #4e73df, #224abe); border-radius: 0 0 15px 15px; padding: 25px 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+                            <i class="fas fa-calculator" style="color: white !important; font-size: 20px;"></i>
+                        </div>
+                        <div>
+                            <div style="color: rgba(255,255,255,0.7) !important; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">Summary</div>
+                            <div style="color: white !important; font-size: 1.25rem; font-weight: 800; margin: 0; line-height: 1;">Grand Total ({{ strtoupper($target_type) }})</div>
+                        </div>
                     </div>
-                    <div class="col-md-6 text-right">
-                        <span class="h1 mb-0 font-weight-bold text-primary" id="overallTotalDisplay" style="letter-spacing: -1.5px;">0.00</span>
+                    <div style="text-align: right;">
+                        <div id="overallTotalDisplay" style="color: white !important; font-size: 2.5rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.1);">0.00</div>
                     </div>
                 </div>
             </div>

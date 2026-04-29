@@ -30,20 +30,28 @@
             min-height: 100vh;
             padding: 30px;
         }
+        .select2-container {
+            width: 100% !important;
+        }
     </style>
 
     <div class="well_N">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="setup-title mb-0"><i class="fas fa-layer-group text-primary mr-2"></i> BA Target Setup</h1>
-            <a href="{{ route('baTargets.import') }}" class="btn btn-outline-primary rounded-pill px-4 font-weight-bold">
-                <i class="fas fa-file-import mr-2"></i> Bulk Import Targets
-            </a>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 25px;">
+            <div>
+                <h1 class="setup-title mb-1"><i class="fas fa-layer-group text-primary mr-2"></i> BA Target Setup</h1>
+                <p class="text-muted small mb-0">Manage performance targets for your Business Associates</p>
+            </div>
+            <div style="text-align: right;">
+                <a href="{{ route('baTargets.import') }}" class="btn btn-primary rounded-pill px-4 py-2 font-weight-bold shadow-sm" style="transition: all 0.3s; background: linear-gradient(45deg, #4e73df, #224abe); border: none; white-space: nowrap; display: inline-block;">
+                    <i class="fas fa-file-import mr-2"></i> Bulk Import Targets
+                </a>
+            </div>
         </div>
         
         <div class="premium-filter-card">
             <form id="filterForm">
-                <div class="row">
-                    <div class="col-md-3">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-2">
                         <label class="filter-label">Target Month</label>
                         <select id="month" name="month" class="form-select select2">
                             @for($m=1; $m<=12; $m++)
@@ -70,7 +78,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="filter-label">Tracking Mode</label>
                         <select class="form-select select2" id="target_type" name="target_type">
                             <option value="amount">Amount (Revenue) wise</option>
@@ -95,7 +103,8 @@
         <script>
             $(document).ready(function () {
                 $('.select2').select2({
-                    theme: 'bootstrap-5'
+                    theme: 'bootstrap-5',
+                    width: '100%'
                 });
 
                 function loadBaData() {
