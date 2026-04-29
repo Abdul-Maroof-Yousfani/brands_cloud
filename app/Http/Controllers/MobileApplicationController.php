@@ -1944,16 +1944,17 @@ public function get_stock(Request $request)
 
             $targets = $targetQuery->get();
 
-            // 3. Achievements (Secondary & Tertiary)
+            // 3. Achievements (Secondary & Tertiary) - Brand Wise
             $secondarySales = DB::connection('mysql2')
-                ->table('sales_order')
-                ->whereIn('buyers_id', $customerIds)
-                ->whereYear('so_date', $year)
-                ->whereMonth('so_date', $month)
-                ->selectRaw('buyers_id, SUM(total_amount) as total_amount, SUM(total_qty) as total_qty')
-                ->groupBy('buyers_id')
-                ->get()
-                ->keyBy('buyers_id');
+                ->table('sales_order as so')
+                ->join('sales_order_data as sod', 'so.id', '=', 'sod.master_id')
+                ->join('subitem as si', 'si.id', '=', 'sod.item_id')
+                ->whereIn('so.buyers_id', $customerIds)
+                ->whereYear('so.so_date', $year)
+                ->whereMonth('so.so_date', $month)
+                ->selectRaw('so.buyers_id, si.brand_id, SUM(sod.amount) as total_amount, SUM(sod.qty) as total_qty')
+                ->groupBy('so.buyers_id', 'si.brand_id')
+                ->get();
 
             $tertiarySales = DB::connection('mysql2')
                 ->table('retail_sale_orders as so')
@@ -1961,10 +1962,9 @@ public function get_stock(Request $request)
                 ->where('so.user_id', $targetUser->id)
                 ->whereYear('so.sale_order_date', $year)
                 ->whereMonth('so.sale_order_date', $month)
-                ->selectRaw('so.distributor_id, SUM(sod.qty) as total_qty')
-                ->groupBy('so.distributor_id')
-                ->get()
-                ->keyBy('distributor_id');
+                ->selectRaw('so.distributor_id, sod.brand_id, SUM(sod.qty) as total_qty')
+                ->groupBy('so.distributor_id', 'sod.brand_id')
+                ->get();
 
             // Format Data
             $reportData = [];
@@ -1981,14 +1981,25 @@ public function get_stock(Request $request)
                     $qtyTarget = $storeTargets->where('brand_id', $bId)->where('target_type', 'qty')->first()->target ?? 0;
                     $amountTarget = $storeTargets->where('brand_id', $bId)->where('target_type', 'amount')->first()->target ?? 0;
 
+                    // Brand-wise Achievements
+                    $secAchieved = $secondarySales->where('buyers_id', $f->customer_id)->where('brand_id', $bId)->first();
+                    $terAchieved = $tertiarySales->where('distributor_id', $f->customer_id)->where('brand_id', $bId)->first();
+
                     $item = [
                         'brand_id' => $bId,
                         'brand_name' => $brandName
                     ];
 
                     // Only include the requested basis, or both if null
-                    if (!$target_basis || $target_basis == 'qty') $item['qty_target'] = $qtyTarget;
-                    if (!$target_basis || $target_basis == 'amount') $item['amount_target'] = $amountTarget;
+                    if (!$target_basis || $target_basis == 'qty') {
+                        $item['qty_target'] = (float)$qtyTarget;
+                        $item['achieved_qty'] = (float)($terAchieved->total_qty ?? 0);
+                        $item['secondary_qty'] = (float)($secAchieved->total_qty ?? 0);
+                    }
+                    if (!$target_basis || $target_basis == 'amount') {
+                        $item['amount_target'] = (float)$amountTarget;
+                        $item['achieved_amount'] = (float)($secAchieved->total_amount ?? 0); // Amount usually from secondary
+                    }
 
                     $brandDetails[] = $item;
                 }
@@ -1996,14 +2007,7 @@ public function get_stock(Request $request)
                 $reportData[] = [
                     'store_id' => $f->customer_id,
                     'store_name' => $storeName,
-                    'brands' => $brandDetails,
-                    'achievement_secondary' => [
-                        'amount' => $secondarySales[$f->customer_id]->total_amount ?? 0,
-                        'qty' => $secondarySales[$f->customer_id]->total_qty ?? 0
-                    ],
-                    'achievement_tertiary' => [
-                        'qty' => $tertiarySales[$f->customer_id]->total_qty ?? 0
-                    ]
+                    'brands' => $brandDetails
                 ];
             }
 
