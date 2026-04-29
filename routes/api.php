@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 Route::post('/login','MobileApplicationController@login');
 Route::post('/loginById','MobileApplicationController@loginById');
+Route::post('/hr/update-status', 'BAFormationController@hrUpdateStatus');
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();

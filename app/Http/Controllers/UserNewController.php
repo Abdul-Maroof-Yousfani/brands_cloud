@@ -72,6 +72,17 @@ class UserNewController extends Controller
             'imei'     => 'nullable|string',
         ]);
 
+        // HR Portal Verification for Activation
+        if ($request->input('status') == 1) {
+            if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
+                $msg = 'Cannot activate. This employee is currently INACTIVE in the HR Portal.';
+                return redirect()->back()->with([
+                    'error'  => $msg,
+                    'status' => 403
+                ]);
+            }
+        }
+
         DB::beginTransaction();
         try {
             // Create the user
@@ -247,6 +258,15 @@ public function update(Request $request, $id)
         'password' => 'nullable|string|confirmed|min:8',
         'imei'     => 'nullable|string',
     ]);
+
+    // HR Portal Verification for Activation
+    if ($request->input('status') == 1) {
+        if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
+            return redirect()->back()->withErrors([
+                'message' => 'Cannot activate. This employee is currently INACTIVE in the HR Portal.',
+            ]);
+        }
+    }
 
     DB::beginTransaction();
 

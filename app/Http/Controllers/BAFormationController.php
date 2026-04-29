@@ -87,6 +87,17 @@ class BAFormationController extends Controller
             return redirect()->back()->with(["error" => implode('<br>', $validator->errors()->all())]);
         }
 
+        // HR Portal Verification for Activation
+        if ($request->input('status') == 1) {
+            if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
+                $msg = 'Cannot activate. This employee is currently INACTIVE in the HR Portal.';
+                if ($request->ajax()) {
+                    return response()->json(['success' => false, 'message' => $msg]);
+                }
+                return back()->with("error", $msg);
+            }
+        }
+
         DB::beginTransaction();
         try {
             $lastBaNo = BAFormation::orderBy('ba_no', 'desc')->first(); // Get the last ba_no
@@ -170,6 +181,17 @@ class BAFormationController extends Controller
                 return response()->json(['success' => false, 'message' => implode('<br>', $validator->errors()->all())]);
             }
             return redirect()->back()->with(["error" => implode('<br>', $validator->errors()->all()), "status" => 404]);
+        }
+        
+        // HR Portal Verification for Activation
+        if ($request->input('status') == 1) {
+            if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
+                $msg = 'Cannot activate. This employee is currently INACTIVE in the HR Portal.';
+                if ($request->ajax()) {
+                    return response()->json(['success' => false, 'message' => $msg]);
+                }
+                return back()->with("error", $msg);
+            }
         }
 
         DB::beginTransaction();
@@ -390,11 +412,48 @@ class BAFormationController extends Controller
             }
 
             return response()->json(['success' => true, 'message' => $message]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             fclose($handle);
             return response()->json(['success' => false, 'message' => 'Import failed: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * API for HR Portal to update employee status
+     */
+    public function hrUpdateStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'emp_id' => 'required',
+            'status' => 'required|in:0,1'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
+        }
+
+        $empId = $request->emp_id;
+        $status = $request->status;
+
+        DB::beginTransaction();
+        try {
+            // 1. Update BA Formation
+            BAFormation::where('employee_id', $empId)->update(['status' => $status]);
+
+            // 2. Update BA User
+            DB::connection('mysql2')->table('users')
+                ->where('emp_code', $empId)
+                ->where('acc_type', 'ba')
+                ->update(['status' => $status]);
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Employee status synced and updated successfully in BA portal.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Sync failed: ' . $e->getMessage()], 500);
+        }
+    }
+
     }
 }

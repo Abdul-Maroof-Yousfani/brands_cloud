@@ -1,5 +1,6 @@
 <?php
 namespace App\Helpers;
+use GuzzleHttp\Client as HttpClient;
 use App\Models\AdvancePayment;
 use App\Models\Countries;
 use App\Models\ProductsPrincipalGroup;
@@ -98,6 +99,32 @@ class CommonHelper
     {
         Config::set('database.default', 'mysql');
         DB::reconnect('mysql');
+    }
+
+    /**
+     * Helper to verify if employee is active in HR Portal
+     */
+    public static function isEmployeeActiveInHR($empId)
+    {
+        try {
+            $client = new HttpClient();
+            $response = $client->get('https://brands.smrsoftwares.com/api/getEmployeesList');
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($response->getBody()->getContents(), true);
+                $employees = $data['data'] ?? [];
+                
+                // Search for the employee in the HR list
+                foreach ($employees as $emp) {
+                    if ($emp['emp_id'] == $empId) {
+                        return true; // Found in active list
+                    }
+                }
+            }
+            return false;
+        } catch (\Exception $e) {
+            // If API fails, default to true or handle error (here we return false to be safe)
+            return false; 
+        }
     }
 
     public static function get_all_principal_groups()
