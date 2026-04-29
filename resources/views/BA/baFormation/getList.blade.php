@@ -19,7 +19,7 @@
                 <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#editmodal{{ $BAFormation->id }}">
                     Edit
                 </button>
-                <div class="modal fade" id="editmodal{{ $BAFormation->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="editmodal{{ $BAFormation->id }}" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -83,7 +83,8 @@
         $('body').on('shown.bs.modal', '.modal', function () {
             $(this).find('.select2').select2({
                 width: '100%',
-                allowClear: true
+                allowClear: true,
+                dropdownParent: $(this)
             });
         });
     });
