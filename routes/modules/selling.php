@@ -250,4 +250,8 @@ Route::get('rmplaningReport','ReportsController@rmplaningReport')->name('rmplani
 });
 
 
+// BA Attendance & Target Report
+Route::get('/ba/reports/attendance', 'BaAttendanceReportController@index')->name('ba.reports.attendance');
+Route::post('/ba/reports/attendance/generate', 'BaAttendanceReportController@generateReport')->name('ba.reports.attendance.generate');
+
 //  End New Implement tation  
