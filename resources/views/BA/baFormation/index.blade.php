@@ -62,6 +62,50 @@
             transform: translateY(-2px) !important;
             box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4) !important;
         }
+
+        /* Select2 Multi-select tag styling */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #6c5ce7 !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: 6px !important;
+            padding: 4px 12px !important;
+            font-size: 13px !important;
+            margin-top: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        /* Hide any extra pseudo-elements that might cause double icons */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice::before,
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove::before {
+            content: "" !important;
+            display: none !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: #fff !important;
+            border: none !important;
+            margin-right: 8px !important;
+            padding: 0 !important;
+            font-weight: bold !important;
+            font-size: 16px !important;
+            background: transparent !important;
+            position: static !important;
+            order: -1; /* Ensure x is on the left */
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            background-color: transparent !important;
+            color: #ff7675 !important;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #d1dcec !important;
+            border-radius: 8px !important;
+            min-height: 45px !important;
+            padding-bottom: 6px !important;
+        }
     </style>
     <div class="well_N">
         <div class="row align-items-center ">
