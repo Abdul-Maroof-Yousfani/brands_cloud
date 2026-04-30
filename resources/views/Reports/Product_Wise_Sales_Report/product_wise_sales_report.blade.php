@@ -96,7 +96,7 @@ use App\Helpers\SaleHelper;
                         <label class="control-label">BA (Employees)</label>
                         <div class="input-group">
                             <select class="form-control select2" id="ba_id" multiple>
-                                @foreach(\App\Helpers\SalesHelper::get_all_employees() as $row)
+                                @foreach(\App\User::whereNotNull('emp_id')->where('emp_id', '!=', '')->select('id', 'name')->get() as $row)
                                     <option value="{{ $row->id }}">{{ $row->name }}</option>
                                 @endforeach
                             </select>
