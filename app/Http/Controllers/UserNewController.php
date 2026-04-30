@@ -88,6 +88,7 @@ class UserNewController extends Controller
             // Create the user
             $user = User::create([
                 'emp_code' => $request->employee,
+                'emp_id' => $request->employee,
                 'name' => $request->name,
                 'email' => $request->email,
                 'username' => $request->email,
