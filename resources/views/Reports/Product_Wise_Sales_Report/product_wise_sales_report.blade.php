@@ -54,8 +54,7 @@ use App\Helpers\SaleHelper;
                     <div class="form-group">
                         <label class="control-label">Brand</label>
                         <div class="input-group">
-                            <select class="form-control select2" id="brand_id">
-                                <option value="">Select Brand</option>
+                            <select class="form-control select2" id="brand_id" multiple>
                                 @foreach(\App\Helpers\CommonHelper::get_all_brand() as $brand)
                                     <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                                 @endforeach
@@ -69,8 +68,7 @@ use App\Helpers\SaleHelper;
                     <div class="form-group">
                         <label class="control-label">Stores</label>
                         <div class="input-group">
-                            <select class="form-control select2" id="store_id">
-                                <option value="">Select Store</option>
+                            <select class="form-control select2" id="store_id" multiple>
                                 @foreach(\App\Helpers\CommonHelper::get_customer() as $customer)
                                     <option value="{{ $customer->id }}">{{ $customer->name }}</option>
                                 @endforeach
@@ -87,6 +85,19 @@ use App\Helpers\SaleHelper;
                                 <option value="">Select Product</option>
                                 @foreach(\App\Helpers\CommonHelper::get_subitems() as $subitem)
                                     <option value="{{ $subitem->id }}">{{ $subitem->product_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">BA (Employees)</label>
+                        <div class="input-group">
+                            <select class="form-control select2" id="ba_id" multiple>
+                                @foreach(\App\Helpers\SalesHelper::get_all_employees() as $row)
+                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -165,6 +176,7 @@ use App\Helpers\SaleHelper;
             so: $('#so').val(),
             brand_id: $("#brand_id").val(),
             store_id: $("#store_id").val(),
+            ba_id: $("#ba_id").val(),
             subitem_id: $("#subitem_id").val()
         },
         beforeSend: function() {
