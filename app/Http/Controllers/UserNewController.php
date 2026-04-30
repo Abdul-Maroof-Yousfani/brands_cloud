@@ -19,7 +19,7 @@ class UserNewController extends Controller
      */
     public function index()
     {
-        return  view('auth.users.index');
+        return view('auth.users.index');
     }
     public function getList(Request $request)
     {
@@ -32,10 +32,10 @@ class UserNewController extends Controller
         }
 
         $data['roles'] = $rolesQuery->where('acc_type', 'ba')
-        ->get();
+            ->get();
         // ->paginate(10);
 
-       
+
 
         // Return the view with the roles data
         return view('auth.users.getList', $data);
@@ -49,7 +49,7 @@ class UserNewController extends Controller
     public function create()
     {
         $roles = Roles::get();
-        return  view('auth.users.create', compact('roles'));
+        return view('auth.users.create', compact('roles'));
     }
 
     /**
@@ -61,7 +61,7 @@ class UserNewController extends Controller
     public function store(Request $request)
     {
 
-      
+
         $validated = $request->validate([
             'employee' => 'required',
             'name' => 'required|string|max:255',
@@ -69,19 +69,19 @@ class UserNewController extends Controller
             'password' => 'required|string|confirmed|min:8',
             'status' => 'required|boolean',
             'roles' => 'required',
-            'imei'     => 'nullable|string',
+            'imei' => 'nullable|string',
         ]);
 
         // HR Portal Verification for Activation
-        if ($request->input('status') == 1) {
-            if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
-                $msg = 'Cannot activate. This employee is currently INACTIVE in the HR Portal.';
-                return redirect()->back()->with([
-                    'error'  => $msg,
-                    'status' => 403
-                ]);
-            }
-        }
+        // if ($request->input('status') == 1) {
+        //     if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
+        //         $msg = 'Cannot activate. This employee is currently INACTIVE in the HR Portal.';
+        //         return redirect()->back()->with([
+        //             'error'  => $msg,
+        //             'status' => 403
+        //         ]);
+        //     }
+        // }
 
         DB::beginTransaction();
         try {
@@ -99,23 +99,23 @@ class UserNewController extends Controller
             ]);
 
 
-             if (
-            $request->shop_location == 1 &&
-            !empty($request->latitude) &&
-            is_array($request->latitude)
-        ) {
-            foreach ($request->latitude as $index => $lat) {
-                if (!empty($lat) && isset($request->longitude[$index])) {
-                    BaLocationModel::create([
-                        'ba_id'        => $user->id,
-                        'location_name' => $request->location_name[$index] ?? null,
-                        'latitude'      => $lat,
-                        'longitude'     => $request->longitude[$index],
-                        'radius'        => $request->radius[$index] ?? null,
-                    ]);
+            if (
+                $request->shop_location == 1 &&
+                !empty($request->latitude) &&
+                is_array($request->latitude)
+            ) {
+                foreach ($request->latitude as $index => $lat) {
+                    if (!empty($lat) && isset($request->longitude[$index])) {
+                        BaLocationModel::create([
+                            'ba_id' => $user->id,
+                            'location_name' => $request->location_name[$index] ?? null,
+                            'latitude' => $lat,
+                            'longitude' => $request->longitude[$index],
+                            'radius' => $request->radius[$index] ?? null,
+                        ]);
+                    }
                 }
             }
-        }
 
             // Attach roles to the user
             // $user->roles()->attach($request->roles);
@@ -126,10 +126,10 @@ class UserNewController extends Controller
             //     'message' => 'User created successfully.',
             //     'user' => $user,
             // ], 201);
-             return redirect()->back()->with([
-            'success' => 'User created successfully.',
-            'status'  => 201
-        ]);
+            return redirect()->back()->with([
+                'success' => 'User created successfully.',
+                'status' => 201
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -138,10 +138,10 @@ class UserNewController extends Controller
             //     'error' => $e->getMessage(),
             // ], 500);
 
-               return redirect()->back()->with([
-            'error'  => 'Failed to create user. ' . $e->getMessage(),
-            'status' => 500
-        ]);
+            return redirect()->back()->with([
+                'error' => 'Failed to create user. ' . $e->getMessage(),
+                'status' => 500
+            ]);
         }
     }
 
@@ -172,7 +172,7 @@ class UserNewController extends Controller
             ->select('users.*', 'roles.name as role_name')
             ->where('users.id', $id)
             ->first();
-            
+
 
         // Fetch all roles to display in the form
         $roles = Roles::all();
@@ -192,7 +192,7 @@ class UserNewController extends Controller
     // public function update(Request $request, $id)
     // {
 
-   
+
     //     $employeeValidationRule = 'nullable';
     //     if ($request->has('employee') && $request->input('employee') != $request->old('employee')) {
     //         $employeeValidationRule = 'required';  // Make it required if the user is updating employee
@@ -241,100 +241,100 @@ class UserNewController extends Controller
 
 
 
-public function update(Request $request, $id)
-{
-    $employeeValidationRule = 'nullable';
-    if ($request->has('employee') && !empty($request->input('employee'))) {
-        $employeeValidationRule = 'required';
-    }
-
-    // Validation
-    $validated = $request->validate([
-        'employee' => $employeeValidationRule,
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|max:255',
-        'status' => 'required|boolean',
-        'roles' => 'required',
-        'password' => 'nullable|string|confirmed|min:8',
-        'imei'     => 'nullable|string',
-    ]);
-
-    // HR Portal Verification for Activation
-    if ($request->input('status') == 1) {
-        if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
-            return redirect()->back()->withErrors([
-                'message' => 'Cannot activate. This employee is currently INACTIVE in the HR Portal.',
-            ]);
-        }
-    }
-
-    DB::beginTransaction();
-
-    try {
-        $user = User::findOrFail($id);
-
-        // Base data
-        $data = [
-            'emp_code'   => $request->employee,
-            'emp_id'     => $request->employee,
-            'name'       => $request->name,
-            'email'      => $request->email,
-            'username'   => $request->email,
-            'status'     => $request->status,
-            'ba_role_id' => $request->roles,
-            'imei' => $request->imei
-        ];
-
-        // Only update password if it’s not empty
-        if (!empty($request->password)) {
-            $data['password'] = $request->password;
+    public function update(Request $request, $id)
+    {
+        $employeeValidationRule = 'nullable';
+        if ($request->has('employee') && !empty($request->input('employee'))) {
+            $employeeValidationRule = 'required';
         }
 
-        // Update user
-        $user->update($data);
+        // Validation
+        $validated = $request->validate([
+            'employee' => $employeeValidationRule,
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
+            'status' => 'required|boolean',
+            'roles' => 'required',
+            'password' => 'nullable|string|confirmed|min:8',
+            'imei' => 'nullable|string',
+        ]);
+
+        // HR Portal Verification for Activation
+        // if ($request->input('status') == 1) {
+        //     if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
+        //         return redirect()->back()->withErrors([
+        //             'message' => 'Cannot activate. This employee is currently INACTIVE in the HR Portal.',
+        //         ]);
+        //     }
+        // }
+
+        DB::beginTransaction();
+
+        try {
+            $user = User::findOrFail($id);
+
+            // Base data
+            $data = [
+                'emp_code' => $request->employee,
+                'emp_id' => $request->employee,
+                'name' => $request->name,
+                'email' => $request->email,
+                'username' => $request->email,
+                'status' => $request->status,
+                'ba_role_id' => $request->roles,
+                'imei' => $request->imei
+            ];
+
+            // Only update password if it’s not empty
+            if (!empty($request->password)) {
+                $data['password'] = $request->password;
+            }
+
+            // Update user
+            $user->update($data);
 
 
 
-          if ($request->shop_location != 1) {
-            $inputs['location_name'] = null;
-            $inputs['latitude'] = null;
-            $inputs['longitude'] = null;
-            $inputs['radius'] = null;
+            if ($request->shop_location != 1) {
+                $inputs['location_name'] = null;
+                $inputs['latitude'] = null;
+                $inputs['longitude'] = null;
+                $inputs['radius'] = null;
 
-            // Purani locations delete kar do
-            $user->locations()->delete();
-        } else {
-            // ✅ Shop Location hai → Update / Recreate
-            // Purani entries delete kar do
-            $user->locations()->delete();
+                // Purani locations delete kar do
+                $user->locations()->delete();
+            } else {
+                // ✅ Shop Location hai → Update / Recreate
+                // Purani entries delete kar do
+                $user->locations()->delete();
 
-            // Nayi entries save karo
-            if (!empty($request->latitude) && is_array($request->latitude)) {
-                foreach ($request->latitude as $index => $lat) {
-                    if (!empty($lat) && isset($request->longitude[$index])) {
-                        BaLocationModel::create([
-                            'ba_id'        => $user->id,
-                            'location_name' => $request->location_name[$index] ?? null,
-                            'latitude'      => $lat,
-                            'longitude'     => $request->longitude[$index],
-                            'radius'        => $request->radius[$index] ?? null,
-                        ]);
+                // Nayi entries save karo
+                if (!empty($request->latitude) && is_array($request->latitude)) {
+                    foreach ($request->latitude as $index => $lat) {
+                        if (!empty($lat) && isset($request->longitude[$index])) {
+                            BaLocationModel::create([
+                                'ba_id' => $user->id,
+                                'location_name' => $request->location_name[$index] ?? null,
+                                'latitude' => $lat,
+                                'longitude' => $request->longitude[$index],
+                                'radius' => $request->radius[$index] ?? null,
+                            ]);
+                        }
                     }
                 }
             }
+
+            DB::commit();
+
+            return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'message' => 'Failed to update user.',
+                'error' => $e->getMessage(),
+            ]);
         }
-
-        DB::commit();
-
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return redirect()->back()->withErrors([
-            'message' => 'Failed to update user.',
-            'error' => $e->getMessage(),
-        ]);
     }
-}
 
 
     /**

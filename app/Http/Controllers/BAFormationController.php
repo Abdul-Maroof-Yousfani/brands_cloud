@@ -182,7 +182,7 @@ class BAFormationController extends Controller
             }
             return redirect()->back()->with(["error" => implode('<br>', $validator->errors()->all()), "status" => 404]);
         }
-        
+
         // HR Portal Verification for Activation
         if ($request->input('status') == 1) {
             if (!\App\Helpers\CommonHelper::isEmployeeActiveInHR($request->input('employee'))) {
@@ -289,7 +289,7 @@ class BAFormationController extends Controller
         try {
             while (($row = fgetcsv($handle)) !== false) {
                 $rowNum++;
-                
+
                 // Expected columns: Employee Name/ID, Customer Name/ID, Brands (comma-separated Names/IDs), Status (Active/Deactive)
                 $empVal = trim($row[0] ?? '');
                 $custVal = trim($row[1] ?? '');
@@ -302,10 +302,10 @@ class BAFormationController extends Controller
                 }
 
                 // 1. Resolve Employee ID
-                $empVal = preg_replace('/[[:^print:]]/u', '', $empVal); 
+                $empVal = preg_replace('/[[:^print:]]/u', '', $empVal);
                 $empVal = html_entity_decode($empVal);
-                $empVal = trim(preg_replace('/\s+/', ' ', $empVal)); 
-                
+                $empVal = trim(preg_replace('/\s+/', ' ', $empVal));
+
                 $employeeQ = DB::connection('mysql2')->table('employees');
                 if (is_numeric($empVal)) {
                     $employeeQ->where('emp_id', $empVal);
@@ -363,7 +363,7 @@ class BAFormationController extends Controller
                     $bVal = preg_replace('/[[:^print:]]/u', '', $bVal);
                     $bVal = html_entity_decode($bVal);
                     $bVal = trim(preg_replace('/\s+/', ' ', $bVal));
-                    
+
                     $brandQ = DB::connection('mysql2')->table('brands');
                     if (is_numeric($bVal)) {
                         $brandQ->where('id', $bVal);
@@ -374,7 +374,7 @@ class BAFormationController extends Controller
                     $brand = $brandQ->first();
 
                     if ($brand) {
-                        $brandsIds[] = (string)$brand->id;
+                        $brandsIds[] = (string) $brand->id;
                     }
                 }
 
@@ -436,24 +436,54 @@ class BAFormationController extends Controller
         $empId = $request->emp_id;
         $status = $request->status;
 
+        // Check if employee exists in either BA Formation or Users
+        $baExists = BAFormation::where('employee_id', $empId)->exists();
+        $userExists = DB::table('users')->where('emp_code', $empId)->where('acc_type', 'ba')->exists();
+
+        if (!$baExists && !$userExists) {
+            return response()->json([
+                'success' => false, 
+                'message' => "Employee ID $empId not found in BA Formation or Users list."
+            ], 404);
+        }
+
         DB::beginTransaction();
         try {
+            $updatedBA = 0;
+            $updatedUser = 0;
+
             // 1. Update BA Formation
-            BAFormation::where('employee_id', $empId)->update(['status' => $status]);
+            if ($baExists) {
+                $updatedBA = BAFormation::where('employee_id', $empId)->update(['status' => $status]);
+            }
 
             // 2. Update BA User
-            DB::connection('mysql2')->table('users')
-                ->where('emp_code', $empId)
-                ->where('acc_type', 'ba')
-                ->update(['status' => $status]);
+            if ($userExists) {
+                $updatedUser = DB::table('users')
+                    ->where('emp_code', $empId)
+                    ->where('acc_type', 'ba')
+                    ->update(['status' => $status]);
+            }
 
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Employee status synced and updated successfully in BA portal.']);
+            
+            $statusLabel = ($status == 1) ? 'Active' : 'Inactive';
+            return response()->json([
+                'success' => true, 
+                'message' => "Employee $empId status successfully updated to $statusLabel.",
+                'details' => [
+                    'ba_formation_updated' => $updatedBA > 0,
+                    'user_account_updated' => $updatedUser > 0
+                ]
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Sync failed: ' . $e->getMessage()], 500);
         }
     }
 
+    public function testApi()
+    {
+        return response()->json(['success' => true, 'message' => 'API is working!']);
     }
 }
