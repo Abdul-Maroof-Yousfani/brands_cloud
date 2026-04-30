@@ -20,7 +20,7 @@
                         <label for="employee" class="form-label">Employee</label>
                         <select class="form-select select2" id="employee" name="employee" style="width: 100%;">
                             <option value="">Select Employee</option>
-                            @foreach(App\Helpers\SalesHelper::get_all_unregistered_employees() as $row)
+                            @foreach(App\Helpers\SalesHelper::get_ba_formation_employees() as $row)
                             <option value="{{ $row->id }}" data-email="{{ $row->email }}" data-name="{{ $row->name }}">
                                 {{ $row->name }}
                             </option>

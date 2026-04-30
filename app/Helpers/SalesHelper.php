@@ -234,6 +234,20 @@ class SalesHelper
             ->get();
     }
 
+    public static function get_ba_formation_employees()
+    {
+        // Get all unique employee IDs from BA Formation
+        $baEmployeeIds = BAFormation::where('status', 1)->pluck('employee_id')->unique()->toArray();
+
+        // Get employees who are in the BA Formation list
+        $employee = (new Employees())->setConnection('mysql2');
+        return $employee
+            ->whereIn('emp_id', $baEmployeeIds)
+            ->where('status', 1)
+            ->select('emp_id as id', 'name', 'email')
+            ->get();
+    }
+
 
 
     public static function get_all_client()
