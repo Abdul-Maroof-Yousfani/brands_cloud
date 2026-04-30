@@ -327,7 +327,7 @@
                             <div class="alert alert-info py-2">
                                 <small><strong>Note:</strong> Columns: Employee, Customer, Brands, <b>Status (Active/Inactive)</b>.</small>
                                 <br>
-                                <a href="{{ asset('public/samples/ba_formation_sample.csv') }}"
+                                <a href="{{ asset('samples/ba_formation_sample.csv') }}"
                                     class="text-primary font-weight-bold" download>
                                     <i class="fas fa-download mt-2"></i> Download Sample CSV
                                 </a>
