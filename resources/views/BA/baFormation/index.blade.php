@@ -106,6 +106,37 @@
             min-height: 45px !important;
             padding-bottom: 6px !important;
         }
+
+        /* Styling for Select2 within Filters */
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #d1dcec !important;
+            border-radius: 8px !important;
+            height: 45px !important;
+            background-color: #f8fbff !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 45px !important;
+            color: #2d3436 !important;
+            padding-left: 12px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 45px !important;
+        }
+
+        .select2-dropdown {
+            border: 1px solid #d1dcec !important;
+            border-radius: 8px !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
+            overflow: hidden !important;
+        }
+
+        .select2-search__field {
+            border-radius: 6px !important;
+            border: 1px solid #d1dcec !important;
+            padding: 8px !important;
+        }
     </style>
     <div class="well_N">
         <div class="row align-items-center ">
@@ -147,7 +178,7 @@
                         <div class="col-md-3">
                             <div class="filter-group">
                                 <label class="filter-label">Customers</label>
-                                <select class="form-select custom-filter-input" name="filter_customer" id="filter_customer">
+                                <select class="form-select custom-filter-input select2" name="filter_customer" id="filter_customer">
                                     <option value="">All Customers</option>
                                     @foreach(App\Helpers\SalesHelper::get_all_customer_only_distributors() as $row)
                                         <option value="{{$row->id}}">{{$row->name}}</option>
@@ -158,7 +189,7 @@
                         <div class="col-md-3">
                             <div class="filter-group">
                                 <label class="filter-label">Employee</label>
-                                <select class="form-select custom-filter-input" name="filter_employee" id="filter_employee">
+                                <select class="form-select custom-filter-input select2" name="filter_employee" id="filter_employee">
                                     <option value="">All Employees</option>
                                     @foreach(App\Helpers\SalesHelper::get_all_employees() as $row)
                                         <option value="{{$row->id}}">{{$row->name}}</option>
@@ -169,7 +200,7 @@
                         <div class="col-md-3">
                             <div class="filter-group">
                                 <label class="filter-label">Status</label>
-                                <select class="form-select custom-filter-input" name="filter_status" id="filter_status">
+                                <select class="form-select custom-filter-input select2" name="filter_status" id="filter_status">
                                     <option value="">All Status</option>
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
@@ -476,28 +507,12 @@
     </script>
 
     <script>
+        $(document).ready(function() {
+            $('.custom-filter-input.select2').select2({
+                width: '100%'
+            });
+        });
 
-        // $(document).ready(function() {
-        //     $('#customers').select2({
-        //         placeholder: 'Select Customers',
-        //         allowClear: true
-        //     });
-
-        //     $('#brands').select2({
-        //         placeholder: 'Select Brands',
-        //         allowClear: true
-        //     });
-
-        //     $('#employee').select2({
-        //         placeholder: 'Select Employee',
-        //         allowClear: true
-        //     });
-
-        //     $('#status').select2({
-        //         placeholder: 'Select Status',
-        //         allowClear: true
-        //     });
-        // });
         function syncEmployee() {
             // Show loader and hide sync icon
             $('#syncIcon').hide();
