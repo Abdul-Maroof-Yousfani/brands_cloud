@@ -34,7 +34,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label">Select BA (Employees)</label>
                             <div class="input-group">
@@ -47,6 +47,15 @@
                         </div>
                     </div>
                     <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Target Type</label>
+                            <select name="target_type" id="target_type" class="form-control">
+                                <option value="qty">Quantity</option>
+                                <option value="amount">Amount</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
                         <div class="form-group" style="margin-top: 25px;">
                             <button type="submit" class="btn btn-primary" style="margin-top: 1px;">
                                 <i class="fas fa-sync-alt mr-2"></i> Generate
