@@ -152,8 +152,7 @@ use App\Helpers\SaleHelper;
                                             {{ $row->name }}
                                         </option>
                                     @endforeach
-
-
+                                </select>
                             </div>
                         </div>
                     </div>
