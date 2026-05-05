@@ -39,7 +39,6 @@
                     <th>Item Type</th>
                     <th>Brand</th>
                     <th>Packing</th>
-                     <th>Stock in Transit (Pcs)</th>
 
                     @foreach($warehouses as $id => $warehouseName)
                         <th>{{ $warehouseName }}</th>
@@ -53,8 +52,6 @@
                 @foreach($stocks as $row)
                     @php
                         $rowTotal = 0;
-                        $transitVal = (float)($row['transit_stock'] ?? 0);
-                        $transitTotal += $transitVal;
                     @endphp
                     <tr>
                         <td>{{ $counter++ }}</td>
@@ -64,7 +61,6 @@
                         <td>{{ $row['item_type'] ?? 'N/A' }}</td>
                         <td>{{ $row['brand'] ?? 'N/A' }}</td>
                         <td>{{ $row['packing'] }}</td>
-                        <td>{{ number_format($transitVal, 0) }}</td>
 
                         @foreach($warehouses as $id => $wName)
                             @php
@@ -88,7 +84,6 @@
             <tfoot>
                 <tr class="totals-row">
                     <td colspan="7" class="text-right">Total</td>
-                    <td>{{ number_format($transitTotal, 0) }}</td>
 
                     @foreach($warehouses as $id => $wName)
                         <td>{{ number_format($warehouseTotals[$id], 0) }}</td>

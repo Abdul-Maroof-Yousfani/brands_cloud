@@ -2107,7 +2107,6 @@ public function getBrandsByWarehouse(Request $request)
 
         $warehouses = DB::connection('mysql2')->table('warehouse')
             ->whereIn('id', $warehouseList)
-            ->where("is_virtual", 1)
             ->where('status', 1)
             ->get();
 
@@ -2152,18 +2151,6 @@ public function getBrandsByWarehouse(Request $request)
 
     if ($request->ajax()) {
         try {
-            $transitSub = DB::connection('mysql2')->table('stock_transfers_transit')
-                ->select(
-                    'product_id',
-                    'warehouse_to_id',
-                    DB::raw('SUM(quantity) as transit_stock')
-                )
-                ->where('tr_status', 1)
-                ->groupBy('product_id', 'warehouse_to_id');
-
-            $rawQuery = $transitSub->toSql();
-            $bindings = $transitSub->getBindings();
-
             $query = DB::connection('mysql2')->table('ba_stock as s')
                 ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
                 ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
@@ -2171,11 +2158,6 @@ public function getBrandsByWarehouse(Request $request)
                 ->leftJoin('category as c', 'si.main_ic_id', '=', 'c.id')
                 ->leftJoin('warehouse as w', 's.warehouse_id', '=', 'w.id')
                 ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
-                ->leftJoin(DB::raw("($rawQuery) as st"), function($join) {
-                    $join->on('si.id', '=', 'st.product_id')
-                        ->on('w.id', '=', 'st.warehouse_to_id');
-                })
-                ->addBinding($bindings, 'join')
                 ->select(
                     'si.id as product_id',
                     'si.sku_code',
@@ -2189,8 +2171,7 @@ public function getBrandsByWarehouse(Request $request)
                     'w.id as warehouse_id',
                     'w.name as warehouse_name',
                     DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,9) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock'),
-                    DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
+                    DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock')
                 )
                 ->where('s.status', 1)
                 ->whereBetween('s.created_date', [$from_date, $to_date]);
@@ -2239,7 +2220,6 @@ public function getBrandsByWarehouse(Request $request)
                         'item_type' => $stock->item_type,
                         'brand' => $stock->brand,
                         'packing' => $stock->packing,
-                        'transit_stock' => $stock->transit_stock,
                         'warehouses' => [] // Store warehouse-wise stock
                     ];
                 }
