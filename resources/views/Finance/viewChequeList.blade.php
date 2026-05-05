@@ -50,23 +50,83 @@ use App\Helpers\ReuseableCode;
 									</div>
 								</div>
 
-								<div class="row">
+								<style>
+									.sf-filter-label {
+										font-weight: 600;
+										font-size: 14px;
+										color: #444;
+										margin-bottom: 5px;
+										display: block;
+									}
+									.sf-filter-input {
+										height: 42px !important;
+										border-radius: 6px !important;
+										border: 1px solid #d1d1d1 !important;
+										box-shadow: none !important;
+									}
+									.select2-container .select2-selection--single {
+										height: 42px !important;
+										border-radius: 6px !important;
+										display: flex !important;
+										align-items: center !important;
+										border: 1px solid #d1d1d1 !important;
+									}
+									.select2-container--default .select2-selection--single .select2-selection__arrow {
+										height: 40px !important;
+									}
+								</style>
 
-									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-										<label>Customer</label>
-										<select id="customer_id" class="form-control select2">
-											<option value="">Select Customer</option>
-											<?php foreach ($customers as $key => $val):?>
-											<option value="<?php echo $val->id?>">
-												<?php echo $val->name; ?>
-											</option>
-											<?php endforeach;?>
+								<div class="row">
+									<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+										<label class="sf-filter-label" id="party_label">Customer</label>
+										<div id="customer_div">
+											<select id="customer_id" class="form-control select2 sf-filter-input" style="width: 100%;">
+												<option value="">Select Customer</option>
+												<?php foreach ($customers as $key => $val):?>
+												<option value="<?php echo $val->id?>">
+													<?php echo $val->name; ?>
+												</option>
+												<?php endforeach;?>
+											</select>
+										</div>
+										<div id="vendor_div" style="display:none;">
+											<select id="acc_id" class="form-control select2 sf-filter-input" style="width: 100%;">
+												<option value="">Select Party</option>
+												<?php foreach ($accounts as $key => $val):?>
+												<option value="<?php echo $val->id?>">
+													<?php echo $val->name; ?>
+												</option>
+												<?php endforeach;?>
+											</select>
+										</div>
+									</div>
+
+									<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+										<label class="sf-filter-label">Status</label>
+										<select id="issued" class="form-control select2 sf-filter-input">
+											<option value="">All Statuses</option>
+											<option value="0">Cheque In Hand</option>
+											<option value="1">Deposit in Bank</option>
+											<option value="2">Bounce</option>
+											<option value="3">Return to Customer</option>
+											<option value="4">Cancel</option>
+											<option value="5">Clear</option>
 										</select>
 									</div>
 
-									<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 text-right">
+									<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+										<label class="sf-filter-label">From Date</label>
+										<input type="date" id="from_date" class="form-control sf-filter-input">
+									</div>
+
+									<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+										<label class="sf-filter-label">To Date</label>
+										<input type="date" id="to_date" class="form-control sf-filter-input">
+									</div>
+
+									<div class="col-lg-1 col-md-1 col-sm-6 col-xs-12">
 										<input type="button" value="Get Data" class="btn btn-primary"
-											onclick="viewChequeListAjax();" style="margin-top: 32px;" />
+											onclick="viewChequeListAjax();" style="margin-top: 25px; height: 42px; width: 100%;" />
 									</div>
 								</div>
 
@@ -87,7 +147,7 @@ use App\Helpers\ReuseableCode;
 																	<thead>
 
 																		<th class="text-center">S.No</th>
-																		<th class="text-center">Customer Name</th>
+																		<th class="text-center party_header">Customer Name</th>
 																		<th class="text-center">Received Code</th>
 																		<th class="text-center">Received Date</th>
 																		<th class="text-center">Cheque No</th>
@@ -143,6 +203,10 @@ use App\Helpers\ReuseableCode;
 			$('#data').empty();
 			let customer_id = $('#customer_id').val();
 			let supplier_id = $('#supplier_id').val();
+			let acc_id = $('#acc_id').val();
+			let issued = $('#issued').val();
+			let from_date = $('#from_date').val();
+			let to_date = $('#to_date').val();
 			let list_type = $('input[name="list_type"]:checked').val();
 
 			$.ajax({
@@ -151,6 +215,10 @@ use App\Helpers\ReuseableCode;
 				data: {
 					customer_id,
 					supplier_id,
+					acc_id,
+					issued,
+					from_date,
+					to_date,
 					list_type
 				},
 				success: function (data) {
@@ -159,8 +227,18 @@ use App\Helpers\ReuseableCode;
 					
 					if (list_type == 'rv') {
 						$('.issue_cols').hide();
+						$('.party_header').text('Party Name');
+						$('#party_label').text('Party');
+						$('#customer_div').hide();
+						$('#vendor_div').show();
+						$('#customer_id').val('').trigger('change');
 					} else {
 						$('.issue_cols').show();
+						$('.party_header').text('Customer Name');
+						$('#party_label').text('Customer');
+						$('#customer_div').show();
+						$('#vendor_div').hide();
+						$('#acc_id').val('').trigger('change');
 					}
 				}
 			});

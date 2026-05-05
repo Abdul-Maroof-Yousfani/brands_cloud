@@ -11,7 +11,7 @@
             {{ $counter++ }}
         </td>
         <td class="text-center">
-            {{ strtoupper($item->customer_name) }}
+            {{ strtoupper($item->customer_name != "-" ? $item->customer_name : ($item->supplier_name != "-" ? $item->supplier_name : "-")) }}
         </td>
         <td class="text-center">
             {{ strtoupper($item->reci_code) }}

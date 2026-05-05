@@ -3375,12 +3375,15 @@ class FinanceController extends Controller
 	{
 		$customers = DB::Connection('mysql2')->table('customers')->where('status', 1)->get();
 		$supplier = DB::Connection('mysql2')->table('supplier')->where('status', 1)->get();
+		$accounts = DB::Connection('mysql2')->table('accounts')->where('status', 1)->orderBy('name')->get();
 
 		if ($request->ajax()) {
-
 			$customer_id = $request->customer_id;
 			$supplier_id = $request->supplier_id;
+			$acc_id = $request->acc_id;
 			$issued = $request->issued;
+			$from_date = $request->from_date;
+			$to_date = $request->to_date;
 			$list_type = $request->list_type ?? 'advance';
 
 			if ($list_type == 'rv') {
@@ -3423,7 +3426,12 @@ class FinanceController extends Controller
 				$cheque2 = DB::Connection('mysql2')->table('new_rvs as rv')
 					->select([
 						'rv.id as adv_id',
-						DB::raw('COALESCE(c.name, "-") as customer_name'),
+						DB::raw('COALESCE(
+							c.name, 
+							(SELECT name FROM customers WHERE id = (SELECT buyers_id FROM sales_tax_invoice WHERE id = (SELECT si_id FROM brige_table_sales_receipt WHERE rv_id = rv.id LIMIT 1) LIMIT 1) LIMIT 1),
+							(SELECT name FROM accounts WHERE id = (SELECT acc_id FROM new_rv_data WHERE master_id = rv.id AND debit_credit = 0 LIMIT 1) LIMIT 1),
+							"-"
+						) as customer_name'),
 						'rv.rv_no as reci_code',
 						'rv.cheque_no',
 						'rv.cheque_date',
@@ -3450,7 +3458,11 @@ class FinanceController extends Controller
 				$cheque3 = DB::Connection('mysql2')->table('new_pv as pv')
 					->select([
 						'pv.id as adv_id',
-						DB::raw(' "-" as customer_name'),
+						DB::raw('COALESCE(
+							(SELECT name FROM supplier WHERE id = (SELECT paid_to_id FROM new_pv_data WHERE master_id = pv.id AND paid_to_type = 1 LIMIT 1) LIMIT 1),
+							(SELECT name FROM accounts WHERE id = (SELECT acc_id FROM new_pv_data WHERE master_id = pv.id AND debit_credit = 1 LIMIT 1) LIMIT 1),
+							"-"
+						) as customer_name'),
 						'pv.pv_no as reci_code',
 						'pv.cheque_no',
 						'pv.cheque_date',
@@ -3478,6 +3490,27 @@ class FinanceController extends Controller
 					// Cheque3 (PV) is generally for suppliers, so we skip it if customer filter is active
 					$cheque3 = $cheque3->whereRaw('1 = 0');
 				}
+				if ($acc_id) {
+					// Filter by account ID in new_rv_data or new_pv_data
+					$cheque1 = $cheque1->whereExists(function ($query) use ($acc_id) {
+						$query->select(DB::raw(1))
+							->from('new_rv_data')
+							->whereRaw('new_rv_data.rv_no = ch.code')
+							->where('acc_id', $acc_id);
+					});
+					$cheque2 = $cheque2->whereExists(function ($query) use ($acc_id) {
+						$query->select(DB::raw(1))
+							->from('new_rv_data')
+							->whereRaw('new_rv_data.master_id = rv.id')
+							->where('acc_id', $acc_id);
+					});
+					$cheque3 = $cheque3->whereExists(function ($query) use ($acc_id) {
+						$query->select(DB::raw(1))
+							->from('new_pv_data')
+							->whereRaw('new_pv_data.master_id = pv.id')
+							->where('acc_id', $acc_id);
+					});
+				}
 				if ($issued != "") {
 					$cheque1 = $cheque1->where('ch.issued', $issued);
 					// For cheque2 and cheque3, we only have them if they are '0' (In Hand) since they are not in cheque table
@@ -3486,8 +3519,18 @@ class FinanceController extends Controller
 						$cheque3 = $cheque3->whereRaw('1 = 0');
 					}
 				}
+				if ($from_date) {
+					$cheque1 = $cheque1->where('ch.date', '>=', $from_date);
+					$cheque2 = $cheque2->where('rv.rv_date', '>=', $from_date);
+					$cheque3 = $cheque3->where('pv.pv_date', '>=', $from_date);
+				}
+				if ($to_date) {
+					$cheque1 = $cheque1->where('ch.date', '<=', $to_date);
+					$cheque2 = $cheque2->where('rv.rv_date', '<=', $to_date);
+					$cheque3 = $cheque3->where('pv.pv_date', '<=', $to_date);
+				}
 
-				$cheque = $cheque1->unionAll($cheque2)->unionAll($cheque3);
+				$cheque = $cheque1->unionAll($cheque2)->unionAll($cheque3)->get();
 
 			} else {
 				$cheque = DB::Connection('mysql2')->table('advance_payments as adv')
@@ -3532,19 +3575,28 @@ class FinanceController extends Controller
 				if ($supplier_id) {
 					$cheque = $cheque->where('ch.supplier_id', $supplier_id);
 				}
+				if ($acc_id) {
+					$cheque = $cheque->where('adv.acc_id', $acc_id);
+				}
 				if ($issued != "") {
 					$cheque = $cheque->where('ch.issued', $issued);
+				}
+				if ($from_date) {
+					$cheque = $cheque->where('adv.adv_date', '>=', $from_date);
+				}
+				if ($to_date) {
+					$cheque = $cheque->where('adv.adv_date', '<=', $to_date);
 				}
 				if ($request->pay_mode) {
 					$cheque = $cheque->where('adv.payment_type', $request->pay_mode);
 				}
-			}
 
-			$cheque = $cheque->get();
+				$cheque = $cheque->get();
+			}
 
 			return view('Finance.AjaxPages.viewChequeListAjax', compact('cheque'));
 		}
-		return view('Finance.viewChequeList', compact('customers', 'supplier'));
+		return view('Finance.viewChequeList', compact('customers', 'supplier', 'accounts'));
 	}
 
 	public function updateChequeStatus(Request $request)
