@@ -70,6 +70,7 @@ Route::middleware(['custom-middleware'])->group(function () {
     Route::get('/surveyData','MobileApplicationController@surveyData');
     Route::get('/get-target-report', 'MobileApplicationController@targetReportApi');
     Route::get('/get-ba-target-progress', 'MobileApplicationController@getBaTargetProgressApi');
+    Route::get('/get-user-stock-report', 'MobileApplicationController@getUserStockReportApi');
 
     // Route::controller('SalesController')->prefix("survey")->group(function(){
     //     Route::post('createSurvey', "createSurvey");

@@ -473,6 +473,95 @@ public function get_stock(Request $request)
         ], 200);
     }
 
+    public function getUserStockReportApi(Request $request)
+    {
+        // Get user from filter or auth
+        if ($request->user_id) {
+            $user = User::find($request->user_id);
+        } else {
+            $user = $this->getAuthenticatedUser();
+            if ($user instanceof \Illuminate\Http\JsonResponse) {
+                return $user;
+            }
+        }
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found'], 404);
+        }
+
+        // Get all formations for this user to identify allowed brands and customers
+        $formations = \App\BAFormation::where('employee_id', $user->emp_code)->where('status', 1)->get();
+        
+        $allBrandIds = [];
+        $customerIds = [];
+        foreach ($formations as $f) {
+            $ids = json_decode($f->brands_ids, true);
+            if (is_array($ids)) {
+                $allBrandIds = array_merge($allBrandIds, $ids);
+            }
+            $customerIds[] = $f->customer_id;
+        }
+        $allBrandIds = array_unique(array_filter($allBrandIds));
+        $customerIds = array_unique(array_filter($customerIds));
+
+        if (empty($allBrandIds) || empty($customerIds)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No brands or customers assigned to this user',
+                'data' => []
+            ], 200);
+        }
+
+        // Get all products belonging to the allowed brands
+        $products = DB::connection('mysql2')->table('subitem')
+            ->whereIn('brand_id', $allBrandIds)
+            ->where('status', 1)
+            ->get(['id', 'sku_code', 'product_name', 'product_barcode']);
+
+        if ($products->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No products found for assigned brands',
+                'data' => []
+            ], 200);
+        }
+
+        // Aggregate stock across all assigned customers for these products
+        $stockData = DB::connection('mysql2')->table('ba_stock')
+            ->whereIn('customer_id', $customerIds)
+            ->whereIn('sub_item_id', $products->pluck('id'))
+            ->where('status', 1)
+            ->select('sub_item_id',
+                DB::raw('SUM(CASE WHEN voucher_type IN (1, 9) THEN qty ELSE 0 END) AS total_in'),
+                DB::raw('SUM(CASE WHEN voucher_type = 50 THEN qty ELSE 0 END) AS total_out'),
+                DB::raw('SUM(CASE WHEN voucher_type = 51 THEN qty ELSE 0 END) AS total_return')
+            )
+            ->groupBy('sub_item_id')
+            ->get()
+            ->keyBy('sub_item_id');
+
+        $result = $products->map(function($p) use ($stockData) {
+            $stock = $stockData->get($p->id);
+            $available = 0;
+            if ($stock) {
+                $available = max(0, $stock->total_in + $stock->total_return - $stock->total_out);
+            }
+            return [
+                'product_id' => $p->id,
+                'sku_code' => $p->sku_code,
+                'product_name' => ($p->sku_code ?? '') . ' ' . ($p->product_name ?? '') . ' ' . ($p->product_barcode ?? ''),
+                'barcode' => $p->product_barcode,
+                'available_qty' => (float)$available
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All products stock for user',
+            'data' => $result
+        ], 200);
+    }
+
 // public function getSaleAmount(Request $request)
 // {
 //     // Validate inputs
