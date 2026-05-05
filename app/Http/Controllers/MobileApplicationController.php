@@ -979,40 +979,47 @@ public function get_stock(Request $request)
             return $user; // Return the error response if no authenticated user
         }
 
-        // Validate that emp_id, from_date, and to_date are provided in the request
-        $rules = [
-            'order_id' => 'required|integer',
-        ];
+        // If order_id is provided, fetch specific order
+        if ($request->order_id) {
+            $saleOrder = RetailSaleOrder::with([
+                'details' => function ($query) {
+                    $query->with(['brand:id,name', 'product:id,product_name']); // Ensure 'id' and 'name' are actual columns
+                },
+                'distributor:id,name' // Fetch distributor with selected fields
+            ])->find($request->order_id);
 
-        // Create the validator instance
-        $validator = Validator::make($request->all(), $rules);
+            if (!$saleOrder) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sale order not found',
+                ], 404); // 404 Not Found
+            }
 
-        // Check if validation fails
-        if ($validator->fails()) {
             return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422); // 422 Unprocessable Entity
+                'success' => true,
+                'data' => $saleOrder,
+            ]);
         }
 
-        // Find the sale order by its ID
-        $saleOrder = RetailSaleOrder::with([
-            'details' => function ($query) {
-                $query->with(['brand:id,name', 'product:id,product_name']); // Ensure 'id' and 'name' are actual columns
-            },
-            'distributor:id,name' // Fetch distributor with selected fields
-        ])->find($request->order_id);
+        // If no order_id, return today's and monthly sales summary
+        $today_sale = RetailSaleOrder::where('user_id', $user->id)
+            ->whereDate('retail_sale_orders.created_at', Carbon::today())
+            ->join('retail_sale_order_details', 'retail_sale_orders.id', '=', 'retail_sale_order_details.retail_sale_order_id')
+            ->sum('retail_sale_order_details.qty');
 
-        if (!$saleOrder) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sale order not found',
-            ], 404); // 404 Not Found
-        }
+        $monthly_sale = RetailSaleOrder::where('user_id', $user->id)
+            ->whereYear('retail_sale_orders.created_at', Carbon::now()->year)
+            ->whereMonth('retail_sale_orders.created_at', Carbon::now()->month)
+            ->join('retail_sale_order_details', 'retail_sale_orders.id', '=', 'retail_sale_order_details.retail_sale_order_id')
+            ->sum('retail_sale_order_details.qty');
 
         return response()->json([
             'success' => true,
-            'data' => $saleOrder,
+            'message' => 'Sales Summary Fetched Successfully',
+            'data' => [
+                'today_sale' => (int) $today_sale,
+                'monthly_sale' => (int) $monthly_sale,
+            ],
         ]);
     }
 
