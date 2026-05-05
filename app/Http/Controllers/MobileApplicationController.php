@@ -512,11 +512,19 @@ public function get_stock(Request $request)
             ], 200);
         }
 
+        // Handle optional brand_id filter
+        $requestedBrandId = $request->brand_id;
+
         // Get all products belonging to the allowed brands
-        $products = DB::connection('mysql2')->table('subitem')
+        $productsQuery = DB::connection('mysql2')->table('subitem')
             ->whereIn('brand_id', $allBrandIds)
-            ->where('status', 1)
-            ->get(['id', 'sku_code', 'product_name', 'product_barcode', 'brand_id']);
+            ->where('status', 1);
+
+        if ($requestedBrandId) {
+            $productsQuery->where('brand_id', $requestedBrandId);
+        }
+
+        $products = $productsQuery->get(['id', 'sku_code', 'product_name', 'product_barcode', 'brand_id']);
 
         if ($products->isEmpty()) {
             return response()->json([
