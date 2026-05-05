@@ -30,23 +30,23 @@
         <!-- <td class="text-center">
             {{ strtoupper($item->supplier_name) }}
         </td> -->
-        <td class="text-center">
+        <td class="text-center issue_cols">
             {{ strtoupper($item->issue_code) }}
         </td>
-        <td class="text-center">
+        <td class="text-center issue_cols">
             {{ $item->issue_date }}
         </td>
         <td class="text-center">
             {{ number_format($item->amount, 2) }}
         </td>
-        <td class="text-center">
+        <td class="text-center issue_cols">
             @if(isset($item->remaining_amount))
                 {{ number_format($item->remaining_amount, 2) }}
             @else
                 -
             @endif
         </td>
-        <td class="text-center">
+        <td class="text-center issue_cols">
             @if(isset($item->remaining_amount))
                 @php
                     $rem = $item->remaining_amount;
@@ -64,18 +64,16 @@
             @endif
         </td>
         <td class="text-center">
-            @if(isset($item->cheque_id))
-                <select class="form-control" onfocus="setPrevStatus(this)" onchange="changeStatus(this, {{ $item->cheque_id }})" style="width: 150px; margin: 0 auto;">
-                    <option value="0" {{ $item->issued == 0 ? 'selected' : '' }}>Cheque In Hand</option>
-                    <option value="1" {{ $item->issued == 1 ? 'selected' : '' }}>Deposit in Bank</option>
-                    <option value="2" {{ $item->issued == 2 ? 'selected' : '' }}>Bounce</option>
-                    <option value="3" {{ $item->issued == 3 ? 'selected' : '' }}>Return to Customer</option>
-                    <option value="4" {{ $item->issued == 4 ? 'selected' : '' }}>Cancel</option>
-                    <option value="5" {{ $item->issued == 5 ? 'selected' : '' }}>Clear</option>
-                </select>
-            @else
-                {{ strtoupper($item->issue_status) }}
-            @endif
+            <select class="form-control" onfocus="setPrevStatus(this)" 
+                onchange="changeStatus(this, '{{ $item->cheque_id ?? 'new' }}', '{{ $item->reci_code }}', '{{ $item->cheque_no }}')" 
+                style="width: 150px; margin: 0 auto;">
+                <option value="0" {{ $item->issued == 0 ? 'selected' : '' }}>Cheque In Hand</option>
+                <option value="1" {{ $item->issued == 1 ? 'selected' : '' }}>Deposit in Bank</option>
+                <option value="2" {{ $item->issued == 2 ? 'selected' : '' }}>Bounce</option>
+                <option value="3" {{ $item->issued == 3 ? 'selected' : '' }}>Return to Customer</option>
+                <option value="4" {{ $item->issued == 4 ? 'selected' : '' }}>Cancel</option>
+                <option value="5" {{ $item->issued == 5 ? 'selected' : '' }}>Clear</option>
+            </select>
         </td>
 
 

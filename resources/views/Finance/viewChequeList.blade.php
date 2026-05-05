@@ -93,13 +93,11 @@ use App\Helpers\ReuseableCode;
 																		<th class="text-center">Cheque No</th>
 																		<th class="text-center">Cheque Date</th>
 
-
-																		<!-- <th class="text-center">Supplier Name</th> -->
-																		<th class="text-center">Issue Code</th>
-																		<th class="text-center">Issue Date</th>
+																		<th class="text-center issue_cols">Issue Code</th>
+																		<th class="text-center issue_cols">Issue Date</th>
 																		<th class="text-center">Amount</th>
-																		<th class="text-center">Remaining</th>
-																		<th class="text-center">Consumption Status</th>
+																		<th class="text-center issue_cols">Remaining</th>
+																		<th class="text-center issue_cols">Consumption Status</th>
 																		<th class="text-center">Cheques Status</th>
 																		<!-- <th class="text-center hidden-print">Action</th> -->
 																	</thead>
@@ -157,7 +155,13 @@ use App\Helpers\ReuseableCode;
 				},
 				success: function (data) {
 					$('#data').empty();
-					$('#data').append(data)
+					$('#data').append(data);
+					
+					if (list_type == 'rv') {
+						$('.issue_cols').hide();
+					} else {
+						$('.issue_cols').show();
+					}
 				}
 			});
 		}
@@ -166,7 +170,7 @@ use App\Helpers\ReuseableCode;
 			previous_status = $(obj).val();
 		}
 
-		function changeStatus(obj, id) {
+		function changeStatus(obj, id, v_no = '', cheque_no = '') {
 			let status = $(obj).val();
 			let statusText = $(obj).find('option:selected').text();
 			
@@ -177,11 +181,17 @@ use App\Helpers\ReuseableCode;
 					data: {
 						_token: '{{ csrf_token() }}',
 						id: id,
-						status: status
+						status: status,
+						v_no: v_no,
+						cheque_no: cheque_no
 					},
 					success: function (data) {
 						if (data.success) {
 							toastr.success(data.message);
+							if (data.new_id) {
+								// Update the row to use the newly created ID for future changes
+								$(obj).attr('onchange', `changeStatus(this, ${data.new_id})`);
+							}
 						} else {
 							toastr.error(data.message);
 							$(obj).val(previous_status); // Revert on server error

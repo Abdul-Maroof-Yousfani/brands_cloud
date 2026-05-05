@@ -199,6 +199,12 @@ class CommonHelper
         return $adv ? $adv->cheque_no : '';
     }
 
+    public static function get_bank_name($id)
+    {
+        if (!$id) return '-';
+        return DB::connection('mysql2')->table('bank_detail')->where('id', $id)->value('bank_name') ?? '-';
+    }
+
     public static function get_unadjusted_outstanding_si($customer_id, $toDate)
     {
         $invoices = DB::connection('mysql2')->table('sales_tax_invoice')

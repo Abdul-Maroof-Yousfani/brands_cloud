@@ -3384,7 +3384,8 @@ class FinanceController extends Controller
 			$list_type = $request->list_type ?? 'advance';
 
 			if ($list_type == 'rv') {
-				$cheque = DB::Connection('mysql2')->table('cheque as ch')
+				// 1. Cheques already in 'cheque' table (excluding those in advance_payments)
+				$cheque1 = DB::Connection('mysql2')->table('cheque as ch')
 					->select([
 						'ch.id as adv_id',
 						DB::raw('COALESCE(c.name, s.name, "-") as customer_name'),
@@ -3418,12 +3419,75 @@ class FinanceController extends Controller
 							->whereRaw('advance_payments.payment_no = ch.code');
 					});
 
+				// 2. Cheques from new_rvs (not in cheque table)
+				$cheque2 = DB::Connection('mysql2')->table('new_rvs as rv')
+					->select([
+						'rv.id as adv_id',
+						DB::raw('COALESCE(c.name, "-") as customer_name'),
+						'rv.rv_no as reci_code',
+						'rv.cheque_no',
+						'rv.cheque_date',
+						'rv.rv_date as reci_date',
+						DB::raw(' "-" as supplier_name'),
+						DB::raw(' "-" as issue_code'),
+						DB::raw(' "-" as issue_date'),
+						DB::raw('(SELECT SUM(amount) FROM new_rv_data WHERE master_id = rv.id) as amount'),
+						DB::raw('NULL as remaining_amount'),
+						DB::raw("'Cheque In Hand' as issue_status"),
+						DB::raw('0 as issued'),
+						DB::raw('NULL as cheque_id')
+					])
+					->leftJoin('customers as c', 'rv.buyer_id', '=', 'c.id')
+					->whereNotNull('rv.cheque_no')
+					->where('rv.cheque_no', '!=', '')
+					->whereNotExists(function ($query) {
+						$query->select(DB::raw(1))
+							->from('cheque')
+							->whereRaw('cheque.cheque_no = rv.cheque_no');
+					});
+
+				// 3. Cheques from new_pv (not in cheque table)
+				$cheque3 = DB::Connection('mysql2')->table('new_pv as pv')
+					->select([
+						'pv.id as adv_id',
+						DB::raw(' "-" as customer_name'),
+						'pv.pv_no as reci_code',
+						'pv.cheque_no',
+						'pv.cheque_date',
+						'pv.pv_date as reci_date',
+						DB::raw('(SELECT name FROM supplier WHERE id = (SELECT paid_to_id FROM new_pv_data WHERE master_id = pv.id AND paid_to_type = 1 LIMIT 1)) as supplier_name'),
+						DB::raw(' "-" as issue_code'),
+						DB::raw(' "-" as issue_date'),
+						DB::raw('(SELECT SUM(amount) FROM new_pv_data WHERE master_id = pv.id) as amount'),
+						DB::raw('NULL as remaining_amount'),
+						DB::raw("'Cheque In Hand' as issue_status"),
+						DB::raw('0 as issued'),
+						DB::raw('NULL as cheque_id')
+					])
+					->whereNotNull('pv.cheque_no')
+					->where('pv.cheque_no', '!=', '')
+					->whereNotExists(function ($query) {
+						$query->select(DB::raw(1))
+							->from('cheque')
+							->whereRaw('cheque.cheque_no = pv.cheque_no');
+					});
+
 				if ($customer_id) {
-					$cheque = $cheque->where('ch.customer_id', $customer_id);
+					$cheque1 = $cheque1->where('ch.customer_id', $customer_id);
+					$cheque2 = $cheque2->where('rv.buyer_id', $customer_id);
+					// Cheque3 (PV) is generally for suppliers, so we skip it if customer filter is active
+					$cheque3 = $cheque3->whereRaw('1 = 0');
 				}
 				if ($issued != "") {
-					$cheque = $cheque->where('ch.issued', $issued);
+					$cheque1 = $cheque1->where('ch.issued', $issued);
+					// For cheque2 and cheque3, we only have them if they are '0' (In Hand) since they are not in cheque table
+					if ($issued != 0) {
+						$cheque2 = $cheque2->whereRaw('1 = 0');
+						$cheque3 = $cheque3->whereRaw('1 = 0');
+					}
 				}
+
+				$cheque = $cheque1->unionAll($cheque2)->unionAll($cheque3);
 
 			} else {
 				$cheque = DB::Connection('mysql2')->table('advance_payments as adv')
@@ -3487,6 +3551,51 @@ class FinanceController extends Controller
 	{
 		$id = $request->id;
 		$status = $request->status;
+
+		if ($id === 'new') {
+			$v_no = $request->v_no;
+			$cheque_no = $request->cheque_no;
+
+			// Try to find source in new_rvs
+			$source = DB::connection('mysql2')->table('new_rvs')->where('rv_no', $v_no)->where('cheque_no', $cheque_no)->first();
+			if ($source) {
+				$v_type = 'RV';
+				$customer_id = $source->buyer_id;
+				$supplier_id = null;
+				$amount = DB::connection('mysql2')->table('new_rv_data')->where('master_id', $source->id)->sum('amount');
+				$cheque_date = $source->cheque_date;
+				$date = $source->rv_date;
+			} else {
+				// Try to find source in new_pv
+				$source = DB::connection('mysql2')->table('new_pv')->where('pv_no', $v_no)->where('cheque_no', $cheque_no)->first();
+				if ($source) {
+					$v_type = 'PV';
+					$customer_id = null;
+					$supplier_id = DB::connection('mysql2')->table('new_pv_data')->where('master_id', $source->id)->where('paid_to_type', 1)->value('paid_to_id');
+					$amount = DB::connection('mysql2')->table('new_pv_data')->where('master_id', $source->id)->sum('amount');
+					$cheque_date = $source->cheque_date;
+					$date = $source->pv_date;
+				}
+			}
+
+			if ($source) {
+				$new_id = DB::connection('mysql2')->table('cheque')->insertGetId([
+					'code' => $v_no,
+					'cheque_no' => $cheque_no,
+					'cheque_date' => $cheque_date,
+					'date' => $date,
+					'amount' => $amount,
+					'customer_id' => $customer_id,
+					'supplier_id' => $supplier_id,
+					'issued' => $status,
+					'status' => 1,
+					'v_type' => $v_type
+				]);
+				return response()->json(['success' => true, 'message' => 'Cheque registered and status updated.', 'new_id' => $new_id]);
+			} else {
+				return response()->json(['success' => false, 'message' => 'Source voucher not found.']);
+			}
+		}
 
 		$cheque = DB::connection('mysql2')->table('cheque')->where('id', $id)->first();
 		if (!$cheque) {
