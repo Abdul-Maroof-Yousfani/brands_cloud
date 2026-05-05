@@ -516,7 +516,7 @@ public function get_stock(Request $request)
         $products = DB::connection('mysql2')->table('subitem')
             ->whereIn('brand_id', $allBrandIds)
             ->where('status', 1)
-            ->get(['id', 'sku_code', 'product_name', 'product_barcode']);
+            ->get(['id', 'sku_code', 'product_name', 'product_barcode', 'brand_id']);
 
         if ($products->isEmpty()) {
             return response()->json([
@@ -540,6 +540,9 @@ public function get_stock(Request $request)
             ->get()
             ->keyBy('sub_item_id');
 
+        // Fetch brand names
+        $brandNames = Brand::whereIn('id', $allBrandIds)->pluck('name', 'id');
+
         $result = $products->map(function($p) use ($stockData) {
             $stock = $stockData->get($p->id);
             $available = 0;
@@ -551,14 +554,27 @@ public function get_stock(Request $request)
                 'sku_code' => $p->sku_code,
                 'product_name' => ($p->sku_code ?? '') . ' ' . ($p->product_name ?? '') . ' ' . ($p->product_barcode ?? ''),
                 'barcode' => $p->product_barcode,
-                'available_qty' => (float)$available
+                'available_qty' => (float)$available,
+                'brand_id' => $p->brand_id
             ];
+        })
+        ->filter(function($p) {
+            return $p['available_qty'] > 0; // Only show products with stock
         });
+
+        // Group by Brand
+        $grouped = $result->groupBy('brand_id')->map(function($items, $brandId) use ($brandNames) {
+            return [
+                'brand_id' => $brandId,
+                'brand_name' => $brandNames[$brandId] ?? 'N/A',
+                'products' => $items->values()
+            ];
+        })->values();
 
         return response()->json([
             'success' => true,
-            'message' => 'All products stock for user',
-            'data' => $result
+            'message' => 'Products stock report grouped by brand',
+            'data' => $grouped
         ], 200);
     }
 
