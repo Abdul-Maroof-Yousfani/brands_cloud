@@ -322,7 +322,10 @@ public function loginById(Request $request)
         }
 
         $brand = Brand::find($request->brand_id);
-        $subitems = $brand->subitems()->selected()->get();
+        $subitems = $brand->subitems()->selected()->get()->map(function($item) {
+            $item->product_name = $item->sku_code . ' ' . $item->product_name . ' ' . $item->product_barcode;
+            return $item;
+        });
 
         return response()->json([
             'message' => 'all products',
