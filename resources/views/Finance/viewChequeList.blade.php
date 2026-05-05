@@ -23,7 +23,7 @@ use App\Helpers\ReuseableCode;
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 
-												<span class="subHeadingLabelClass">Advance Cheque List</span>
+												<span class="subHeadingLabelClass">Bank Reconciliation </span>
 											</div>
 											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right">
 												<?php echo CommonHelper::displayPrintButtonInBlade('PrintPanel', '', '1');?>
@@ -41,10 +41,12 @@ use App\Helpers\ReuseableCode;
 									<div class="col-lg-12">
 										<div class="form-group" style="margin-left: 15px;">
 											<label style="margin-right: 20px;">
-												<input type="radio" name="list_type" value="advance" checked onchange="viewChequeListAjax()"> Advance Cheque List
+												<input type="radio" name="list_type" value="advance" checked
+													onchange="viewChequeListAjax()"> Advance Cheque List
 											</label>
 											<label>
-												<input type="radio" name="list_type" value="rv" onchange="viewChequeListAjax()"> Voucher Cheque List
+												<input type="radio" name="list_type" value="rv"
+													onchange="viewChequeListAjax()"> Voucher Cheque List
 											</label>
 										</div>
 									</div>
@@ -58,12 +60,14 @@ use App\Helpers\ReuseableCode;
 										margin-bottom: 5px;
 										display: block;
 									}
+
 									.sf-filter-input {
 										height: 42px !important;
 										border-radius: 6px !important;
 										border: 1px solid #d1d1d1 !important;
 										box-shadow: none !important;
 									}
+
 									.select2-container .select2-selection--single {
 										height: 42px !important;
 										border-radius: 6px !important;
@@ -71,16 +75,18 @@ use App\Helpers\ReuseableCode;
 										align-items: center !important;
 										border: 1px solid #d1d1d1 !important;
 									}
+
 									.select2-container--default .select2-selection--single .select2-selection__arrow {
 										height: 40px !important;
 									}
 								</style>
 
 								<div class="row">
-									<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+									<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 										<label class="sf-filter-label" id="party_label">Customer</label>
 										<div id="customer_div">
-											<select id="customer_id" class="form-control select2 sf-filter-input" style="width: 100%;">
+											<select id="customer_id" class="form-control select2 sf-filter-input"
+												style="width: 100%;">
 												<option value="">Select Customer</option>
 												<?php foreach ($customers as $key => $val):?>
 												<option value="<?php echo $val->id?>">
@@ -90,7 +96,8 @@ use App\Helpers\ReuseableCode;
 											</select>
 										</div>
 										<div id="vendor_div" style="display:none;">
-											<select id="acc_id" class="form-control select2 sf-filter-input" style="width: 100%;">
+											<select id="acc_id" class="form-control select2 sf-filter-input"
+												style="width: 100%;">
 												<option value="">Select Party</option>
 												<?php foreach ($accounts as $key => $val):?>
 												<option value="<?php echo $val->id?>">
@@ -102,7 +109,7 @@ use App\Helpers\ReuseableCode;
 									</div>
 
 									<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
-										<label class="sf-filter-label">Status</label>
+										<label class="sf-filter-label">Cheque Status</label>
 										<select id="issued" class="form-control select2 sf-filter-input">
 											<option value="">All Statuses</option>
 											<option value="0">Cheque In Hand</option>
@@ -112,6 +119,12 @@ use App\Helpers\ReuseableCode;
 											<option value="4">Cancel</option>
 											<option value="5">Clear</option>
 										</select>
+									</div>
+
+									<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+										<label class="sf-filter-label">Cheque No</label>
+										<input type="text" id="cheque_no_filter" class="form-control sf-filter-input"
+											placeholder="Search Cheque No">
 									</div>
 
 									<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
@@ -126,7 +139,8 @@ use App\Helpers\ReuseableCode;
 
 									<div class="col-lg-1 col-md-1 col-sm-6 col-xs-12">
 										<input type="button" value="Get Data" class="btn btn-primary"
-											onclick="viewChequeListAjax();" style="margin-top: 25px; height: 42px; width: 100%;" />
+											onclick="viewChequeListAjax();"
+											style="margin-top: 25px; height: 42px; width: 100%;" />
 									</div>
 								</div>
 
@@ -147,7 +161,8 @@ use App\Helpers\ReuseableCode;
 																	<thead>
 
 																		<th class="text-center">S.No</th>
-																		<th class="text-center party_header">Customer Name</th>
+																		<th class="text-center party_header">Customer Name
+																		</th>
 																		<th class="text-center">Received Code</th>
 																		<th class="text-center">Received Date</th>
 																		<th class="text-center">Cheque No</th>
@@ -157,7 +172,8 @@ use App\Helpers\ReuseableCode;
 																		<th class="text-center issue_cols">Issue Date</th>
 																		<th class="text-center">Amount</th>
 																		<th class="text-center issue_cols">Remaining</th>
-																		<th class="text-center issue_cols">Consumption Status</th>
+																		<th class="text-center issue_cols">Consumption
+																			Status</th>
 																		<th class="text-center">Cheques Status</th>
 																		<!-- <th class="text-center hidden-print">Action</th> -->
 																	</thead>
@@ -204,6 +220,7 @@ use App\Helpers\ReuseableCode;
 			let customer_id = $('#customer_id').val();
 			let supplier_id = $('#supplier_id').val();
 			let acc_id = $('#acc_id').val();
+			let cheque_no = $('#cheque_no_filter').val();
 			let issued = $('#issued').val();
 			let from_date = $('#from_date').val();
 			let to_date = $('#to_date').val();
@@ -216,6 +233,7 @@ use App\Helpers\ReuseableCode;
 					customer_id,
 					supplier_id,
 					acc_id,
+					cheque_no,
 					issued,
 					from_date,
 					to_date,
@@ -224,7 +242,7 @@ use App\Helpers\ReuseableCode;
 				success: function (data) {
 					$('#data').empty();
 					$('#data').append(data);
-					
+
 					if (list_type == 'rv') {
 						$('.issue_cols').hide();
 						$('.party_header').text('Party Name');
@@ -251,7 +269,7 @@ use App\Helpers\ReuseableCode;
 		function changeStatus(obj, id, v_no = '', cheque_no = '') {
 			let status = $(obj).val();
 			let statusText = $(obj).find('option:selected').text();
-			
+
 			if (confirm('Are you sure you want to change status to "' + statusText + '"?')) {
 				$.ajax({
 					url: '{{ url("finance/updateChequeStatus") }}',

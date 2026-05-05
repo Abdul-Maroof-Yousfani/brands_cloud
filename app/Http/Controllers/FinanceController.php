@@ -3381,6 +3381,7 @@ class FinanceController extends Controller
 			$customer_id = $request->customer_id;
 			$supplier_id = $request->supplier_id;
 			$acc_id = $request->acc_id;
+			$cheque_no = $request->cheque_no;
 			$issued = $request->issued;
 			$from_date = $request->from_date;
 			$to_date = $request->to_date;
@@ -3511,6 +3512,11 @@ class FinanceController extends Controller
 							->where('acc_id', $acc_id);
 					});
 				}
+				if ($cheque_no) {
+					$cheque1 = $cheque1->where('ch.cheque_no', 'LIKE', '%' . $cheque_no . '%');
+					$cheque2 = $cheque2->where('rv.cheque_no', 'LIKE', '%' . $cheque_no . '%');
+					$cheque3 = $cheque3->where('pv.cheque_no', 'LIKE', '%' . $cheque_no . '%');
+				}
 				if ($issued != "") {
 					$cheque1 = $cheque1->where('ch.issued', $issued);
 					// For cheque2 and cheque3, we only have them if they are '0' (In Hand) since they are not in cheque table
@@ -3577,6 +3583,9 @@ class FinanceController extends Controller
 				}
 				if ($acc_id) {
 					$cheque = $cheque->where('adv.acc_id', $acc_id);
+				}
+				if ($cheque_no) {
+					$cheque = $cheque->where('adv.cheque_no', 'LIKE', '%' . $cheque_no . '%');
 				}
 				if ($issued != "") {
 					$cheque = $cheque->where('ch.issued', $issued);
