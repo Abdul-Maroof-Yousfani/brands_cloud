@@ -142,12 +142,47 @@ class BaTargetsController extends Controller
     return back()->with('success', 'Targets processed successfully');
 }
 
+    public function listIndex()
+    {
+        return view('BA.BaTargets.list_index');
+    }
+
     public function getList(Request $request)
     {
-        $data['BaTargets'] = BaTargets::leftJoin('customers', 'customers.id', '=', 'ba_targets.customer_id')
-            ->select('ba_targets.*', 'customers.name as customer_name', 'customers.zone as zone')
-            ->paginate(10);
-        $data['brands'] = \App\Helpers\CommonHelper::get_all_brand()->pluck('product_name', 'id')->toArray();
+        $query = TargetItems::query()
+            ->join('customers', 'customers.id', '=', 'target_items.customer_id')
+            ->select(
+                'target_items.year',
+                'target_items.month',
+                'target_items.employee_id',
+                'target_items.customer_id',
+                'customers.name as customer_name',
+                DB::raw('MAX(target_items.updated_at) as last_updated')
+            )
+            ->groupBy('target_items.year', 'target_items.month', 'target_items.employee_id', 'target_items.customer_id', 'customers.name')
+            ->orderBy('target_items.year', 'desc')
+            ->orderBy('target_items.month', 'desc')
+            ->orderBy('last_updated', 'desc');
+
+        $paginated = $query->paginate(10);
+
+        // Fetch brands for these specific groupings to show brand breakdown
+        foreach ($paginated as $row) {
+            $brandDetails = TargetItems::where([
+                'year' => $row->year,
+                'month' => $row->month,
+                'employee_id' => $row->employee_id,
+                'customer_id' => $row->customer_id
+            ])->get();
+
+            $row->qty_targets = $brandDetails->where('target_type', 'qty')->pluck('target', 'brand_id')->toArray();
+            $row->amount_targets = $brandDetails->where('target_type', 'amount')->pluck('target', 'brand_id')->toArray();
+        }
+
+        $data['BaTargets'] = $paginated;
+        $data['employees'] = \App\Employees::pluck('name', 'emp_id')->toArray();
+        $data['brands'] = \App\Helpers\CommonHelper::get_all_brand()->pluck('name', 'id')->toArray();
+        
         return view('BA.BaTargets.getList', $data);
     }
 
@@ -307,62 +342,88 @@ class BaTargetsController extends Controller
     public function destroy(BaTargets $baTargets)
     {
         //
+    }    public function targetReport(Request $request)
+    {
+        $date = $request->date ?? date('Y-m');
+        $target_type = $request->target_type ?? 'qty';
+        $employee_filter = $request->employee_id; // New filter
+        [$year, $month] = explode('-', $date);
+
+        $reportsQuery = TargetItems::where('year', $year)
+            ->where('month', (int)$month)
+            ->where('target_type', $target_type);
+        
+        if ($employee_filter) {
+            $reportsQuery->where('employee_id', $employee_filter);
+        }
+
+        $reports = $reportsQuery->get();
+
+        $employeeIds = $reports->pluck('employee_id')->unique();
+        $brandIds = $reports->pluck('brand_id')->unique();
+
+        // Get all employees for the filter dropdown
+        $all_employees = \App\Employees::pluck('name', 'emp_id');
+        
+        $employees = \App\Employees::whereIn('emp_id', $employeeIds)->pluck('name', 'emp_id');
+        $brands = Brand::whereIn('id', $brandIds)->pluck('name', 'id');
+
+        // Sales - Grouped by employee_id and brand_id
+        $salesQuery = DB::connection('mysql2')->table('retail_sale_orders as so')
+            ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
+            ->whereIn('so.user_id', $employeeIds)
+            ->whereYear('so.sale_order_date', $year)
+            ->whereMonth('so.sale_order_date', $month);
+
+        if ($target_type == 'amount') {
+            $salesQuery->join('subitem as si', 'si.id', '=', 'sod.product_id')
+                ->select('so.user_id as employee_id', 'sod.brand_id', DB::raw('SUM(sod.qty * si.mrp_price) as total_val'));
+        } else {
+            $salesQuery->select('so.user_id as employee_id', 'sod.brand_id', DB::raw('SUM(sod.qty) as total_val'));
+        }
+
+        $sales = $salesQuery->groupBy('so.user_id', 'sod.brand_id')->get();
+
+        $salesData = [];
+        foreach ($sales as $sale) {
+            $salesData[$sale->employee_id][$sale->brand_id] = $sale->total_val;
+        }
+
+        // Returns - Grouped by employee_id and brand_id
+        $returnsQuery = DB::connection('mysql2')->table('retail_sale_order_returns as rsor')
+            ->join('retail_sale_order_return_details as rsord', 'rsor.id', '=', 'rsord.retail_sale_order_return_id')
+            ->whereIn('rsor.user_id', $employeeIds)
+            ->whereYear('rsor.created_at', $year)
+            ->whereMonth('rsor.created_at', $month);
+
+        if ($target_type == 'amount') {
+            $returnsQuery->join('subitem as si', 'si.id', '=', 'rsord.product_id')
+                ->select('rsor.user_id as employee_id', 'rsord.brand_id', DB::raw('SUM(rsord.quantity * si.mrp_price) as total_val'));
+        } else {
+            $returnsQuery->select('rsor.user_id as employee_id', 'rsord.brand_id', DB::raw('SUM(rsord.quantity) as total_val'));
+        }
+
+        $returns = $returnsQuery->groupBy('rsor.user_id', 'rsord.brand_id')->get();
+
+        $returnsData = [];
+        foreach ($returns as $ret) {
+            $returnsData[$ret->employee_id][$ret->brand_id] = $ret->total_val;
+        }
+
+        return view('BA.BaTargets.report', compact(
+            'reports',
+            'employees',
+            'all_employees', // For filter
+            'brands',
+            'year',
+            'month',
+            'salesData',
+            'returnsData',
+            'target_type',
+            'employee_filter'
+        ));
     }
-   public function targetReport(Request $request)
-{
-    $date = $request->date ?? date('Y-m');
-    [$year, $month] = explode('-', $date);
 
-    $reports = TargetItems::where('year', $year)
-        ->where('month', (int)$month)
-        ->get();
-
-    $customerIds = $reports->pluck('customer_id')->unique();
-    $brandIds = $reports->pluck('brand_id')->unique();
-
-    $customers = Customer::whereIn('id', $customerIds)->pluck('name', 'id');
-    $brands = Brand::whereIn('id', $brandIds)->pluck('name', 'id');
-
-    // Sales
-    $sales = DB::connection('mysql2')->table('retail_sale_orders as so')
-        ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
-        ->whereIn('so.distributor_id', $customerIds)
-        ->whereYear('so.sale_order_date', $year)
-        ->whereMonth('so.sale_order_date', $month)
-        ->select('so.distributor_id', 'sod.brand_id', DB::raw('SUM(sod.qty) as total_qty'))
-        ->groupBy('so.distributor_id', 'sod.brand_id')
-        ->get();
-
-    $salesData = [];
-    foreach ($sales as $sale) {
-        $salesData[$sale->distributor_id][$sale->brand_id] = $sale->total_qty;
-    }
-
-    // Returns
-    $returns = DB::connection('mysql2')->table('retail_sale_order_returns as rsor')
-        ->join('retail_sale_order_return_details as rsord', 'rsor.id', '=', 'rsord.retail_sale_order_return_id')
-        ->whereIn('rsor.distributor_id', $customerIds)
-        ->whereYear('rsor.created_at', $year)
-        ->whereMonth('rsor.created_at', $month)
-        ->select('rsor.distributor_id', 'rsord.brand_id', DB::raw('SUM(rsord.quantity) as total_qty'))
-        ->groupBy('rsor.distributor_id', 'rsord.brand_id')
-        ->get();
-
-    $returnsData = [];
-    foreach ($returns as $ret) {
-        $returnsData[$ret->distributor_id][$ret->brand_id] = $ret->total_qty;
-    }
-
-    return view('BA.BaTargets.report', compact(
-        'reports',
-        'customers',
-        'brands',
-        'year',
-        'month',
-        'salesData',
-        'returnsData'
-    ));
-}
 
     public function loadBaWise(Request $request)
     {

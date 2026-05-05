@@ -1,131 +1,124 @@
-<table class="table table-bordered sf-table-list">
-    <thead>
-    <tr class="text-center">
-        <th class="text-center">Ba No</th>
-        <th class="text-center">Customer</th>
-        <th class="text-center">Zone</th>
-        <th class="text-center">Brands</th>
-        <th class="text-center">Total Target Qty</th>
-        <th class="text-center">Start Date</th>
-        <th class="text-center">End Date</th>
-        <th class="text-center">Status</th>
-        <th class="text-center">Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach($BaTargets as $key=>$BAFormation)
-        <tr class="text-center">
-            <td class="text-center">{{ $key+1 }}</td>
-            <td class="text-center">{{ $BAFormation->customer_name }}</td>
-            <td class="text-center">{{ $BAFormation->zone ?? 'N/A' }}</td>
-            <td class="text-center">
-                @php
-                    $brand_names = [];
-                    foreach ($BAFormation->targets ?? [] as $bid => $qty) {
-                        if ($qty > 0) { // Only show brands with positive targets
-                            $brand_names[] = $brands[$bid] ?? $bid;
-                        }
-                    }
-                @endphp
-                {{ implode(', ', $brand_names) }}
-            </td>
-            <td class="text-center">{{ array_sum($BAFormation->targets ?? []) }}</td>
-            <td class="text-center">{{ $BAFormation->start_date }}</td>
-            <td class="text-center">{{ $BAFormation->end_date }}</td>
-            <td class="text-center">{{$BAFormation->status == 0 ? 'Inactive' : 'Active'}} </td>
-            <td class="text-center">
-                <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#editmodal{{ $BAFormation->id }}">
-                    Edit
-                </button>
-                <div class="modal fade" id="editmodal{{ $BAFormation->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-xl">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Edit BA Targets</h5>
-                            </div>
-                            <div class="modal-body">
-                                <form id="submitadv" action="{{ route('baTargets.update',$BAFormation->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="hidden" id="listRefresh" value="{{ route('list.baTargets') }}">
-                                    <div class="mb-3">
-                                        <label for="customers" class="form-label">Store Name</label>
-                                        <select class="form-select select2" id="customers" name="customer" style="width: 100%;">
-                                            <option value="">Select Store</option>
-                                            @foreach(App\Helpers\SalesHelper::get_all_customer_only_distributors() as $row)
-                                                <option {{$BAFormation->customer_id == $row->id ? 'selected' : ''}} value="{{ $row->id }}">{{ $row->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="start_date" class="form-label">Start Date</label>
-                                        <input type="date" value="{{$BAFormation->start_date}}" name="start_date" class="form-control">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="end_date" class="form-label">End Date </label>
-                                        <input type="date" value="{{$BAFormation->end_date}}" name="end_date" class="form-control">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="status" class="form-label">Status</label>
-                                        <select class="form-select select2" name="status" id="status" style="width: 100%;">
-                                            <option {{$BAFormation->status == 1 ? 'selected' : ''}} value="1">Active</option>
-                                            <option {{$BAFormation->status == 0 ? 'selected' : ''}} value="0">Inactive</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Targets</label>
-                                        <div style="overflow-x: auto;">
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Code</th>
-                                                        <th>Store</th>
-                                                        <th>Zone</th>
-                                                        @foreach($brands as $brand_id => $brand_name)
-                                                            <th>{{ $brand_name }}</th>
-                                                        @endforeach
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>{{ $BAFormation->id }}</td>
-                                                        <td>{{ $BAFormation->customer_name }}</td>
-                                                        <td>{{ $BAFormation->zone ?? 'N/A' }}</td>
-                                                        @foreach($brands as $brand_id => $brand_name)
-                                                            <td>
-                                                                <input type="number" name="targets[{{$brand_id}}]" value="{{ $BAFormation->targets[$brand_id] ?? '' }}" class="form-control" min="0">
-                                                            </td>
-                                                        @endforeach
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <button style="margin-top: 10px" type="submit" class="btn btn-primary my-2">Update</button>
-                                </form>
+<style>
+    .target-section {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+    .target-section.amount-based {
+        background: #fff;
+        border: 1px solid #eef2ff;
+    }
+    .target-title {
+        font-size: 10px;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        display: block;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding-bottom: 3px;
+        margin-bottom: 8px;
+    }
+    .badge-target {
+        padding: 5px 10px;
+        font-weight: 500;
+        margin-right: 4px;
+        margin-bottom: 4px;
+        border-radius: 6px;
+        font-size: 11px;
+    }
+    .summary-box {
+        padding: 6px 12px;
+        border-radius: 6px;
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 4px;
+        background: #fff;
+        border: 1px solid #eee;
+    }
+    .summary-qty {
+        color: #065f46;
+        border-left: 4px solid #10b981;
+    }
+    .summary-amt {
+        color: #1e40af;
+        border-left: 4px solid #3b82f6;
+    }
+</style>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered mb-0 shadow-sm" style="border-radius: 10px; overflow: hidden;">
+        <thead class="table-light text-dark">
+            <tr class="text-center">
+                <th width="50">#</th>
+                <th>Month / Year</th>
+                <th>Business Associate (BA)</th>
+                <th>Customer / Store</th>
+                <th>Assigned Targets Breakdown</th>
+                <th width="180">Total Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach($BaTargets as $key => $row)
+            <tr class="text-center align-middle">
+                <td>{{ $BaTargets->firstItem() + $key }}</td>
+                <td class="fw-bold">
+                    <span class="text-primary">{{ date('F', mktime(0, 0, 0, $row->month, 1)) }}</span><br>
+                    <small class="text-muted">{{ $row->year }}</small>
+                </td>
+                <td class="text-start">
+                    <div class="fw-bold">{{ $employees[$row->employee_id] ?? 'BA: ' . $row->employee_id }}</div>
+                    <small class="text-muted">ID: {{ $row->employee_id }}</small>
+                </td>
+                <td class="text-start">
+                    <div class="fw-bold text-dark">{{ $row->customer_name }}</div>
+                </td>
+                <td class="text-start p-3">
+                    @if(!empty($row->qty_targets))
+                        <div class="target-section">
+                            <span class="target-title text-uppercase fw-bold"><i class="fa fa-cubes me-1"></i> QTY Based Targets</span>
+                            <div class="d-flex flex-wrap">
+                                @foreach ($row->qty_targets as $bid => $qty)
+                                    <span class="badge badge-target bg-success text-white shadow-sm">
+                                        {{ $brands[$bid] ?? $bid }}: <span class="fw-bold">{{ number_format($qty) }}</span>
+                                    </span>
+                                @endforeach
                             </div>
                         </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    @endforeach
+                    @endif
+                    @if(!empty($row->amount_targets))
+                        <div class="target-section amount-based">
+                            <span class="target-title text-uppercase fw-bold"><i class="fa fa-money-bill me-1"></i> Amount Based Targets</span>
+                            <div class="d-flex flex-wrap">
+                                @foreach ($row->amount_targets as $bid => $amt)
+                                    <span class="badge badge-target bg-primary text-white shadow-sm">
+                                        {{ $brands[$bid] ?? $bid }}: <span class="fw-bold">{{ number_format($amt) }}</span>
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </td>
+                <td class="text-center">
+                    @if(!empty($row->qty_targets))
+                        <div class="summary-box summary-qty text-start">
+                            <small class="d-block" style="font-size: 9px; opacity: 0.8;">TOTAL QUANTITY</small>
+                            <span class="fs-6 fw-bold">{{ number_format(array_sum($row->qty_targets)) }}</span>
+                        </div>
+                    @endif
+                    @if(!empty($row->amount_targets))
+                        <div class="summary-box summary-amt text-start">
+                            <small class="d-block" style="font-size: 9px; opacity: 0.8;">TOTAL AMOUNT</small>
+                            <span class="fs-6 fw-bold">{{ number_format(array_sum($row->amount_targets)) }}</span>
+                        </div>
+                    @endif
+                </td>
+            </tr>
+        @endforeach
     </tbody>
-</table>
-
-<div id="paginationLinks">
-    {{ $BaTargets->links() }}
+    </table>
 </div>
 
-<script>
-    $(document).ready(function() {
-        $('.select2').select2();
-        // Attach select2 to elements when the modal is shown
-        $('body').on('shown.bs.modal', '.modal', function () {
-            $(this).find('.select2').select2({
-                width: '100%',
-                allowClear: true
-            });
-        });
-    });
-</script>
+<div id="paginationLinks" class="mt-4 d-flex justify-content-center">
+    {{ $BaTargets->links() }}
+</div>

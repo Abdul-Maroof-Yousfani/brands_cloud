@@ -7,23 +7,23 @@
         background: #fff;
     }
     .target-header {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-        color: white;
-        padding: 20px;
+        background: #fff;
+        color: #1e293b;
+        padding: 20px 25px;
         position: sticky;
         top: 0;
         z-index: 100;
-        backdrop-filter: blur(5px);
+        border-bottom: 1px solid #e2e8f0;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
     .store-section {
-        background: #f8f9fc;
-        border-bottom: 2px solid #e3e6f0;
-        padding: 15px 20px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 25px;
         font-weight: 700;
-        color: #4e73df;
+        color: #3b82f6;
         display: flex;
         align-items: center;
     }
@@ -31,65 +31,68 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 15px;
-        padding: 20px;
+        padding: 25px;
     }
     .brand-item {
         background: #fff;
-        border: 1px solid #eaecf4;
-        border-radius: 10px;
-        padding: 12px;
-        transition: all 0.3s ease;
+        border: 1px solid #f1f5f9;
+        border-radius: 12px;
+        padding: 15px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     .brand-item:hover {
-        border-color: #4e73df;
-        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.1);
+        border-color: #3b82f6;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
     }
     .brand-name {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #5a5c69;
-        margin-bottom: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 10px;
         display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     .target-input {
         border-radius: 8px !important;
-        border: 1px solid #d1d3e2;
-        padding: 8px 12px;
-        height: 38px;
+        border: 1px solid #cbd5e1;
+        padding: 10px 15px;
+        height: 42px;
+        font-weight: 600;
+        color: #1e293b;
     }
     .target-input:focus {
-        border-color: #4e73df;
-        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
     }
     .btn-save-targets {
-        background: #fff;
-        color: #4e73df;
-        border-radius: 30px;
-        padding: 8px 25px;
+        background: #3b82f6;
+        color: #fff;
+        border-radius: 8px;
+        padding: 10px 25px;
         font-weight: 700;
-        transition: all 0.3s;
+        transition: all 0.2s;
         border: none;
+        font-size: 14px;
     }
     .btn-save-targets:hover {
-        background: #f8f9fc;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        background: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 </style>
 
 <div class="target-card mt-3">
-    <div class="target-header">
+    <div class="target-header shadow-sm">
         <div>
-            <h5 class="mb-0 font-weight-bold">
-                <i class="fas fa-bullseye mr-2"></i> {{ $month_year }} Targets 
-                <span class="badge badge-light ml-2">{{ strtoupper($target_type) }} Basis</span>
+            <h5 class="mb-0 fw-bold text-dark">
+                <i class="fas fa-bullseye me-2 text-primary"></i> {{ $month_year }} Targets 
+                <span class="badge bg-soft-primary text-primary border border-primary ms-2 text-uppercase" style="font-size: 10px;">{{ strtoupper($target_type) }} Basis</span>
             </h5>
         </div>
-        <button type="button" form="targetSaveForm" id="saveTargetsBtn" class="btn-save-targets shadow-sm">
-            <i class="fas fa-save mr-1"></i> Save Targets
+        <button type="button" form="targetSaveForm" id="saveTargetsBtn" class="btn-save-targets">
+            <i class="fas fa-save me-2"></i> Save Targets
         </button>
     </div>
 
@@ -102,9 +105,9 @@
 
             @foreach($formations as $formation)
                 <div class="store-section">
-                    <i class="fas fa-store-alt mr-2 text-primary"></i>
-                    {{ $formation->customer->name ?? 'N/A' }} 
-                    <small class="ml-2 text-muted font-weight-normal">(ID: {{ $formation->customer_id }})</small>
+                    <i class="fas fa-store-alt me-2 text-primary"></i>
+                    <span class="text-dark">{{ $formation->customer->name ?? 'N/A' }}</span>
+                    <small class="ms-2 text-muted fw-normal">(ID: {{ $formation->customer_id }})</small>
                 </div>
                 
                 <div class="brand-grid">
@@ -118,7 +121,7 @@
                             <input type="number" 
                                    name="targets[{{ $formation->customer_id }}][{{ $brand->id }}]" 
                                    class="form-control target-input" 
-                                   placeholder="Enter {{ $target_type }}" 
+                                   placeholder="0.00" 
                                    value="{{ $existingValue }}"
                                    min="0" step="0.01">
                         </div>
@@ -126,20 +129,20 @@
                 </div>
             @endforeach
 
-            <!-- Redesigned Grand Total Section -->
-            <div class="mt-4" style="background: linear-gradient(to right, #4e73df, #224abe); border-radius: 0 0 15px 15px; padding: 25px 30px;">
+            <!-- Redesigned Grand Total Section - White Theme -->
+            <div class="mt-4 border-top" style="background: #f8fafc; border-radius: 0 0 15px 15px; padding: 30px 40px; border-top: 1px solid #e2e8f0 !important;">
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-                            <i class="fas fa-calculator" style="color: white !important; font-size: 20px;"></i>
+                        <div style="background: #fff; width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                            <i class="fas fa-calculator" style="color: #3b82f6 !important; font-size: 24px;"></i>
                         </div>
                         <div>
-                            <div style="color: rgba(255,255,255,0.7) !important; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">Summary</div>
-                            <div style="color: white !important; font-size: 1.25rem; font-weight: 800; margin: 0; line-height: 1;">Grand Total ({{ strtoupper($target_type) }})</div>
+                            <div style="color: #64748b !important; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Summary Dashboard</div>
+                            <div style="color: #1e293b !important; font-size: 1.5rem; font-weight: 800; margin: 0; line-height: 1;">Grand Total ({{ strtoupper($target_type) }})</div>
                         </div>
                     </div>
                     <div style="text-align: right;">
-                        <div id="overallTotalDisplay" style="color: white !important; font-size: 2.5rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.1);">0.00</div>
+                        <div id="overallTotalDisplay" style="color: #3b82f6 !important; font-size: 3rem; font-weight: 900; letter-spacing: -2px; line-height: 1;">0.00</div>
                     </div>
                 </div>
             </div>
