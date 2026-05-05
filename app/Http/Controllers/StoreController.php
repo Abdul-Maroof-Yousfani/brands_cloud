@@ -2089,7 +2089,7 @@ public function getBrandsByWarehouse(Request $request)
     $user = Auth::user();
     $isUser = $user && $user->acc_type == 'user';
     
-    if ($isUser) {
+  
         $territory_ids = json_decode($user->territory_id, true);
         if (!is_array($territory_ids)) {
             $territory_ids = [$user->territory_id];
@@ -2136,20 +2136,7 @@ public function getBrandsByWarehouse(Request $request)
             ->whereIn('id', $territory_ids)
             ->where('status', 1)
             ->get(['id', 'name']);
-    } else {
-        $warehouses = DB::connection('mysql2')->table('warehouse')
-            ->where("is_virtual", 1)
-            ->where('status', 1)
-            ->get();
-            
-        $customers = DB::connection("mysql2")->table("customers")
-            ->where("status",1)
-            ->get();
-
-        $products = DB::connection('mysql2')->table('subitem')->where('status', 1)->get(['id', 'product_name']);
-        $brands = DB::connection('mysql2')->table('brands')->where('status', 1)->get(['id', 'name']);
-        $territories = DB::connection('mysql2')->table('territories')->where('status', 1)->get(['id', 'name']);
-    }
+    
 
     // Create warehouse names array with ID as key for the AJAX view
     $warehouseNames = [];
