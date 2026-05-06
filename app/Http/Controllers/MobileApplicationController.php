@@ -512,8 +512,9 @@ public function get_stock(Request $request)
             ], 200);
         }
 
-        // Handle optional brand_id filter
+        // Handle optional filters
         $requestedBrandId = $request->brand_id;
+        $requestedProductId = $request->product_id;
 
         // Get all products belonging to the allowed brands
         $productsQuery = DB::connection('mysql2')->table('subitem')
@@ -522,6 +523,10 @@ public function get_stock(Request $request)
 
         if ($requestedBrandId) {
             $productsQuery->where('brand_id', $requestedBrandId);
+        }
+        
+        if ($requestedProductId) {
+            $productsQuery->where('id', $requestedProductId);
         }
 
         $products = $productsQuery->get(['id', 'sku_code', 'product_name', 'product_barcode', 'brand_id']);
@@ -541,7 +546,7 @@ public function get_stock(Request $request)
             ->where('status', 1)
             ->select('sub_item_id',
                 DB::raw('SUM(CASE WHEN voucher_type IN (1, 9) THEN qty ELSE 0 END) AS total_in'),
-                DB::raw('SUM(CASE WHEN voucher_type = 50 THEN qty ELSE 0 END) AS total_out'),
+                DB::raw('SUM(CASE WHEN voucher_type IN (50, 2) THEN qty ELSE 0 END) AS total_out'),
                 DB::raw('SUM(CASE WHEN voucher_type = 51 THEN qty ELSE 0 END) AS total_return')
             )
             ->groupBy('sub_item_id')
@@ -565,9 +570,14 @@ public function get_stock(Request $request)
                 'available_qty' => (float)$available,
                 'brand_id' => $p->brand_id
             ];
-        })
-        ->filter(function($p) {
-            return $p['available_qty'] > 0; // Only show products with stock
+        });
+
+        $result = $result->filter(function($p) use ($requestedProductId) {
+            // If specific product requested, show it even if 0 stock. Otherwise only show items > 0.
+            if ($requestedProductId) {
+                return true;
+            }
+            return $p['available_qty'] > 0;
         });
 
         // Group by Brand
@@ -1212,6 +1222,94 @@ public function get_stock(Request $request)
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retail sale return.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function CreateBAStockAdjustment(Request $request)
+    {
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof \Illuminate\Http\JsonResponse) {
+            return $user;
+        }
+
+        $rules = [
+            'distributor_id' => 'required|integer',
+            'remarks' => 'nullable|string',
+            'details' => 'required|array',
+            'details.*.product_id' => 'required|integer',
+            'details.*.available_qty' => 'required|numeric',
+            'details.*.actual_qty' => 'required|numeric',
+            'details.*.diff_qty' => 'required|numeric',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $distributor = $user->customers()->where('customers.id', $request->distributor_id)->first();
+            if (!$distributor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Distributor not found.',
+                ], 404);
+            }
+
+            if (!$distributor->warehouse_to) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Virtual Warehouse is not assigned to this distributor.',
+                ], 400);
+            }
+
+            $adj_no = 'BA-ADJ-' . time();
+            $date = date('Y-m-d');
+
+            foreach ($request->details as $detail) {
+                $diff = (float)$detail['diff_qty'];
+                if ($diff == 0) continue;
+
+                $stock = [
+                    'main_id' => 0,
+                    'master_id' => 0,
+                    'voucher_no' => $adj_no,
+                    'voucher_date' => $date,
+                    'supplier_id' => 0,
+                    'customer_id' => $request->distributor_id,
+                    'voucher_type' => ($diff > 0) ? 1 : 2, // 1: Adj In, 2: Adj Out
+                    'rate' => 0,
+                    'sub_item_id' => $detail['product_id'],
+                    'batch_code' => 0,
+                    'qty' => abs($diff),
+                    'discount_amount' => 0,
+                    'amount' => 0,
+                    'status' => 1,
+                    'warehouse_id' => $distributor->warehouse_to,
+                    'username' => Auth::user()->username,
+                    'created_date' => $date,
+                    'opening' => 0,
+                    'so_data_id' => 0,
+                    'description' => 'Mobile Adjustment: ' . ($request->remarks ?? '')
+                ];
+                DB::Connection('mysql2')->table('ba_stock')->insert($stock);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'BA Stock Adjustment saved successfully!',
+                'adj_no' => $adj_no
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create adjustment.',
                 'error' => $e->getMessage(),
             ], 500);
         }
