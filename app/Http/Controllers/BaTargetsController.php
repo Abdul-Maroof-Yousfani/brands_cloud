@@ -158,8 +158,18 @@ class BaTargetsController extends Controller
                 'target_items.customer_id',
                 'customers.name as customer_name',
                 DB::raw('MAX(target_items.updated_at) as last_updated')
-            )
-            ->groupBy('target_items.year', 'target_items.month', 'target_items.employee_id', 'target_items.customer_id', 'customers.name')
+            );
+
+        if ($request->date) {
+            [$year, $month] = explode('-', $request->date);
+            $query->where('target_items.year', $year)->where('target_items.month', (int)$month);
+        }
+
+        if ($request->employee_id) {
+            $query->where('target_items.employee_id', $request->employee_id);
+        }
+
+        $query->groupBy('target_items.year', 'target_items.month', 'target_items.employee_id', 'target_items.customer_id', 'customers.name')
             ->orderBy('target_items.year', 'desc')
             ->orderBy('target_items.month', 'desc')
             ->orderBy('last_updated', 'desc');
@@ -522,11 +532,36 @@ class BaTargetsController extends Controller
 
     public function exportTemplate(Request $request)
     {
-        $filters = $request->only(['year', 'month', 'target_type']);
-        $monthName = date('F', mktime(0, 0, 0, ($filters['month'] ?? date('m')), 1));
-        $fileName = 'BA_Targets_Template_' . ($filters['year'] ?? date('Y')) . '_' . $monthName . '_' . ($filters['target_type'] ?? 'qty') . '.xlsx';
+        $filters = $request->only(['year', 'month', 'employee_id', 'target_type']);
+        
+        $year = $filters['year'] ?? date('Y');
+        $month = (int)($filters['month'] ?? date('m'));
+        $monthName = date('F', mktime(0, 0, 0, $month, 1));
+        
+        $fileName = 'BA_Targets_' . $year . '_' . $monthName . '.xlsx';
         
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\BaTargetsExport($filters), $fileName);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $filters = $request->only(['year', 'month', 'employee_id']);
+        $year = $filters['year'] ?? date('Y');
+        $month = (int)($filters['month'] ?? date('m'));
+        
+        $export = new \App\Exports\BaTargetsExport($filters);
+        $data = $export->collection();
+        
+        $data_arr = [
+            'rows' => $data,
+            'year' => $year,
+            'month' => date('F', mktime(0, 0, 0, $month, 1)),
+            'title' => 'BA Performance Targets'
+        ];
+
+        // If dompdf is available, we can use it. Otherwise, return a printable view.
+        // For now, let's return a clean printable view that the browser can save as PDF.
+        return view('BA.BaTargets.pdf_export', $data_arr);
     }
 
     public function importExcel(Request $request)
