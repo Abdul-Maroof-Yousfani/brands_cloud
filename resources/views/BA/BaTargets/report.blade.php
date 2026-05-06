@@ -69,31 +69,42 @@
     </div>
 
     <div class="filter-card">
-        <form action="{{ route('target.report') }}" method="GET" class="row g-3 align-items-end">
+        <form action="{{ route('target.report') }}" method="GET" id="reportFilterForm" class="row g-3 align-items-center">
             <div class="col-xl-2 col-md-3">
-                <label class="form-label small fw-bold text-muted">Select Month</label>
-                <input type="month" name="date" class="form-control" value="{{ $year }}-{{ sprintf('%02d', $month) }}">
+                <label class="form-label small fw-bold text-muted mb-1">Select Month</label>
+                <input type="month" name="date" id="reportDate" class="form-control" value="{{ $year }}-{{ sprintf('%02d', $month) }}">
             </div>
             <div class="col-xl-4 col-md-4">
-                <label class="form-label small fw-bold text-muted">Business Associate</label>
-                <select name="employee_id" class="form-select select2">
-                    <option value="">All Business Associates</option>
+                <label class="form-label small fw-bold text-muted mb-1">Business Associate</label>
+                <select name="employee_id" id="reportBA" class="form-select select2">
+                    <option value="" {{ is_null($employee_filter) ? 'selected' : '' }}>All Business Associates</option>
                     @foreach($all_employees as $eid => $ename)
-                        <option value="{{ $eid }}" {{ $employee_filter == $eid ? 'selected' : '' }}>{{ $ename }}</option>
+                        <option value="{{ $eid }}" {{ !is_null($employee_filter) && $employee_filter == $eid ? 'selected' : '' }}>{{ $ename }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-xl-3 col-md-3">
-                <label class="form-label small fw-bold text-muted">Target Basis</label>
-                <select name="target_type" class="form-select">
+            <div class="col-xl-2 col-md-2">
+                <label class="form-label small fw-bold text-muted mb-1">Target Basis</label>
+                <select name="target_type" class="form-select select2">
                     <option value="qty" {{ ($target_type ?? 'qty') == 'qty' ? 'selected' : '' }}>Quantity wise</option>
                     <option value="amount" {{ ($target_type ?? 'qty') == 'amount' ? 'selected' : '' }}>Amount wise</option>
                 </select>
             </div>
-            <div class="col-xl-3 col-md-2">
-                <button type="submit" class="btn btn-primary w-100 shadow-sm py-2">
-                    <i class="fa fa-filter me-2"></i> Update Report
-                </button>
+            <div class="col-xl-4 col-md-3">
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                      <button type="submit" class="btn btn-primary shadow-sm py-2 px-4">
+                        <i class="fa fa-sync-alt me-1"></i> Filter
+                    </button>
+                    <div class="btn-group shadow-sm">
+                        <a href="javascript:void(0)" onclick="exportReport('excel')" class="btn btn-success py-2 px-3">
+                            <i class="fa fa-file-excel me-1"></i> Excel
+                        </a>
+                        <a href="javascript:void(0)" onclick="exportReport('pdf')" class="btn btn-danger py-2 px-3">
+                            <i class="fa fa-file-pdf me-1"></i> PDF
+                        </a>
+                    </div>
+                  
+                </div>
             </div>
         </form>
     </div>
@@ -210,14 +221,35 @@
 </div>
 @endsection
 
-@section('scripts')
+@section('script')
 <script>
+    function exportReport(type) {
+        let date = $('#reportDate').val();
+        let ba = $('#reportBA').val();
+        let target_type = $('select[name="target_type"]').val();
+        
+        // Split date YYYY-MM
+        let parts = date.split('-');
+        let year = parts[0];
+        let month = parseInt(parts[1]);
+
+        let baseUrl = type === 'excel' ? "{{ route('baTargets.exportTemplate') }}" : "{{ route('baTargets.exportPdf') }}";
+        let finalUrl = baseUrl + `?year=${year}&month=${month}&employee_id=${ba}&target_type=${target_type}`;
+        
+        window.location.href = finalUrl;
+    }
+
     $(document).ready(function() {
         if ($.fn.select2) {
             $('.select2').select2({
-                placeholder: "Select Business Associate",
+                placeholder: "Select",
                 allowClear: true,
                 width: '100%'
+            });
+
+            // Trigger submit when any select2 changes
+            $('.select2').on('change', function() {
+                $('#reportFilterForm').submit();
             });
         }
     });

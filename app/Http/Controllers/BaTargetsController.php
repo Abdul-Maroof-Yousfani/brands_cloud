@@ -356,7 +356,7 @@ class BaTargetsController extends Controller
     {
         $date = $request->date ?? date('Y-m');
         $target_type = $request->target_type ?? 'qty';
-        $employee_filter = $request->employee_id; // New filter
+        $employee_filter = $request->employee_id; // Can be array now
         [$year, $month] = explode('-', $date);
 
         $reportsQuery = TargetItems::where('year', $year)
