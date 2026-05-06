@@ -5376,7 +5376,7 @@ $( document ).ready(function() {
                     $open_amount_dr=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',1)
-                    ->where('acc_id',97)
+                    ->where('acc_id', config('accounts.inventory.finished_goods.id'))
                     ->whereBetween('v_date',[$financial[0],$too])
                     ->sum('amount');
 
@@ -5385,7 +5385,7 @@ $( document ).ready(function() {
                     $open_amount_cr=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',0)
-                    ->where('acc_id',97)
+                    ->where('acc_id', config('accounts.inventory.finished_goods.id'))
                     ->whereBetween('v_date',[$financial[0],$too])
                     ->sum('amount');
             $open_amount=$open_amount_dr-$open_amount_cr;
@@ -5405,7 +5405,7 @@ $( document ).ready(function() {
                      $net_purchase=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',1)
-                    ->where('acc_id',97)
+                    ->where('acc_id', config('accounts.inventory.finished_goods.id'))
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
                     ->sum('amount');
@@ -5414,7 +5414,7 @@ $( document ).ready(function() {
                     $credit_note=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',1)
-                    ->where('acc_id',97)
+                    ->where('acc_id', config('accounts.inventory.finished_goods.id'))
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
                     ->where('voucher_type',9)
@@ -5428,7 +5428,7 @@ $( document ).ready(function() {
             $issuence_from_work=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',0)
-                    ->where('acc_id',97)
+                    ->where('acc_id', config('accounts.inventory.finished_goods.id'))
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
                     ->where('voucher_type',13)
@@ -5443,7 +5443,7 @@ $( document ).ready(function() {
                       $purchase_amount_dr=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',1)
-                    ->where('acc_id',97)
+                    ->where('acc_id', config('accounts.inventory.finished_goods.id'))
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
                     ->whereNotIn('voucher_type',[9])
@@ -5455,7 +5455,7 @@ $( document ).ready(function() {
                     $purchase_amount_cr=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',0)
-                    ->where('acc_id',97)
+                    ->where('acc_id', config('accounts.inventory.finished_goods.id'))
                     ->where('voucher_type',5)
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
@@ -5463,9 +5463,23 @@ $( document ).ready(function() {
                   $purchase_amount=  $purchase_amount_dr-$purchase_amount_cr-$issuence_from_work;
 
                      $net_purchase.' - '.$credit_note.' - '.$stock_return_from_work_order.' - '.$purchase_amount_cr.' - '.$issuence_from_work.' = ';
-               echo       number_format($purchase_amount,2);
+                echo       number_format($purchase_amount,2);
 
 ?>
+                             </tr>
+
+                            <tr>
+                                <td>Inventory Loss / (Gain)</td>
+                                <td class="text-right"><?php
+                                    $loss_acc = config('accounts.adjustment.loss');
+                                    $gain_acc = config('accounts.adjustment.gain');
+                                    
+                                    $loss_amount = CommonHelper::get_parent_and_account_amount(1, $from_date, $to_date, $loss_acc['code'], '1', 1, 0);
+                                    $gain_amount = CommonHelper::get_parent_and_account_amount(1, $from_date, $to_date, $gain_acc['code'], '1', 0, 1);
+                                    
+                                    $net_adjustment = $loss_amount - $gain_amount;
+                                    echo number_format($net_adjustment, 2);
+                                ?></td>
                             </tr>
 
 
@@ -5477,7 +5491,7 @@ $( document ).ready(function() {
          $sales_dr=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',1)
-                    ->where('acc_id',768)
+                    ->where('acc_id', config('accounts.sales.cogs.id'))
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
                     ->sum('amount');
@@ -5486,7 +5500,7 @@ $( document ).ready(function() {
                      $saless=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',1)
-                    ->where('acc_id',768)
+                    ->where('acc_id', config('accounts.sales.cogs.id'))
                     ->where('voucher_type',8)
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
@@ -5495,7 +5509,7 @@ $( document ).ready(function() {
                      $sales_return=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',0)
-                    ->where('acc_id',768)
+                    ->where('acc_id', config('accounts.sales.cogs.id'))
                     ->where('voucher_type',9)
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
@@ -5505,7 +5519,7 @@ $( document ).ready(function() {
                 $sales_cr=DB::Connection('mysql2')->table('transactions')
                     ->where('status',1)
                     ->where('debit_credit',0)
-                    ->where('acc_id',768)
+                    ->where('acc_id', config('accounts.sales.cogs.id'))
                     ->whereBetween('v_date',[$from_date,$to_date])
                     ->where('opening_bal',0)
                     ->sum('amount');
@@ -5514,7 +5528,7 @@ $( document ).ready(function() {
         $sales=$sales_dr-$sales_cr;
 
 
-                    $cogs=$open_amount+$purchase_amount-$sales;
+                    $cogs=$open_amount+$purchase_amount+$net_adjustment-$sales;
                     echo number_format($cogs,2);
 $in_amount=0;
 $remianig_amount=0;
@@ -5559,9 +5573,10 @@ $remianig_amount=0;
 
                             $head=strlen($row->code);
                             $level=count(explode('-',$row->code));
-                        $amount =CommonHelper::get_parent_and_account_amount(1,$from_date,$to_date,$row->code,'1',1,0);
+                        $amount = CommonHelper::get_parent_and_account_amount(1, $from_date, $to_date, $row->code, '1', 1, 0);
 
-                        if ($amount!=0):
+                        $loss_acc_id = config('accounts.adjustment.loss.id');
+                        if ($amount != 0 || $row->id == $loss_acc_id):
                         ?>
                             <tr>
 <!--                                <td>< ?php echo $row->code.'=='.$level ?></td>-->

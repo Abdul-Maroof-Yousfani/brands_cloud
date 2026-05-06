@@ -19,93 +19,156 @@ $AccYearTo = $AccYearDate->accyearto;
 ?>
 
 @extends('layouts.default')
+
 @section('content')
+<style>
+    .filter-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        border: 1px solid #eef2f7;
+    }
+    .subHeadingLabelClass {
+        font-weight: 700 !important;
+        color: #1a202c !important;
+        font-size: 24px !important;
+        margin: 0 !important;
+    }
+    .head_flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .filter-label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 13px;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .form-control {
+        border-radius: 8px !important;
+        border: 1px solid #e2e8f0 !important;
+        height: 42px !important;
+        font-size: 14px !important;
+        transition: all 0.3s !important;
+    }
+    .btn-generate {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 10px 25px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .btn-generate:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+    .btn-export {
+        border-radius: 8px;
+        font-weight: 600;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 20px;
+    }
+    .badge-date {
+        background: #edf2f7;
+        color: #4a5568;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 50px auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
 
-    <div class="">
-        <div class="well_N">
-            <div class="dp_sdw">
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
+<div class="container-fluid">
+    <div class="well_N">
+        <div class="head_flex">
+            <div>
+                <h2 class="subHeadingLabelClass">Profit & Loss Statement</h2>
+                <div id="selected_filters_display" style="margin-top: 10px;">
+                    <span class="badge-date">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="display_from">{{ date('d M, Y', strtotime($currentMonthStartDate)) }}</span> 
+                        - 
+                        <span id="display_to">{{ date('d M, Y', strtotime($currentMonthEndDate)) }}</span>
+                    </span>
+                    <span id="extra_badges_container" style="margin-left: 5px;"></span>
+                </div>
+            </div>
+            <div class="d-flex" style="gap: 10px;">
+                <?php echo CommonHelper::displayPrintButtonInBlade('trial_bal','','1');?>
+                <?php if($export == true):?>
+                <button type="button" class="btn btn-success btn-export" onclick="ExportToExcel('xlsx')">
+                    <i class="fa-regular fa-file-excel"></i> Excel
+                </button>
+                <?php endif;?>
+            </div>
+        </div>
 
-                        <?php // echo CommonHelper::displayExportButton('trial_bal','','1')?>
-                    </div>
-                    {{--<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" style="display: none;">--}}
-                    {{--@include('Finance.'.$accType.'financeMenu')--}}
-                    {{--</div>--}}
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="head_flex">
-                                        <div class="headquids">
-                                            <h2 class="subHeadingLabelClass">Profit & Loss Statement</h2>
-                                        </div>
-                                        <div class="prints">
-                                            <?php echo CommonHelper::displayPrintButtonInBlade('trial_bal','','1');?>
-                                            <?php if($export == true):?>
-                                            <a id="dlink" style="display:none;"></a>
-                                            <button type="button" class="btn btn-warning" onclick="ExportToExcel('xlsx')">Export <b>(xlsx)</b></button>
-                                            <?php endif;?>
-                                        </div>
-                                    </div>
-                                    <hr style="border-bottom:1px solid #000">
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-right">
-                                    <button type="button" class="btn btn-xs btn-primary" style="width: 67px;" id="BtnDown"><i class="fa fa-arrow-down" aria-hidden="true"></i></button>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-left">
-                                    <button style="width: 67px;" type="button" class="btn btn-xs btn-primary" id="BtnUp"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
-                                </div>
-                            </div>
-                            <div class="lineHeight">&nbsp;</div>
-                            <div class="row" id="SlideUpDown">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="row align-items-center">
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                            <lable class="control-label">Date</lable>
-                                            <input name="from_date" id="from_date" max="<?php echo $AccYearTo ?>" min="<?php echo $AccYearFrom?>" required="required"  class="form-control" type="date" value="<?php echo $currentMonthStartDate?>" />
-                                        </div>
-
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                            <lable class="control-label">To</lable>
-                                            <input name="to_date" id="to_date" class="form-control" type="date" max="<?php echo $AccYearTo?>" min="<?php echo $AccYearFrom?>"  required="required" value="<?php echo $currentMonthEndDate?>" />
-                                        </div>
-
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                            <lable class="control-label">Summary</lable>
-                                            <select name="" id="" class="form-control">
-                                                <option value="">Summary</option>
-                                            </select>
-                                        </div>
-
-
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                            <lable class="control-label">Comparative</lable>
-                                            <select name="" id="comparetive" class="form-control">
-                                                <option value="">select</option>
-                                                <option value="1">Comparative</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-lg-1 col-md-1 col-sm-2 col-xs-12">
-                                            <button onclick="Generate()" type="button" class="btn btn-sm btn-primary">Submit</button>
-                                        </div>
-
-
-                                    </div>
-                                    <span id="Error"></span>
-                                </div>
-
-                            </div>
-
-                            <span id="trial_bal"></span>
-                            <span id="NewAjax" style="display: none;"></span>
-                        </div>
-                    </div>
+        <div class="filter-card">
+            <div class="row align-items-end">
+                <div class="col-lg-3 col-md-3">
+                    <label class="filter-label">From Date</label>
+                    <input name="from_date" id="from_date" max="<?php echo $AccYearTo ?>" min="<?php echo $AccYearFrom?>" required class="form-control" type="date" value="<?php echo $currentMonthStartDate?>" />
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <label class="filter-label">To Date</label>
+                    <input name="to_date" id="to_date" class="form-control" type="date" max="<?php echo $AccYearTo?>" min="<?php echo $AccYearFrom?>" required value="<?php echo $currentMonthEndDate?>" />
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <label class="filter-label">Comparative</label>
+                    <select name="comparetive" id="comparetive" class="form-control">
+                        <option value="">Standard</option>
+                        <option value="1">Comparative</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <button onclick="Generate()" type="button" class="btn btn-generate w-100">
+                        <i class="fa-solid fa-arrows-rotate"></i> Update Report
+                    </button>
                 </div>
             </div>
         </div>
+
+        <div id="trial_bal">
+            <div class="text-center py-5 text-muted" style="padding: 100px 0;">
+                <i class="fa-solid fa-chart-line fa-3x mb-3" style="opacity: 0.1; font-size: 60px;"></i>
+                <p style="margin-top: 20px; font-size: 16px;">Click "Update Report" to view financial data</p>
+            </div>
+        </div>
     </div>
+</div>
     <script src="{{ URL::asset('assets/custom/js/exportToExcelXlsx.js') }}"></script>
     <script !src="">
         function ExportToExcel(type, fn, dl) {
@@ -127,44 +190,45 @@ $AccYearTo = $AccYearDate->accyearto;
         }
     </script>
     <script>
-        $(document).ready(function(){
-            $('#BtnDown').css('display','none');
-            $('#BtnUp').css('display','none');
-        });
-        $("#BtnDown").click(function(){
-            $("#SlideUpDown").slideDown();
-            $('#BtnDown').css('display','none');
-            $('#BtnUp').css('display','block');
-        });
-        $("#BtnUp").click(function(){
-            $("#SlideUpDown").slideUp();
-            $('#BtnDown').css('display','block');
-            $('#BtnUp').css('display','none');
-        });
         function Generate()
         {
-            $('#trial_bal').html('<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="loader"></div></div></div>');
-            from_date = $("#from_date").val();
-            to_date = $("#to_date").val();
+            var from_date = $("#from_date").val();
+            var to_date = $("#to_date").val();
             var comparetive = $("#comparetive").val();
-            m = '<?= $_GET['m']; ?>';
+            var m = '<?= $_GET['m']; ?>';
+
+            // Update badges
+            $('#display_from').text(from_date);
+            $('#display_to').text(to_date);
+
+            var extra_badges = '';
+            if(comparetive == '1') {
+                extra_badges += '<span class="badge-date" style="background: #ebf8ff; color: #2b6cb0;"><i class="fa-solid fa-layer-group"></i> Comparative</span>';
+            } else {
+                extra_badges += '<span class="badge-date" style="background: #f0fff4; color: #2f855a;"><i class="fa-solid fa-check"></i> Standard</span>';
+            }
+            
+            $('#extra_badges_container').html(extra_badges);
+
+            $('#trial_bal').html('<div class="loader"></div>');
+
             $.ajax({
                 url: '<?php echo url('/');?>/fdc/IncomeStatement',
                 type: 'GET',
                 data: {from_date: from_date, to_date: to_date, m:m ,comparetive:comparetive},
                 success: function (response) {
-                 //   $('#BtnUp').css('display','none');
-                 //   $('#BtnDown').css('display','block');
-
                     $('#trial_bal').html(response);
-                //    $('#NewAjax').html(response);
-
-                  //  $('#SlideUpDown').slideUp();
-             //       $('#OtherArea').css('display','block');
-
+                    $('.profit_Loss_Statement').addClass('table table-hover');
+                },
+                error: function() {
+                    $('#trial_bal').html('<div class="alert alert-danger">Error loading report. Please try again.</div>');
                 }
             });
         }
+
+        $(document).ready(function() {
+            Generate();
+        });
 
 
         function newTabOpen(FromDate,ToDate,AccCode)
