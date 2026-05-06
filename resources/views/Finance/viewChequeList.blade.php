@@ -227,7 +227,7 @@ use App\Helpers\ReuseableCode;
 			let list_type = $('input[name="list_type"]:checked').val();
 
 			$.ajax({
-				url: 'viewChequeList',
+				url: 'BankReconciliation',
 				type: "GET",
 				data: {
 					customer_id,
