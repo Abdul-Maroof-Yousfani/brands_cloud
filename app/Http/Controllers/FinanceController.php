@@ -3295,6 +3295,7 @@ class FinanceController extends Controller
 		$advance->adv_date = $validated['adv_date'];
 		$advance->description = $validated['description'];
 		$advance->cheque_no = $request->cheque ?? null;
+		$advance->cheque_date = $request->cheque_date ?? null;
 		$advance->user_name = Auth::user()->name;
 		$advance->save();
 
@@ -3545,7 +3546,7 @@ class FinanceController extends Controller
 						'c.name as customer_name',
 						'adv.payment_no as reci_code',
 						'adv.cheque_no as cheque_no',
-						'adv.cheque_date',
+						DB::raw('COALESCE(ch.cheque_date, adv.cheque_date) as cheque_date'),
 						'adv.adv_date as reci_date',
 						DB::raw('IFNULL(s.name, "-") as supplier_name'),
 						DB::raw('IFNULL(ch.issue_against_code, "-") as issue_code'),
