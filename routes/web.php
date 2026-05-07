@@ -335,6 +335,21 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
     Route::post('listbaTargets', 'BaTargetsController@getList')->name('list.baTargets');
     Route::get("target-report", "BaTargetsController@targetReport")->name("target.report");
 
+    Route::get('ba-sales-report', 'BAReportingController@baSalesReport')->name('ba.sales_report');
+    Route::get('list-ba-sales-report', 'BAReportingController@listBaSalesReport')->name('list.ba_sales_report');
+
+    Route::get('stock-adjustment-report', 'BAReportingController@stockAdjustmentReport')->name('ba.stock_adjustment_report');
+    Route::get('list-stock-adjustment-report', 'BAReportingController@listStockAdjustmentReport')->name('list.stock_adjustment_report');
+
+    Route::get('return-stock-report', 'BAReportingController@returnStockReport')->name('ba.return_stock_report');
+    Route::get('list-return-stock-report', 'BAReportingController@listReturnStockReport')->name('list.return_stock_report');
+
+    Route::get('survey-report', 'BAReportingController@surveyReport')->name('ba.survey_report');
+    Route::get('list-survey-report', 'BAReportingController@listSurveyReport')->name('list.survey_report');
+
+    Route::get('ba-attendance-report', 'BaAttendanceReportController@index')->name('ba.reports.attendance');
+    Route::post('ba-attendance-report-generate', 'BaAttendanceReportController@generateReport')->name('ba.reports.attendance.generate');
+
     Route::get("opening-inventory", "OpeningInventoryController@index");
     Route::post("opening-inventory", "OpeningInventoryController@import")->name("openingInventory.import");
 });

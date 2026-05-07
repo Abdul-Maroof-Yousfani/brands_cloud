@@ -203,6 +203,56 @@
                             </tr>
                         @endforeach
                     </tbody>
+                    <tfoot class="bg-light fw-bold">
+                        <tr>
+                            <td class="p-3">GRAND TOTAL</td>
+                            @php 
+                                $grandTotalTarget = 0; $grandTotalSale = 0;
+                                $grandTotalReturn = 0; $grandTotalBalance = 0;
+                                $brandGrandTotals = [];
+                            @endphp
+                            @foreach($uniqueBrandIds as $bId)
+                                @php
+                                    $bt = 0; $bs = 0; $br = 0; $bb = 0;
+                                    foreach($matrix as $empId => $brandTargets) {
+                                        $t = $brandTargets[$bId] ?? 0;
+                                        $s = $salesData[$empId][$bId] ?? 0;
+                                        $r = $returnsData[$empId][$bId] ?? 0;
+                                        $ns = max(0, $s - $r);
+                                        $bt += $t; $bs += $s; $br += $r; $bb += ($t - $ns);
+                                    }
+                                    $grandTotalTarget += $bt; $grandTotalSale += $bs;
+                                    $grandTotalReturn += $br; $grandTotalBalance += $bb;
+                                @endphp
+                                <td class="p-2">
+                                    <div class="text-primary small">T: {{ number_format($bt) }}</div>
+                                    <div class="text-success small">S: {{ number_format($bs) }}</div>
+                                    <div class="text-danger small">R: {{ number_format($br) }}</div>
+                                    <div class="text-dark border-top mt-1 pt-1">B: {{ number_format($bb) }}</div>
+                                </td>
+                            @endforeach
+                            <td class="p-2">
+                                <div class="total-summary-box border-primary" style="border-left: 3px solid #3b82f6;">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Target:</span>
+                                        <span class="fw-bold text-primary">{{ number_format($grandTotalTarget) }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Sale:</span>
+                                        <span class="fw-bold text-success">{{ number_format($grandTotalSale) }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Return:</span>
+                                        <span class="fw-bold text-danger">{{ number_format($grandTotalReturn) }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between border-top mt-1 pt-1">
+                                        <span class="fw-bold">Balance:</span>
+                                        <span class="fw-bold text-dark">{{ number_format($grandTotalBalance) }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

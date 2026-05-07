@@ -37,4 +37,9 @@ class SurveyForm extends Model
     {
         return $this->belongsTo(Subitem::class, 'product_id'); // Ensure 'Subitem' model is correctly set
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
