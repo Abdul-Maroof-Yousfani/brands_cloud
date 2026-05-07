@@ -2014,21 +2014,21 @@ $newdate = date('Y-m-d', $newdate);
     </th>
 </thead>
     <thead>
-        <th colspan="3" class="text-center"></th>
-        <th colspan="2" class="text-center">Opening Balance</th>
-        <th colspan="2" class="text-center">Transactions</th>
-        <th colspan="2" class="text-center">Closing Balance</th>
+        <th colspan="3" class="text-center" style="background-color: #f8f9fa;"></th>
+        <th colspan="2" class="text-center" style="background-color: #e9ecef; border-bottom: 2px solid #dee2e6;">Opening Balance</th>
+        <th colspan="2" class="text-center" style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">Transactions</th>
+        <th colspan="2" class="text-center" style="background-color: #e9ecef; border-bottom: 2px solid #dee2e6;">Closing Balance</th>
     </thead>
-    <thead  class="fix" style="display: table-header-group">
-        <th  class="text-center">Sr.No</th>
-        <th  class="text-center col-sm-1">ACC.CODE</th>
-        <th  class="text-center col-sm-5">ACCOUNT</th>
-        <th  class="text-center col-sm-1">OPEN.DR</th>
-        <th  class="text-center col-sm-1">OPEN.CR</th>
-        <th  class="text-center col-sm-1">TX.DR</th>
-        <th  class="text-center col-sm-1">TX.CR</th>
-        <th  class="text-center col-sm-1">CL.DR</th>
-        <th  class="text-center col-sm-1">CL.CR</th>
+    <thead class="fix" style="display: table-header-group">
+        <th class="text-center" style="width: 50px;">Sr.No</th>
+        <th class="text-center col-sm-1">ACC.CODE</th>
+        <th class="text-center col-sm-5">ACCOUNT</th>
+        <th class="text-center col-sm-1" style="background-color: #f1f3f5;">OPEN.DR</th>
+        <th class="text-center col-sm-1" style="background-color: #f1f3f5;">OPEN.CR</th>
+        <th class="text-center col-sm-1">TX.DR</th>
+        <th class="text-center col-sm-1">TX.CR</th>
+        <th class="text-center col-sm-1" style="background-color: #f1f3f5;">CL.DR</th>
+        <th class="text-center col-sm-1" style="background-color: #f1f3f5;">CL.CR</th>
     </thead>
     <tbody>
     <?php
@@ -2268,15 +2268,14 @@ $open_debit=DB::selectOne('select sum(amount)amount from transactions where acc_
 
 
 
-    <tr>
-        <td colspan="3">TOTAL</td>
-        <td class="text-right" colspan="1"><?php echo number_format($total_opening_debit,2) ?></td>
-        <td class="text-right" colspan="1"><?php echo number_format($total_opening_credit*-1,2) ?></td>
-        <td class="text-right" colspan="1"><?php echo number_format($tx_trial_debit,2) ?></td>
-        <td class="text-right" colspan="1"><?php echo number_format($tx_trial_credit,2) ?></td>
-        <td class="text-right" colspan="1"><?php echo number_format($end_debit_total,2); ?></td>
-        <td class="text-right" colspan="1"><?php echo number_format($end_credit_total*-1,2); ?></td>
-
+    <tr style="background-color: #e9ecef; font-weight: bold; font-size: 14px;">
+        <td colspan="3" class="text-center">GRAND TOTAL</td>
+        <td class="text-right"><?php echo number_format($total_opening_debit,2) ?></td>
+        <td class="text-right"><?php echo number_format($total_opening_credit*-1,2) ?></td>
+        <td class="text-right"><?php echo number_format($tx_trial_debit,2) ?></td>
+        <td class="text-right"><?php echo number_format($tx_trial_credit,2) ?></td>
+        <td class="text-right"><?php echo number_format($end_debit_total,2); ?></td>
+        <td class="text-right"><?php echo number_format($end_credit_total*-1,2); ?></td>
     </tr>
 </table>
             <input type="submit" value="Customise Trial Balance" class="btn btn-success">
