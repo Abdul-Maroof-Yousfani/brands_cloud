@@ -1353,6 +1353,64 @@ public function get_stock(Request $request)
         }
     }
 
+    public function getAllUserProducts(Request $request)
+    {
+        $rules = [
+            'user_id' => 'required|integer',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = User::find($request->user_id);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found'], 404);
+        }
+
+        // Get assigned brands from BAFormation
+        $formations = \App\BAFormation::where('employee_id', $user->emp_code)->where('status', 1)->get();
+        
+        $allBrandIds = [];
+        foreach ($formations as $f) {
+            $ids = json_decode($f->brands_ids, true);
+            if (is_array($ids)) {
+                $allBrandIds = array_merge($allBrandIds, $ids);
+            }
+        }
+        $allBrandIds = array_unique(array_filter($allBrandIds));
+
+        if (empty($allBrandIds)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No brands assigned to this user',
+                'data' => []
+            ], 200);
+        }
+
+        // Get all products belonging to the allowed brands
+        $products = DB::connection('mysql2')->table('subitem')
+            ->whereIn('brand_id', $allBrandIds)
+            ->where('status', 1)
+            ->get(['id', 'sku_code', 'product_name', 'product_barcode', 'brand_id', 'sale_price', 'rate']);
+
+        // Format names like in other APIs
+        $formattedProducts = $products->map(function($p) {
+            $p->full_product_name = ($p->sku_code ?? '') . ' ' . ($p->product_name ?? '') . ' ' . ($p->product_barcode ?? '');
+            return $p;
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Assigned brands products',
+            'data' => $formattedProducts
+        ], 200);
+    }
+
     public function BAStockAdjustmentData(Request $request)
     {
         $user = $this->getAuthenticatedUser();

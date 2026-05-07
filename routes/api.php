@@ -74,6 +74,7 @@ Route::middleware(['custom-middleware'])->group(function () {
     Route::post('/CreateBAStockAdjustment','MobileApplicationController@CreateBAStockAdjustment');
     Route::get('/BAStockAdjustmentList','MobileApplicationController@BAStockAdjustmentList');
     Route::get('/BAStockAdjustmentData','MobileApplicationController@BAStockAdjustmentData');
+    Route::get('/getAllUserProducts','MobileApplicationController@getAllUserProducts');
 
     // Route::controller('SalesController')->prefix("survey")->group(function(){
     //     Route::post('createSurvey', "createSurvey");
