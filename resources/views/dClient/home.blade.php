@@ -257,7 +257,7 @@
                     </div>
                     <div class="col-md-12 mp-20">
                         <div class="row">
-                            <div class="col-md-5">
+                            <div class="col-md-8">
                                 <div class="topExport topSelling">
                                     <div>
                                         <h6>Top Selling Products</h6>
@@ -282,18 +282,6 @@
                                         <li class="printListBtn text-center">
                                             <a href="{{url('/selling/listSaleOrder?pageType=view&&parentCode=89&&m=1#Rototec')}}" class="btn btn-primary">View All</a>
                                         </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="topExport topSelling topLocations">
-                                    <h6>Top Export Locations</h6>
-                                    <ul>
-                                        <li><div><img src="assets/img/uae.svg"><div><h6>United arab Emirates</h6><p>$446.61</p></div></div></li>
-                                        <li><div><img src="assets/img/uk.svg"><div><h6>United Kingdom</h6><p>$446.61</p></div></div></li>
-                                        <li><div><img src="assets/img/brazil.svg"><div><h6>Brazil</h6><p>$446.61</p></div></div></li>
-                                        <li><div><img src="assets/img/pk.svg"><div><h6>Pakistan</h6><p>$446.61</p></div></div></li>
-                                        <li><div><img src="assets/img/us.svg"><div><h6>United States</h6><p>$446.61</p></div></div></li>
                                     </ul>
                                 </div>
                             </div>
