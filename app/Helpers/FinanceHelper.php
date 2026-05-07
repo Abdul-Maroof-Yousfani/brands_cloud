@@ -84,11 +84,13 @@
 
 
 		public static function companyDatabaseConnection($param1){
-			$d = DB::selectOne('select `dbName` from `company` where `id` = '.Session::get('run_company').'')->dbName;
+			$company_id = $param1 ? $param1 : Session::get('run_company');
+			$d = DB::selectOne('select `dbName` from `company` where `id` = '.$company_id.'')->dbName;
 			Config::set(['database.connections.tenant.database' => $d]);
-		//	Config::set(['database.connections.tenant.username' => 'innovative_unison']);
+			Config::set(['database.connections.mysql2.database' => $d]);
 			Config::set('database.default', 'tenant');
 			DB::reconnect('tenant');
+			DB::reconnect('mysql2');
 		}
 
 		public static function reconnectMasterDatabase(){
