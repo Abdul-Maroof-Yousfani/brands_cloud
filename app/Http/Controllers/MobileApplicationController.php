@@ -22,6 +22,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
 use App\TargetItems;
 use App\Models\Customer;
+use App\Models\Subitem;
 
 class MobileApplicationController extends Controller
 {
@@ -1408,6 +1409,88 @@ public function get_stock(Request $request)
             'success' => true,
             'message' => 'Assigned brands products',
             'data' => $formattedProducts
+        ], 200);
+    }
+
+    public function getBASaleSummary(Request $request)
+    {
+        $rules = [
+            'user_id' => 'required|integer',
+            'date' => 'nullable|date',
+            'month' => 'nullable|integer|min:1|max:12',
+            'year' => 'nullable|integer|min:2000',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $query = RetailSaleOrder::where('user_id', $request->user_id);
+
+        if ($request->date) {
+            $query->whereDate('sale_order_date', $request->date);
+        } elseif ($request->month && $request->year) {
+            $query->whereMonth('sale_order_date', $request->month)
+                  ->whereYear('sale_order_date', $request->year);
+        }
+
+        $orders = $query->with(['distributor:id,name', 'details.brand:id,name', 'details.product:id,product_name,sku_code'])->get();
+
+        $summary = [];
+
+        foreach ($orders as $order) {
+            $storeName = $order->distributor->name ?? 'Unknown Store';
+            $storeId = $order->distributor_id;
+
+            if (!isset($summary[$storeId])) {
+                $summary[$storeId] = [
+                    'store_id' => $storeId,
+                    'store_name' => $storeName,
+                    'brands' => []
+                ];
+            }
+
+            foreach ($order->details as $detail) {
+                $brandName = $detail->brand->name ?? 'Unknown Brand';
+                $brandId = $detail->brand_id;
+
+                if (!isset($summary[$storeId]['brands'][$brandId])) {
+                    $summary[$storeId]['brands'][$brandId] = [
+                        'brand_id' => $brandId,
+                        'brand_name' => $brandName,
+                        'total_quantity' => 0,
+                        'products' => []
+                    ];
+                }
+
+                $summary[$storeId]['brands'][$brandId]['total_quantity'] += (float)$detail->qty;
+
+                $productId = $detail->product_id;
+                if (!isset($summary[$storeId]['brands'][$brandId]['products'][$productId])) {
+                    $summary[$storeId]['brands'][$brandId]['products'][$productId] = [
+                        'product_id' => $productId,
+                        'product_name' => $detail->product->product_name ?? 'Unknown Product',
+                        'sku_code' => $detail->product->sku_code ?? '',
+                        'quantity' => 0
+                    ];
+                }
+                $summary[$storeId]['brands'][$brandId]['products'][$productId]['quantity'] += (float)$detail->qty;
+            }
+        }
+
+        // Convert associative arrays to indexed arrays for JSON response
+        $finalData = array_values(array_map(function($store) {
+            $store['brands'] = array_values(array_map(function($brand) {
+                $brand['products'] = array_values($brand['products']);
+                return $brand;
+            }, $store['brands']));
+            return $store;
+        }, $summary));
+
+        return response()->json([
+            'success' => true,
+            'data' => $finalData
         ], 200);
     }
 
