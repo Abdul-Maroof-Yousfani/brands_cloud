@@ -168,4 +168,115 @@ class DashboardHelper
 
         return $data;
     }
+
+    public static function getSaleSummaryAmount($monthStartDate, $monthEndDate)
+    {
+        $sale = DB::Connection('mysql2')->table('sales_order')
+            ->where('sales_order.status', 1)
+            ->whereBetween('sales_order.date', [$monthStartDate, $monthEndDate])
+            ->select(DB::raw('sum(sales_order.total_amount_after_sale_tax) as sale_amount'))
+            ->first();
+
+        if ($sale) {
+            return $sale->sale_amount;
+        } else {
+            return 0;
+        }
+    }
+
+    public static function getCollectionSummaryAmount($startDate, $endDate)
+    {
+        return DB::connection('mysql2')->table('transactions')
+            ->where('status', 1)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where(function ($query) {
+                $query->where('voucher_no', 'like', 'brv%')
+                    ->orWhere('voucher_no', 'like', 'crv%')
+                    ->orWhere('voucher_no', 'like', 'ADV%');
+            })
+            ->where('debit_credit', 1)
+            ->sum('amount');
+    }
+
+    public static function getTotalReceivablesAmount()
+    {
+        $debits = DB::connection('mysql2')->table('transactions')
+            ->where('status', 1)
+            ->where('acc_code', 'like', '1-%')
+            ->where('debit_credit', 1)
+            ->sum('amount');
+        $credits = DB::connection('mysql2')->table('transactions')
+            ->where('status', 1)
+            ->where('acc_code', 'like', '1-%')
+            ->where('debit_credit', 0)
+            ->sum('amount');
+        return $debits - $credits;
+    }
+
+    public static function getTotalPayablesAmount()
+    {
+        $credits = DB::connection('mysql2')->table('transactions')
+            ->where('status', 1)
+            ->where('acc_code', 'like', '2-%')
+            ->where('debit_credit', 0)
+            ->sum('amount');
+        $debits = DB::connection('mysql2')->table('transactions')
+            ->where('status', 1)
+            ->where('acc_code', 'like', '2-%')
+            ->where('debit_credit', 1)
+            ->sum('amount');
+        return $credits - $debits;
+    }
+
+    public static function getBankBalance()
+    {
+        $debits = DB::connection('mysql2')->table('transactions')
+            ->where('status', 1)
+            ->where(function ($query) {
+                $query->where('acc_code', 'like', '1-1%')
+                    ->orWhere('acc_code', 'like', '1-18%');
+            })
+            ->where('debit_credit', 1)
+            ->sum('amount');
+        $credits = DB::connection('mysql2')->table('transactions')
+            ->where('status', 1)
+            ->where(function ($query) {
+                $query->where('acc_code', 'like', '1-1%')
+                    ->orWhere('acc_code', 'like', '1-18%');
+            })
+            ->where('debit_credit', 0)
+            ->sum('amount');
+        return $debits - $credits;
+    }
+
+    public static function getMonthlySalesData()
+    {
+        $sales = [];
+        $labels = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = date('Y-m', strtotime("-$i months"));
+            $startDate = "$month-01";
+            $endDate = date('Y-m-t', strtotime($startDate));
+            $amount = self::getSaleSummaryAmount($startDate, $endDate);
+            $sales[] = (float)$amount;
+            $labels[] = date('M', strtotime($startDate));
+        }
+        return ['labels' => $labels, 'data' => $sales];
+    }
+
+    public static function getTopSellingProducts($limit = 5)
+    {
+        return DB::connection('mysql2')->table('sales_order_data')
+            ->join('subitem', 'sales_order_data.item_id', '=', 'subitem.id')
+            ->select(
+                'subitem.product_name',
+                'subitem.sku_code',
+                DB::raw('SUM(sales_order_data.qty) as total_qty'),
+                DB::raw('SUM(sales_order_data.qty * COALESCE(subitem.sale_price, 0)) as total_sales')
+            )
+            ->groupBy('subitem.id', 'subitem.product_name', 'subitem.sku_code')
+            ->orderBy('total_sales', 'DESC')
+            ->limit($limit)
+            ->get();
+    }
 }
