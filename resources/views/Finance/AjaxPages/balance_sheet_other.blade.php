@@ -100,10 +100,24 @@ $clause='';
                     <?php endif; ?>
                 @endforeach
 
-                <?php $total_assets=$amount = CommonHelper::get_parent_and_account_amount($m,$from_date,$to_date,'1','1',1,0); ?>
+                <?php $total_assets = CommonHelper::get_parent_and_account_amount($m,$from_date,$to_date,'1','1',1,0); ?>
                 <tr style="background-color: lightblue;font-size: larger;font-weight: bolder">
                     <td>Total Assets</td>
                     <td class="text-right"> <?php echo number_format($total_assets,2) ?></td>
+                </tr>
+                <?php 
+                    $liblaty_ref = CommonHelper::get_parent_and_account_amount($m,$from_date,$to_date,'2','1',0,1);
+                    $owner_equity_val = CommonHelper::get_parent_and_account_amount($m,$from_date,$to_date,3,'1',0,1);
+                    // Need net profit for equity reference
+                    $revenue_ref = CommonHelper::get_parent_and_account_amount(1,$from_date,$to_date,5,'1',1,0);
+                    $cogs_dr_ref = DB::Connection('mysql2')->table('transactions')->where('status',1)->where('debit_credit',1)->where('acc_id',768)->where('voucher_type','!=',5)->whereBetween('v_date',[$from_date,$to_date])->where('opening_bal',0)->sum('amount');
+                    $cogs_cr_ref = DB::Connection('mysql2')->table('transactions')->where('status',1)->where('debit_credit',0)->where('acc_id',768)->where('voucher_type','!=',5)->whereBetween('v_date',[$from_date,$to_date])->where('opening_bal',0)->sum('amount');
+                    $net_profit_ref = (abs($revenue_ref) - ($cogs_dr_ref - $cogs_cr_ref)) - CommonHelper::get_parent_and_account_amount(1,$from_date,$to_date,4,'1',1,0);
+                    $total_lib_eq_ref = $liblaty_ref + $owner_equity_val + $net_profit_ref;
+                ?>
+                <tr style="background-color: #f8f9fa; font-size: 14px; font-weight: normal; color: #666;">
+                    <td><i>Liabilities + Owner's Equity (Reference)</i></td>
+                    <td class="text-right"><i><?php echo number_format($total_lib_eq_ref, 2) ?></i></td>
                 </tr>
                 </tbody>
             </table>
@@ -323,6 +337,11 @@ $clause='';
                 <tr style="background-color: lightblue;font-size: larger;font-weight: bolder">
                     <td>Liabilties + Owner's Equity</td>
                     <td class="text-right"> <?php echo number_format($owner_equity+$liblaty,2) ?></td>
+                </tr>
+                <tr style="background-color: #f8f9fa; font-size: 14px; font-weight: normal; color: #666;">
+                    <td><i>Total Assets (Reference)</i></td>
+                    <?php $total_assets_ref = CommonHelper::get_parent_and_account_amount($m,$from_date,$to_date,'1','1',1,0); ?>
+                    <td class="text-right"><i><?php echo number_format($total_assets_ref, 2) ?></i></td>
                 </tr>
                 </tbody>
             </table>

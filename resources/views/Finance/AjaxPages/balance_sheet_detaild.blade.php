@@ -210,6 +210,18 @@ $clause='';
                         ?>
                         <td class="text-right" colspan="1"><?php echo $total ?></td>
                     </tr>
+                    <?php if ($index == 1): // After Assets ?>
+                    <tr style="background-color: #f8f9fa; font-size: 13px; color: #666;">
+                        <td class="text-center" colspan="2"><i>Liabilities + Owner's Equity (Reference)</i></td>
+                        <?php 
+                            $lib_ref = CommonHelper::get_parent_and_account_amount($m,$from_date,$to_date,'3','1',1,0);
+                            $eq_ref = CommonHelper::get_parent_and_account_amount($m,$from_date,$to_date,2,'1',1,0);
+                            // Net profit calc is complex in this file, using the one from the loop if available
+                            $ref_val = number_format(abs($lib_ref) + abs($eq_ref) + abs($net_profit_cal), 2);
+                        ?>
+                        <td class="text-right" colspan="1"><i><?php echo $ref_val; ?></i></td>
+                    </tr>
+                    <?php endif; ?>
                     </tbody>
 
                     <?php  ?>
@@ -244,6 +256,11 @@ $clause='';
 
                         ?>
                         <td style="font-size: large;font-weight: bolder" class="text-right" colspan="1"><?php echo $total_liblaty_equty; ?></td>
+                    </tr>
+                    <tr style="background-color: #f8f9fa; font-size: 13px; color: #666;">
+                        <td class="text-center" colspan="2"><i>Total Assets (Reference)</i></td>
+                        <?php $ass_ref = CommonHelper::get_parent_and_account_amount($m,$from_date,$to_date,'1','1',1,0); ?>
+                        <td class="text-right" colspan="1"><i><?php echo number_format($ass_ref, 2); ?></i></td>
                     </tr>
 
 
