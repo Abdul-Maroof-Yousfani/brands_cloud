@@ -1315,6 +1315,89 @@ public function get_stock(Request $request)
         }
     }
 
+    public function BAStockAdjustmentList(Request $request)
+    {
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof \Illuminate\Http\JsonResponse) {
+            return $user;
+        }
+
+        try {
+            $adjustments = DB::Connection('mysql2')->table('ba_stock as bs')
+                ->join('customers as c', 'bs.customer_id', '=', 'c.id')
+                ->where('bs.voucher_no', 'like', 'BA-ADJ-%')
+                ->where('bs.username', $user->username)
+                ->select(
+                    'bs.voucher_no',
+                    'bs.voucher_date',
+                    'c.name as distributor_name',
+                    'bs.customer_id',
+                    DB::raw('COUNT(*) as total_items'),
+                    DB::raw('MAX(bs.description) as remarks')
+                )
+                ->groupBy('bs.voucher_no', 'bs.voucher_date', 'c.name', 'bs.customer_id')
+                ->orderBy('bs.voucher_date', 'DESC')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $adjustments
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch adjustments list.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function BAStockAdjustmentData(Request $request)
+    {
+        $user = $this->getAuthenticatedUser();
+        if ($user instanceof \Illuminate\Http\JsonResponse) {
+            return $user;
+        }
+
+        $rules = [
+            'voucher_no' => 'required|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $details = DB::Connection('mysql2')->table('ba_stock as bs')
+                ->join('subitem as si', 'bs.sub_item_id', '=', 'si.id')
+                ->where('bs.voucher_no', $request->voucher_no)
+                ->where('bs.username', $user->username)
+                ->select(
+                    'bs.*',
+                    'si.product_name',
+                    'si.sku_code'
+                )
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $details
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch adjustment data.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function ReturnSaleOrderList(Request $request)
     {
         $user = $this->getAuthenticatedUser();
