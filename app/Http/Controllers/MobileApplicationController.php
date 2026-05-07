@@ -44,7 +44,7 @@ class MobileApplicationController extends Controller
     //         ], 422); // 422 Unprocessable Entity
     //     }
 
-        
+
     //     // Find the user by email
     //     $user = User::where('email', $request->email)->first();
 
@@ -66,109 +66,109 @@ class MobileApplicationController extends Controller
     //     ]);
     // }
 
-public function login(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'name'     => ['required', 'string'],
-        'password' => 'required|string',
-        'imei'     => 'nullable|string',
-    ]);
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string'],
+            'password' => 'required|string',
+            'imei' => 'nullable|string',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'errors' => $validator->errors(),
-        ], 422);
-    }
-
-    // ✅ Find user
-    $user = User::where('username', $request->name)->first();
-
-    if (!$user) {
-        return response()->json(['message' => 'Invalid username or password'], 401);
-    }
-
-    // ✅ IMEI check ONLY if user has IMEI stored
-    if (!empty($user->imei)) {
-
-        // request me IMEI nahi aya
-        if (empty($request->imei)) {
-            return response()->json(['message' => 'IMEI required for this user'], 401);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
         }
 
-        // IMEI mismatch
-        if ($user->imei !== $request->imei) {
-            return response()->json(['message' => 'Invalid IMEI'], 401);
+        // ✅ Find user
+        $user = User::where('username', $request->name)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid username or password'], 401);
         }
-    }
 
-    // ✅ Password check
-    if (!Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Invalid username or password'], 401);
-    }
+        // ✅ IMEI check ONLY if user has IMEI stored
+        if (!empty($user->imei)) {
 
-    // ✅ Account type check
-    if ($user->acc_type !== 'ba') {
-        return response()->json(['message' => 'Unauthorized account type'], 403);
-    }
+            // request me IMEI nahi aya
+            if (empty($request->imei)) {
+                return response()->json(['message' => 'IMEI required for this user'], 401);
+            }
 
-    // ✅ Status check (1 = Active, 0 = Inactive)
-    if ($user->status == '0') {
-        return response()->json(['message' => 'Account is inactive. Please contact administrator.'], 401);
-    }
+            // IMEI mismatch
+            if ($user->imei !== $request->imei) {
+                return response()->json(['message' => 'Invalid IMEI'], 401);
+            }
+        }
 
-    // ✅ Generate token
-    $token = $user->generateApiToken();
+        // ✅ Password check
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid username or password'], 401);
+        }
 
-    return response()->json([
-        'message' => 'Login successful',
-        'user'    => $user,
-        'token'   => $token,
-    ], 200);
-}
+        // ✅ Account type check
+        if ($user->acc_type !== 'ba') {
+            return response()->json(['message' => 'Unauthorized account type'], 403);
+        }
 
-public function loginById(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'user_id' => 'required|numeric'
-    ]);
+        // ✅ Status check (1 = Active, 0 = Inactive)
+        if ($user->status == '0') {
+            return response()->json(['message' => 'Account is inactive. Please contact administrator.'], 401);
+        }
 
-    if ($validator->fails()) {
+        // ✅ Generate token
+        $token = $user->generateApiToken();
+
         return response()->json([
-            'success' => false,
-            'errors' => $validator->errors(),
-        ], 422);
+            'message' => 'Login successful',
+            'user' => $user,
+            'token' => $token,
+        ], 200);
     }
 
-    // ✅ Find user
-    $user = User::find($request->user_id);
+    public function loginById(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|numeric'
+        ]);
 
-    if (!$user) {
-        return response()->json(['message' => 'Invalid user id'], 401);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // ✅ Find user
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid user id'], 401);
+        }
+
+
+        // ✅ Account type check
+        if ($user->acc_type !== 'ba') {
+            return response()->json(['message' => 'Unauthorized account type'], 403);
+        }
+
+        // ✅ Status check (1 = Active, 0 = Inactive)
+        if ($user->status == '0') {
+            return response()->json(['message' => 'Account is inactive. Please contact administrator.'], 401);
+        }
+
+        // ✅ Generate token
+        $token = $user->generateApiToken();
+
+        return response()->json([
+            'message' => 'Login successful',
+            'user' => $user,
+            'token' => $token,
+        ], 200);
     }
 
-
-    // ✅ Account type check
-    if ($user->acc_type !== 'ba') {
-        return response()->json(['message' => 'Unauthorized account type'], 403);
-    }
-
-    // ✅ Status check (1 = Active, 0 = Inactive)
-    if ($user->status == '0') {
-        return response()->json(['message' => 'Account is inactive. Please contact administrator.'], 401);
-    }
-
-    // ✅ Generate token
-    $token = $user->generateApiToken();
-
-    return response()->json([
-        'message' => 'Login successful',
-        'user'    => $user,
-        'token'   => $token,
-    ], 200);
-}
-
-// public function login(Request $request)
+    // public function login(Request $request)
 // {
 //     // ✅ Validation rules
 //     $validator = Validator::make($request->all(), [
@@ -177,38 +177,38 @@ public function loginById(Request $request)
 //         'imei' => 'required'
 //     ]);
 
-//     if ($validator->fails()) {
+    //     if ($validator->fails()) {
 //         return response()->json([
 //             'success' => false,
 //             'errors' => $validator->errors(),
 //         ], 422);
 //     }
 
-//     // ✅ Check user by username
+    //     // ✅ Check user by username
 //     $user = User::where('username', $request->name)->first();
-    
-//     if($user->imei != $request->imei) {
+
+    //     if($user->imei != $request->imei) {
 //         return response()->json(["message" => "invalid IMEI"], 401);
 //     }
 
-//     if (!$user) {
+    //     if (!$user) {
 //         return response()->json(['message' => 'Invalid username or password'], 401);
 //     }
 
-//     // ✅ Verify password
+    //     // ✅ Verify password
 //     if (!Hash::check($request->password, $user->password)) {
 //         return response()->json(['message' => 'Invalid username or password'], 401);
 //     }
 
-//     // ✅ Check account type
+    //     // ✅ Check account type
 //     if ($user->acc_type !== 'ba') {
 //         return response()->json(['message' => 'Unauthorized account type1'], 403);
 //     }
 
-//     // ✅ Generate token (ensure generateApiToken() exists)
+    //     // ✅ Generate token (ensure generateApiToken() exists)
 //     $token = $user->generateApiToken();
 
-//     return response()->json([
+    //     return response()->json([
 //         'message' => 'Login successful',
 //         'user' => $user,
 //         'token' => $token,
@@ -323,7 +323,7 @@ public function loginById(Request $request)
         }
 
         $brand = Brand::find($request->brand_id);
-        $subitems = $brand->subitems()->selected()->get()->map(function($item) {
+        $subitems = $brand->subitems()->selected()->get()->map(function ($item) {
             $item->product_name = $item->sku_code . ' ' . $item->product_name . ' ' . $item->product_barcode;
             return $item;
         });
@@ -429,8 +429,8 @@ public function loginById(Request $request)
     //         'available_qty' => $available_qty,
     //     ], 200);
     // }
- 
-public function get_stock(Request $request)
+
+    public function get_stock(Request $request)
     {
         $user = $this->getAuthenticatedUser();
         if ($user instanceof \Illuminate\Http\JsonResponse) {
@@ -492,7 +492,7 @@ public function get_stock(Request $request)
 
         // Get all formations for this user to identify allowed brands and customers
         $formations = \App\BAFormation::where('employee_id', $user->emp_code)->where('status', 1)->get();
-        
+
         $allBrandIds = [];
         $customerIds = [];
         foreach ($formations as $f) {
@@ -525,7 +525,7 @@ public function get_stock(Request $request)
         if ($requestedBrandId) {
             $productsQuery->where('brand_id', $requestedBrandId);
         }
-        
+
         if ($requestedProductId) {
             $productsQuery->where('id', $requestedProductId);
         }
@@ -545,7 +545,8 @@ public function get_stock(Request $request)
             ->whereIn('customer_id', $customerIds)
             ->whereIn('sub_item_id', $products->pluck('id'))
             ->where('status', 1)
-            ->select('sub_item_id',
+            ->select(
+                'sub_item_id',
                 DB::raw('SUM(CASE WHEN voucher_type IN (1, 9) THEN qty ELSE 0 END) AS total_in'),
                 DB::raw('SUM(CASE WHEN voucher_type IN (50, 2) THEN qty ELSE 0 END) AS total_out'),
                 DB::raw('SUM(CASE WHEN voucher_type = 51 THEN qty ELSE 0 END) AS total_return')
@@ -557,7 +558,7 @@ public function get_stock(Request $request)
         // Fetch brand names
         $brandNames = Brand::whereIn('id', $allBrandIds)->pluck('name', 'id');
 
-        $result = $products->map(function($p) use ($stockData) {
+        $result = $products->map(function ($p) use ($stockData) {
             $stock = $stockData->get($p->id);
             $available = 0;
             if ($stock) {
@@ -568,12 +569,12 @@ public function get_stock(Request $request)
                 'sku_code' => $p->sku_code,
                 'product_name' => ($p->sku_code ?? '') . ' ' . ($p->product_name ?? '') . ' ' . ($p->product_barcode ?? ''),
                 'barcode' => $p->product_barcode,
-                'available_qty' => (float)$available,
+                'available_qty' => (float) $available,
                 'brand_id' => $p->brand_id
             ];
         });
 
-        $result = $result->filter(function($p) use ($requestedProductId) {
+        $result = $result->filter(function ($p) use ($requestedProductId) {
             // If specific product requested, show it even if 0 stock. Otherwise only show items > 0.
             if ($requestedProductId) {
                 return true;
@@ -582,7 +583,7 @@ public function get_stock(Request $request)
         });
 
         // Group by Brand
-        $grouped = $result->groupBy('brand_id')->map(function($items, $brandId) use ($brandNames) {
+        $grouped = $result->groupBy('brand_id')->map(function ($items, $brandId) use ($brandNames) {
             return [
                 'brand_id' => $brandId,
                 'brand_name' => $brandNames[$brandId] ?? 'N/A',
@@ -597,7 +598,7 @@ public function get_stock(Request $request)
         ], 200);
     }
 
-// public function getSaleAmount(Request $request)
+    // public function getSaleAmount(Request $request)
 // {
 //     // Validate inputs
 //     $validator = Validator::make($request->all(), [
@@ -606,47 +607,47 @@ public function get_stock(Request $request)
 //         'month' => 'nullable|integer|min:1|max:12',
 //     ]);
 
-//     if ($validator->fails()) {
+    //     if ($validator->fails()) {
 //         return response()->json([
 //             'success' => false,
 //             'errors' => $validator->errors()
 //         ], 422);
 //     }
 
-//     try {
+    //     try {
 //         // Get user from main DB
 //         $user = DB::connection('mysql')
 //             ->table('users')
 //             ->where('emp_code', $request->emp_code)
 //             ->first();
 
-//         if (!$user) {
+    //         if (!$user) {
 //             return response()->json([
 //                 'success' => false,
 //                 'message' => 'Employee not found.'
 //             ], 404);
 //         }
 
-//         // Build query in mysql2
+    //         // Build query in mysql2
 //         $query = DB::connection('mysql2')
 //             ->table('retail_sale_orders as so')
 //             ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
 //             ->join('subitem as si', 'sod.product_id', '=', 'si.id') // join for rate
 //             ->where('so.user_id', $user->id);
 
-//         // Optional filters
+    //         // Optional filters
 //         if ($request->year) {
 //             $query->whereYear('so.sale_order_date', $request->year);
 //         }
 
-//         if ($request->month) {
+    //         if ($request->month) {
 //             $query->whereMonth('so.sale_order_date', $request->month);
 //         }
 
-//         // Calculate total sale amount (qty * rate)
+    //         // Calculate total sale amount (qty * rate)
 //         $totalAmount = $query->sum(DB::raw('sod.qty * si.rate'));
 
-//         return response()->json([
+    //         return response()->json([
 //             'success' => true,
 //             'emp_code' => $request->emp_code,
 //             'year' => $request->year,
@@ -654,7 +655,7 @@ public function get_stock(Request $request)
 //             'total_sale_amount' => $totalAmount ?? 0,
 //         ], 200);
 
-//     } catch (\Exception $e) {
+    //     } catch (\Exception $e) {
 //         return response()->json([
 //             'success' => false,
 //             'message' => 'Failed to fetch sale amount.',
@@ -664,32 +665,32 @@ public function get_stock(Request $request)
 // }
 
 
-  public function getSaleAmount(Request $request)
+    public function getSaleAmount(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'emp_code' => 'required|integer|exists:mysql.users,emp_code',
             'year' => 'nullable|integer|min:2000|max:' . date('Y'),
             'month' => 'nullable|integer|min:1|max:12',
         ]);
- 
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
             ], 422);
         }
- 
+
         try {
             // Fetch employee (main DB)
             $employee = DB::connection('mysql')
                 ->table('users')
                 ->where('emp_code', $request->emp_code)
                 ->first();
- 
+
             if (!$employee) {
                 return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
             }
- 
+
             /*
             |--------------------------------------------------------------------------
             | 1. GET ALL CUSTOMERS ASSIGNED TO EMPLOYEE (BA FORMATION)
@@ -699,7 +700,7 @@ public function get_stock(Request $request)
                 ->table('b_a_formations')
                 ->where('employee_id', $employee->emp_id)
                 ->pluck('customer_id');
- 
+
             /*
             |--------------------------------------------------------------------------
             | 2. SECONDARY SALE (SALE ORDER TABLE)
@@ -708,17 +709,17 @@ public function get_stock(Request $request)
             $secondaryQuery = DB::connection('mysql2')
                 ->table('sales_order')
                 ->whereIn('buyers_id', $customers);
- 
+
             if ($request->year) {
                 $secondaryQuery->whereYear('so_date', $request->year);
             }
             if ($request->month) {
                 $secondaryQuery->whereMonth('so_date', $request->month);
             }
- 
+
             $secondaryAmount = $secondaryQuery->sum('total_amount');
             $secondaryQty = $secondaryQuery->sum('total_qty');
- 
+
             /*
             |--------------------------------------------------------------------------
             | 3. TERTIARY SALE (RETAIL SALE ORDERS)
@@ -729,17 +730,17 @@ public function get_stock(Request $request)
                 ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
                 ->join('subitem as si', 'sod.product_id', '=', 'si.id')
                 ->where('so.user_id', $employee->id);
- 
+
             if ($request->year) {
                 $tertiaryQuery->whereYear('so.sale_order_date', $request->year);
             }
             if ($request->month) {
                 $tertiaryQuery->whereMonth('so.sale_order_date', $request->month);
             }
- 
+
             $tertiaryAmount = $tertiaryQuery->sum(DB::raw('sod.qty * si.sale_price'));
             $tertiaryQty = $tertiaryQuery->sum('sod.qty');
- 
+
             /*
             |--------------------------------------------------------------------------
             | 4. FINAL RESPONSE
@@ -750,21 +751,21 @@ public function get_stock(Request $request)
                 'emp_code' => $request->emp_code,
                 'year' => $request->year,
                 'month' => $request->month,
- 
+
                 // Secondary sale (customer-wise)
                 'secondary_sale_amount' => $secondaryAmount ?? 0,
-                'secondary_sale_qty'    => $secondaryQty ?? 0,
- 
+                'secondary_sale_qty' => $secondaryQty ?? 0,
+
                 // Tertiary sale (employee-created)
                 'tertiary_sale_amount' => $tertiaryAmount ?? 0,
-                'tertiary_sale_qty'    => $tertiaryQty ?? 0,
+                'tertiary_sale_qty' => $tertiaryQty ?? 0,
                 // 'distributor_id'    => $tertiaryQuery->first()->distributor_id ?? null,
                 // 'data'    => $secondaryQuery->get(),
                 // 'customers'    => $customers,
                 // 'employee'    => $employee,
- 
+
             ], 200);
- 
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -796,7 +797,7 @@ public function get_stock(Request $request)
         ];
 
 
-      
+
         // Create the validator instance
         $validator = Validator::make($request->all(), $rules);
 
@@ -825,7 +826,7 @@ public function get_stock(Request $request)
 
             $distributor = $user->customers()->where('customers.id', $request->distributor_id)->first();
 
-           
+
             if (!$distributor) {
                 return response()->json([
                     'success' => false,
@@ -889,19 +890,20 @@ public function get_stock(Request $request)
     }
 
 
-    public function getBranchName(Request $request){
-    $branch = DB::connection('mysql2')
-        ->table('branch')  // table name check kar lena
-        ->where('id', $request->id)
-        ->first();
+    public function getBranchName(Request $request)
+    {
+        $branch = DB::connection('mysql2')
+            ->table('branch')  // table name check kar lena
+            ->where('id', $request->id)
+            ->first();
 
-    
-    
-    return response()->json([
-        'name' => $branch ? $branch->branch_name : '-',
-        'code' => $branch ? $branch->id : '-'
-    ]);
-}
+
+
+        return response()->json([
+            'name' => $branch ? $branch->branch_name : '-',
+            'code' => $branch ? $branch->id : '-'
+        ]);
+    }
     // public function SaleOrderList(Request $request)
     // {
     //     $user = $this->getAuthenticatedUser();
@@ -934,53 +936,53 @@ public function get_stock(Request $request)
     // }
 
 
-//   
+    //   
 
 
- public function SaleOrderList(Request $request)
-{
-    $user = $this->getAuthenticatedUser();
- 
-    if ($user instanceof \Illuminate\Http\JsonResponse) {
-        return $user;
-    }
- 
-    // Start query
-    $query = RetailSaleOrder::with([
-        'details' => function ($query) {
-            $query->with(['brand:id,name', 'product:id,product_name,product_barcode,sku_code']);
-        },
-        'distributor:id,name'
-    ])->where('user_id', $user->id);
- 
-    // Apply date filter
-    if ($request->filled('start_date') && $request->filled('end_date')) {
- 
-        $startDate = Carbon::parse($request->start_date)->startOfDay();
-        $endDate   = Carbon::parse($request->end_date)->endOfDay();
- 
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    }
- 
-    $saleOrder = $query->get();
- 
-    // Calculate total count
-    $totalCount = $saleOrder->count();
- 
-    if ($saleOrder->isEmpty()) {
+    public function SaleOrderList(Request $request)
+    {
+        $user = $this->getAuthenticatedUser();
+
+        if ($user instanceof \Illuminate\Http\JsonResponse) {
+            return $user;
+        }
+
+        // Start query
+        $query = RetailSaleOrder::with([
+            'details' => function ($query) {
+                $query->with(['brand:id,name', 'product:id,product_name,product_barcode,sku_code']);
+            },
+            'distributor:id,name'
+        ])->where('user_id', $user->id);
+
+        // Apply date filter
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $saleOrder = $query->get();
+
+        // Calculate total count
+        $totalCount = $saleOrder->count();
+
+        if ($saleOrder->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No sale orders found for the given date range.',
+                'total' => $totalCount
+            ], 404);
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'No sale orders found for the given date range.',
+            'success' => true,
+            'data' => $saleOrder,
             'total' => $totalCount
-        ], 404);
+        ]);
     }
- 
-    return response()->json([
-        'success' => true,
-        'data' => $saleOrder,
-        'total' => $totalCount
-    ]);
-}
 
     public function getSaleOrder(Request $request)
     {
@@ -1139,8 +1141,8 @@ public function get_stock(Request $request)
             'details.*.qty' => 'required|integer|min:1',
             'details.*.barcode' => 'nullable|string',
             'details.*.reason' => 'nullable|string',
-     'details.*.damage_photo' => 'nullable|file|image|mimes:jpg,jpeg,png|max:2048',
-        'details.*.expiry_date' => 'nullable|date',
+            'details.*.damage_photo' => 'nullable|file|image|mimes:jpg,jpeg,png|max:2048',
+            'details.*.expiry_date' => 'nullable|date',
 
         ];
 
@@ -1157,7 +1159,7 @@ public function get_stock(Request $request)
 
 
         try {
-          
+
             $order = RetailSaleOrderReturn::create([
                 'user_id' => Auth::user()->id,
                 'user_name' => Auth::user()->name,
@@ -1172,25 +1174,25 @@ public function get_stock(Request $request)
             $order->return_no = 'SR-' . str_pad($order->id, 4, '0', STR_PAD_LEFT);
             $order->save();
 
-           foreach ($request->details as $index => $detail) {
+            foreach ($request->details as $index => $detail) {
 
-                    $damagePhotoPath = null;
+                $damagePhotoPath = null;
 
-                    // Check if file exists in this detail item
-                    if ($request->hasFile("details.$index.damage_photo")) {
-                        $photoFile = $request->file("details.$index.damage_photo");
-                        $damagePhotoPath = $photoFile->store('damage_photos', 'public');
-                    }
+                // Check if file exists in this detail item
+                if ($request->hasFile("details.$index.damage_photo")) {
+                    $photoFile = $request->file("details.$index.damage_photo");
+                    $damagePhotoPath = $photoFile->store('damage_photos', 'public');
+                }
 
-                    $order->returnDetails()->create([
-                        'brand_id' => $detail['brand_id'],
-                        'product_id' => $detail['product_id'],
-                        'quantity' => $detail['qty'],
-                        'barcode' => $detail['barcode'],
-                        'reason' => $detail['reason'] ?? null,
-                        'damage_photo' => $damagePhotoPath,
-                        'expiry_date' => $detail['expiry_date'] ?? null,
-                    ]);
+                $order->returnDetails()->create([
+                    'brand_id' => $detail['brand_id'],
+                    'product_id' => $detail['product_id'],
+                    'quantity' => $detail['qty'],
+                    'barcode' => $detail['barcode'],
+                    'reason' => $detail['reason'] ?? null,
+                    'damage_photo' => $damagePhotoPath,
+                    'expiry_date' => $detail['expiry_date'] ?? null,
+                ]);
 
                 $stock = array(
                     'main_id' => 0,   //  delivery note id
@@ -1273,8 +1275,9 @@ public function get_stock(Request $request)
             $date = date('Y-m-d');
 
             foreach ($request->details as $detail) {
-                $diff = (float)$detail['diff_qty'];
-                if ($diff == 0) continue;
+                $diff = (float) $detail['diff_qty'];
+                if ($diff == 0)
+                    continue;
 
                 $stock = [
                     'main_id' => 0,
@@ -1375,7 +1378,7 @@ public function get_stock(Request $request)
 
         // Get assigned brands from BAFormation
         $formations = \App\BAFormation::where('employee_id', $user->emp_code)->where('status', 1)->get();
-        
+
         $allBrandIds = [];
         foreach ($formations as $f) {
             $ids = json_decode($f->brands_ids, true);
@@ -1400,7 +1403,7 @@ public function get_stock(Request $request)
             ->get(['id', 'sku_code', 'product_name', 'product_barcode', 'brand_id', 'sale_price', 'rate']);
 
         // Format names like in other APIs
-        $formattedProducts = $products->map(function($p) {
+        $formattedProducts = $products->map(function ($p) {
             $p->full_product_name = ($p->sku_code ?? '') . ' ' . ($p->product_name ?? '') . ' ' . ($p->product_barcode ?? '');
             return $p;
         });
@@ -1432,7 +1435,7 @@ public function get_stock(Request $request)
             $query->whereDate('sale_order_date', $request->date);
         } elseif ($request->month && $request->year) {
             $query->whereMonth('sale_order_date', $request->month)
-                  ->whereYear('sale_order_date', $request->year);
+                ->whereYear('sale_order_date', $request->year);
         }
 
         $orders = $query->with(['distributor:id,name', 'details.brand:id,name', 'details.product:id,product_name,sku_code'])->get();
@@ -1464,7 +1467,7 @@ public function get_stock(Request $request)
                     ];
                 }
 
-                $summary[$storeId]['brands'][$brandId]['total_quantity'] += (float)$detail->qty;
+                $summary[$storeId]['brands'][$brandId]['total_quantity'] += (float) $detail->qty;
 
                 $productId = $detail->product_id;
                 if (!isset($summary[$storeId]['brands'][$brandId]['products'][$productId])) {
@@ -1475,13 +1478,13 @@ public function get_stock(Request $request)
                         'quantity' => 0
                     ];
                 }
-                $summary[$storeId]['brands'][$brandId]['products'][$productId]['quantity'] += (float)$detail->qty;
+                $summary[$storeId]['brands'][$brandId]['products'][$productId]['quantity'] += (float) $detail->qty;
             }
         }
 
         // Convert associative arrays to indexed arrays for JSON response
-        $finalData = array_values(array_map(function($store) {
-            $store['brands'] = array_values(array_map(function($brand) {
+        $finalData = array_values(array_map(function ($store) {
+            $store['brands'] = array_values(array_map(function ($brand) {
                 $brand['products'] = array_values($brand['products']);
                 return $brand;
             }, $store['brands']));
@@ -1516,7 +1519,7 @@ public function get_stock(Request $request)
         try {
             $details = DB::Connection('mysql2')->table('ba_stock as bs')
                 ->join('subitem as si', 'bs.sub_item_id', '=', 'si.id')
-                ->leftJoin('brand as b', 'si.brand_id', '=', 'b.id')
+                ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
                 ->leftJoin('customers as c', 'bs.customer_id', '=', 'c.id')
                 ->where('bs.voucher_no', $request->voucher_no)
                 ->where('bs.username', $user->username)
@@ -1528,23 +1531,23 @@ public function get_stock(Request $request)
                     'c.name as customer_name'
                 )
                 ->get()
-                ->map(function($item) {
+                ->map(function ($item) {
                     $item->voucher_type_name = ($item->voucher_type == 1) ? 'Adjustment In' : 'Adjustment Out';
-                    
+
                     // Parse quantities from description if they exist (for new records)
                     $item->available_qty = 0;
                     $item->actual_qty = 0;
-                    $item->diff_qty = (float)$item->qty * ($item->voucher_type == 2 ? -1 : 1);
-                    
+                    $item->diff_qty = (float) $item->qty * ($item->voucher_type == 2 ? -1 : 1);
+
                     if (strpos($item->description, 'BA-ADJ |') !== false) {
                         preg_match('/Avail: ([\d.-]+) \| Actual: ([\d.-]+) \| Diff: ([\d.-]+)/', $item->description, $matches);
                         if (count($matches) >= 4) {
-                            $item->available_qty = (float)$matches[1];
-                            $item->actual_qty = (float)$matches[2];
-                            $item->diff_qty = (float)$matches[3];
+                            $item->available_qty = (float) $matches[1];
+                            $item->actual_qty = (float) $matches[2];
+                            $item->diff_qty = (float) $matches[3];
                         }
                     }
-                    
+
                     return $item;
                 });
 
@@ -2042,7 +2045,7 @@ public function get_stock(Request $request)
             'longitude' => 'required',
             'check' => 'required',
             'username' => 'required',
-             'checkin_status' => 'nullable',
+            'checkin_status' => 'nullable',
         ];
 
         // Create the validator instance
@@ -2065,12 +2068,12 @@ public function get_stock(Request $request)
         $longitude = $request->input('longitude');
         $check = $request->input('check');
         $username = $request->input('username');
-         $checkin_status = $request->input('checkin_status', null);
+        $checkin_status = $request->input('checkin_status', null);
 
 
 
- $user_id = Auth::user()->id;
-        $status = $this->findUsersNearby($request->latittude , $request->longitude , $user_id);
+        $user_id = Auth::user()->id;
+        $status = $this->findUsersNearby($request->latittude, $request->longitude, $user_id);
 
         if (!$status) {
             return response()->json([
@@ -2084,7 +2087,7 @@ public function get_stock(Request $request)
         // Initialize Guzzle HTTP client
         $client = new Client();
 
-     
+
         // Make the POST request with the required data
         $response = $client->post('https://brands.smrsoftwares.com/api/addAttendance', [
             'form_params' => [
@@ -2093,7 +2096,7 @@ public function get_stock(Request $request)
                 'longitude' => $longitude,
                 'check' => $check,
                 'username' => $username,
-                 'checkin_status' => $checkin_status,
+                'checkin_status' => $checkin_status,
             ]
         ]);
 
@@ -2106,62 +2109,62 @@ public function get_stock(Request $request)
 
 
 
-    
+
     public function findUsersNearby($latitude, $longitude, $user_id)
-{
-    // dd($latitude, $longitude, $user_id);
-    $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat={$latitude}&lon={$longitude}&accept-language=en";
-    $options = [
-        'http' => [
-            'header' => "User-Agent: popular-snd 1.0"
-        ]
-    ];
-    $context = stream_context_create($options);
-    $response = file_get_contents($url, false, $context);
-    $json = json_decode($response, true);
-    $address = $json['display_name'] ?? '';
+    {
+        // dd($latitude, $longitude, $user_id);
+        $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat={$latitude}&lon={$longitude}&accept-language=en";
+        $options = [
+            'http' => [
+                'header' => "User-Agent: popular-snd 1.0"
+            ]
+        ];
+        $context = stream_context_create($options);
+        $response = file_get_contents($url, false, $context);
+        $json = json_decode($response, true);
+        $address = $json['display_name'] ?? '';
 
-    // 🔹 Get TSO with all saved locations
-    $user = User::with('locations')->find($user_id);
+        // 🔹 Get TSO with all saved locations
+        $user = User::with('locations')->find($user_id);
 
-    if (!$user) {
-        return false; // TSO not found
-    }
+        if (!$user) {
+            return false; // TSO not found
+        }
 
-    // Agar koi location hi nahi set hai → sab allowed
-    if ($user->locations->count() == 0) {
-        return true;
-    }
+        // Agar koi location hi nahi set hai → sab allowed
+        if ($user->locations->count() == 0) {
+            return true;
+        }
 
-    $earthRadius = 6371; // Earth's radius in kilometers
+        $earthRadius = 6371; // Earth's radius in kilometers
 
-    foreach ($user->locations as $location) {
-        if ($location->latitude && $location->longitude && $location->radius) {
-            $lat2 = $location->latitude;
-            $lon2 = $location->longitude;
-            $lat1 = $latitude;
-            $lon1 = $longitude;
+        foreach ($user->locations as $location) {
+            if ($location->latitude && $location->longitude && $location->radius) {
+                $lat2 = $location->latitude;
+                $lon2 = $location->longitude;
+                $lat1 = $latitude;
+                $lon1 = $longitude;
 
-            $dLat = deg2rad($lat2 - $lat1);
-            $dLon = deg2rad($lon2 - $lon1);
+                $dLat = deg2rad($lat2 - $lat1);
+                $dLon = deg2rad($lon2 - $lon1);
 
-            $a = sin($dLat / 2) * sin($dLat / 2) +
-                 cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-                 sin($dLon / 2) * sin($dLon / 2);
+                $a = sin($dLat / 2) * sin($dLat / 2) +
+                    cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+                    sin($dLon / 2) * sin($dLon / 2);
 
-            $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-            $distance = $earthRadius * $c;
+                $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+                $distance = $earthRadius * $c;
 
-            // ✅ Agar user is location ke radius ke andar hai → allow
-            if ($distance <= $location->radius) {
-                return true;
+                // ✅ Agar user is location ke radius ke andar hai → allow
+                if ($distance <= $location->radius) {
+                    return true;
+                }
             }
         }
-    }
 
-    // ✅ Agar koi bhi location match nahi hui
-    return false;
-}
+        // ✅ Agar koi bhi location match nahi hui
+        return false;
+    }
 
 
     // public function getSalesData()
@@ -2196,35 +2199,35 @@ public function get_stock(Request $request)
 
 
     public function getSalesData()
-{
-    $user = $this->getAuthenticatedUser();
+    {
+        $user = $this->getAuthenticatedUser();
 
-    if ($user instanceof \Illuminate\Http\JsonResponse) {
-        return $user; // Return the error response if no authenticated user
+        if ($user instanceof \Illuminate\Http\JsonResponse) {
+            return $user; // Return the error response if no authenticated user
+        }
+
+        // Sum of qty for today's sale
+        $today_sale = RetailSaleOrder::where('user_id', $user->id)
+            ->whereDate('retail_sale_orders.created_at', Carbon::today())
+            ->join('retail_sale_order_details', 'retail_sale_orders.id', '=', 'retail_sale_order_details.retail_sale_order_id')
+            ->sum('retail_sale_order_details.qty');
+
+        // Sum of qty for current month's sale
+        $monthly_sale = RetailSaleOrder::where('user_id', $user->id)
+            ->whereYear('retail_sale_orders.created_at', Carbon::now()->year)
+            ->whereMonth('retail_sale_orders.created_at', Carbon::now()->month)
+            ->join('retail_sale_order_details', 'retail_sale_orders.id', '=', 'retail_sale_order_details.retail_sale_order_id')
+            ->sum('retail_sale_order_details.qty');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dashboard Data Fetched Successfully',
+            'data' => [
+                'today_sale' => (int) $today_sale,
+                'monthly_sale' => (int) $monthly_sale,
+            ],
+        ]);
     }
-
-    // Sum of qty for today's sale
-    $today_sale = RetailSaleOrder::where('user_id', $user->id)
-        ->whereDate('retail_sale_orders.created_at', Carbon::today())
-        ->join('retail_sale_order_details', 'retail_sale_orders.id', '=', 'retail_sale_order_details.retail_sale_order_id')
-        ->sum('retail_sale_order_details.qty');
-
-    // Sum of qty for current month's sale
-    $monthly_sale = RetailSaleOrder::where('user_id', $user->id)
-        ->whereYear('retail_sale_orders.created_at', Carbon::now()->year)
-        ->whereMonth('retail_sale_orders.created_at', Carbon::now()->month)
-        ->join('retail_sale_order_details', 'retail_sale_orders.id', '=', 'retail_sale_order_details.retail_sale_order_id')
-        ->sum('retail_sale_order_details.qty');
-
-   return response()->json([
-    'success' => true,
-    'message' => 'Dashboard Data Fetched Successfully',
-    'data' => [
-        'today_sale' => (int) $today_sale,
-        'monthly_sale' => (int) $monthly_sale,
-    ],
-]);
-}
 
     protected function getAuthenticatedUser()
     {
@@ -2238,120 +2241,120 @@ public function get_stock(Request $request)
     }
 
     public function targetReportApi(Request $request)
-{
-    // ================= Filters =================
-    $date = $request->date ?? date('Y-m');
-    [$year, $month] = explode('-', $date);
+    {
+        // ================= Filters =================
+        $date = $request->date ?? date('Y-m');
+        [$year, $month] = explode('-', $date);
 
-    $customerFilterId = $request->customer_id; // optional
-    $userId           = $request->user_id;     // optional
+        $customerFilterId = $request->customer_id; // optional
+        $userId = $request->user_id;     // optional
 
-    // ================= Targets =================
-    $reports = TargetItems::where('year', $year)
-        ->where('month', (int)$month)
-        ->when($customerFilterId, function ($q) use ($customerFilterId) {
-            $q->where('customer_id', $customerFilterId);
-        })
-        ->get();
+        // ================= Targets =================
+        $reports = TargetItems::where('year', $year)
+            ->where('month', (int) $month)
+            ->when($customerFilterId, function ($q) use ($customerFilterId) {
+                $q->where('customer_id', $customerFilterId);
+            })
+            ->get();
 
-    if ($reports->isEmpty()) {
-        return response()->json([
-            'status' => true,
-            'data'   => []
-        ]);
-    }
-
-    $customerIds = $reports->pluck('customer_id')->unique();
-    $brandIds    = $reports->pluck('brand_id')->unique();
-
-    // ================= Brands =================
-    $brands = Brand::whereIn('id', $brandIds)
-        ->pluck('name', 'id');
-
-    // ================= SALES =================
-    $sales = DB::connection('mysql2')
-        ->table('retail_sale_orders as so')
-        ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
-        ->whereIn('so.distributor_id', $customerIds)
-        ->whereYear('so.sale_order_date', $year)
-        ->whereMonth('so.sale_order_date', $month)
-        ->when($userId, function ($q) use ($userId) {
-            $q->where('so.user_id', $userId);
-        })
-        ->select(
-            'sod.brand_id',
-            DB::raw('SUM(sod.qty) as total_qty')
-        )
-        ->groupBy('sod.brand_id')
-        ->get();
-
-    $salesData = $sales->pluck('total_qty', 'brand_id')->toArray();
-
-    // ================= RETURNS =================
-    $returns = DB::connection('mysql2')
-        ->table('retail_sale_order_returns as rsor')
-        ->join('retail_sale_order_return_details as rsord', 'rsor.id', '=', 'rsord.retail_sale_order_return_id')
-        ->whereIn('rsor.distributor_id', $customerIds)
-        ->whereYear('rsor.created_at', $year)
-        ->whereMonth('rsor.created_at', $month)
-        ->when($userId, function ($q) use ($userId) {
-            $q->where('rsor.user_id', $userId);
-        })
-        ->select(
-            'rsord.brand_id',
-            DB::raw('SUM(rsord.quantity) as total_qty')
-        )
-        ->groupBy('rsord.brand_id')
-        ->get();
-
-    $returnsData = $returns->pluck('total_qty', 'brand_id')->toArray();
-
-    // ================= FINAL BRAND-WISE REPORT =================
-    $finalReport = [];
-
-    foreach ($reports as $report) {
-
-        $brandId = $report->brand_id;
-
-        if (!isset($finalReport[$brandId])) {
-            $finalReport[$brandId] = [
-                'brand_id'         => $brandId,
-                'brand_name'       => $brands[$brandId] ?? '',
-                'target_qty'       => 0,
-                'achieved_qty'     => 0,
-                'return_qty'       => 0,
-                'net_achieved_qty' => 0,
-                'achieved_percent' => 0
-            ];
+        if ($reports->isEmpty()) {
+            return response()->json([
+                'status' => true,
+                'data' => []
+            ]);
         }
 
-        // ✅ Correct target column
-        $finalReport[$brandId]['target_qty'] += $report->target ?? 0;
+        $customerIds = $reports->pluck('customer_id')->unique();
+        $brandIds = $reports->pluck('brand_id')->unique();
+
+        // ================= Brands =================
+        $brands = Brand::whereIn('id', $brandIds)
+            ->pluck('name', 'id');
+
+        // ================= SALES =================
+        $sales = DB::connection('mysql2')
+            ->table('retail_sale_orders as so')
+            ->join('retail_sale_order_details as sod', 'so.id', '=', 'sod.retail_sale_order_id')
+            ->whereIn('so.distributor_id', $customerIds)
+            ->whereYear('so.sale_order_date', $year)
+            ->whereMonth('so.sale_order_date', $month)
+            ->when($userId, function ($q) use ($userId) {
+                $q->where('so.user_id', $userId);
+            })
+            ->select(
+                'sod.brand_id',
+                DB::raw('SUM(sod.qty) as total_qty')
+            )
+            ->groupBy('sod.brand_id')
+            ->get();
+
+        $salesData = $sales->pluck('total_qty', 'brand_id')->toArray();
+
+        // ================= RETURNS =================
+        $returns = DB::connection('mysql2')
+            ->table('retail_sale_order_returns as rsor')
+            ->join('retail_sale_order_return_details as rsord', 'rsor.id', '=', 'rsord.retail_sale_order_return_id')
+            ->whereIn('rsor.distributor_id', $customerIds)
+            ->whereYear('rsor.created_at', $year)
+            ->whereMonth('rsor.created_at', $month)
+            ->when($userId, function ($q) use ($userId) {
+                $q->where('rsor.user_id', $userId);
+            })
+            ->select(
+                'rsord.brand_id',
+                DB::raw('SUM(rsord.quantity) as total_qty')
+            )
+            ->groupBy('rsord.brand_id')
+            ->get();
+
+        $returnsData = $returns->pluck('total_qty', 'brand_id')->toArray();
+
+        // ================= FINAL BRAND-WISE REPORT =================
+        $finalReport = [];
+
+        foreach ($reports as $report) {
+
+            $brandId = $report->brand_id;
+
+            if (!isset($finalReport[$brandId])) {
+                $finalReport[$brandId] = [
+                    'brand_id' => $brandId,
+                    'brand_name' => $brands[$brandId] ?? '',
+                    'target_qty' => 0,
+                    'achieved_qty' => 0,
+                    'return_qty' => 0,
+                    'net_achieved_qty' => 0,
+                    'achieved_percent' => 0
+                ];
+            }
+
+            // ✅ Correct target column
+            $finalReport[$brandId]['target_qty'] += $report->target ?? 0;
+        }
+
+        foreach ($finalReport as $brandId => &$row) {
+
+            $row['achieved_qty'] = $salesData[$brandId] ?? 0;
+            $row['return_qty'] = $returnsData[$brandId] ?? 0;
+
+            $row['net_achieved_qty'] = $row['achieved_qty'] - $row['return_qty'];
+
+            $row['achieved_percent'] = $row['target_qty'] > 0
+                ? round(($row['net_achieved_qty'] / $row['target_qty']) * 100, 2)
+                : 0;
+        }
+
+        return response()->json([
+            'status' => true,
+            'filters' => [
+                'year' => $year,
+                'month' => $month,
+                'customer_id' => $customerFilterId,
+                'user_id' => $userId
+            ],
+            'data' => array_values($finalReport)
+        ]);
     }
-
-    foreach ($finalReport as $brandId => &$row) {
-
-        $row['achieved_qty'] = $salesData[$brandId] ?? 0;
-        $row['return_qty']   = $returnsData[$brandId] ?? 0;
-
-        $row['net_achieved_qty'] = $row['achieved_qty'] - $row['return_qty'];
-
-        $row['achieved_percent'] = $row['target_qty'] > 0
-            ? round(($row['net_achieved_qty'] / $row['target_qty']) * 100, 2)
-            : 0;
-    }
-
-    return response()->json([
-        'status'  => true,
-        'filters' => [
-            'year'        => $year,
-            'month'       => $month,
-            'customer_id' => $customerFilterId,
-            'user_id'     => $userId
-        ],
-        'data' => array_values($finalReport)
-    ]);
-}
 
     public function getBaTargetProgressApi(Request $request)
     {
@@ -2361,11 +2364,11 @@ public function get_stock(Request $request)
         }
 
         $validator = Validator::make($request->all(), [
-            'date'         => 'nullable|date_format:Y-m',
-            'year'         => 'nullable|integer|min:2000',
-            'month'        => 'nullable|integer|min:1|max:12',
-            'user_id'      => 'nullable|integer|exists:mysql.users,id',
-            'customer_id'  => 'nullable|integer',
+            'date' => 'nullable|date_format:Y-m',
+            'year' => 'nullable|integer|min:2000',
+            'month' => 'nullable|integer|min:1|max:12',
+            'user_id' => 'nullable|integer|exists:mysql.users,id',
+            'customer_id' => 'nullable|integer',
             'target_basis' => 'nullable|string|in:qty,amount'
         ]);
 
@@ -2404,7 +2407,7 @@ public function get_stock(Request $request)
             $formations = $formationQuery->get();
 
             $customerIds = $formations->pluck('customer_id')->unique();
-            
+
             // 2. Get Targets (Filtered by basis if provided)
             $targetQuery = DB::connection('mysql2')
                 ->table('target_items')
@@ -2466,22 +2469,22 @@ public function get_stock(Request $request)
             foreach ($formations as $f) {
                 $storeTargets = $targets->where('customer_id', $f->customer_id);
                 $storeName = $customerNames[$f->customer_id] ?? 'Unknown Store';
-                
+
                 $brandDetails = [];
                 $brandIds = json_decode($f->brands_ids, true) ?? [];
-                
+
                 foreach ($brandIds as $bId) {
                     $brandName = $brandNames[$bId] ?? 'Unknown Brand';
-                    
-                    $qtyTarget = (float)($storeTargets->where('brand_id', $bId)->where('target_type', 'qty')->first()->target ?? 0);
-                    $amountTarget = (float)($storeTargets->where('brand_id', $bId)->where('target_type', 'amount')->first()->target ?? 0);
+
+                    $qtyTarget = (float) ($storeTargets->where('brand_id', $bId)->where('target_type', 'qty')->first()->target ?? 0);
+                    $amountTarget = (float) ($storeTargets->where('brand_id', $bId)->where('target_type', 'amount')->first()->target ?? 0);
 
                     // Brand-wise Achievements
                     $secAchieved = $secondarySales->where('buyers_id', $f->customer_id)->where('brand_id', $bId)->first();
                     $terAchieved = $tertiarySales->where('distributor_id', $f->customer_id)->where('brand_id', $bId)->first();
                     $terReturned = $tertiaryReturns->where('distributor_id', $f->customer_id)->where('brand_id', $bId)->first();
 
-                    $netAchievedQty = (float)($terAchieved->total_qty ?? 0) - (float)($terReturned->total_qty ?? 0);
+                    $netAchievedQty = (float) ($terAchieved->total_qty ?? 0) - (float) ($terReturned->total_qty ?? 0);
 
                     $item = [
                         'brand_id' => $bId,
@@ -2492,13 +2495,13 @@ public function get_stock(Request $request)
                     if (!$target_basis || $target_basis == 'qty') {
                         $item['qty_target'] = $qtyTarget;
                         $item['achieved_qty'] = $netAchievedQty;
-                        $item['secondary_qty'] = (float)($secAchieved->total_qty ?? 0);
+                        $item['secondary_qty'] = (float) ($secAchieved->total_qty ?? 0);
                         $item['percentage'] = $qtyTarget > 0 ? round(($netAchievedQty / $qtyTarget) * 100, 2) : 0;
                     }
-                    
+
                     if (!$target_basis || $target_basis == 'amount') {
                         $item['amount_target'] = $amountTarget;
-                        $item['achieved_amount'] = (float)($secAchieved->total_amount ?? 0);
+                        $item['achieved_amount'] = (float) ($secAchieved->total_amount ?? 0);
                         if ($target_basis == 'amount') {
                             $item['percentage'] = $amountTarget > 0 ? round(($item['achieved_amount'] / $amountTarget) * 100, 2) : 0;
                         }
