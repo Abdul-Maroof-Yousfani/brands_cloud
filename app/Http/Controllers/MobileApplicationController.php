@@ -1296,7 +1296,7 @@ public function get_stock(Request $request)
                     'created_date' => $date,
                     'opening' => 0,
                     'so_data_id' => 0,
-                    'description' => 'Mobile Adjustment: ' . ($request->remarks ?? '')
+                    'description' => "BA-ADJ | Avail: {$detail['available_qty']} | Actual: {$detail['actual_qty']} | Diff: {$diff} | Remarks: " . ($request->remarks ?? '')
                 ];
                 DB::Connection('mysql2')->table('ba_stock')->insert($stock);
             }
@@ -1516,14 +1516,37 @@ public function get_stock(Request $request)
         try {
             $details = DB::Connection('mysql2')->table('ba_stock as bs')
                 ->join('subitem as si', 'bs.sub_item_id', '=', 'si.id')
+                ->leftJoin('brand as b', 'si.brand_id', '=', 'b.id')
+                ->leftJoin('customers as c', 'bs.customer_id', '=', 'c.id')
                 ->where('bs.voucher_no', $request->voucher_no)
                 ->where('bs.username', $user->username)
                 ->select(
                     'bs.*',
                     'si.product_name',
-                    'si.sku_code'
+                    'si.sku_code',
+                    'b.name as brand_name',
+                    'c.name as customer_name'
                 )
-                ->get();
+                ->get()
+                ->map(function($item) {
+                    $item->voucher_type_name = ($item->voucher_type == 1) ? 'Adjustment In' : 'Adjustment Out';
+                    
+                    // Parse quantities from description if they exist (for new records)
+                    $item->available_qty = 0;
+                    $item->actual_qty = 0;
+                    $item->diff_qty = (float)$item->qty * ($item->voucher_type == 2 ? -1 : 1);
+                    
+                    if (strpos($item->description, 'BA-ADJ |') !== false) {
+                        preg_match('/Avail: ([\d.-]+) \| Actual: ([\d.-]+) \| Diff: ([\d.-]+)/', $item->description, $matches);
+                        if (count($matches) >= 4) {
+                            $item->available_qty = (float)$matches[1];
+                            $item->actual_qty = (float)$matches[2];
+                            $item->diff_qty = (float)$matches[3];
+                        }
+                    }
+                    
+                    return $item;
+                });
 
             return response()->json([
                 'success' => true,
