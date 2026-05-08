@@ -1577,7 +1577,7 @@ class MobileApplicationController extends Controller
         // Find the sale order by its ID
         $saleReturn = RetailSaleOrderReturn::with([
             'returnDetails' => function ($query) {
-                $query->with(['brand:id,name', 'product:id,product_name']); // Ensure 'id' and 'name' are actual columns
+                $query->with(['brand:id,name', 'product:id,product_name,image']); // Ensure 'id' and 'name' are actual columns
             },
             'distributor:id,name' // Fetch distributor with selected fields
         ])
@@ -1589,6 +1589,20 @@ class MobileApplicationController extends Controller
                 'success' => false,
                 'message' => 'Sale return not found',
             ], 404); // 404 Not Found
+        }
+
+        foreach ($saleReturn as $returnOrder) {
+            foreach ($returnOrder->returnDetails as $detail) {
+                if ($detail->product && $detail->product->image) {
+                    if (!str_starts_with($detail->product->image, 'http')) {
+                        if (str_starts_with($detail->product->image, 'uploads/')) {
+                            $detail->product->image = asset($detail->product->image);
+                        } else {
+                            $detail->product->image = asset('uploads/products/' . $detail->product->image);
+                        }
+                    }
+                }
+            }
         }
 
         return response()->json([
@@ -1624,7 +1638,7 @@ class MobileApplicationController extends Controller
         // Find the sale order by its ID
         $saleReturn = RetailSaleOrderReturn::with([
             'returnDetails' => function ($query) {
-                $query->with(['brand:id,name', 'product:id,product_name']); // Ensure 'id' and 'name' are actual columns
+                $query->with(['brand:id,name', 'product:id,product_name,image']); // Ensure 'id' and 'name' are actual columns
             },
             'distributor:id,name' // Fetch distributor with selected fields
         ])->find($request->return_id);
@@ -1634,6 +1648,18 @@ class MobileApplicationController extends Controller
                 'success' => false,
                 'message' => 'Sale return not found',
             ], 404); // 404 Not Found
+        }
+
+        foreach ($saleReturn->returnDetails as $detail) {
+            if ($detail->product && $detail->product->image) {
+                if (!str_starts_with($detail->product->image, 'http')) {
+                    if (str_starts_with($detail->product->image, 'uploads/')) {
+                        $detail->product->image = asset($detail->product->image);
+                    } else {
+                        $detail->product->image = asset('uploads/products/' . $detail->product->image);
+                    }
+                }
+            }
         }
 
         return response()->json([
