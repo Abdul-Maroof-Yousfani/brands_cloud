@@ -1602,6 +1602,12 @@ class MobileApplicationController extends Controller
                         }
                     }
                 }
+                
+                if ($detail->damage_photo) {
+                    if (!str_starts_with($detail->damage_photo, 'http')) {
+                        $detail->damage_photo = asset('storage/' . $detail->damage_photo);
+                    }
+                }
             }
         }
 
@@ -1658,6 +1664,12 @@ class MobileApplicationController extends Controller
                     } else {
                         $detail->product->image = asset('uploads/products/' . $detail->product->image);
                     }
+                }
+            }
+            
+            if ($detail->damage_photo) {
+                if (!str_starts_with($detail->damage_photo, 'http')) {
+                    $detail->damage_photo = asset('storage/' . $detail->damage_photo);
                 }
             }
         }
