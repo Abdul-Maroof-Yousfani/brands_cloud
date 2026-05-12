@@ -14,6 +14,10 @@ $CustMore = DB::Connection('mysql2')->table('customer_info')->where('cust_id', $
 $States = DB::table('states')->where('country_id', $Cusomter->country)->get();
 $Cities = DB::table('cities')->where('state_id', $Cusomter->province)->get();
 $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id', $Cusomter->acc_id)->first();
+$ResellerLogin = null;
+if ($Cusomter->CustomerType == 3) {
+    $ResellerLogin = DB::table('reseller_logins')->where('customer_id', $id)->first();
+}
 ?>
 @extends('layouts.default')
 
@@ -573,6 +577,14 @@ $Bank = DB::Connection('mysql2')->table('bank_detail')->where('acc_id', $Cusomte
                                                                                         {{$Cusomter->ba_mapping == 0 ? 'selected' : ''}}>
                                                                                         No</option>
                                                                                 </select>
+                                                                            </div>
+                                                                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 customerTypeField hide">
+                                                                                <label>Login Email (Reseller) :</label>
+                                                                                <input type="email" name="reseller_email" id="reseller_email" class="form-control" placeholder="Enter Login Email" value="{{ isset($ResellerLogin) ? $ResellerLogin->email : '' }}" />
+                                                                            </div>
+                                                                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 customerTypeField hide">
+                                                                                <label>Login Password (Reseller) :</label>
+                                                                                <input type="text" name="reseller_password" id="reseller_password" class="form-control" placeholder="{{ isset($ResellerLogin) ? 'Leave blank to keep current password' : 'Enter Login Password' }}" />
                                                                             </div>
                                                                             <div id="only_emp"
                                                                                 class="col-lg-12 col-md-12 col-sm-12 col-xs-12  @if($Cusomter->CustomerType != 2) hide @endif">

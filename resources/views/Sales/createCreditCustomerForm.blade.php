@@ -559,6 +559,14 @@ $m = Session::get('run_company');
                                                                             <option value="0">No</option>
                                                                         </select>
                                                                     </div>
+                                                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 customerTypeField hide">
+                                                                        <label>Login Email (Reseller) :</label>
+                                                                        <input type="email" name="reseller_email" id="reseller_email" class="form-control" placeholder="Enter Login Email" />
+                                                                    </div>
+                                                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 customerTypeField hide">
+                                                                        <label>Login Password (Reseller) :</label>
+                                                                        <input type="text" name="reseller_password" id="reseller_password" class="form-control" placeholder="Enter Login Password" />
+                                                                    </div>
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                                         <label>Employee :</label>
                                                                         <span class="rflabelsteric"></span>

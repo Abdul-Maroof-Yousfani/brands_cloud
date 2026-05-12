@@ -581,6 +581,17 @@ class SalesAddDetailControler extends Controller
         //     endif;
         CommonHelper::reconnectMasterDatabase();
         // return Redirect::to('sales/viewCreditCustomerList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR');
+        
+        if ($customer_type == 3 && $request->filled('reseller_email') && $request->filled('reseller_password')) {
+            DB::connection('mysql')->table('reseller_logins')->insert([
+                'customer_id' => $CustId,
+                'email' => $request->input('reseller_email'),
+                'password' => \Illuminate\Support\Facades\Hash::make($request->input('reseller_password')),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+        
         return redirect('sales/viewCreditCustomerList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . $_GET['m'] . '#SFR')
             ->with([
                 "success" => "Customer created successfully",
@@ -838,6 +849,28 @@ class SalesAddDetailControler extends Controller
                 $type . " is edited by " . auth()->user()->name,
                 "Customer"
             );
+            
+            // Reseller Login Update
+            $customer_type = $request->input('customer_type');
+            if ($customer_type == 3 && $request->filled('reseller_email')) {
+                $loginData = [
+                    'email' => $request->input('reseller_email'),
+                    'updated_at' => now()
+                ];
+                if ($request->filled('reseller_password')) {
+                    $loginData['password'] = \Illuminate\Support\Facades\Hash::make($request->input('reseller_password'));
+                }
+                
+                // We use mysql connection since reseller_logins is in main DB
+                DB::connection('mysql')->table('reseller_logins')->updateOrInsert(
+                    ['customer_id' => $request->input('EditId')],
+                    $loginData
+                );
+            } else if ($customer_type != 3) {
+                // If they changed to something else, we can delete their login or leave it. Leaving it is safer.
+                // DB::connection('mysql')->table('reseller_logins')->where('customer_id', $request->input('EditId'))->delete();
+            }
+
             // Reconnect to the master database
             CommonHelper::reconnectMasterDatabase();
 
