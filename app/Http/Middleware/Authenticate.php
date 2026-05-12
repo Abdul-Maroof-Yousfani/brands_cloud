@@ -25,7 +25,9 @@ class Authenticate
             }
 
             else {
-    
+                if ($guard === 'reseller') {
+                    return redirect()->route('reseller.login');
+                }
                 return redirect()->guest('/');
             }
 

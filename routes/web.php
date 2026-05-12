@@ -2499,6 +2499,11 @@ Route::get('sales/viewCustomerBank', 'SalesAddDetailControler@viewCustomerBank')
 Route::get('sales/editCustomerBank/{id}', 'SalesAddDetailControler@editCustomerBank');
 Route::post('sales/updateCustomerBank/{id}', 'SalesAddDetailControler@updateCustomerBank');
 
+// Admin side Reseller SO Requests
+Route::get('sales/reseller-so-requests', 'AdminResellerSoController@index')->name('admin.reseller_so.index');
+Route::get('sales/reseller-so-requests/{id}', 'AdminResellerSoController@show')->name('admin.reseller_so.show');
+Route::post('sales/reseller-so-requests/{id}/approve', 'AdminResellerSoController@approve')->name('admin.reseller_so.approve');
+
 require('Production/Production.php');
 require('InventoryMaster/InventoryMaster.php');
 require('Import/importMainRoute.php');
@@ -2508,3 +2513,24 @@ require('modules/selectlist.php');
 require('modules/users.php');
 require('modules/shah.php');
 require('modules/assets.php');
+
+// Reseller Portal Routes
+Route::prefix('reseller')->group(function () {
+    Route::get('/login', 'ResellerLoginController@showLoginForm')->name('reseller.login');
+    Route::post('/login', 'ResellerLoginController@login')->name('reseller.login.submit');
+    
+    Route::middleware(['auth:reseller'])->group(function () {
+        Route::get('/dashboard', 'ResellerLoginController@dashboard')->name('reseller.dashboard');
+        Route::get('/logout', 'ResellerLoginController@logout')->name('reseller.logout');
+        
+        // SO Requests
+        Route::get('/so-requests/create', 'ResellerPortalController@createSoRequest')->name('reseller.so.create');
+        Route::get('/so-requests/get-products-by-brand', 'ResellerPortalController@getProductsByBrand')->name('reseller.so.get_products');
+        Route::post('/so-requests/store', 'ResellerPortalController@storeSoRequest')->name('reseller.so.store');
+        Route::get('/so-requests', 'ResellerPortalController@soRequestList')->name('reseller.so.list');
+        Route::get('/so-requests/{id}', 'ResellerPortalController@showSoRequest')->name('reseller.so.show');
+        
+        // Inventory
+        Route::get('/inventory/stock', 'ResellerPortalController@myStock')->name('reseller.inventory.stock');
+    });
+});
