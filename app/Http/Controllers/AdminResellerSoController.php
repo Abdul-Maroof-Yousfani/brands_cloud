@@ -19,7 +19,7 @@ class AdminResellerSoController extends Controller
     {
         $requests = DB::connection('mysql2')->table('inpl2erp_brands_master.reseller_so_requests as r')
             ->join('inpl2erp_brands_master.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
-            ->join('inpl2erp_brands_new.customers as c', 'l.customer_id', '=', 'c.id')
+            ->join('inpl2erp_brands.customers as c', 'l.customer_id', '=', 'c.id')
             ->select('r.*', 'c.name as reseller_name', 'l.email')
             ->orderBy('r.id', 'DESC')
             ->get();
@@ -31,7 +31,7 @@ class AdminResellerSoController extends Controller
     {
         $request = DB::connection('mysql2')->table('inpl2erp_brands_master.reseller_so_requests as r')
             ->join('inpl2erp_brands_master.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
-            ->join('inpl2erp_brands_new.customers as c', 'l.customer_id', '=', 'c.id')
+            ->join('inpl2erp_brands.customers as c', 'l.customer_id', '=', 'c.id')
             ->where('r.id', $id)
             ->select('r.*', 'c.name as reseller_name', 'c.id as customer_id', 'l.email')
             ->first();
@@ -41,7 +41,7 @@ class AdminResellerSoController extends Controller
         }
 
         $details = DB::connection('mysql2')->table('inpl2erp_brands_master.reseller_so_request_details as d')
-            ->join('inpl2erp_brands_new.subitem as s', 'd.product_id', '=', 's.id')
+            ->join('inpl2erp_brands.subitem as s', 'd.product_id', '=', 's.id')
             ->where('d.request_id', $id)
             ->select('d.*', 's.product_name', 's.sku_code')
             ->get();
