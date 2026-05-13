@@ -28,23 +28,23 @@ class ResellerPortalController extends Controller
 
         // Fetch stock for this reseller
         $rawStock = DB::connection('mysql2')->table('ba_stock as s')
-                ->select(
-                    's.sub_item_id as product_id',
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,9) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock')
-                )
-                ->where('s.status', 1)
-                ->where('s.customer_id', $resellerCustomerId)
-                ->groupBy('s.sub_item_id')
-                ->get()
-                ->keyBy('product_id');
+            ->select(
+                's.sub_item_id as product_id',
+                DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11,51) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
+                DB::raw('SUM(CASE WHEN s.voucher_type IN (2,5,3,9,50) THEN s.qty ELSE 0 END) AS out_stock')
+            )
+            ->where('s.status', 1)
+            ->where('s.customer_id', $resellerCustomerId)
+            ->groupBy('s.sub_item_id')
+            ->get()
+            ->keyBy('product_id');
 
         $result = [];
         foreach ($products as $p) {
             $stock = isset($rawStock[$p->id]) ? $rawStock[$p->id] : null;
             $qty = 0;
             if ($stock) {
-                $qty = (float)$stock->in_stock - (float)$stock->out_stock;
+                $qty = (float) $stock->in_stock - (float) $stock->out_stock;
             }
             $result[] = [
                 'id' => $p->id,
@@ -83,24 +83,24 @@ class ResellerPortalController extends Controller
                 $detail->qty = $request->qty[$key];
                 $detail->save();
 
-                // Deduct stock from reseller
-                $stockRecord = DB::connection('mysql2')->table('stock')
+                // Deduct stock from reseller (ba_stock)
+                $stockRecord = DB::connection('mysql2')->table('ba_stock')
                     ->where('customer_id', $reseller->customer_id)
                     ->where('sub_item_id', $productId)
                     ->where('status', 1)
                     ->first();
                 $warehouseId = $stockRecord ? $stockRecord->warehouse_id : 3;
 
-                DB::connection('mysql2')->table('stock')->insert([
+                DB::connection('mysql2')->table('ba_stock')->insert([
                     'customer_id' => $reseller->customer_id,
                     'sub_item_id' => $productId,
                     'qty' => $request->qty[$key],
-                    'voucher_type' => 2, // 2 = Out
+                    'voucher_type' => 2, // 2 = Out for ba_stock
                     'status' => 1,
                     'transfer_status' => 0,
                     'warehouse_id' => $warehouseId,
                     'created_date' => date('Y-m-d'),
-                    'description' => 'SO Request Created'
+                    'description' => 'SO Request Created: ' . $soRequest->id
                 ]);
             }
         }
@@ -111,10 +111,10 @@ class ResellerPortalController extends Controller
     public function soRequestList()
     {
         $resellerId = Auth::guard('reseller')->id();
-        
+
         $requests = ResellerSoRequest::where('reseller_id', $resellerId)
-                        ->orderBy('id', 'DESC')
-                        ->get();
+            ->orderBy('id', 'DESC')
+            ->get();
 
         return view('reseller.so_requests.list', compact('requests'));
     }
@@ -122,20 +122,20 @@ class ResellerPortalController extends Controller
     public function showSoRequest($id)
     {
         $resellerId = Auth::guard('reseller')->id();
-        
+
         $request = ResellerSoRequest::where('id', $id)
-                    ->where('reseller_id', $resellerId)
-                    ->firstOrFail();
+            ->where('reseller_id', $resellerId)
+            ->firstOrFail();
 
         $details = ResellerSoRequestDetail::where('request_id', $id)->get();
-        
+
         // Fetch product info from mysql2 for details
         $productIds = $details->pluck('product_id')->toArray();
         $products = DB::connection('mysql2')->table('subitem')
-                        ->whereIn('id', $productIds)
-                        ->select('id', 'product_name', 'sku_code')
-                        ->get()
-                        ->keyBy('id');
+            ->whereIn('id', $productIds)
+            ->select('id', 'product_name', 'sku_code')
+            ->get()
+            ->keyBy('id');
 
         return view('reseller.so_requests.show', compact('request', 'details', 'products'));
     }
@@ -147,29 +147,29 @@ class ResellerPortalController extends Controller
 
         // Fetch stock based on customer_id in ba_stock
         $query = DB::connection('mysql2')->table('ba_stock as s')
-                ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
-                ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
-                ->leftJoin("customers as cus", "cus.id", "=", "s.customer_id")
-                ->leftJoin('category as c', 'si.main_ic_id', '=', 'c.id')
-                ->leftJoin('warehouse as w', 's.warehouse_id', '=', 'w.id')
-                ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
-                ->select(
-                    'si.id as product_id',
-                    'si.sku_code',
-                    'si.product_name',
-                    'si.product_barcode as barcode',
-                    'pt.type as item_type',
-                    'si.pack_size as packing',
-                    'b.name as brand',
-                    'cus.name as customer_name',
-                    'cus.id as customer_id',
-                    'w.id as warehouse_id',
-                    'w.name as warehouse_name',
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,9) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (50) THEN s.qty ELSE 0 END) AS out_stock')
-                )
-                ->where('s.status', 1)
-                ->where('s.customer_id', $resellerCustomerId);
+            ->join('subitem as si', 's.sub_item_id', '=', 'si.id')
+            ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
+            ->leftJoin("customers as cus", "cus.id", "=", "s.customer_id")
+            ->leftJoin('category as c', 'si.main_ic_id', '=', 'c.id')
+            ->leftJoin('warehouse as w', 's.warehouse_id', '=', 'w.id')
+            ->leftJoin('brands as b', 'si.brand_id', '=', 'b.id')
+            ->select(
+                'si.id as product_id',
+                'si.sku_code',
+                'si.product_name',
+                'si.product_barcode as barcode',
+                'pt.type as item_type',
+                'si.pack_size as packing',
+                'b.name as brand',
+                'cus.name as customer_name',
+                'cus.id as customer_id',
+                'w.id as warehouse_id',
+                'w.name as warehouse_name',
+                DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
+                DB::raw('SUM(CASE WHEN s.voucher_type IN (2,5,3,9) THEN s.qty ELSE 0 END) AS out_stock')
+            )
+            ->where('s.status', 1)
+            ->where('s.customer_id', $resellerCustomerId);
 
         if ($request->has('product_id') && !empty($request->product_id)) {
             $query->where('s.sub_item_id', $request->product_id);
@@ -179,7 +179,7 @@ class ResellerPortalController extends Controller
 
         $stocks = [];
         foreach ($rawStock as $stock) {
-            $stockQty = (float)$stock->in_stock - (float)$stock->out_stock;
+            $stockQty = (float) $stock->in_stock - (float) $stock->out_stock;
             if ($stockQty > 0) {
                 $stocks[] = (object) [
                     'product_name' => $stock->product_name,
