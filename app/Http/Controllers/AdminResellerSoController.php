@@ -17,9 +17,12 @@ class AdminResellerSoController extends Controller
 
     public function index()
     {
-        $requests = DB::connection('mysql2')->table('inpl2erp_brands_master.reseller_so_requests as r')
-            ->join('inpl2erp_brands_master.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
-            ->join('inpl2erp_brands.customers as c', 'l.customer_id', '=', 'c.id')
+        $db1 = env('DB_DATABASE');
+        $db2 = env('DB_DATABASE_2');
+
+        $requests = DB::connection('mysql2')->table($db1 . '.reseller_so_requests as r')
+            ->join($db1 . '.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
+            ->join($db2 . '.customers as c', 'l.customer_id', '=', 'c.id')
             ->select('r.*', 'c.name as reseller_name', 'l.email')
             ->orderBy('r.id', 'DESC')
             ->get();
@@ -29,9 +32,12 @@ class AdminResellerSoController extends Controller
 
     public function show($id)
     {
-        $request = DB::connection('mysql2')->table('inpl2erp_brands_master.reseller_so_requests as r')
-            ->join('inpl2erp_brands_master.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
-            ->join('inpl2erp_brands.customers as c', 'l.customer_id', '=', 'c.id')
+        $db1 = env('DB_DATABASE');
+        $db2 = env('DB_DATABASE_2');
+
+        $request = DB::connection('mysql2')->table($db1 . '.reseller_so_requests as r')
+            ->join($db1 . '.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
+            ->join($db2 . '.customers as c', 'l.customer_id', '=', 'c.id')
             ->where('r.id', $id)
             ->select('r.*', 'c.name as reseller_name', 'c.id as customer_id', 'l.email')
             ->first();
@@ -40,8 +46,8 @@ class AdminResellerSoController extends Controller
             abort(404);
         }
 
-        $details = DB::connection('mysql2')->table('inpl2erp_brands_master.reseller_so_request_details as d')
-            ->join('inpl2erp_brands.subitem as s', 'd.product_id', '=', 's.id')
+        $details = DB::connection('mysql2')->table($db1 . '.reseller_so_request_details as d')
+            ->join($db2 . '.subitem as s', 'd.product_id', '=', 's.id')
             ->where('d.request_id', $id)
             ->select('d.*', 's.product_name', 's.sku_code')
             ->get();
