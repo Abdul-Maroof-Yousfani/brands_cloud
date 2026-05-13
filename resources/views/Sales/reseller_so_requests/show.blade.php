@@ -59,11 +59,24 @@ $m = ($accType == 'client') ? Session::get('run_company') : Auth::user()->compan
                 </div>
                 
                 @if($request->status == 0)
-                <div class="text-right" style="margin-top: 20px;">
-                    <form action="{{ route('admin.reseller_so.approve', $request->id) }}" method="POST" style="display:inline-block;">
-                        {{ csrf_field() }}
-                        <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to approve this request? This will deduct stock from the reseller\'s virtual warehouse and create a Sales Order.');">Approve Request</button>
-                    </form>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12 text-right">
+                        <form action="{{ route('admin.reseller_so.approve', $request->id) }}" method="POST" style="display:inline-block; text-align: left;">
+                            {{ csrf_field() }}
+                            <div class="form-group" style="display:inline-block; margin-right: 15px; vertical-align: top; text-align: left;">
+                                <label>Select Warehouse for Stock IN</label>
+                                <select name="warehouse_id" class="form-control" required style="width: 250px;">
+                                    <option value="">-- Select Warehouse --</option>
+                                    @foreach($warehouses as $warehouse)
+                                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div style="display:inline-block; vertical-align: top; margin-top: 25px;">
+                                <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to approve this request? This will create a Stock IN entry.');">Approve Request</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 @endif
                 

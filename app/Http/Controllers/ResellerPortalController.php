@@ -74,6 +74,7 @@ class ResellerPortalController extends Controller
         $soRequest->save();
 
         // Save the details
+        $reseller = Auth::guard('reseller')->user();
         foreach ($request->product_id as $key => $productId) {
             if (!empty($productId) && $request->qty[$key] > 0) {
                 $detail = new ResellerSoRequestDetail();
@@ -81,6 +82,26 @@ class ResellerPortalController extends Controller
                 $detail->product_id = $productId;
                 $detail->qty = $request->qty[$key];
                 $detail->save();
+
+                // Deduct stock from reseller
+                $stockRecord = DB::connection('mysql2')->table('stock')
+                    ->where('customer_id', $reseller->customer_id)
+                    ->where('sub_item_id', $productId)
+                    ->where('status', 1)
+                    ->first();
+                $warehouseId = $stockRecord ? $stockRecord->warehouse_id : 3;
+
+                DB::connection('mysql2')->table('stock')->insert([
+                    'customer_id' => $reseller->customer_id,
+                    'sub_item_id' => $productId,
+                    'qty' => $request->qty[$key],
+                    'voucher_type' => 2, // 2 = Out
+                    'status' => 1,
+                    'transfer_status' => 0,
+                    'warehouse_id' => $warehouseId,
+                    'created_date' => date('Y-m-d'),
+                    'description' => 'SO Request Created'
+                ]);
             }
         }
 

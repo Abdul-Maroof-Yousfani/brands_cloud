@@ -52,11 +52,17 @@ class AdminResellerSoController extends Controller
             ->select('d.*', 's.product_name', 's.sku_code')
             ->get();
 
-        return view('Sales.reseller_so_requests.show', compact('request', 'details'));
+        $warehouses = DB::connection('mysql2')->table($db2 . '.warehouse')->where('status', 1)->get();
+
+        return view('Sales.reseller_so_requests.show', compact('request', 'details', 'warehouses'));
     }
 
     public function approve(Request $req, $id)
     {
+        $req->validate([
+            'warehouse_id' => 'required'
+        ]);
+
         $request = ResellerSoRequest::findOrFail($id);
         
         if ($request->status != 0) {
@@ -68,14 +74,27 @@ class AdminResellerSoController extends Controller
         $resellerLogin = DB::table('reseller_logins')->where('id', $request->reseller_id)->first();
         $customerId = $resellerLogin->customer_id;
 
-        // Perform stock transfer logic here
-        // 1. Stock Out from Virtual Warehouse (Voucher 50)
-        // 2. Create actual SO for Company
+        $db2 = env('DB_DATABASE_2');
+
+        // Insert Stock IN (voucher_type 1) for the Company warehouse
+        foreach ($details as $detail) {
+            DB::connection('mysql2')->table($db2 . '.stock')->insert([
+                'sub_item_id' => $detail->product_id,
+                'qty' => $detail->qty,
+                'voucher_type' => 1, // 1 = Stock IN
+                'warehouse_id' => $req->warehouse_id,
+                'status' => 1,
+                'opening' => 0,
+                'transfer' => 0,
+                'created_date' => date('Y-m-d'),
+                'description' => 'SO Request Approved: ' . $request->id
+            ]);
+        }
         
         // Mark as approved
         $request->status = 1;
         $request->save();
 
-        return redirect()->route('admin.reseller_so.index')->with('success', 'SO Request Approved and processed successfully.');
+        return redirect()->route('admin.reseller_so.index')->with('success', 'SO Request Approved and Stock IN processed successfully.');
     }
 }
