@@ -16,7 +16,7 @@
             <form id="reportForm">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="control-label">Start Date</label>
                             <div class="input-group">
@@ -25,12 +25,25 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="control-label">End Date</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                 <input type="date" name="end_date" id="end_date" class="form-control" required value="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Select Brand</label>
+                            <div class="input-group">
+                                <select name="brand_id" id="brand_id" class="form-control select2">
+                                    <option value="">All Brands</option>
+                                    @foreach($brands as $brand)
+                                        <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -82,7 +95,7 @@
 <script>
     $(document).ready(function() {
         $('.select2').select2({
-            placeholder: "All BAs",
+            placeholder: "Select Option",
             allowClear: true
         });
 

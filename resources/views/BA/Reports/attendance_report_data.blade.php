@@ -20,7 +20,7 @@
                 <th rowspan="2">BA Code</th>
                 <th rowspan="2">BA Name</th>
                 <th rowspan="2">Customer</th>
-                <th rowspan="2">Mobile</th>
+                <th rowspan="2">Brand(s)</th>
                 @foreach($dates as $date)
                     <th colspan="4" class="date-header">{{ \Carbon\Carbon::parse($date)->format('d M Y') }}</th>
                 @endforeach
@@ -46,7 +46,7 @@
                 <td>{{ $ba['emp_id'] }}</td>
                 <td style="text-align: left; font-weight: 600;">{{ $ba['name'] }}</td>
                 <td style="text-align: left;">{{ $ba['customer'] }}</td>
-                <td>{{ $ba['mobile'] }}</td>
+                <td style="text-align: left;">{{ $ba['brands'] }}</td>
                 @foreach($dates as $date)
                     <td>{{ $ba['days'][$date]['time_in'] }}</td>
                     <td>{{ $ba['days'][$date]['time_out'] }}</td>
