@@ -17,8 +17,8 @@ class AdminResellerSoController extends Controller
 
     public function index()
     {
-        $db1 = env('DB_DATABASE');
-        $db2 = env('DB_DATABASE_2');
+        $db1 = config('database.connections.mysql.database');
+        $db2 = config('database.connections.mysql2.database');
 
         $requests = DB::connection('mysql2')->table($db1 . '.reseller_so_requests as r')
             ->join($db1 . '.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
@@ -32,8 +32,8 @@ class AdminResellerSoController extends Controller
 
     public function show($id)
     {
-        $db1 = env('DB_DATABASE');
-        $db2 = env('DB_DATABASE_2');
+        $db1 = config('database.connections.mysql.database');
+        $db2 = config('database.connections.mysql2.database');
 
         $request = DB::connection('mysql2')->table($db1 . '.reseller_so_requests as r')
             ->join($db1 . '.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
@@ -74,7 +74,7 @@ class AdminResellerSoController extends Controller
         $resellerLogin = DB::table('reseller_logins')->where('id', $request->reseller_id)->first();
         $customerId = $resellerLogin->customer_id;
 
-        $db2 = env('DB_DATABASE_2');
+        $db2 = config('database.connections.mysql2.database');
 
         // Insert Stock IN (voucher_type 1) for the Company warehouse
         foreach ($details as $detail) {
