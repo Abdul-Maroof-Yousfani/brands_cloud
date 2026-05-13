@@ -57,7 +57,7 @@ $m = ($accType == 'client') ? Session::get('run_company') : Auth::user()->compan
                         </tbody>
                     </table>
                 </div>
-                
+                                                        
                 @if($request->status == 0)
                 <div class="row" style="margin-top: 20px;">
                     <div class="col-md-12 text-right">
