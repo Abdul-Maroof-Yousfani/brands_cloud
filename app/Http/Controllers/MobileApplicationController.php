@@ -517,10 +517,20 @@ class MobileApplicationController extends Controller
         $requestedBrandId = $request->brand_id;
         $requestedProductId = $request->product_id;
 
-        // Get all products belonging to the allowed brands
+        // Get products that are actually in the user's stock for their assigned customers
+        $stockProductIds = DB::connection('mysql2')->table('ba_stock')
+            ->whereIn('customer_id', $customerIds)
+            ->where('status', 1)
+            ->distinct()
+            ->pluck('sub_item_id');
+
+        // Get all products belonging to the allowed brands OR products that are in their stock
         $productsQuery = DB::connection('mysql2')->table('subitem as si')
             ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
-            ->whereIn('si.brand_id', $allBrandIds)
+            ->where(function($q) use ($allBrandIds, $stockProductIds) {
+                $q->whereIn('si.brand_id', $allBrandIds)
+                  ->orWhereIn('si.id', $stockProductIds);
+            })
             ->where('si.status', 1);
 
         if ($requestedBrandId) {
@@ -576,8 +586,11 @@ class MobileApplicationController extends Controller
         });
 
         $result = $result->filter(function ($p) use ($requestedProductId) {
-            // Show all products belonging to the brands assigned to the user
-            return true;
+            // Only show items with stock > 0, unless a specific product was requested
+            if ($requestedProductId) {
+                return true;
+            }
+            return $p['available_qty'] > 0;
         });
 
         // Group by Brand
