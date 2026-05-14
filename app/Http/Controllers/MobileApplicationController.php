@@ -576,11 +576,8 @@ class MobileApplicationController extends Controller
         });
 
         $result = $result->filter(function ($p) use ($requestedProductId) {
-            // If specific product requested, show it even if 0 stock. Otherwise only show items > 0.
-            if ($requestedProductId) {
-                return true;
-            }
-            return $p['available_qty'] > 0;
+            // Show all products belonging to the brands assigned to the user
+            return true;
         });
 
         // Group by Brand
