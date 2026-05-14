@@ -547,8 +547,8 @@ class MobileApplicationController extends Controller
             ->where('status', 1)
             ->select(
                 'sub_item_id',
-                DB::raw('SUM(CASE WHEN voucher_type IN (1, 9) THEN qty ELSE 0 END) AS total_in'),
-                DB::raw('SUM(CASE WHEN voucher_type IN (50, 2) THEN qty ELSE 0 END) AS total_out'),
+                DB::raw('SUM(CASE WHEN voucher_type IN (1,4,6,10,11) THEN qty ELSE 0 END) AS total_in'),
+                DB::raw('SUM(CASE WHEN voucher_type IN (2,5,3,9) THEN qty ELSE 0 END) AS total_out'),
                 DB::raw('SUM(CASE WHEN voucher_type = 51 THEN qty ELSE 0 END) AS total_return')
             )
             ->groupBy('sub_item_id')
@@ -1625,7 +1625,7 @@ class MobileApplicationController extends Controller
                     'return_reason' => $returnOrder->return_reason,
                     'distributor_id' => $returnOrder->distributor_id,
                     'distributor_name' => $returnOrder->distributor->name ?? 'N/A',
-                    
+
                     'detail_id' => $detail->id,
                     'brand_id' => $detail->brand_id,
                     'brand_name' => $detail->brand->name ?? 'N/A',
