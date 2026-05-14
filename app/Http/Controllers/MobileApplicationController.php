@@ -1573,47 +1573,78 @@ class MobileApplicationController extends Controller
             return $user; // Return the error response if no authenticated user
         }
 
-
-        // Find the sale order by its ID
-        $saleReturn = RetailSaleOrderReturn::with([
+        // Find the sale return by its ID
+        $query = RetailSaleOrderReturn::with([
             'returnDetails' => function ($query) {
-                $query->with(['brand:id,name', 'product:id,product_name,image']); // Ensure 'id' and 'name' are actual columns
+                $query->with(['brand:id,name', 'product:id,product_name,sku_code,product_barcode,image']);
             },
             'distributor:id,name' // Fetch distributor with selected fields
         ])
-            ->where('user_id', Auth::user()->id) // Filter by user_id
-            ->get();
+            ->where('user_id', $user->id); // Filter by user_id
 
-        if (!$saleReturn) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sale return not found',
-            ], 404); // 404 Not Found
+        // Apply date filter if provided (consistency with SaleOrderList)
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
         }
 
-        foreach ($saleReturn as $returnOrder) {
+        $saleReturns = $query->orderBy('id', 'desc')->get();
+
+        $flattenedItems = [];
+
+        foreach ($saleReturns as $returnOrder) {
             foreach ($returnOrder->returnDetails as $detail) {
+                // Image handling logic
+                $image = null;
                 if ($detail->product && $detail->product->image) {
                     if (!str_starts_with($detail->product->image, 'http')) {
                         if (str_starts_with($detail->product->image, 'uploads/')) {
-                            $detail->product->image = asset($detail->product->image);
+                            $image = asset($detail->product->image);
                         } else {
-                            $detail->product->image = asset('uploads/products/' . $detail->product->image);
+                            $image = asset('uploads/products/' . $detail->product->image);
                         }
+                    } else {
+                        $image = $detail->product->image;
                     }
                 }
-                
+
+                $damagePhoto = null;
                 if ($detail->damage_photo) {
                     if (!str_starts_with($detail->damage_photo, 'http')) {
-                        $detail->damage_photo = asset('storage/' . $detail->damage_photo);
+                        $damagePhoto = asset('storage/' . $detail->damage_photo);
+                    } else {
+                        $damagePhoto = $detail->damage_photo;
                     }
                 }
+
+                $flattenedItems[] = [
+                    'return_id' => $returnOrder->id,
+                    'return_no' => $returnOrder->return_no,
+                    'return_date' => $returnOrder->return_date,
+                    'return_reason' => $returnOrder->return_reason,
+                    'distributor_id' => $returnOrder->distributor_id,
+                    'distributor_name' => $returnOrder->distributor->name ?? 'N/A',
+                    
+                    'detail_id' => $detail->id,
+                    'brand_id' => $detail->brand_id,
+                    'brand_name' => $detail->brand->name ?? 'N/A',
+                    'product_id' => $detail->product_id,
+                    'product_name' => $detail->product->product_name ?? 'N/A',
+                    'sku_code' => $detail->product->sku_code ?? '',
+                    'barcode' => $detail->barcode ?? ($detail->product->product_barcode ?? ''),
+                    'qty' => $detail->quantity,
+                    'reason' => $detail->reason,
+                    'damage_photo' => $damagePhoto,
+                    'expiry_date' => $detail->expiry_date,
+                    'image' => $image,
+                ];
             }
         }
 
         return response()->json([
             'success' => true,
-            'data' => $saleReturn,
+            'data' => $flattenedItems,
         ]);
     }
 
@@ -1666,7 +1697,7 @@ class MobileApplicationController extends Controller
                     }
                 }
             }
-            
+
             if ($detail->damage_photo) {
                 if (!str_starts_with($detail->damage_photo, 'http')) {
                     $detail->damage_photo = asset('storage/' . $detail->damage_photo);
