@@ -67,7 +67,7 @@
         box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
     }
     .btn-save-targets {
-        background: #3b82f6;
+        background: #7961f2;
         color: #fff;
         border-radius: 8px;
         padding: 10px 25px;
@@ -77,9 +77,9 @@
         font-size: 14px;
     }
     .btn-save-targets:hover {
-        background: #2563eb;
+        background: #634fd1;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 12px rgba(121, 97, 242, 0.3);
     }
 </style>
 

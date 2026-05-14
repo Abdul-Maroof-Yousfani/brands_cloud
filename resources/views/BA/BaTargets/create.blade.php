@@ -42,7 +42,7 @@
                 <p class="text-muted small mb-0">Manage performance targets for your Business Associates</p>
             </div>
             <div style="text-align: right;">
-                <a href="{{ route('baTargets.import') }}" class="btn btn-primary px-4 py-2 font-weight-bold shadow-sm" style="transition: all 0.3s; background: #2e3b4e; border: none; white-space: nowrap; display: inline-block; border-radius: 8px;">
+                <a href="{{ route('baTargets.import') }}" class="btn btn-primary px-4 py-2 font-weight-bold shadow-sm" style="transition: all 0.3s; background: #7961f2; border: none; white-space: nowrap; display: inline-block; border-radius: 8px;">
                     Bulk Import Targets
                 </a>
             </div>
