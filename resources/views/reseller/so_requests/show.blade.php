@@ -18,6 +18,10 @@
                                 {{ \Carbon\Carbon::parse($request->request_date)->format('d-M-Y') }}
                             </div>
                             <div class="col-md-4">
+                                <strong>Customer Name:</strong><br>
+                                {{ $request->customer_name }}
+                            </div>
+                            <div class="col-md-4">
                                 <strong>Status:</strong><br>
                                 @if($request->status == 0)
                                     <span class="badge badge-warning" style="background:#f0ad4e;">Pending</span>

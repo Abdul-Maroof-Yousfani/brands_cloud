@@ -1607,6 +1607,12 @@ Route::group(['prefix' => 'store', 'middleware' => 'mysql2', 'before' => 'csrf']
     Route::get('/stock_movemnetAjaxMoreData', 'StoreController@stock_movemnetAjaxMoreData');
 
     Route::get('/internal_consumtion_list', 'StoreController@internal_consumtion_list');
+
+    // Item Conversion Routes
+    Route::get('/item-conversion', 'ItemConversionController@index');
+    Route::get('/item-conversion/list', 'ItemConversionController@list');
+    Route::post('/item-conversion/save', 'ItemConversionController@save');
+    Route::get('/item-conversion/get-stock', 'ItemConversionController@getStock');
 });
 
 Route::group(['prefix' => 'stad', 'middleware' => 'mysql2', 'before' => 'csrf'], function () {

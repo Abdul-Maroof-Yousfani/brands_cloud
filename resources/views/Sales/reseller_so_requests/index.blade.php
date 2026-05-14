@@ -27,6 +27,7 @@ $m = ($accType == 'client') ? Session::get('run_company') : Auth::user()->compan
                                 <th>Req ID</th>
                                 <th>Reseller Name</th>
                                 <th>Reseller Email</th>
+                                <th>Customer Name</th>
                                 <th>Date</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -38,6 +39,7 @@ $m = ($accType == 'client') ? Session::get('run_company') : Auth::user()->compan
                                 <td>REQ-{{ str_pad($req->id, 5, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ $req->reseller_name }}</td>
                                 <td>{{ $req->email }}</td>
+                                <td>{{ $req->customer_name }}</td>
                                 <td>{{ \Carbon\Carbon::parse($req->request_date)->format('d-M-Y') }}</td>
                                 <td>
                                     @if($req->status == 0)

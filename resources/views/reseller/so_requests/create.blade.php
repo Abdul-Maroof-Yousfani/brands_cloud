@@ -20,6 +20,12 @@
                                                 <input type="date" class="form-control" name="request_date" value="{{ date('Y-m-d') }}" required>
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Customer Name</label>
+                                                <input type="text" class="form-control" name="customer_name" placeholder="Enter Customer Name" required>
+                                            </div>
+                                        </div>
                                     </div>
                                     
                                     <hr>

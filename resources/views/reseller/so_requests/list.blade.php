@@ -20,6 +20,7 @@
                                         <tr>
                                             <th>Request ID</th>
                                             <th>Date</th>
+                                            <th>Customer Name</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -29,6 +30,7 @@
                                         <tr>
                                             <td>REQ-{{ str_pad($request->id, 5, '0', STR_PAD_LEFT) }}</td>
                                             <td>{{ \Carbon\Carbon::parse($request->request_date)->format('d-M-Y') }}</td>
+                                            <td>{{ $request->customer_name }}</td>
                                             <td>
                                                 @if($request->status == 0)
                                                     <span class="badge badge-warning" style="background:#f0ad4e;">Pending</span>

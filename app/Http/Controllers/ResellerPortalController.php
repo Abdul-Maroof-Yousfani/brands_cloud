@@ -60,6 +60,7 @@ class ResellerPortalController extends Controller
     {
         $request->validate([
             'request_date' => 'required|date',
+            'customer_name' => 'required|string|max:255',
             'product_id' => 'required|array|min:1',
             'qty' => 'required|array|min:1'
         ]);
@@ -69,6 +70,7 @@ class ResellerPortalController extends Controller
         // Save the Request
         $soRequest = new ResellerSoRequest();
         $soRequest->reseller_id = $resellerId;
+        $soRequest->customer_name = $request->customer_name;
         $soRequest->request_date = $request->request_date;
         $soRequest->status = 0; // 0 = Pending
         $soRequest->save();

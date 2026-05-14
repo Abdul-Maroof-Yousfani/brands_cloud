@@ -21,6 +21,7 @@ $m = ($accType == 'client') ? Session::get('run_company') : Auth::user()->compan
                     </div>
                     <div class="col-md-4">
                         <p><strong>Request Date:</strong> {{ \Carbon\Carbon::parse($request->request_date)->format('d-M-Y') }}</p>
+                        <p><strong>Customer Name:</strong> {{ $request->customer_name }}</p>
                         <p><strong>Status:</strong> 
                             @if($request->status == 0)
                                 <span class="label label-warning">Pending</span>
