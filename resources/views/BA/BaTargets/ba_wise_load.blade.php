@@ -87,12 +87,12 @@
     <div class="target-header shadow-sm">
         <div>
             <h5 class="mb-0 fw-bold text-dark">
-                <i class="fas fa-bullseye me-2 text-primary"></i> {{ $month_year }} Targets 
+                {{ $month_year }} Targets 
                 <span class="badge bg-soft-primary text-primary border border-primary ms-2 text-uppercase" style="font-size: 10px;">{{ strtoupper($target_type) }} Basis</span>
             </h5>
         </div>
         <button type="button" form="targetSaveForm" id="saveTargetsBtn" class="btn-save-targets">
-            <i class="fas fa-save me-2"></i> Save Targets
+            Save Targets
         </button>
     </div>
 
@@ -105,7 +105,6 @@
 
             @foreach($formations as $formation)
                 <div class="store-section">
-                    <i class="fas fa-store-alt me-2 text-primary"></i>
                     <span class="text-dark">{{ $formation->customer->name ?? 'N/A' }}</span>
                     <small class="ms-2 text-muted fw-normal">(ID: {{ $formation->customer_id }})</small>
                 </div>
@@ -133,9 +132,6 @@
             <div class="mt-4 border-top" style="background: #f8fafc; border-radius: 0 0 15px 15px; padding: 30px 40px; border-top: 1px solid #e2e8f0 !important;">
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="background: #fff; width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
-                            <i class="fas fa-calculator" style="color: #3b82f6 !important; font-size: 24px;"></i>
-                        </div>
                         <div>
                             <div style="color: #64748b !important; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Summary Dashboard</div>
                             <div style="color: #1e293b !important; font-size: 1.5rem; font-weight: 800; margin: 0; line-height: 1;">Grand Total ({{ strtoupper($target_type) }})</div>
@@ -173,7 +169,7 @@
         let btn = $(this);
         let form = $('#targetSaveForm');
 
-        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Saving...');
+        btn.prop('disabled', true).text('Saving...');
 
         $.ajax({
             url: "{{ route('baTargets.saveBaWise') }}",
@@ -191,11 +187,11 @@
                 } else {
                     Swal.fire('Error', res.message || 'Something went wrong', 'error');
                 }
-                btn.prop('disabled', false).html('<i class="fas fa-save mr-1"></i> Save Targets');
+                btn.prop('disabled', false).text('Save Targets');
             },
             error: function () {
                 Swal.fire('Error', 'Server Error. Please try again.', 'error');
-                btn.prop('disabled', false).html('<i class="fas fa-save mr-1"></i> Save Targets');
+                btn.prop('disabled', false).text('Save Targets');
             }
         });
     });

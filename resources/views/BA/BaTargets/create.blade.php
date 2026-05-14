@@ -38,12 +38,12 @@
     <div class="well_N">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 25px;">
             <div>
-                <h1 class="setup-title mb-1"><i class="fas fa-layer-group text-primary mr-2"></i> BA Target Setup</h1>
+                <h1 class="setup-title mb-1">BA Target Setup</h1>
                 <p class="text-muted small mb-0">Manage performance targets for your Business Associates</p>
             </div>
             <div style="text-align: right;">
-                <a href="{{ route('baTargets.import') }}" class="btn btn-primary rounded-pill px-4 py-2 font-weight-bold shadow-sm" style="transition: all 0.3s; background: linear-gradient(45deg, #4e73df, #224abe); border: none; white-space: nowrap; display: inline-block;">
-                    <i class="fas fa-file-import mr-2"></i> Bulk Import Targets
+                <a href="{{ route('baTargets.import') }}" class="btn btn-primary px-4 py-2 font-weight-bold shadow-sm" style="transition: all 0.3s; background: #2e3b4e; border: none; white-space: nowrap; display: inline-block; border-radius: 8px;">
+                    Bulk Import Targets
                 </a>
             </div>
         </div>
@@ -91,7 +91,6 @@
 
         <div id="baTargetData">
             <div class="card p-5 text-center text-muted" style="border: 2px dashed #cbd5e0; border-radius: 20px; background: transparent;">
-                <div class="mb-3"><i class="fas fa-mouse-pointer fa-3x opacity-2"></i></div>
                 <h4 class="font-weight-bold" style="color: #a0aec0;">Select a BA & Period to begin setup</h4>
             </div>
         </div>
