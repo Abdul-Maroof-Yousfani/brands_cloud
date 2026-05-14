@@ -518,19 +518,20 @@ class MobileApplicationController extends Controller
         $requestedProductId = $request->product_id;
 
         // Get all products belonging to the allowed brands
-        $productsQuery = DB::connection('mysql2')->table('subitem')
-            ->whereIn('brand_id', $allBrandIds)
-            ->where('status', 1);
+        $productsQuery = DB::connection('mysql2')->table('subitem as si')
+            ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
+            ->whereIn('si.brand_id', $allBrandIds)
+            ->where('si.status', 1);
 
         if ($requestedBrandId) {
-            $productsQuery->where('brand_id', $requestedBrandId);
+            $productsQuery->where('si.brand_id', $requestedBrandId);
         }
 
         if ($requestedProductId) {
-            $productsQuery->where('id', $requestedProductId);
+            $productsQuery->where('si.id', $requestedProductId);
         }
 
-        $products = $productsQuery->get(['id', 'sku_code', 'product_name', 'product_barcode', 'brand_id']);
+        $products = $productsQuery->get(['si.id', 'si.sku_code', 'si.product_name', 'si.product_barcode', 'si.brand_id', 'pt.type as item_type']);
 
         if ($products->isEmpty()) {
             return response()->json([
@@ -547,9 +548,8 @@ class MobileApplicationController extends Controller
             ->where('status', 1)
             ->select(
                 'sub_item_id',
-                DB::raw('SUM(CASE WHEN voucher_type IN (1,4,6,10,11) THEN qty ELSE 0 END) AS total_in'),
-                DB::raw('SUM(CASE WHEN voucher_type IN (2,5,3,9) THEN qty ELSE 0 END) AS total_out'),
-                DB::raw('SUM(CASE WHEN voucher_type = 51 THEN qty ELSE 0 END) AS total_return')
+                DB::raw('SUM(CASE WHEN voucher_type IN (51,1,4,6,10,11) AND transfer_status != 1 THEN qty ELSE 0 END) AS total_in'),
+                DB::raw('SUM(CASE WHEN voucher_type IN (50,2,5,3,9) THEN qty ELSE 0 END) AS total_out')
             )
             ->groupBy('sub_item_id')
             ->get()
@@ -562,7 +562,7 @@ class MobileApplicationController extends Controller
             $stock = $stockData->get($p->id);
             $available = 0;
             if ($stock) {
-                $available = max(0, $stock->total_in + $stock->total_return - $stock->total_out);
+                $available = max(0, $stock->total_in - $stock->total_out);
             }
             return [
                 'product_id' => $p->id,
@@ -570,7 +570,8 @@ class MobileApplicationController extends Controller
                 'product_name' => ($p->sku_code ?? '') . ' ' . ($p->product_name ?? '') . ' ' . ($p->product_barcode ?? ''),
                 'barcode' => $p->product_barcode,
                 'available_qty' => (float) $available,
-                'brand_id' => $p->brand_id
+                'brand_id' => $p->brand_id,
+                'item_type' => $p->item_type
             ];
         });
 

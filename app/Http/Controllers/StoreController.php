@@ -1870,8 +1870,8 @@ class StoreController extends Controller
                     'w.name as warehouse_name',
                     'cus.name as customer_name',
                     'cus.id as customer_id',
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (1,4,6,10,11) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
-                    DB::raw('SUM(CASE WHEN s.voucher_type IN (2,5,3,9) THEN s.qty ELSE 0 END) AS out_stock'),
+                    DB::raw('SUM(CASE WHEN s.voucher_type IN (51,1,4,6,10,11) AND s.transfer_status != 1 THEN s.qty ELSE 0 END) AS in_stock'),
+                    DB::raw('SUM(CASE WHEN s.voucher_type IN (50,2,5,3,9) THEN s.qty ELSE 0 END) AS out_stock'),
                     DB::raw('IFNULL(st.transit_stock,0) as transit_stock')
                 )
                 ->where('s.status', 1)
