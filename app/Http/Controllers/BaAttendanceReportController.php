@@ -118,56 +118,59 @@ class BaAttendanceReportController extends Controller
                 }
             }
 
-            foreach ($brandIds as $bId) {
-                $brandName = DB::connection('mysql2')->table('brands')->where('id', $bId)->value('name') ?? 'N/A';
-                
-                $baData = [
-                    'emp_id' => $ba->emp_id,
-                    'name' => $ba->name,
-                    'brands' => $brandName,
-                    'days' => []
+            if (empty($brandIds)) continue;
+
+            $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $brandIds)->pluck('name')->toArray();
+            
+            $baData = [
+                'emp_id' => $ba->emp_id,
+                'name' => $ba->name,
+                'brands' => implode(', ', $brandNames),
+                'days' => []
+            ];
+
+            $baData['customer'] = $formation->customer->name ?? 'N/A';
+            $baData['city'] = 'N/A';
+            $baData['zone'] = 'N/A';
+            $baData['location'] = 'N/A';
+
+            $apiAttendance = [];
+            if (isset($allAttendanceData[$ba->emp_id])) {
+                foreach ($allAttendanceData[$ba->emp_id] as $att) {
+                    $apiAttendance[$att['attendance_date']] = $att;
+                }
+            }
+
+            $totalPresent = 0;
+            $totalAbsent = 0;
+            $totalTarget = 0;
+            $totalAch = 0;
+
+            foreach ($dates as $dateStr) {
+                $dayData = [
+                    'time_in' => '-',
+                    'time_out' => '-',
+                    'target' => 0,
+                    'ach' => 0
                 ];
 
-                $baData['customer'] = $formation->customer->name ?? 'N/A';
-                $baData['city'] = 'N/A';
-                $baData['zone'] = 'N/A';
-                $baData['location'] = 'N/A';
-
-                $apiAttendance = [];
-                if (isset($allAttendanceData[$ba->emp_id])) {
-                    foreach ($allAttendanceData[$ba->emp_id] as $att) {
-                        $apiAttendance[$att['attendance_date']] = $att;
-                    }
-                }
-
-                $totalPresent = 0;
-                $totalAbsent = 0;
-                $totalTarget = 0;
-                $totalAch = 0;
-
-                foreach ($dates as $dateStr) {
-                    $dayData = [
-                        'time_in' => '-',
-                        'time_out' => '-',
-                        'target' => 0,
-                        'ach' => 0
-                    ];
-
-                    if (isset($apiAttendance[$dateStr])) {
-                        $att = $apiAttendance[$dateStr];
-                        $dayData['time_in'] = $att['clock_in'] ?? '-';
-                        $dayData['time_out'] = $att['clock_out'] ?? '-';
-                        
-                        if (($att['clock_in'] && $att['clock_in'] != '-') || (isset($att['attendance_status']) && $att['attendance_status'] == 'P')) {
-                            $totalPresent++;
-                        } else {
-                            $totalAbsent++;
-                        }
+                if (isset($apiAttendance[$dateStr])) {
+                    $att = $apiAttendance[$dateStr];
+                    $dayData['time_in'] = $att['clock_in'] ?? '-';
+                    $dayData['time_out'] = $att['clock_out'] ?? '-';
+                    
+                    if (($att['clock_in'] && $att['clock_in'] != '-') || (isset($att['attendance_status']) && $att['attendance_status'] == 'P')) {
+                        $totalPresent++;
                     } else {
                         $totalAbsent++;
                     }
+                } else {
+                    $totalAbsent++;
+                }
 
-                    // Target from target_items for specific brand
+                // Aggregate Targets and Achievements for ALL brands of this BA
+                foreach ($brandIds as $bId) {
+                    // Target
                     $dt = Carbon::parse($dateStr);
                     $monthlyTarget = DB::connection('mysql2')->table('target_items')
                         ->where('employee_id', $ba->emp_id)
@@ -179,12 +182,11 @@ class BaAttendanceReportController extends Controller
                     
                     if ($monthlyTarget > 0) {
                         $daysInMonth = $dt->daysInMonth;
-                        $dayData['target'] = round($monthlyTarget / $daysInMonth, 2);
-                        $totalTarget = $monthlyTarget; // Use full monthly target
-                        $grandTotals['days'][$dateStr]['target'] += $dayData['target'];
+                        $dayData['target'] += round($monthlyTarget / $daysInMonth, 2);
+                        // For the total summary, we'll sum these up outside this loop or handle carefully
                     }
 
-                    // Achievement for specific brand
+                    // Achievement
                     $user = User::where('emp_id', $ba->emp_id)->first();
                     if ($user) {
                         $query = DB::connection('mysql2')->table('retail_sale_order_details')
@@ -200,26 +202,38 @@ class BaAttendanceReportController extends Controller
                             $ach = $query->sum('retail_sale_order_details.qty');
                         }
                         
-                        $dayData['ach'] = $ach;
-                        $totalAch += $ach;
-                        $grandTotals['days'][$dateStr]['ach'] += $ach;
+                        $dayData['ach'] += $ach;
                     }
-
-                    $baData['days'][$dateStr] = $dayData;
                 }
 
-                $baData['total_present'] = $totalPresent;
-                $baData['total_absent'] = $totalAbsent;
-                $baData['total_target'] = round($totalTarget, 2);
-                $baData['total_ach'] = $totalAch;
+                $totalAch += $dayData['ach'];
+                $grandTotals['days'][$dateStr]['ach'] += $dayData['ach'];
+                $grandTotals['days'][$dateStr]['target'] += $dayData['target'];
 
-                $grandTotals['present'] += $totalPresent;
-                $grandTotals['absent'] += $totalAbsent;
-                $grandTotals['target'] += $baData['total_target'];
-                $grandTotals['ach'] += $totalAch;
-
-                $reportData[] = $baData;
+                $baData['days'][$dateStr] = $dayData;
             }
+
+            // Calculate total target for the BA (sum of monthly targets for all brands)
+            $dt = Carbon::parse($dates[0]); // Use first date for month/year context
+            $totalMonthlyTarget = DB::connection('mysql2')->table('target_items')
+                ->where('employee_id', $ba->emp_id)
+                ->whereIn('brand_id', $brandIds)
+                ->where('year', $dt->year)
+                ->where('month', (int)$dt->month)
+                ->where('target_type', $targetType)
+                ->sum('target');
+
+            $baData['total_present'] = $totalPresent;
+            $baData['total_absent'] = $totalAbsent;
+            $baData['total_target'] = round($totalMonthlyTarget, 2);
+            $baData['total_ach'] = $totalAch;
+
+            $grandTotals['present'] += $totalPresent;
+            $grandTotals['absent'] += $totalAbsent;
+            $grandTotals['target'] += $baData['total_target'];
+            $grandTotals['ach'] += $totalAch;
+
+            $reportData[] = $baData;
         }
 
         usort($reportData, function($a, $b) {
