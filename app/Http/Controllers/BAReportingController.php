@@ -204,4 +204,48 @@ class BAReportingController extends Controller
         $data['surveys'] = $surveys;
         return view('BA.Reports.AjaxPages.survey_report_ajax', $data);
     }
+    public function merchandiseReport()
+    {
+        $data['employees'] = User::where('acc_type', 'ba')->get();
+        $data['customers'] = Customer::where('status', 1)->get();
+        $data['report_title'] = 'BA Merchandising Report';
+        return view('BA.Reports.merchandise_report', $data);
+    }
+
+    public function listMerchandiseReport(Request $request)
+    {
+        $query = \App\Merchandise::with(['distributor', 'user']);
+
+        if ($request->employee_id) {
+            $query->where('merchandise.user_id', $request->employee_id);
+        }
+
+        if ($request->customer_id) {
+            $query->where('merchandise.distributor_id', $request->customer_id);
+        }
+
+        if ($request->from_date && $request->to_date) {
+            $query->whereBetween('merchandise.merchandise_date', [$request->from_date, $request->to_date]);
+        }
+
+        $merchandise = $query->orderBy('merchandise.merchandise_date', 'desc')->get();
+
+        if ($request->export == 'excel') {
+            $exportData = [];
+            foreach ($merchandise as $m) {
+                $exportData[] = [
+                    'Date' => $m->merchandise_date,
+                    'BA Name' => $m->user->name ?? 'N/A',
+                    'Store' => $m->distributor->name ?? 'N/A',
+                    'Before Rack' => $m->before_rack ? url('storage/' . $m->before_rack) : 'N/A',
+                    'After Rack' => $m->after_rack ? url('storage/' . $m->after_rack) : 'N/A',
+                    'Remarks' => $m->remarks
+                ];
+            }
+            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\BAReportExport($exportData, ['Date', 'BA Name', 'Store', 'Before Rack', 'After Rack', 'Remarks']), 'BA_Merchandising_Report.xlsx');
+        }
+
+        $data['merchandise'] = $merchandise;
+        return view('BA.Reports.AjaxPages.merchandise_report_ajax', $data);
+    }
 }

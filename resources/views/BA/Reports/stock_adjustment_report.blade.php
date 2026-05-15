@@ -37,9 +37,9 @@
     <div class="filter-card">
         <form id="adjustmentFilterForm" class="row g-3 align-items-center">
             <div class="col-xl-3 col-md-3">
-                <label class="form-label small fw-bold text-muted mb-1">Business Associate</label>
+                <label class="form-label small fw-bold text-muted mb-1">BA</label>
                 <select name="employee_id" class="form-select select2">
-                    <option value="">All Business Associates</option>
+                    <option value="">All BA</option>
                     @foreach($employees as $emp)
                         <option value="{{ $emp->id }}">{{ $emp->name }}</option>
                     @endforeach

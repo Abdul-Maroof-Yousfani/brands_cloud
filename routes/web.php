@@ -347,6 +347,9 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
     Route::get('survey-report', 'BAReportingController@surveyReport')->name('ba.survey_report');
     Route::get('list-survey-report', 'BAReportingController@listSurveyReport')->name('list.survey_report');
 
+    Route::get('merchandise-report', 'BAReportingController@merchandiseReport')->name('ba.merchandise_report');
+    Route::get('list-merchandise-report', 'BAReportingController@listMerchandiseReport')->name('list.merchandise_report');
+
     Route::get('ba-attendance-report', 'BaAttendanceReportController@index')->name('ba.reports.attendance');
     Route::post('ba-attendance-report-generate', 'BaAttendanceReportController@generateReport')->name('ba.reports.attendance.generate');
 

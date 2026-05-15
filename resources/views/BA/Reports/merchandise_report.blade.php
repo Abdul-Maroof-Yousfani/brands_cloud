@@ -33,10 +33,10 @@
     </div>
 
     <div class="filter-card">
-        <form id="salesFilterForm" class="row g-3 align-items-center">
+        <form id="merchandiseFilterForm" class="row g-3 align-items-center">
             <div class="col-xl-3 col-md-3">
                 <label class="form-label small fw-bold text-muted mb-1">BA</label>
-                <select name="employee_id" id="employee_id" class="form-select select2">
+                <select name="employee_id" class="form-select select2">
                     <option value="">All BA</option>
                     @foreach($employees as $emp)
                         <option value="{{ $emp->id }}">{{ $emp->name }}</option>
@@ -44,8 +44,8 @@
                 </select>
             </div>
             <div class="col-xl-3 col-md-3">
-                <label class="form-label small fw-bold text-muted mb-1">Store / Customer</label>
-                <select name="customer_id" id="customer_id" class="form-select select2">
+                <label class="form-label small fw-bold text-muted mb-1">Store / Distributor</label>
+                <select name="customer_id" class="form-select select2">
                     <option value="">All Stores</option>
                     @foreach($customers as $cust)
                         <option value="{{ $cust->id }}">{{ $cust->name }}</option>
@@ -54,11 +54,11 @@
             </div>
             <div class="col-xl-2 col-md-2">
                 <label class="form-label small fw-bold text-muted mb-1">From Date</label>
-                <input type="date" name="from_date" id="from_date" class="form-control" value="{{ date('Y-m-01') }}">
+                <input type="date" name="from_date" class="form-control" value="{{ date('Y-m-01') }}">
             </div>
             <div class="col-xl-2 col-md-2">
                 <label class="form-label small fw-bold text-muted mb-1">To Date</label>
-                <input type="date" name="to_date" id="to_date" class="form-control" value="{{ date('Y-m-d') }}">
+                <input type="date" name="to_date" class="form-control" value="{{ date('Y-m-d') }}">
             </div>
             <div class="col-xl-2 col-md-2">
                 <div class="mt-4 d-flex gap-2">
@@ -75,7 +75,7 @@
 
     <div id="reportContainer">
         <div class="report-card text-center py-5">
-            <p class="text-muted mb-0">Select filters and click search to view report.</p>
+            <p class="text-muted mb-0">Select filters and click search to view merchandising data.</p>
         </div>
     </div>
 </div>
@@ -85,9 +85,7 @@
 <script>
     $(document).ready(function() {
         if ($.fn.select2) {
-            $('.select2').select2({
-                width: '100%'
-            });
+            $('.select2').select2({ width: '100%' });
         }
 
         $('#filterBtn').click(function() {
@@ -95,16 +93,16 @@
         });
 
         $('#exportBtn').click(function() {
-            let formData = $('#salesFilterForm').serialize();
-            window.location.href = "{{ route('list.ba_sales_report') }}?" + formData + "&export=excel";
+            let formData = $('#merchandiseFilterForm').serialize();
+            window.location.href = "{{ route('list.merchandise_report') }}?" + formData + "&export=excel";
         });
 
         function loadReport() {
-            let formData = $('#salesFilterForm').serialize();
+            let formData = $('#merchandiseFilterForm').serialize();
             $('#reportContainer').html('<div class="report-card text-center py-5"><i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i><br>Loading Report...</div>');
 
             $.ajax({
-                url: "{{ route('list.ba_sales_report') }}",
+                url: "{{ route('list.merchandise_report') }}",
                 type: 'GET',
                 data: formData,
                 success: function(response) {
