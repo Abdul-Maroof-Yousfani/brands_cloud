@@ -65,15 +65,15 @@
             <div class="wrapper wrapper-content">
                 <div class="row">
                     <div class="col-lg-12 priorMainBox">
-                        <a href="#" onclick="getDashboardSaleSummary(1,'{{date('Y-m-d')}}','{{date('Y-m-d')}}');">
+                        <a href="#">
                             <div class="mainDashBox">
                                 <div class="title">
-                                    <h6>Today's Sales</h6>
-                                    <p>{{date('Y-m-d')}}</p>
+                                    <h6>Today Total Sales</h6>
+                                    <p>value only approved sales invoices</p>
                                 </div>
                                 <img src="assets/img/miniBar.svg" alt="">
                                 <h4>
-                                    {{number_format(DashboardHelper::getSaleSummaryAmount(date('Y-m-d'),date('Y-m-d')),0)}}
+                                    {{number_format(DashboardHelper::getApprovedInvoicesAmount(date('Y-m-d'),date('Y-m-d')),0)}}
                                 </h4>
                             </div>
                         </a>
@@ -84,22 +84,22 @@
                             $totalReceivables = DashboardHelper::getTotalReceivablesAmount();
                             $totalPayables = DashboardHelper::getTotalPayablesAmount();
                         @endphp
-                        <a href="#" onclick="getDashboardSaleSummary(2,'{{$monthStartDate}}','{{$monthEndDate}}');">
+                        <a href="#">
                             <div class="mainDashBox">
                                 <div class="title">
-                                    <h6>This Month Sales</h6>
-                                    <p>{{date('Y')}}</p>
+                                    <h6>Monthly sales</h6>
+                                    <p>only sales value</p>
                                 </div>
                                 <img src="assets/img/miniBar.svg" alt="">
                                 <h4>
-                                    {{number_format(DashboardHelper::getSaleSummaryAmount($monthStartDate,$monthEndDate),0)}}
+                                    {{number_format(DashboardHelper::getMonthlySalesValue($monthStartDate,$monthEndDate),0)}}
                                 </h4>
                             </div>
                         </a>
                         <a href="#">
                             <div class="mainDashBox">
                                 <div class="title">
-                                    <h6>This Month's Collection</h6>
+                                    <h6>Total receipt Voucher</h6>
                                 </div>
                                 <img src="assets/img/miniBar.svg" alt="">
                                 <h4>{{ number_format($thisMonthCollection, 2) }}</h4>
@@ -108,7 +108,7 @@
                         <a href="#">
                             <div class="mainDashBox">
                                 <div class="title">
-                                    <h6>Total Receivables</h6>
+                                    <h6>customer aging as to today as totality</h6>
                                 </div>
                                 <img src="assets/img/miniBar.svg" alt="">
                                 <h4>{{ number_format($totalReceivables, 2) }}</h4>
@@ -117,7 +117,7 @@
                         <a href="#">
                             <div class="mainDashBox">
                                 <div class="title">
-                                    <h6>Total Payables</h6>
+                                    <h6>vendor aging as of today as totality</h6>
                                 </div>
                                 <img src="assets/img/miniBar.svg" alt="">
                                 <h4>{{ number_format($totalPayables, 2) }}</h4>
@@ -127,18 +127,36 @@
                     <div class="col-md-12">
                         <div class="row">
                             <div class="col-md-5">
-                                <div class="card barChartHead">
-                                    <div>
-                                        <div>
-                                            <h6>Business Flow Chart</h6>
-                                        </div>
-                                        <div class="text-right">
-                                            <h6>{{ number_format($thisMonthCollection, 2) }}</h6>
-                                            <p>Total Sales – Monthly</p>
-                                        </div>
+                                <div class="card barChartHead" style="height: 100%;">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="card-title mb-0">BA Target Achievement %</h6>
+                                        <span class="badge bg-primary">Current Month</span>
                                     </div>
-                                    <div class="card-body">
-                                        <canvas class="bar-chart-ex chartjs" data-height="320"></canvas>
+                                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                        @php
+                                            $baAchievements = DashboardHelper::getBATargetAchievementList();
+                                        @endphp
+                                        <div class="list-group list-group-flush">
+                                            @forelse($baAchievements as $ba)
+                                            <div class="list-group-item px-0 py-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span class="fw-bold">{{ $ba->name }}</span>
+                                                    <span class="text-primary fw-bold">{{ $ba->percentage }}%</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" 
+                                                         style="width: {{ min($ba->percentage, 100) }}%;" 
+                                                         aria-valuenow="{{ $ba->percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between mt-1 small text-muted">
+                                                    <span>Target: {{ number_format($ba->target, 0) }}</span>
+                                                    <span>Actual: {{ number_format($ba->actual, 0) }}</span>
+                                                </div>
+                                            </div>
+                                            @empty
+                                            <p class="text-center text-muted py-4">No target data found for this month.</p>
+                                            @endforelse
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -149,8 +167,8 @@
                                             <div id="ShowHide">
                                                 <div class="table-responsive dashTable mhe">
                                                     <div class="dashTableHeading printListBtn">
-                                                        <h6>Sales Orders</h6>
-                                                        <a class="btn btn-primary" target="_blank" id="myBtn" href="{{url('/selling/listSaleOrder?pageType=view&&parentCode=89&&m=1#Rototec')}}">View All Sales Orders</a>
+                                                        <h6>Pending Sales Orders for Approval</h6>
+                                                        <a class="btn btn-primary btn-sm" target="_blank" id="myBtn" href="{{url('/selling/listSaleOrder?pageType=view&&parentCode=89&&m=1#Rototec')}}">View All</a>
                                                     </div>
                                                     <table class="userlittab table table-bordered sf-table-list" id="TableExportToCsv">
                                                         <thead class="bgBlueofTd">
@@ -166,12 +184,23 @@
                                                         </thead>
                                                         <tbody id="data" class="dashTableBody">
                                                             @php
-                                                                $latestSaleOrders = CommonHelper::displayLatestSaleOrdersDetail();
+                                                                $pendingSaleOrders = DashboardHelper::getPendingSalesOrdersForApproval();
                                                                 $overallSubTotal = 0;
                                                                 $overallTaxAmount = 0;
+                                                                foreach($pendingSaleOrders as $lsoRow) {
+                                                                    $overallSubTotal += $lsoRow->total_amount;
+                                                                    $overallTaxAmount += $lsoRow->total_amount_after_sale_tax;
+                                                                }
                                                             @endphp
-                                                            @if(!empty($latestSaleOrders))
-                                                            @foreach($latestSaleOrders as $lsoKey => $lsoRow)
+                                                            <tr style="background: #eef2f7; font-weight: bold;">
+                                                                <td colspan="4" class="text-center">TOTALITY AT TOP</td>
+                                                                <td class="text-center">{{number_format($overallSubTotal,0)}}</td>
+                                                                <td class="text-center">{{number_format($overallTaxAmount - $overallSubTotal,0)}}</td>
+                                                                <td class="text-center">{{number_format($overallTaxAmount,0)}}</td>
+                                                                <td class="text-center">---</td>
+                                                            </tr>
+                                                            @if(!empty($pendingSaleOrders))
+                                                            @foreach($pendingSaleOrders as $lsoKey => $lsoRow)
                                                                 @php
                                                                     $overallSubTotal += $lsoRow->total_amount;
                                                                     $overallTaxAmount += $lsoRow->total_amount_after_sale_tax;
@@ -191,13 +220,6 @@
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
-                                                            <tr>
-                                                                <td colspan="4">Total</td>
-                                                                <td class="text-right">{{number_format($overallSubTotal,0)}}</td>
-                                                                <td class="text-right"></td>
-                                                                <td class="text-right">{{number_format($overallTaxAmount,0)}}</td>
-                                                                <td class="text-center">---</td>
-                                                            </tr>
                                                             @endif
                                                         </tbody>
                                                     </table>
@@ -209,99 +231,55 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="card barChartHead">
-                                    <div class="card-header d-flex flex-sm-row flex-column justify-content-md-between align-items-start justify-content-start">
-                                        <div class="cashSection">
-                                            <div>
-                                                <h4 class="card-subtitle mb-25">Cash Flow</h4>
-                                                <p class="card-title font-weight-bolder">Cash Coming in and going out of your business</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="bar-chart"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="payable pieChartHead">
-                                    <div class="statistics card-header d-flex flex-sm-row flex-column justify-content-md-between align-items-start justify-content-start">
-                                        <h6 class="card-title mb-sm-0 mb-1">Receivables and Payables</h6>
-                                    </div>
-                                    <ul>
-                                        <li>
-                                            <h6>Receivables</h6>
-                                            <ul>
-                                                <li>
-                                                    <p>Total</p>
-                                                    <p>{{ number_format($totalReceivables, 2) }}</p>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                        <li>
-                                            <h6>Payables</h6>
-                                            <ul>
-                                                <li>
-                                                    <p>Total</p>
-                                                    <p>{{ number_format($totalPayables, 2) }}</p>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="col-md-12 mp-20">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <div class="topExport topSelling">
-                                    <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h6>Top Selling Products</h6>
+                                        <div class="d-flex gap-2">
+                                            <form action="" method="GET" class="d-flex gap-2">
+                                                <select name="top_type" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                    <option value="value" {{ request('top_type') == 'value' ? 'selected' : '' }}>By Value</option>
+                                                    <option value="qty" {{ request('top_type') == 'qty' ? 'selected' : '' }}>By Qty</option>
+                                                </select>
+                                                <select name="top_period" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                    <option value="month" {{ request('top_period') == 'month' ? 'selected' : '' }}>This Month</option>
+                                                    <option value="today" {{ request('top_period') == 'today' ? 'selected' : '' }}>Today</option>
+                                                </select>
+                                            </form>
+                                        </div>
                                     </div>
                                     <ul>
                                         @php
-                                            $topProducts = DashboardHelper::getTopSellingProducts(4);
+                                            $topType = request('top_type', 'value');
+                                            $topPeriod = request('top_period', 'month');
+                                            $topProducts = DashboardHelper::getTopSellingProducts(5, $topType, $topPeriod);
                                         @endphp
                                         @forelse($topProducts as $product)
                                         <li>
-                                            <div>
-                                                <h6>{{ $product->product_name }}</h6>
+                                            <div class="d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <h6>{{ $product->sku_code }}</h6>
-                                                    <p>Total Sales: <span>{{ number_format($product->total_sales, 0) }}</span></p>
+                                                    <h6>{{ $product->product_name }}</h6>
+                                                    <span class="text-muted small">{{ $product->sku_code }}</span>
+                                                </div>
+                                                <div class="text-right">
+                                                    @if($topType == 'qty')
+                                                        <h6 class="mb-0">{{ number_format($product->total_qty, 0) }} Units</h6>
+                                                    @else
+                                                        <h6 class="mb-0">{{ number_format($product->total_sales, 0) }}</h6>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </li>
                                         @empty
-                                        <li class="text-center">No data found</li>
+                                        <li class="text-center py-4">No data found</li>
                                         @endforelse
                                         <li class="printListBtn text-center">
-                                            <a href="{{url('/selling/listSaleOrder?pageType=view&&parentCode=89&&m=1#Rototec')}}" class="btn btn-primary">View All</a>
+                                            <a href="{{url('/selling/listSaleOrder?pageType=view&&parentCode=89&&m=1#Rototec')}}" class="btn btn-primary btn-sm mt-2">View All</a>
                                         </li>
                                     </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="topExport debitCardSection">
-                                    <h6>Primary Account</h6>
-                                    <div>
-                                        <img src="assets/img/debitcard.svg" alt="">
-                                        <div class="balance">
-                                            <div>
-                                                <h6>Bank Balance</h6>
-                                                <h4>{{ number_format(DashboardHelper::getBankBalance(), 2) }}</h4>
-                                            </div>
-                                            <img src="assets/img/mastercard.svg" alt="">
-                                        </div>
-                                        <div class="numbers">
-                                            <div><p>Rototec</p><p>12/14</p></div>
-                                            <pre>4197 **** **** 4116</pre>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
