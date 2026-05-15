@@ -527,9 +527,9 @@ class MobileApplicationController extends Controller
         // Get all products belonging to the allowed brands OR products that are in their stock
         $productsQuery = DB::connection('mysql2')->table('subitem as si')
             ->leftJoin('product_type as pt', 'si.product_type_id', '=', 'pt.product_type_id')
-            ->where(function($q) use ($allBrandIds, $stockProductIds) {
+            ->where(function ($q) use ($allBrandIds, $stockProductIds) {
                 $q->whereIn('si.brand_id', $allBrandIds)
-                  ->orWhereIn('si.id', $stockProductIds);
+                    ->orWhereIn('si.id', $stockProductIds);
             })
             ->where('si.status', 1);
 
@@ -2007,9 +2007,9 @@ class MobileApplicationController extends Controller
                 'contact' => $item->contact ?? 'N/A',
                 'alternate_contact' => $item->alternate_contact ?? 'N/A',
                 'area_address' => $item->area_address ?? 'N/A',
-                'currently_using_brand' => $item->currentlyUsingBrand->name ?? 'N/A',
+                'currently_using_brand' => $item->currently_using_brand_id ?? 'N/A',
                 'reason_of_usage_1' => $item->reason_of_usage_1 ?? '',
-                'currently_using_brand_2' => $item->currentlyUsingBrand2->name ?? 'N/A',
+                'currently_using_brand_2' => $item->currently_using_brand_2_id ?? 'N/A',
                 'reason_of_usage_2' => $item->reason_of_usage_2 ?? '',
                 'product_id' => $item->product_id ?? 'N/A', // Keep this to indicate the product ID
                 'product_name' => $item->product->product_name ?? 'N/A', // Correctly map the product name
