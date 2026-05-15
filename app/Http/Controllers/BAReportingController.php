@@ -192,8 +192,8 @@ class BAReportingController extends Controller
                     'BA Name' => $sv->user->name ?? 'N/A',
                     'Customer' => $sv->customer_name,
                     'Contact' => $sv->contact,
-                    'Current Brand 1' => $sv->currentlyUsingBrand->name ?? 'N/A',
-                    'Current Brand 2' => $sv->currentlyUsingBrand2->name ?? 'N/A',
+                    'Current Brand 1' => $sv->currently_using_brand_id ?? 'N/A',
+                    'Current Brand 2' => $sv->currently_using_brand_2_id ?? 'N/A',
                     'Recommended' => $sv->product->product_name ?? 'N/A',
                     'Remarks' => $sv->remarks
                 ];
