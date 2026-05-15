@@ -13,7 +13,7 @@
                 @php
                     $summary = [];
                     foreach($returns as $ret) {
-                        foreach($ret->details as $detail) {
+                        foreach($ret->returnDetails as $detail) {
                             $ba = $ret->user->name ?? 'N/A';
                             $br = $detail->brand->name ?? 'N/A';
                             $summary[$ba][$br] = ($summary[$ba][$br] ?? 0) + $detail->quantity;
@@ -48,12 +48,12 @@
             </thead>
             <tbody>
                 @forelse($returns as $return)
-                    @foreach($return->details as $index => $detail)
+                    @foreach($return->returnDetails as $index => $detail)
                         <tr>
                             @if($index == 0)
-                                <td rowspan="{{ count($return->details) }}">{{ date('d-M-Y', strtotime($return->return_date)) }}</td>
-                                <td rowspan="{{ count($return->details) }}">{{ $return->user->name ?? 'N/A' }}</td>
-                                <td rowspan="{{ count($return->details) }}">{{ $return->distributor->name ?? 'N/A' }}</td>
+                                <td rowspan="{{ count($return->returnDetails) }}">{{ date('d-M-Y', strtotime($return->return_date)) }}</td>
+                                <td rowspan="{{ count($return->returnDetails) }}">{{ $return->user->name ?? 'N/A' }}</td>
+                                <td rowspan="{{ count($return->returnDetails) }}">{{ $return->distributor->name ?? 'N/A' }}</td>
                             @endif
                             <td>
                                 <strong>{{ $detail->product->product_name ?? 'N/A' }}</strong><br>

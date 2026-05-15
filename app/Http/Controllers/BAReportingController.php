@@ -121,7 +121,7 @@ class BAReportingController extends Controller
 
     public function listReturnStockReport(Request $request)
     {
-        $query = RetailSaleOrderReturn::with(['distributor', 'details.product', 'details.brand', 'user']);
+        $query = RetailSaleOrderReturn::with(['distributor', 'returnDetails.product', 'returnDetails.brand', 'user']);
 
         if ($request->employee_id) {
             $query->where('retail_sale_order_returns.user_id', $request->employee_id);
@@ -140,7 +140,7 @@ class BAReportingController extends Controller
         if ($request->export == 'excel') {
             $exportData = [];
             foreach ($returns as $ret) {
-                foreach ($ret->details as $detail) {
+                foreach ($ret->returnDetails as $detail) {
                     $exportData[] = [
                         'Date' => $ret->return_date,
                         'BA Name' => $ret->user->name ?? 'N/A',
