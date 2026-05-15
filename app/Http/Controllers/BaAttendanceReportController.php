@@ -74,6 +74,31 @@ class BaAttendanceReportController extends Controller
             ];
         }
 
+        // Prepare requests for all BAs
+        $requests = [];
+        foreach ($bas as $ba) {
+            $requests[$ba->emp_id] = function() use ($client, $ba, $startDate, $endDate) {
+                return $client->getAsync("https://brands.smrsoftwares.com/api/viewAttendanceReport?emp_id={$ba->emp_id}&from_date={$startDate->format('Y-m-d')}&to_date={$endDate->format('Y-m-d')}");
+            };
+        }
+
+        $allAttendanceData = [];
+        $pool = new \GuzzleHttp\Pool($client, $requests, [
+            'concurrency' => 10,
+            'fulfilled' => function ($response, $emp_id) use (&$allAttendanceData) {
+                $resData = json_decode($response->getBody(), true);
+                if (isset($resData['data'])) {
+                    $allAttendanceData[$emp_id] = $resData['data'];
+                }
+            },
+            'rejected' => function ($reason, $emp_id) {
+                // Ignore failures for individual BAs
+            },
+        ]);
+
+        $promise = $pool->promise();
+        $promise->wait();
+
         foreach ($bas as $ba) {
             $formation = BAFormation::where('employee_id', $ba->emp_id)->first();
             $brandIds = [];
@@ -109,15 +134,11 @@ class BaAttendanceReportController extends Controller
                 $baData['location'] = 'N/A';
 
                 $apiAttendance = [];
-                try {
-                    $response = $client->get("https://brands.smrsoftwares.com/api/viewAttendanceReport?emp_id={$ba->emp_id}&from_date={$startDate->format('Y-m-d')}&to_date={$endDate->format('Y-m-d')}");
-                    $resData = json_decode($response->getBody(), true);
-                    if (isset($resData['data'])) {
-                        foreach ($resData['data'] as $att) {
-                            $apiAttendance[$att['attendance_date']] = $att;
-                        }
+                if (isset($allAttendanceData[$ba->emp_id])) {
+                    foreach ($allAttendanceData[$ba->emp_id] as $att) {
+                        $apiAttendance[$att['attendance_date']] = $att;
                     }
-                } catch (\Exception $e) {}
+                }
 
                 $totalPresent = 0;
                 $totalAbsent = 0;
@@ -159,7 +180,6 @@ class BaAttendanceReportController extends Controller
                     if ($monthlyTarget > 0) {
                         $daysInMonth = $dt->daysInMonth;
                         $dayData['target'] = round($monthlyTarget / $daysInMonth, 2);
-                        // $totalTarget += $dayData['target']; // Remove proportional sum
                         $totalTarget = $monthlyTarget; // Use full monthly target
                         $grandTotals['days'][$dateStr]['target'] += $dayData['target'];
                     }
@@ -205,6 +225,49 @@ class BaAttendanceReportController extends Controller
         usort($reportData, function($a, $b) {
             return strcmp($a['brands'], $b['brands']);
         });
+
+        if ($request->export == 'excel') {
+            $exportData = [];
+            $headings = ['BA Code', 'BA Name', 'Customer', 'Brand(s)'];
+            
+            foreach ($dates as $date) {
+                $d = \Carbon\Carbon::parse($date)->format('d M Y');
+                $headings[] = $d . ' (In)';
+                $headings[] = $d . ' (Out)';
+                $headings[] = $d . ' (Tgt)';
+                $headings[] = $d . ' (Ach)';
+            }
+            
+            $headings[] = 'Total Pres';
+            $headings[] = 'Total Abs';
+            $headings[] = 'Total Tgt';
+            $headings[] = 'Total Ach';
+
+            foreach ($reportData as $ba) {
+                $row = [
+                    $ba['emp_id'],
+                    $ba['name'],
+                    $ba['customer'],
+                    $ba['brands']
+                ];
+                
+                foreach ($dates as $date) {
+                    $row[] = $ba['days'][$date]['time_in'];
+                    $row[] = $ba['days'][$date]['time_out'];
+                    $row[] = $ba['days'][$date]['target'];
+                    $row[] = $ba['days'][$date]['ach'];
+                }
+                
+                $row[] = $ba['total_present'];
+                $row[] = $ba['total_absent'];
+                $row[] = $ba['total_target'];
+                $row[] = $ba['total_ach'];
+                
+                $exportData[] = $row;
+            }
+
+            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\BAReportExport($exportData, $headings), 'BA_Attendance_Report.xlsx');
+        }
 
         return view('BA.Reports.attendance_report_data', compact('reportData', 'dates', 'grandTotals'));
     }

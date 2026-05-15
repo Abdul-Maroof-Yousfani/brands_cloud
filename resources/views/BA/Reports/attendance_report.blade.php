@@ -15,6 +15,7 @@
             
             <form id="reportForm">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="export" id="export_type" value="">
                 <div class="row">
                     <div class="col-md-2">
                         <div class="form-group">
@@ -68,12 +69,18 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-1">
-                        <div class="form-group" style="margin-top: 25px;">
-                            <button type="submit" class="btn btn-primary" style="margin-top: 1px;">
-                                <i class="fas fa-sync-alt mr-2"></i> Generate
-                            </button>
-                        </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn btn-success" id="btnExport">
+                            <i class="fas fa-file-excel mr-2"></i> Export to Excel
+                        </button>
+                        <button type="button" class="btn btn-info" id="btnPrint">
+                            <i class="fas fa-print mr-2"></i> Print
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btnGenerate">
+                            <i class="fas fa-sync-alt mr-2"></i> Generate
+                        </button>
                     </div>
                 </div>
             </form>
@@ -102,6 +109,7 @@
         $('#reportForm').on('submit', function(e) {
             e.preventDefault();
             
+            $('#export_type').val(''); // Reset export type
             $('#reportResult').html('<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Generating Report...</p></div>');
 
             $.ajax({
@@ -115,6 +123,25 @@
                     $('#reportResult').html('<div class="alert alert-danger">Error generating report. Please check the logs.</div>');
                 }
             });
+        });
+
+        $('#btnExport').on('click', function() {
+            let form = $('#reportForm').clone();
+            form.find('#export_type').val('excel');
+            form.attr('action', "{{ route('ba.reports.attendance.generate') }}");
+            form.attr('method', 'POST');
+            $('body').append(form);
+            form.submit();
+            form.remove();
+        });
+
+        $('#btnPrint').on('click', function() {
+            let content = $('#reportResult').html();
+            if(!content || content.includes('fas-chart-line')) {
+                alert('Please generate the report first.');
+                return;
+            }
+            window.print();
         });
     });
 </script>
