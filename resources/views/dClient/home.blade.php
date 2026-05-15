@@ -193,7 +193,7 @@
                                                                 }
                                                             @endphp
                                                             <tr style="background: #eef2f7; font-weight: bold;">
-                                                                <td colspan="4" class="text-center">TOTALITY AT TOP</td>
+                                                                <td colspan="4" class="text-center">TOTAL</td>
                                                                 <td class="text-center">{{number_format($overallSubTotal,0)}}</td>
                                                                 <td class="text-center">{{number_format($overallTaxAmount - $overallSubTotal,0)}}</td>
                                                                 <td class="text-center">{{number_format($overallTaxAmount,0)}}</td>

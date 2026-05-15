@@ -53,8 +53,8 @@ CommonHelper::reconnectMasterDatabase();
             <ul class=" tmenu-list d">
                 <li>
                     <div class="o_f">
-                        <a href="#" class="closebtn theme-f-clr Navclose"><i class="fa fa-list-ul"
-                                aria-hidden="true" style="color: white; margin-top: 30px;"></i></a>
+                        <a href="#" class="closebtn theme-f-clr Navclose"><i class="fa fa-list-ul" aria-hidden="true"
+                                style="color: white; margin-top: 30px;"></i></a>
                     </div>
                 </li>
 
@@ -65,126 +65,128 @@ CommonHelper::reconnectMasterDatabase();
     </div>
 
     @if (Session::get('run_company') != null)
-        <?php
-   $Clause = "";
-   if (Session::get("run_company") == 3) {
-       $Clause = ",['id','!=',174]";
-   } else {
-       $Clause = "";
-   }
+            <?php
+            $Clause = "";
+            if (Session::get("run_company") == 3) {
+                $Clause = ",['id','!=',174]";
+            } else {
+                $Clause = "";
+            }
 
-   if (Auth::user()->id == 1040) {
-       $MainMenuTitles = DB::table("main_menu_title")
-           ->select(["main_menu_id", "id"])
-           ->where([
-               ["status", "=", 1],
-               ["main_menu_id", "!=", "HR"],
-               ["main_menu_id", "!=", "HR Master"],
-               ["main_menu_id", "!=", "Users"],
-           ])
-           ->groupBy("main_menu_id")
-           ->orderBy("menu_type")
-           ->orderBy("id")
-           ->get();
-   } else {
-       $MainMenuTitles = DB::table("main_menu_title")
-           ->select(["main_menu_id", "id"])
-           ->where([
-               ["status", "=", 1],
-               ["main_menu_id", "!=", "HR"],
-               ["main_menu_id", "!=", "HR Master"],
-               ["main_menu_id", "!=", "Production"],
-               ["main_menu_id", "!=", "Production Master"],
-           ])
-           ->groupBy("main_menu_id")
-           ->orderBy("menu_type")
-           ->orderBy("id")
-           ->get();
-   }
+            if (Auth::user()->id == 1040) {
+                $MainMenuTitles = DB::table("main_menu_title")
+                    ->select(["main_menu_id", "id"])
+                    ->where([
+                        ["status", "=", 1],
+                        ["main_menu_id", "!=", "HR"],
+                        ["main_menu_id", "!=", "HR Master"],
+                        ["main_menu_id", "!=", "Users"],
+                    ])
+                    ->groupBy("main_menu_id")
+                    ->orderBy("menu_type")
+                    ->orderBy("id")
+                    ->get();
+            } else {
+                $MainMenuTitles = DB::table("main_menu_title")
+                    ->select(["main_menu_id", "id"])
+                    ->where([
+                        ["status", "=", 1],
+                        ["main_menu_id", "!=", "HR"],
+                        ["main_menu_id", "!=", "HR Master"],
+                        ["main_menu_id", "!=", "Production"],
+                        ["main_menu_id", "!=", "Production Master"],
+                    ])
+                    ->groupBy("main_menu_id")
+                    ->orderBy("menu_type")
+                    ->orderBy("id")
+                    ->get();
+            }
 
-   $counter = 1;
-   $count = 1;
+            $counter = 1;
+            $count = 1;
 
-   foreach ($MainMenuTitles as $row) { ?>
-        <ul class="m_list " id="myGroup">
-            <li>
-                <div class="sm-bx">
-                    <button class="btn settingListSb theme-bg" data-toggle="collapse"
-                        data-target="#masterSetting<?= $counter ?>">
-                        <span><i class="<?= $icons[$row->main_menu_id] ?>" aria-hidden="true"></i></span>
-                        <p><?php echo $row->main_menu_id; ?></p>
-                    </button>
-                    <div id="masterSetting<?= $counter ?>" class="collapse pmastermnu">
-                        <ul class="list-unstyled">
-                            <?php
-                  $m = 1;
+            foreach ($MainMenuTitles as $row) { ?>
+            <ul class="m_list " id="myGroup">
+                <li>
+                    <div class="sm-bx">
+                        <button class="btn settingListSb theme-bg" data-toggle="collapse"
+                            data-target="#masterSetting<?= $counter ?>">
+                            <span><i class="<?= $icons[$row->main_menu_id] ?>" aria-hidden="true"></i></span>
+                            <p><?php        echo $row->main_menu_id; ?></p>
+                        </button>
+                        <div id="masterSetting<?= $counter ?>" class="collapse pmastermnu">
+                            <ul class="list-unstyled">
+                                <?php
+                $m = 1;
 
-                  $MainMenuTitlesSub = DB::table("main_menu_title")
-                      ->select(["main_menu_id", "title", "title_id", "id"])
-                      ->where([
-                          ["main_menu_id", "=", $row->main_menu_id],
-                          ["status", "=", 1],
-                          ["id", "!=", 174],
-                      ])
-                      ->orderBy("orderby", "ASC")
-                      ->get();
+                $MainMenuTitlesSub = DB::table("main_menu_title")
+                    ->select(["main_menu_id", "title", "title_id", "id"])
+                    ->where([
+                        ["main_menu_id", "=", $row->main_menu_id],
+                        ["status", "=", 1],
+                        ["id", "!=", 174],
+                    ])
+                    ->orderBy("orderby", "ASC")
+                    ->get();
 
-                  foreach ($MainMenuTitlesSub as $row1) { ?>
-                            <li class="dd">
-                                <ul class="list-unstyled">
-                                    <a href="#" class="settingListSb-subItem" data-toggle="collapsee"
-                                        data-target="#masterSetting<?= $counter ?>-<?= $count ?>"><?php echo $row1->title; ?></a>
-                                    <div id="masterSetting<?= $counter ?>-<?= $count ?>" class="collapsee smastermnu">
-                                        <ul class="list-unstyled">
-                                            <?php
-                              $InCompany = Session::get("run_company");
-                              //if($InCompany != 1):
-                              $data = DB::table("menu")
-                                  ->select([
-                                      "m_type",
-                                      "name",
-                                      "m_controller_name",
-                                      "m_main_title",
-                                      "id",
-                                      "m_parent_code",
-                                  ])
-                                  ->where([
-                                      ["m_parent_code", "=", $row1->id],
-                                      ["page_type", "=", 1],
-                                      ["status", "=", 1],
-                                  ])
-                                  ->orderBy("id", "ASC")
-                                  ->get();
-                              //else:
-                              //  $data = DB::table('menu')->select(['m_type','name','m_controller_name','m_main_title','id','m_parent_code'])->whereNotIn('id', [309,310,311])->where([['m_parent_code','=',$row1->id],['page_type', '=', 1],['status', '=', 1]])->orderBy('order_by', 'ASC')->get();
-                              //endif;
-                              foreach ($data as $dataValue) {
-                                  $MakeUrl = url(
-                                      "" . $dataValue->m_controller_name . ""
-                                  ); ?>
-                                            <li>
-                                                <span><i class="fal fa-circle-notch"></i></span>
-                                                <a href="<?php echo url('' . $dataValue->m_controller_name . '?pageType=' . $dataValue->m_type . '&&parentCode=' . $dataValue->m_parent_code . '&&m=' . Session::get('run_company') . '#premiorsCable'); ?>"> <?php echo $dataValue->name; ?>
-                                                </a>
-                                            </li>
-                                            <?php
-                              }
-                              ?>
-                                        </ul>
-                                    </div>
-                                </ul>
-                            </li>
-                            <?php $count++; ?>
-                            <?php }
-                  ?>
-                        </ul>
+                foreach ($MainMenuTitlesSub as $row1) { ?>
+                                <li class="dd">
+                                    <ul class="list-unstyled">
+                                        <a href="#" class="settingListSb-subItem" data-toggle="collapsee"
+                                            data-target="#masterSetting<?= $counter ?>-<?= $count ?>"><?php            echo $row1->title; ?></a>
+                                        <div id="masterSetting<?= $counter ?>-<?= $count ?>" class="collapsee smastermnu">
+                                            <ul class="list-unstyled">
+                                                <?php
+                    $InCompany = Session::get("run_company");
+                    //if($InCompany != 1):
+                    $data = DB::table("menu")
+                        ->select([
+                            "m_type",
+                            "name",
+                            "m_controller_name",
+                            "m_main_title",
+                            "id",
+                            "m_parent_code",
+                        ])
+                        ->where([
+                            ["m_parent_code", "=", $row1->id],
+                            ["page_type", "=", 1],
+                            ["status", "=", 1],
+                        ])
+                        ->orderBy("id", "ASC")
+                        ->get();
+                    //else:
+                    //  $data = DB::table('menu')->select(['m_type','name','m_controller_name','m_main_title','id','m_parent_code'])->whereNotIn('id', [309,310,311])->where([['m_parent_code','=',$row1->id],['page_type', '=', 1],['status', '=', 1]])->orderBy('order_by', 'ASC')->get();
+                    //endif;
+                    foreach ($data as $dataValue) {
+                        $MakeUrl = url(
+                            "" . $dataValue->m_controller_name . ""
+                        ); ?>
+                                                <li>
+                                                    <span><i class="fal fa-circle-notch"></i></span>
+                                                    <a
+                                                        href="<?php                echo url('' . $dataValue->m_controller_name . '?pageType=' . $dataValue->m_type . '&&parentCode=' . $dataValue->m_parent_code . '&&m=' . Session::get('run_company') . '#BrandUnlimited'); ?>">
+                                                        <?php                echo $dataValue->name; ?>
+                                                    </a>
+                                                </li>
+                                                <?php
+                    }
+                                      ?>
+                                            </ul>
+                                        </div>
+                                    </ul>
+                                </li>
+                                <?php            $count++; ?>
+                                <?php        }
+                          ?>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            </li>
-        </ul>
-        <?php $counter++; ?>
-        <?php }
-   ?>
+                </li>
+            </ul>
+            <?php        $counter++; ?>
+            <?php    }
+           ?>
     @endif
 </div>
 
@@ -201,76 +203,81 @@ CommonHelper::reconnectMasterDatabase();
             </li>
 
         </ul>
-  @php
-                        $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
-                        $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1, true);
-                        $pending_sale_tax_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "sales_tax_invoice", 0, "status", 1);
-                        $pending_sale_returns = \App\Helpers\CommonHelper::pendingDocuments("credit_note", "status", 0);
-                        $pending_purchase_requests = \App\Helpers\CommonHelper::pendingDocuments("demand", "demand_status", 1, "status", 1);
-                        $pending_purchase_quotations = \App\Helpers\CommonHelper::pendingDocuments("quotation", "quotation_status", 1, "status", 1);
-                       $pending_purchase_quotations_creation = \App\Helpers\CommonHelper::pendingDocuments("demand","demand_status",2,"quotation_skip",0,false,
-                            [
-                                                "quotation_approve" => 0,
-                                                "status" => 1
-                                            ]
-                                        );
-                            $pending_purchase_orders = \App\Helpers\CommonHelper::pendingDocuments("purchase_request", "purchase_request_status", 1, "status", 1);
-                          $pending_purchase_orders_creation = \App\Helpers\CommonHelper::pendingDocuments(
-                                    'quotation_data',
-                                    'status',           // column_name
-                                    1,                  // pending_status
-                                    null,               // conditional_column (set to null since not needed)
-                                    null,               // conditional_status (set to null since not needed)
-                                    false,              // is_st_invoice
-                                    [                   // extra_conditions - use associative array
-                                        'vendor' => ['!=', 0],
-                                        'quotation_status' => ['!=', 2]
-                                    ]
-                                );
-                            $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
-                            $pending_grns_creation = \App\Helpers\CommonHelper::pendingDocuments(
-                                    "purchase_request",
-                                    "status",     // column_name
-                                    1,                // pending_status -> grn_status = 1
-                                    "status",         // conditional_column -> status column
-                                    1,                // conditional_status -> status = 1
-                                    false,           
-                                    [                 // extra conditions
-                                        'purchase_request_status' =>  ['!=', 2]  // purchase_request_status = 2
-                                    ]
-                                );
-                        $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
-                        $pending_purchase_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 2, "status", 1, false, ['type' => ['!=', 3]]);
-                        $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
-                        $pending_stock_in = \App\Helpers\CommonHelper::getPendingStockInCount();
-                        $pending_reseller_so_requests = \App\Helpers\CommonHelper::getPendingResellerSoRequestsCount();
-                        $delivery_note_creatable = \App\Helpers\CommonHelper::deliveryNoteCreatable();
-                        $total_pending = 
-                            $pending_delivery_notes +
-                            $pending_sale_tax_invoices +
-                            $pending_sale_tax_invoices_creation +
-                            $pending_sale_returns +
-                            $pending_purchase_requests +
-                            $pending_purchase_quotations +
-                            $pending_purchase_quotations_creation +
-                            $pending_purchase_orders +
-                            $pending_purchase_orders_creation  +
-                            $pending_grns +
-                            $pending_grns_creation +
-                            $pending_purchase_invoices +
-                            $pending_purchase_invoices_creation +
-                            $pending_stock_transfers +
-                            $pending_stock_in +
-                            $pending_reseller_so_requests +
-                            $delivery_note_creatable;
-                    @endphp
+        @php
+            $pending_delivery_notes = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "status", 0);
+            $pending_sale_tax_invoices = \App\Helpers\CommonHelper::pendingDocuments("sales_tax_invoice", "si_status", 1, "status", 1, true);
+            $pending_sale_tax_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("delivery_note", "sales_tax_invoice", 0, "status", 1);
+            $pending_sale_returns = \App\Helpers\CommonHelper::pendingDocuments("credit_note", "status", 0);
+            $pending_purchase_requests = \App\Helpers\CommonHelper::pendingDocuments("demand", "demand_status", 1, "status", 1);
+            $pending_purchase_quotations = \App\Helpers\CommonHelper::pendingDocuments("quotation", "quotation_status", 1, "status", 1);
+            $pending_purchase_quotations_creation = \App\Helpers\CommonHelper::pendingDocuments(
+                "demand",
+                "demand_status",
+                2,
+                "quotation_skip",
+                0,
+                false,
+                [
+                    "quotation_approve" => 0,
+                    "status" => 1
+                ]
+            );
+            $pending_purchase_orders = \App\Helpers\CommonHelper::pendingDocuments("purchase_request", "purchase_request_status", 1, "status", 1);
+            $pending_purchase_orders_creation = \App\Helpers\CommonHelper::pendingDocuments(
+                'quotation_data',
+                'status',           // column_name
+                1,                  // pending_status
+                null,               // conditional_column (set to null since not needed)
+                null,               // conditional_status (set to null since not needed)
+                false,              // is_st_invoice
+                [                   // extra_conditions - use associative array
+                    'vendor' => ['!=', 0],
+                    'quotation_status' => ['!=', 2]
+                ]
+            );
+            $pending_grns = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 1, "status", 1);
+            $pending_grns_creation = \App\Helpers\CommonHelper::pendingDocuments(
+                "purchase_request",
+                "status",     // column_name
+                1,                // pending_status -> grn_status = 1
+                "status",         // conditional_column -> status column
+                1,                // conditional_status -> status = 1
+                false,
+                [                 // extra conditions
+                    'purchase_request_status' => ['!=', 2]  // purchase_request_status = 2
+                ]
+            );
+            $pending_purchase_invoices = \App\Helpers\CommonHelper::pendingDocuments("new_purchase_voucher", "pv_status", 1, "status", 1);
+            $pending_purchase_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 2, "status", 1, false, ['type' => ['!=', 3]]);
+            $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
+            $pending_stock_in = \App\Helpers\CommonHelper::getPendingStockInCount();
+            $pending_reseller_so_requests = \App\Helpers\CommonHelper::getPendingResellerSoRequestsCount();
+            $delivery_note_creatable = \App\Helpers\CommonHelper::deliveryNoteCreatable();
+            $total_pending =
+                $pending_delivery_notes +
+                $pending_sale_tax_invoices +
+                $pending_sale_tax_invoices_creation +
+                $pending_sale_returns +
+                $pending_purchase_requests +
+                $pending_purchase_quotations +
+                $pending_purchase_quotations_creation +
+                $pending_purchase_orders +
+                $pending_purchase_orders_creation +
+                $pending_grns +
+                $pending_grns_creation +
+                $pending_purchase_invoices +
+                $pending_purchase_invoices_creation +
+                $pending_stock_transfers +
+                $pending_stock_in +
+                $pending_reseller_so_requests +
+                $delivery_note_creatable;
+        @endphp
         <ul class="profile-admin d-flex">
 
             <li class="nav-item dropdown dropdown-notification me-25">
                 <a class="nav-link bella" href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa fa-bell" aria-hidden="true"></i>
-                    <span
-                        class="badge rounded-pill bg-danger badge-up notification-count">{{ $total_pending }}</span>
+                    <span class="badge rounded-pill bg-danger badge-up notification-count">{{ $total_pending }}</span>
                 </a>
 
                 <ul class="dropdown-menu dropdown-menu-media dropdown-menu-end">
@@ -282,17 +289,19 @@ CommonHelper::reconnectMasterDatabase();
                                 New</div>
                         </div>
                     </li>
-                  
+
                     <li class="scrollable-container media-list">
 
                         @if($delivery_note_creatable > 0)
-                            <a class="d-flex" href="/sales/CreateDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
+                            <a class="d-flex"
+                                href="/sales/CreateDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Create Delivery Note</span>
                                         </p>
-                                        <small class="notification-text">{{ $delivery_note_creatable }} Pending Delivery notes can be created</small>
+                                        <small class="notification-text">{{ $delivery_note_creatable }} Pending Delivery
+                                            notes can be created</small>
                                         <br>
                                     </div>
                                 </div>
@@ -300,145 +309,167 @@ CommonHelper::reconnectMasterDatabase();
                         @endif
                         {{-- @foreach (App\Helpers\CommonHelper::getUnreadNotifications() as $notification) --}}
                         @if($pending_delivery_notes > 0)
-                            <a class="d-flex" href="/sales/viewDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/sales/viewDeliveryNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Delivery Note Are Approval Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_delivery_notes }} Delivery Notes are Approval pending</small>
+                                        <small class="notification-text">{{ $pending_delivery_notes }} Delivery Notes are
+                                            Approval pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_sale_tax_invoices_creation > 0)
-                            <a class="d-flex" href="/sales/CreateSalesTaxInvoiceList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/sales/CreateSalesTaxInvoiceList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Sales Tax Invoice Are Creation Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_sale_tax_invoices_creation }} Sales Tax Invoice are Creation pending</small>
+                                        <small class="notification-text">{{ $pending_sale_tax_invoices_creation }} Sales Tax
+                                            Invoice are Creation pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_sale_tax_invoices > 0)
-                            <a class="d-flex" href="/sales/viewSalesTaxInvoiceList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/sales/viewSalesTaxInvoiceList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Sales Tax Invoice Are Approval Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_sale_tax_invoices }} Sales Tax Invoice are Approval pending</small>
+                                        <small class="notification-text">{{ $pending_sale_tax_invoices }} Sales Tax Invoice
+                                            are Approval pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_sale_returns > 0)
-                             <a class="d-flex" href="/sales/viewCustomerCreditNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/sales/viewCustomerCreditNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Sales Return Are Approval Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_sale_returns }} Sale Returns are Approval pending</small>
+                                        <small class="notification-text">{{ $pending_sale_returns }} Sale Returns are
+                                            Approval pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
 
-                        
+
                         @if($pending_purchase_requests > 0)
-                            <a class="d-flex" href="/purchase/viewDemandList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/purchase/viewDemandList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Purchase Requests Approval pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_requests }} Purchase Requests are pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_requests }} Purchase Requests
+                                            are pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_purchase_quotations_creation > 0)
-                            <a class="d-flex" href="/quotation/create_quotation?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/quotation/create_quotation?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Quotations Creation Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_quotations_creation }} Quotations are Creation pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_quotations_creation }}
+                                            Quotations are Creation pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_purchase_quotations > 0)
-                            <a class="d-flex" href="/quotation/quotation_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/quotation/quotation_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Quotations Approval pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_quotations }} Purchase Quotations are pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_quotations }} Purchase
+                                            Quotations are pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_purchase_orders_creation > 0)
-                            <a class="d-flex" href="/store/createPurchaseRequestForm?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/store/createPurchaseRequestForm?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Purchase Orders Creation pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_orders_creation }} Purchase Orders are Creation pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_orders_creation }} Purchase
+                                            Orders are Creation pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_purchase_orders > 0)
-                            <a class="d-flex" href="/store/viewPurchaseRequestList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/store/viewPurchaseRequestList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Purchase Orders Approval pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_orders }} Purchase Orders are Approval pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_orders }} Purchase Orders are
+                                            Approval pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_grns_creation > 0)
-                           <a class="d-flex" href="/purchase/createGoodsReceiptNoteForm?pageType=add&&parentCode={{ request()->parentCode }}&&m={{ request()->m }}#premiorsCable">
+                            <a class="d-flex"
+                                href="/purchase/createGoodsReceiptNoteForm?pageType=add&&parentCode={{ request()->parentCode }}&&m={{ request()->m }}#BrandUnlimited">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Goods Receipt Note Creation Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_grns_creation }} Goods Receipt Note are pending</small>
+                                        <small class="notification-text">{{ $pending_grns_creation }} Goods Receipt Note are
+                                            pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_grns > 0)
-                            <a class="d-flex" href="/purchase/viewGoodsReceiptNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/purchase/viewGoodsReceiptNoteList?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Goods Receipt Note Approval Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_grns }} Goods Receipt Note Approval Pending</small>
+                                        <small class="notification-text">{{ $pending_grns }} Goods Receipt Note Approval
+                                            Pending</small>
                                         <br>
                                     </div>
                                 </div>
@@ -446,33 +477,37 @@ CommonHelper::reconnectMasterDatabase();
                         @endif
 
                         @if($pending_purchase_invoices_creation > 0)
-                            <a class="d-flex" href="/purchase/viewGrnListForPurchaseVoucher?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/purchase/viewGrnListForPurchaseVoucher?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Purchase Invoice Creation Pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_invoices_creation }} Purchase Invoices Creation Pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_invoices_creation }} Purchase
+                                            Invoices Creation Pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_purchase_invoices > 0)
-                            <a class="d-flex" href="/purchase/viewPurchaseVoucherListThroughGrn?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/purchase/viewPurchaseVoucherListThroughGrn?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Purchase Invoice are pending</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_purchase_invoices }} Purchase Invoices are pending</small>
+                                        <small class="notification-text">{{ $pending_purchase_invoices }} Purchase Invoices
+                                            are pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
 
-                <!-- @if($pending_stock_transfers > 0)
+                        <!-- @if($pending_stock_transfers > 0)
                             <a class="d-flex" href="/store/stock_transfer_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
@@ -487,32 +522,36 @@ CommonHelper::reconnectMasterDatabase();
                         @endif -->
 
                         @if($pending_stock_in > 0)
-                            <a class="d-flex" href="/store/stock_in_form?m={{ request()->m ?? $m }}&parentCode={{ request()->parentCode ?? '264' }}&type=pending">
+                            <a class="d-flex"
+                                href="/store/stock_in_form?m={{ request()->m ?? $m }}&parentCode={{ request()->parentCode ?? '264' }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Stock Transfer</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_stock_in }} Stock IN are pending</small>
+                                        <small class="notification-text">{{ $pending_stock_in }} Stock IN are
+                                            pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
                         @if($pending_reseller_so_requests > 0)
-                            <a class="d-flex" href="/sales/reseller-so-requests?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                            <a class="d-flex"
+                                href="/sales/reseller-so-requests?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
                                         <p class="media-heading">
                                             <span class="fw-bolder">Pending Reseller SO Requests</span>
                                         </p>
-                                        <small class="notification-text">{{ $pending_reseller_so_requests }} Reseller SO Requests are pending</small>
+                                        <small class="notification-text">{{ $pending_reseller_so_requests }} Reseller SO
+                                            Requests are pending</small>
                                         <br>
                                     </div>
                                 </div>
                             </a>
                         @endif
-                            
+
                         {{-- @endforeach --}}
 
 
@@ -607,8 +646,7 @@ CommonHelper::reconnectMasterDatabase();
     <div class="headerwrap">
         <nav class="navbar  erp-menus">
             <div class="navbar-header">
-                <button class="navbar-toggle" type="button" data-toggle="collapse"
-                    data-target=".js-navbar-collapse">
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -619,125 +657,127 @@ CommonHelper::reconnectMasterDatabase();
                 <!--Company List Begin-->
                 <!--Company List End-->
                 @if (Session::get('run_company') != null)
-                    <?php
-            $Clause = "";
-            if (Session::get("run_company") == 3) {
-                $Clause = ",['id','!=',174]";
-            } else {
-                $Clause = "";
-            }
-
-            if (Auth::user()->id == 1040) {
-                $MainMenuTitles = DB::table("main_menu_title")
-                    ->select(["main_menu_id", "id"])
-                    ->where([
-                        ["status", "=", 1],
-                        ["main_menu_id", "!=", "HR"],
-                        ["main_menu_id", "!=", "HR Master"],
-                        ["main_menu_id", "!=", "Users"],
-                    ])
-                    ->groupBy("main_menu_id")
-                    ->orderBy("menu_type")
-                    ->orderBy("id")
-                    ->get();
-            } else {
-                $MainMenuTitles = DB::table("main_menu_title")
-                    ->select(["main_menu_id", "id"])
-                    ->where([["status", "=", 1]])
-                    ->groupBy("main_menu_id")
-                    ->orderBy("menu_type")
-                    ->orderBy("id")
-                    ->get();
-            }
-
-            $counter = 1;
-
-            foreach ($MainMenuTitles as $row) { ?>
-                    <ul class="nav navbar-nav">
-                        <li class="dropdown mega-dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
-                                    class="<?= $icons[$row->main_menu_id] ?>" aria-hidden="true"></i>
-                                <?php echo $row->main_menu_id; ?></a>
-                            <ul class="dropdown-menu mega-dropdown-menu row">
                                 <?php
-                     $m = 1;
+                    $Clause = "";
+                    if (Session::get("run_company") == 3) {
+                        $Clause = ",['id','!=',174]";
+                    } else {
+                        $Clause = "";
+                    }
 
-                     if (Session::get("run_company") != 2) {
-                         $MainMenuTitlesSub = DB::table("main_menu_title")
-                             ->select([
-                                 "main_menu_id",
-                                 "title",
-                                 "title_id",
-                                 "id",
-                             ])
-                             ->where([
-                                 ["main_menu_id", "=", $row->main_menu_id],
-                                 ["status", "=", 1],
-                                 ["id", "!=", 174],
-                             ])
-                             ->orderBy("id", "ASC")
-                             ->get();
-                     } else {
-                         $MainMenuTitlesSub = DB::table("main_menu_title")
-                             ->select([
-                                 "main_menu_id",
-                                 "title",
-                                 "title_id",
-                                 "id",
-                             ])
-                             ->where([
-                                 ["main_menu_id", "=", $row->main_menu_id],
-                                 ["status", "=", 1],
-                             ])
-                             ->orderBy("id", "ASC")
-                             ->get();
-                     }
+                    if (Auth::user()->id == 1040) {
+                        $MainMenuTitles = DB::table("main_menu_title")
+                            ->select(["main_menu_id", "id"])
+                            ->where([
+                                ["status", "=", 1],
+                                ["main_menu_id", "!=", "HR"],
+                                ["main_menu_id", "!=", "HR Master"],
+                                ["main_menu_id", "!=", "Users"],
+                            ])
+                            ->groupBy("main_menu_id")
+                            ->orderBy("menu_type")
+                            ->orderBy("id")
+                            ->get();
+                    } else {
+                        $MainMenuTitles = DB::table("main_menu_title")
+                            ->select(["main_menu_id", "id"])
+                            ->where([["status", "=", 1]])
+                            ->groupBy("main_menu_id")
+                            ->orderBy("menu_type")
+                            ->orderBy("id")
+                            ->get();
+                    }
 
-                     foreach ($MainMenuTitlesSub as $row1) { ?>
-                                <li class="col-sm-2">
-                                    <ul>
-                                        <li class="dropdown-header"><?php echo $row1->title; ?> </li>
-                                        <?php
-                           $InCompany = Session::get("run_company");
-                           //if($InCompany != 1):
-                           $data = DB::table("menu")
-                               ->select([
-                                   "m_type",
-                                   "name",
-                                   "m_controller_name",
-                                   "m_main_title",
-                                   "id",
-                                   "m_parent_code",
-                               ])
-                               ->where([
-                                   ["m_parent_code", "=", $row1->id],
-                                   ["page_type", "=", 1],
-                                   ["status", "=", 1],
-                               ])
-                               ->orderBy("id", "ASC")
-                               ->get();
-                           //else:
-                           //  $data = DB::table('menu')->select(['m_type','name','m_controller_name','m_main_title','id','m_parent_code'])->whereNotIn('id', [309,310,311])->where([['m_parent_code','=',$row1->id],['page_type', '=', 1],['status', '=', 1]])->orderBy('order_by', 'ASC')->get();
-                           //endif;
-                           foreach ($data as $dataValue) {
-                               $MakeUrl = url(
-                                   "" . $dataValue->m_controller_name . ""
-                               ); ?>
-                                        <li><a href="<?php echo url('' . $dataValue->m_controller_name . '?pageType=' . $dataValue->m_type . '&&parentCode=' . $dataValue->m_parent_code . '&&m=' . Session::get('run_company') . '#signsnow'); ?>"><i
-                                                    class="glyphicon glyphicon-plus-sign"></i> <?php echo $dataValue->name; ?></a>
-                                        </li>
-                                        <?php
-                           }
-                           ?>
-                                    </ul>
-                                </li>
-                                <?php }
-                     ?>
-                            </ul>
-                        </li>
-                    </ul>
-                    <?php }
-            ?>
+                    $counter = 1;
+
+                    foreach ($MainMenuTitles as $row) { ?>
+                                <ul class="nav navbar-nav">
+                                    <li class="dropdown mega-dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                                                class="<?= $icons[$row->main_menu_id] ?>" aria-hidden="true"></i>
+                                            <?php        echo $row->main_menu_id; ?></a>
+                                        <ul class="dropdown-menu mega-dropdown-menu row">
+                                            <?php
+                        $m = 1;
+
+                        if (Session::get("run_company") != 2) {
+                            $MainMenuTitlesSub = DB::table("main_menu_title")
+                                ->select([
+                                    "main_menu_id",
+                                    "title",
+                                    "title_id",
+                                    "id",
+                                ])
+                                ->where([
+                                    ["main_menu_id", "=", $row->main_menu_id],
+                                    ["status", "=", 1],
+                                    ["id", "!=", 174],
+                                ])
+                                ->orderBy("id", "ASC")
+                                ->get();
+                        } else {
+                            $MainMenuTitlesSub = DB::table("main_menu_title")
+                                ->select([
+                                    "main_menu_id",
+                                    "title",
+                                    "title_id",
+                                    "id",
+                                ])
+                                ->where([
+                                    ["main_menu_id", "=", $row->main_menu_id],
+                                    ["status", "=", 1],
+                                ])
+                                ->orderBy("id", "ASC")
+                                ->get();
+                        }
+
+                        foreach ($MainMenuTitlesSub as $row1) { ?>
+                                            <li class="col-sm-2">
+                                                <ul>
+                                                    <li class="dropdown-header"><?php            echo $row1->title; ?> </li>
+                                                    <?php
+                            $InCompany = Session::get("run_company");
+                            //if($InCompany != 1):
+                            $data = DB::table("menu")
+                                ->select([
+                                    "m_type",
+                                    "name",
+                                    "m_controller_name",
+                                    "m_main_title",
+                                    "id",
+                                    "m_parent_code",
+                                ])
+                                ->where([
+                                    ["m_parent_code", "=", $row1->id],
+                                    ["page_type", "=", 1],
+                                    ["status", "=", 1],
+                                ])
+                                ->orderBy("id", "ASC")
+                                ->get();
+                            //else:
+                            //  $data = DB::table('menu')->select(['m_type','name','m_controller_name','m_main_title','id','m_parent_code'])->whereNotIn('id', [309,310,311])->where([['m_parent_code','=',$row1->id],['page_type', '=', 1],['status', '=', 1]])->orderBy('order_by', 'ASC')->get();
+                            //endif;
+                            foreach ($data as $dataValue) {
+                                $MakeUrl = url(
+                                    "" . $dataValue->m_controller_name . ""
+                                ); ?>
+                                                    <li><a
+                                                            href="<?php                echo url('' . $dataValue->m_controller_name . '?pageType=' . $dataValue->m_type . '&&parentCode=' . $dataValue->m_parent_code . '&&m=' . Session::get('run_company') . '#signsnow'); ?>"><i
+                                                                class="glyphicon glyphicon-plus-sign"></i>
+                                                            <?php                echo $dataValue->name; ?></a>
+                                                    </li>
+                                                    <?php
+                            }
+                                           ?>
+                                                </ul>
+                                            </li>
+                                            <?php        }
+                                     ?>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <?php    }
+                            ?>
                 @endif
             </div>
         </nav>
@@ -903,8 +943,8 @@ CommonHelper::reconnectMasterDatabase();
     }
 </style>
 <div style="display:none;" class="sliding_form slide_out">
-    <a href="#" id="form_trigger" style="background: #121111 !important;"
-        onclick="getOnlineUsersAjax()">Online User's</a>
+    <a href="#" id="form_trigger" style="background: #121111 !important;" onclick="getOnlineUsersAjax()">Online
+        User's</a>
     <div class="sliding_form_inner">
         <h3>Online User's</h3>
         <hr>
@@ -913,11 +953,11 @@ CommonHelper::reconnectMasterDatabase();
 </div>
 <?php endif; ?>
 <script !src="">
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         var formWidth = $('.sliding_form').width();
         $('.sliding_form').css('right', '-' + formWidth + 'px');
-        $("#form_trigger").on('click', function() {
+        $("#form_trigger").on('click', function () {
 
             if ($('.sliding_form').hasClass('slide_out')) {
                 $('.sliding_form').removeClass('slide_out').addClass('slide_in')
@@ -934,7 +974,7 @@ CommonHelper::reconnectMasterDatabase();
                         m: m
                     },
 
-                    success: function(response) {
+                    success: function (response) {
                         $('#AjaxDataOnlineUsers').html(response);
                     }
                 });
@@ -963,14 +1003,14 @@ CommonHelper::reconnectMasterDatabase();
         $.ajax({
             url: '{{ route('markAsRead') }}', // The route in your web.php
             type: 'GET', // Or 'POST' if you prefer
-            success: function(response) {
-                $(".notification-count").each(function(index, element) {
+            success: function (response) {
+                $(".notification-count").each(function (index, element) {
                     $(element).text(0);
                 })
                 $(".media-list").html("");
                 $(".mark-all-as-read").prop("disabled", "disabled");
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.log('Error:', xhr.responseText);
             }
         });

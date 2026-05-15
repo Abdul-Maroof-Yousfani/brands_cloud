@@ -1660,7 +1660,7 @@ class FinanceController extends Controller
 		}
 
 
-		return redirect('/finance/viewCashFlow?pageType=&&parentCode=125&&m=1#premiorsCable');
+		return redirect('/finance/viewCashFlow?pageType=&&parentCode=125&&m=1#BrandUnlimited');
 
 	}
 
@@ -1732,7 +1732,7 @@ class FinanceController extends Controller
 		])->first();
 
 		if (!$BankReconciliation) {
-			return redirect('/finance/bankReconciliationView?pageType=&&parentCode=125&&m=1#premiorsCable')->withErrors('record not found');
+			return redirect('/finance/bankReconciliationView?pageType=&&parentCode=125&&m=1#BrandUnlimited')->withErrors('record not found');
 		}
 
 		$CreditBankReconciliationData = BankReconciliationData::where([
@@ -1822,11 +1822,11 @@ class FinanceController extends Controller
 			}
 
 
-			return redirect('/finance/bankReconciliationForm?pageType=&&parentCode=125&&m=1#premiorsCable')->with('success', 'Record inserted successfully');
+			return redirect('/finance/bankReconciliationForm?pageType=&&parentCode=125&&m=1#BrandUnlimited')->with('success', 'Record inserted successfully');
 		} catch (QueryException $e) {
 			// Log or handle the exception as needed
 			DB::Connection('mysql2')->rollback();
-			return redirect('/finance/bankReconciliationForm?pageType=&&parentCode=125&&m=1#premiorsCable')->withErrors('Error inserting record. Please try again.')->withInput();
+			return redirect('/finance/bankReconciliationForm?pageType=&&parentCode=125&&m=1#BrandUnlimited')->withErrors('Error inserting record. Please try again.')->withInput();
 		}
 
 
