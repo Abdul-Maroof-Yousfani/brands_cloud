@@ -23,7 +23,7 @@ class AdminResellerSoController extends Controller
         $requests = DB::connection('mysql2')->table($db1 . '.reseller_so_requests as r')
             ->join($db1 . '.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
             ->join($db2 . '.customers as c', 'l.customer_id', '=', 'c.id')
-            ->select('r.*', 'c.name as reseller_name', 'l.email')
+            ->select('r.*', 'c.name as reseller_name', 'l.email', 'r.customer_name')
             ->orderBy('r.id', 'DESC')
             ->get();
 
@@ -39,7 +39,7 @@ class AdminResellerSoController extends Controller
             ->join($db1 . '.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
             ->join($db2 . '.customers as c', 'l.customer_id', '=', 'c.id')
             ->where('r.id', $id)
-            ->select('r.*', 'c.name as reseller_name', 'c.id as customer_id', 'l.email')
+            ->select('r.*', 'c.name as reseller_name', 'c.id as customer_id', 'l.email', 'r.customer_name')
             ->first();
 
         if (!$request) {
