@@ -1899,6 +1899,12 @@ class MobileApplicationController extends Controller
             ->where('user_id', Auth::user()->id) // Filter by user_id
             ->get();
 
+        $merchandise = $merchandise->map(function ($item) {
+            $item->before_rack = $item->before_rack ? url('storage/' . $item->before_rack) : null;
+            $item->after_rack = $item->after_rack ? url('storage/' . $item->after_rack) : null;
+            return $item;
+        });
+
 
         return response()->json([
             'success' => true,
