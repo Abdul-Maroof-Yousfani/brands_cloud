@@ -52,11 +52,11 @@
                         <td>
                             <div class="mb-1">
                                 <span class="small text-muted">Current Brand 1:</span><br>
-                                <span class="fw-bold">{{ $survey->currentlyUsingBrand->name ?? 'N/A' }}</span>
+                                <span class="fw-bold">{{ $survey->currently_using_brand_id ?? 'N/A' }}</span>
                             </div>
                             <div>
                                 <span class="small text-muted">Current Brand 2:</span><br>
-                                <span class="fw-bold">{{ $survey->currentlyUsingBrand2->name ?? 'N/A' }}</span>
+                                <span class="fw-bold">{{ $survey->currently_using_brand_2_id ?? 'N/A' }}</span>
                             </div>
                         </td>
                         <td>
