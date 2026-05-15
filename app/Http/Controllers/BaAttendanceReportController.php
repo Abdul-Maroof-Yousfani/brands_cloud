@@ -120,7 +120,22 @@ class BaAttendanceReportController extends Controller
 
             if (empty($brandIds)) continue;
 
-            $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $brandIds)->pluck('name')->toArray();
+            // Filter brandIds to only those that have a target for this BA in this month/year
+            $dt_context = Carbon::parse($dates[0]);
+            $targetedBrandIds = DB::connection('mysql2')->table('target_items')
+                ->where('employee_id', $ba->emp_id)
+                ->whereIn('brand_id', $brandIds)
+                ->where('year', $dt_context->year)
+                ->where('month', (int)$dt_context->month)
+                ->where('target_type', $targetType)
+                ->where('target', '>', 0)
+                ->pluck('brand_id')
+                ->unique()
+                ->toArray();
+
+            if (empty($targetedBrandIds)) continue;
+
+            $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $targetedBrandIds)->pluck('name')->toArray();
             
             $baData = [
                 'emp_id' => $ba->emp_id,
@@ -128,6 +143,9 @@ class BaAttendanceReportController extends Controller
                 'brands' => implode(', ', $brandNames),
                 'days' => []
             ];
+
+            // Update brandIds to only targeted ones for the rest of the processing
+            $brandIds = $targetedBrandIds;
 
             $baData['customer'] = $formation->customer->name ?? 'N/A';
             $baData['city'] = 'N/A';
