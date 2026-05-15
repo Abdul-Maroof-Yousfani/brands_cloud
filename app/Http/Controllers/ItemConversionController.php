@@ -58,11 +58,17 @@ class ItemConversionController extends Controller
             $remarks = $request->remarks;
             $warehouse_id = $request->warehouse_id;
 
+            $total_out_amount = 0;
+            $total_in_amount = 0;
+
             // Existing Inventory (Stock OUT)
             if (isset($request->existing_items)) {
                 foreach ($request->existing_items as $item) {
                     if (empty($item['item_id']) || empty($item['qty']))
                         continue;
+
+                    $item_amount = $item['qty'] * $item['rate'];
+                    $total_out_amount += $item_amount;
 
                     DB::connection('mysql2')->table('stock')->insert([
                         'voucher_no' => $conversion_no,
@@ -71,12 +77,30 @@ class ItemConversionController extends Controller
                         'sub_item_id' => $item['item_id'],
                         'qty' => $item['qty'],
                         'rate' => $item['rate'],
-                        'amount' => $item['qty'] * $item['rate'],
+                        'amount' => $item_amount,
                         'warehouse_id' => $warehouse_id,
                         'status' => 1,
                         'description' => 'Conversion OUT: ' . $remarks,
                         'username' => Auth::user()->name,
                         'created_date' => date('Y-m-d')
+                    ]);
+
+                    // Financial Transaction (Credit Inventory)
+                    $product_name = DB::connection('mysql2')->table('subitem')->where('id', $item['item_id'])->value('product_name');
+                    DB::connection('mysql2')->table('transactions')->insert([
+                        'acc_id' => config('accounts.item_conversion.inventory.id'),
+                        'acc_code' => config('accounts.item_conversion.inventory.code'),
+                        'particulars' => $conversion_no . ' - ' . $product_name,
+                        'debit_credit' => 0, // Credit
+                        'amount' => $item_amount,
+                        'voucher_no' => $conversion_no,
+                        'voucher_type' => 53,
+                        'v_date' => $date,
+                        'date' => date('Y-m-d'),
+                        'time' => date('H:i:s'),
+                        'username' => Auth::user()->name,
+                        'status' => 1,
+                        'action' => 'create'
                     ]);
                 }
             }
@@ -87,6 +111,9 @@ class ItemConversionController extends Controller
                     if (empty($item['item_id']) || empty($item['qty']))
                         continue;
 
+                    $item_amount = $item['qty'] * $item['rate'];
+                    $total_in_amount += $item_amount;
+
                     DB::connection('mysql2')->table('stock')->insert([
                         'voucher_no' => $conversion_no,
                         'voucher_date' => $date,
@@ -94,14 +121,52 @@ class ItemConversionController extends Controller
                         'sub_item_id' => $item['item_id'],
                         'qty' => $item['qty'],
                         'rate' => $item['rate'],
-                        'amount' => $item['qty'] * $item['rate'],
+                        'amount' => $item_amount,
                         'warehouse_id' => $warehouse_id,
                         'status' => 1,
                         'description' => 'Conversion IN: ' . $remarks,
                         'username' => Auth::user()->name,
                         'created_date' => date('Y-m-d')
                     ]);
+
+                    // Financial Transaction (Debit Inventory)
+                    $product_name = DB::connection('mysql2')->table('subitem')->where('id', $item['item_id'])->value('product_name');
+                    DB::connection('mysql2')->table('transactions')->insert([
+                        'acc_id' => config('accounts.item_conversion.inventory.id'),
+                        'acc_code' => config('accounts.item_conversion.inventory.code'),
+                        'particulars' => $conversion_no . ' - ' . $product_name,
+                        'debit_credit' => 1, // Debit
+                        'amount' => $item_amount,
+                        'voucher_no' => $conversion_no,
+                        'voucher_type' => 53,
+                        'v_date' => $date,
+                        'date' => date('Y-m-d'),
+                        'time' => date('H:i:s'),
+                        'username' => Auth::user()->name,
+                        'status' => 1,
+                        'action' => 'create'
+                    ]);
                 }
+            }
+
+            // Record Conversion Variance/Expense to balance the entry
+            $diff = $total_in_amount - $total_out_amount;
+            if ($diff != 0) {
+                DB::connection('mysql2')->table('transactions')->insert([
+                    'acc_id' => config('accounts.item_conversion.conversion_account.id'),
+                    'acc_code' => config('accounts.item_conversion.conversion_account.code'),
+                    'particulars' => 'Item Conversion Adjustment: ' . $conversion_no,
+                    'debit_credit' => ($diff > 0) ? 0 : 1, // Credit (0) if Gain, Debit (1) if Loss
+                    'amount' => abs($diff),
+                    'voucher_no' => $conversion_no,
+                    'voucher_type' => 53,
+                    'v_date' => $date,
+                    'date' => date('Y-m-d'),
+                    'time' => date('H:i:s'),
+                    'username' => Auth::user()->name,
+                    'status' => 1,
+                    'action' => 'create'
+                ]);
             }
 
             DB::connection('mysql2')->commit();

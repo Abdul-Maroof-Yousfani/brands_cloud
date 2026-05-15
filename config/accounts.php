@@ -130,4 +130,15 @@ return [
         'id' => 1893,
         'code' => '3-1',
     ],
+
+    'item_conversion' => [
+        'inventory' => [
+            'id' => 1101,
+            'code' => '1-2-1',
+        ],
+        'conversion_account' => [
+            'id' => 1928,
+            'code' => '4-162',
+        ],
+    ],
 ];
