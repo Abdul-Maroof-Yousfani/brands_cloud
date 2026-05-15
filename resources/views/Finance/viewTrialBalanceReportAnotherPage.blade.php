@@ -341,6 +341,11 @@ $m = Session::get('run_company');
                     $cheque_date = $cheque_data->cheque_date;
                     CommonHelper::reconnectMasterDatabase();
                 endif;
+
+                if ($trow->voucher_type == 53):
+                    $page_typ = 'Item Conversion';
+                    $PageTitle = 'Item Conversion Detail';
+                endif;
                     ?>
 
                     <tr title="<?php        echo $trow->voucher_type ?>" class="hov" style="">
