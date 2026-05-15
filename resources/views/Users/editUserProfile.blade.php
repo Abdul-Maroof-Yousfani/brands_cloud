@@ -119,8 +119,12 @@
                 $("#profile_msg").html("<span style='color:green;'>Profile picture updated!</span>");
             },
 
-            error: function(){
-                $("#profile_msg").html("<span style='color:red;'>Upload failed!</span>");
+            error: function(xhr){
+                let errorMsg = "Upload failed!";
+                if(xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                $("#profile_msg").html("<span style='color:red;'>" + errorMsg + "</span>");
             }
         });
     });
