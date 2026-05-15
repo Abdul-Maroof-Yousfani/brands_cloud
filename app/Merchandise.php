@@ -19,4 +19,9 @@ class Merchandise extends Model
     {
         return $this->belongsTo(Customer::class,'distributor_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
