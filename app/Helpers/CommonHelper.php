@@ -2534,6 +2534,11 @@ class CommonHelper
         return $query->count();
     }
 
+    public static function getPendingResellerSoRequestsCount()
+    {
+        return DB::connection("mysql")->table("reseller_so_requests")->where("status", 0)->count();
+    }
+
     public static function getPendingStockInCount()
     {
         $user = Auth::user();

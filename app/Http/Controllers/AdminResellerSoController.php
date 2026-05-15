@@ -15,15 +15,20 @@ class AdminResellerSoController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $db1 = config('database.connections.mysql.database');
         $db2 = config('database.connections.mysql2.database');
 
-        $requests = DB::connection('mysql2')->table($db1 . '.reseller_so_requests as r')
+        $query = DB::connection('mysql2')->table($db1 . '.reseller_so_requests as r')
             ->join($db1 . '.reseller_logins as l', 'r.reseller_id', '=', 'l.id')
-            ->join($db2 . '.customers as c', 'l.customer_id', '=', 'c.id')
-            ->select('r.*', 'c.name as reseller_name', 'l.email', 'r.customer_name')
+            ->join($db2 . '.customers as c', 'l.customer_id', '=', 'c.id');
+
+        if ($request->type == 'pending') {
+            $query->where('r.status', 0);
+        }
+
+        $requests = $query->select('r.*', 'c.name as reseller_name', 'l.email', 'r.customer_name')
             ->orderBy('r.id', 'DESC')
             ->get();
 

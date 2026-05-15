@@ -243,6 +243,7 @@ CommonHelper::reconnectMasterDatabase();
                         $pending_purchase_invoices_creation = \App\Helpers\CommonHelper::pendingDocuments("goods_receipt_note", "grn_status", 2, "status", 1, false, ['type' => ['!=', 3]]);
                         $pending_stock_transfers = \App\Helpers\CommonHelper::pendingDocuments("stock_transfer", "tr_status", 1, "status", 1);
                         $pending_stock_in = \App\Helpers\CommonHelper::getPendingStockInCount();
+                        $pending_reseller_so_requests = \App\Helpers\CommonHelper::getPendingResellerSoRequestsCount();
                         $delivery_note_creatable = \App\Helpers\CommonHelper::deliveryNoteCreatable();
                         $total_pending = 
                             $pending_delivery_notes +
@@ -260,6 +261,7 @@ CommonHelper::reconnectMasterDatabase();
                             $pending_purchase_invoices_creation +
                             $pending_stock_transfers +
                             $pending_stock_in +
+                            $pending_reseller_so_requests +
                             $delivery_note_creatable;
                     @endphp
         <ul class="profile-admin d-flex">
@@ -470,7 +472,7 @@ CommonHelper::reconnectMasterDatabase();
                             </a>
                         @endif
 
-insert_opening_data_single                        <!-- @if($pending_stock_transfers > 0)
+                <!-- @if($pending_stock_transfers > 0)
                             <a class="d-flex" href="/store/stock_transfer_list?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
                                 <div class="list-item d-flex align-items-start">
                                     <div class="list-item-body flex-grow-1">
@@ -492,6 +494,19 @@ insert_opening_data_single                        <!-- @if($pending_stock_transf
                                             <span class="fw-bolder">Stock Transfer</span>
                                         </p>
                                         <small class="notification-text">{{ $pending_stock_in }} Stock IN are pending</small>
+                                        <br>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
+                        @if($pending_reseller_so_requests > 0)
+                            <a class="d-flex" href="/sales/reseller-so-requests?m={{ request()->m }}&parentCode={{ request()->parentCode }}&type=pending">
+                                <div class="list-item d-flex align-items-start">
+                                    <div class="list-item-body flex-grow-1">
+                                        <p class="media-heading">
+                                            <span class="fw-bolder">Pending Reseller SO Requests</span>
+                                        </p>
+                                        <small class="notification-text">{{ $pending_reseller_so_requests }} Reseller SO Requests are pending</small>
                                         <br>
                                     </div>
                                 </div>
