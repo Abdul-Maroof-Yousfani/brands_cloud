@@ -572,7 +572,7 @@ class MobileApplicationController extends Controller
             $stock = $stockData->get($p->id);
             $available = 0;
             if ($stock) {
-                $available = max(0, $stock->total_in - $stock->total_out);
+                $available = abs($stock->total_in - $stock->total_out);
             }
             return [
                 'product_id' => $p->id,
