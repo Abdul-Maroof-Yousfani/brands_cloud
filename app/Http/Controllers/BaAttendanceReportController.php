@@ -133,9 +133,24 @@ class BaAttendanceReportController extends Controller
                 ->unique()
                 ->toArray();
 
-            if (empty($targetedBrandIds)) continue;
+            $hasAttendance = false;
+            if (isset($allAttendanceData[$ba->emp_id])) {
+                foreach ($allAttendanceData[$ba->emp_id] as $att) {
+                    if (($att['clock_in'] && $att['clock_in'] != '-') || (isset($att['attendance_status']) && $att['attendance_status'] == 'P')) {
+                        $hasAttendance = true;
+                        break;
+                    }
+                }
+            }
 
-            $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $targetedBrandIds)->pluck('name')->toArray();
+            if (empty($targetedBrandIds) && !$hasAttendance) continue;
+
+            if (!empty($targetedBrandIds)) {
+                $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $targetedBrandIds)->pluck('name')->toArray();
+                $brandIds = $targetedBrandIds; // Only process targeted brands
+            } else {
+                $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $brandIds)->pluck('name')->toArray();
+            }
             
             $baData = [
                 'emp_id' => $ba->emp_id,
@@ -143,9 +158,6 @@ class BaAttendanceReportController extends Controller
                 'brands' => implode(', ', $brandNames),
                 'days' => []
             ];
-
-            // Update brandIds to only targeted ones for the rest of the processing
-            $brandIds = $targetedBrandIds;
 
             $baData['customer'] = $formation->customer->name ?? 'N/A';
             $baData['city'] = 'N/A';
