@@ -350,6 +350,7 @@ Route::group(['prefix' => 'ba', 'middleware' => 'mysql2', 'before' => 'csrf'], f
     Route::get('merchandise-report', 'BAReportingController@merchandiseReport')->name('ba.merchandise_report');
     Route::get('list-merchandise-report', 'BAReportingController@listMerchandiseReport')->name('list.merchandise_report');
 
+
     Route::get('ba-attendance-report', 'BaAttendanceReportController@index')->name('ba.reports.attendance');
     Route::post('ba-attendance-report-generate', 'BaAttendanceReportController@generateReport')->name('ba.reports.attendance.generate');
 
@@ -2527,18 +2528,18 @@ require('modules/assets.php');
 Route::prefix('reseller')->group(function () {
     Route::get('/login', 'ResellerLoginController@showLoginForm')->name('reseller.login');
     Route::post('/login', 'ResellerLoginController@login')->name('reseller.login.submit');
-    
+
     Route::middleware(['auth:reseller'])->group(function () {
         Route::get('/dashboard', 'ResellerLoginController@dashboard')->name('reseller.dashboard');
         Route::get('/logout', 'ResellerLoginController@logout')->name('reseller.logout');
-        
+
         // SO Requests
         Route::get('/so-requests/create', 'ResellerPortalController@createSoRequest')->name('reseller.so.create');
         Route::get('/so-requests/get-products-by-brand', 'ResellerPortalController@getProductsByBrand')->name('reseller.so.get_products');
         Route::post('/so-requests/store', 'ResellerPortalController@storeSoRequest')->name('reseller.so.store');
         Route::get('/so-requests', 'ResellerPortalController@soRequestList')->name('reseller.so.list');
         Route::get('/so-requests/{id}', 'ResellerPortalController@showSoRequest')->name('reseller.so.show');
-        
+
         // Inventory
         Route::get('/inventory/stock', 'ResellerPortalController@myStock')->name('reseller.inventory.stock');
     });
