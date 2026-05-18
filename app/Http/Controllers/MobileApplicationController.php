@@ -451,22 +451,22 @@ class MobileApplicationController extends Controller
             ], 422);
         }
 
-        $total_stock = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $request->product_id)
+        $total_in = DB::Connection('mysql2')->table('ba_stock')
+            ->where('sub_item_id', $request->product_id)
             ->where('customer_id', $request->distributor_id)
-            ->whereIn("voucher_type", [1, 9])
+            ->where('status', 1)
+            ->whereIn("voucher_type", [51, 1, 4, 6, 10, 11])
+            ->where('transfer_status', '!=', 1)
             ->sum('qty');
 
-        $total_sale = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $request->product_id)
+        $total_out = DB::Connection('mysql2')->table('ba_stock')
+            ->where('sub_item_id', $request->product_id)
             ->where('customer_id', $request->distributor_id)
-            ->where('voucher_type', 50)
+            ->where('status', 1)
+            ->whereIn("voucher_type", [50, 2, 5, 3, 9])
             ->sum('qty');
 
-        $total_return = DB::Connection('mysql2')->table('ba_stock')->where('sub_item_id', $request->product_id)
-            ->where('customer_id', $request->distributor_id)
-            ->where('voucher_type', 51)
-            ->sum('qty');
-
-        $available_qty = max(0, $total_stock + $total_return - $total_sale);
+        $available_qty = abs($total_in - $total_out);
 
         return response()->json([
             'message' => 'Total stock for product',
