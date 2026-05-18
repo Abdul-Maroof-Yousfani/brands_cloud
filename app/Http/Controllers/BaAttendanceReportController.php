@@ -33,18 +33,18 @@ class BaAttendanceReportController extends Controller
             $dates[] = $date->format('Y-m-d');
         }
 
-        $bas = Employees::whereIn('emp_id', function($query) use ($brand_id) {
-                $query->select('employee_id')
-                    ->from('b_a_formations')
-                    ->when(!empty($brand_id), function($q) use ($brand_id) {
-                        $q->whereJsonContains('brands_ids', (string)$brand_id);
-                    });
-            })
-            ->when(!empty($employee_ids), function($query) use ($employee_ids) {
+        $bas = Employees::whereIn('emp_id', function ($query) use ($brand_id) {
+            $query->select('employee_id')
+                ->from('b_a_formations')
+                ->when(!empty($brand_id), function ($q) use ($brand_id) {
+                    $q->whereJsonContains('brands_ids', (string) $brand_id);
+                });
+        })
+            ->when(!empty($employee_ids), function ($query) use ($employee_ids) {
                 $query->whereIn('emp_id', $employee_ids);
             })
             ->get()
-            ->sortBy(function($ba) {
+            ->sortBy(function ($ba) {
                 $formation = BAFormation::where('employee_id', $ba->emp_id)->first();
                 if ($formation && $formation->brands_ids) {
                     $bIds = json_decode($formation->brands_ids, true);
@@ -77,7 +77,7 @@ class BaAttendanceReportController extends Controller
         // Prepare requests for all BAs
         $requests = [];
         foreach ($bas as $ba) {
-            $requests[$ba->emp_id] = function() use ($client, $ba, $startDate, $endDate) {
+            $requests[$ba->emp_id] = function () use ($client, $ba, $startDate, $endDate) {
                 return $client->getAsync("https://brands.smrsoftwares.com/api/viewAttendanceReport?emp_id={$ba->emp_id}&from_date={$startDate->format('Y-m-d')}&to_date={$endDate->format('Y-m-d')}");
             };
         }
@@ -111,14 +111,15 @@ class BaAttendanceReportController extends Controller
 
             // If a specific brand is filtered, only process that brand
             if (!empty($brand_id)) {
-                if (in_array((string)$brand_id, $brandIds)) {
-                    $brandIds = [(string)$brand_id];
+                if (in_array((string) $brand_id, $brandIds)) {
+                    $brandIds = [(string) $brand_id];
                 } else {
                     $brandIds = []; // BA doesn't belong to filtered brand
                 }
             }
 
-            if (empty($brandIds)) continue;
+            if (empty($brandIds))
+                continue;
 
             // Filter brandIds to only those that have a target for this BA in this month/year
             $dt_context = Carbon::parse($dates[0]);
@@ -126,7 +127,7 @@ class BaAttendanceReportController extends Controller
                 ->where('employee_id', $ba->emp_id)
                 ->whereIn('brand_id', $brandIds)
                 ->where('year', $dt_context->year)
-                ->where('month', (int)$dt_context->month)
+                ->where('month', (int) $dt_context->month)
                 ->where('target_type', $targetType)
                 ->where('target', '>', 0)
                 ->pluck('brand_id')
@@ -143,7 +144,8 @@ class BaAttendanceReportController extends Controller
                 }
             }
 
-            if (empty($targetedBrandIds) && !$hasAttendance) continue;
+            if (empty($targetedBrandIds) && !$hasAttendance)
+                continue;
 
             if (!empty($targetedBrandIds)) {
                 $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $targetedBrandIds)->pluck('name')->toArray();
@@ -151,7 +153,8 @@ class BaAttendanceReportController extends Controller
             } else {
                 $brandNames = DB::connection('mysql2')->table('brands')->whereIn('id', $brandIds)->pluck('name')->toArray();
             }
-            
+
+
             $baData = [
                 'emp_id' => $ba->emp_id,
                 'name' => $ba->name,
@@ -188,7 +191,7 @@ class BaAttendanceReportController extends Controller
                     $att = $apiAttendance[$dateStr];
                     $dayData['time_in'] = $att['clock_in'] ?? '-';
                     $dayData['time_out'] = $att['clock_out'] ?? '-';
-                    
+
                     if (($att['clock_in'] && $att['clock_in'] != '-') || (isset($att['attendance_status']) && $att['attendance_status'] == 'P')) {
                         $totalPresent++;
                     } else {
@@ -206,10 +209,10 @@ class BaAttendanceReportController extends Controller
                         ->where('employee_id', $ba->emp_id)
                         ->where('brand_id', $bId)
                         ->where('year', $dt->year)
-                        ->where('month', (int)$dt->month)
+                        ->where('month', (int) $dt->month)
                         ->where('target_type', $targetType)
                         ->sum('target');
-                    
+
                     if ($monthlyTarget > 0) {
                         $daysInMonth = $dt->daysInMonth;
                         $dayData['target'] += round($monthlyTarget / $daysInMonth, 2);
@@ -224,14 +227,14 @@ class BaAttendanceReportController extends Controller
                             ->where('retail_sale_orders.user_id', $user->id)
                             ->where('retail_sale_order_details.brand_id', $bId)
                             ->whereDate('retail_sale_orders.sale_order_date', $dateStr);
-                        
+
                         if ($targetType == 'amount') {
                             $query->join('subitem', 'subitem.id', '=', 'retail_sale_order_details.product_id');
                             $ach = $query->sum(DB::raw('subitem.sale_price * retail_sale_order_details.qty'));
                         } else {
                             $ach = $query->sum('retail_sale_order_details.qty');
                         }
-                        
+
                         $dayData['ach'] += $ach;
                     }
                 }
@@ -249,7 +252,7 @@ class BaAttendanceReportController extends Controller
                 ->where('employee_id', $ba->emp_id)
                 ->whereIn('brand_id', $brandIds)
                 ->where('year', $dt->year)
-                ->where('month', (int)$dt->month)
+                ->where('month', (int) $dt->month)
                 ->where('target_type', $targetType)
                 ->sum('target');
 
@@ -266,14 +269,14 @@ class BaAttendanceReportController extends Controller
             $reportData[] = $baData;
         }
 
-        usort($reportData, function($a, $b) {
+        usort($reportData, function ($a, $b) {
             return strcmp($a['brands'], $b['brands']);
         });
 
         if ($request->export == 'excel') {
             $exportData = [];
             $headings = ['BA Code', 'BA Name', 'Customer', 'Brand(s)'];
-            
+
             foreach ($dates as $date) {
                 $d = \Carbon\Carbon::parse($date)->format('d M Y');
                 $headings[] = $d . ' (In)';
@@ -281,7 +284,7 @@ class BaAttendanceReportController extends Controller
                 $headings[] = $d . ' (Tgt)';
                 $headings[] = $d . ' (Ach)';
             }
-            
+
             $headings[] = 'Total Pres';
             $headings[] = 'Total Abs';
             $headings[] = 'Total Tgt';
@@ -294,19 +297,19 @@ class BaAttendanceReportController extends Controller
                     $ba['customer'],
                     $ba['brands']
                 ];
-                
+
                 foreach ($dates as $date) {
                     $row[] = $ba['days'][$date]['time_in'];
                     $row[] = $ba['days'][$date]['time_out'];
                     $row[] = $ba['days'][$date]['target'];
                     $row[] = $ba['days'][$date]['ach'];
                 }
-                
+
                 $row[] = $ba['total_present'];
                 $row[] = $ba['total_absent'];
                 $row[] = $ba['total_target'];
                 $row[] = $ba['total_ach'];
-                
+
                 $exportData[] = $row;
             }
 
