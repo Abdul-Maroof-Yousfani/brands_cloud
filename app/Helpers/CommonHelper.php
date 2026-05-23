@@ -2781,8 +2781,11 @@ class CommonHelper
     public static function get_id_from_db_by_name($name, $table = null)
     {
         if ($table) {
-            // dd($name,$table);
-            $data = DB::Connection('mysql2')->table($table)->where('name', $name)->first();
+            if ($table == 'customer_group') {
+                $data = DB::Connection('mysql2')->table($table)->where('customer_group', $name)->first();
+            } else {
+                $data = DB::Connection('mysql2')->table($table)->where('name', $name)->first();
+            }
             return $data->id ?? 0;
         } else {
             return 0;

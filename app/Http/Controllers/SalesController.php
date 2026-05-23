@@ -485,7 +485,7 @@ public function exportCustomers(Request $request)
             continue; // Skip the header row
         }
 
-        $row = array_pad($row, 45, null); // ensure enough indexes
+        $row = array_pad($row, 47, null); // ensure enough indexes
 
         // city, state, country
         $cityData = CommonHelper::get_city_id_by_name($row[7]);
@@ -538,7 +538,7 @@ public function exportCustomers(Request $request)
             'region_id' => Region::where('region_name', $row[45])->value('id'),
             'warehouse_to' => $row[42] ?? null,
             'username' => Auth::user()->name,
-            'customer_group_id' => CommonHelper::get_id_from_db_by_name($row[31], 'customer_group') ?? NULL,
+            'customer_group_id' => CommonHelper::get_id_from_db_by_name($row[46], 'customer_group') ?? NULL,
             'date' => date("Y-m-d"),
             'time' => date("H:i:s"),
             'action' => 'create',
