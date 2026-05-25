@@ -1329,6 +1329,7 @@ Route::group(['prefix' => 'pdc', 'middleware' => 'mysql2', 'before' => 'csrf'], 
     Route::Post('/addCurrencyForm', 'PurchaseDataCallController@addCurrencyForm');
 
 
+
     // for sub item ajax
     Route::get('/createSubItemFormAjax/{id?}', 'PurchaseDataCallController@createSubItemFormAjax');
     Route::Post('/addSubItemDetailAjax', 'PurchaseDataCallController@addSubItemDetailAjax');
@@ -2485,6 +2486,11 @@ Route::group(['prefix' => '', 'middleware' => 'mysql2', 'before' => 'csrf'], fun
     Route::get('/set_company/{id?}', 'PaymentVoucherDetails@set_company');
     Route::get('/abc', 'PaymentVoucherDetails@abc');
     Route::get('/approve_new_pv', 'PaymentVoucherDetails@approve_new_pv');
+});
+
+// Currency CRUD Routes
+Route::group(['middleware' => 'mysql2', 'before' => 'csrf'], function () {
+    Route::resource('currency', 'CurrencyController');
 });
 
 
