@@ -179,6 +179,21 @@ var counter = 1;
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label"> <a href="#" onclick="showDetailModelOneParamerter('pdc/createCurrencyTypeForm')" class="">Currency</a></label>
+                                            <select onchange="get_rate(); claculation(1);" name="curren" id="curren" class="form-control select2 requiredField">
+                                                <option value="0,1"> PKR</option>
+                                                @foreach(\App\Helpers\CommonHelper::get_all_currency() as $currency)
+                                                    <option value="{{ $currency->id }},{{ $currency->rate }}">{{ $currency->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <label class="sf-label"> Currency Rate</label>
+                                            <input class="form-control" type="text" name="currency_rate" id="currency_rate" />
+                                        </div>
+                                    </div>
                                     <div class="lineHeight">&nbsp;</div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
@@ -209,8 +224,6 @@ var counter = 1;
                                                             class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center">Rate<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
-                                                    <th class="text-center">Amount(PKR)<span
-                                                            class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center">Amount<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center">Tax %<span
@@ -222,6 +235,8 @@ var counter = 1;
                                                     <th class="text-center">Discount Amount<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center">Net Amount<span
+                                                            class="rflabelsteric"><strong>*</strong></span></th>
+                                                    <th class="text-center">Amount(PKR)<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
                                                     <th class="text-center">Add / Delete<span
                                                             class="rflabelsteric"><strong>*</strong></span></th>
@@ -278,10 +293,6 @@ var counter = 1;
                                                             id="rate1" placeholder="RATE" min="1" value="">
                                                     </td>
                                                     <td>
-                                                        <input type="text" class="form-control row_amount_pkr" name="amount[]"
-                                                            id="amount1" placeholder="AMOUNT" min="1" value="" readonly>
-                                                    </td>
-                                                    <td>
                                                         <input type="text" class="form-control actual_amount" name="actual_amount[]"
                                                             id="actual_amount1" placeholder="AMOUNT" min="1" value="" readonly>
                                                     </td>
@@ -312,6 +323,10 @@ var counter = 1;
                                                             name="after_dis_amount[]" id="after_dis_amount1"
                                                             placeholder="NET AMOUNT" min="1" value="0.00" readonly>
                                                     </td>
+                                                    <td>
+                                                        <input type="text" class="form-control row_amount_pkr" name="amount[]"
+                                                            id="amount1" placeholder="AMOUNT(PKR)" min="1" value="" readonly>
+                                                    </td>
                                                     <td class="text-center" style="display: flex; gap: 10px;">
                                                         <input type="button" class="btn btn-sm btn-primary"
                                                             onclick="AddMoreDetails()" value="+" />
@@ -326,7 +341,6 @@ var counter = 1;
                                                     <td class="text-center" colspan="7">Total</td>
                                                     <td><input readonly class="form-control" type="text" id="total_qty" /></td>
                                                     <td></td>
-                                                    <td><input readonly class="form-control" type="text" id="total_amount_pkr" /></td>
                                                     <td><input readonly class="form-control" type="text" id="total_amount" /></td>
                                                     <td></td>
                                                     <td><input readonly class="form-control" type="text" id="total_tax_amount" /></td>
@@ -334,6 +348,7 @@ var counter = 1;
                                                     <td><input readonly class="form-control" type="text" id="total_discount_amount" /></td>
                                                     <td id="" class="text-right" colspan="1"><input readonly
                                                             class="form-control" type="text" id="net" /> </td>
+                                                    <td><input readonly class="form-control" type="text" id="total_amount_pkr" /></td>
                                                     <td></td>
                                                 </tr>
                                             </tbody>
@@ -480,13 +495,13 @@ function AddMoreDetails() {
             </td>
             <td><input type="text" onkeyup="claculation(${Counter})" class="form-control requiredField ActualQty" name="actual_qty[]" id="actual_qty${Counter}" placeholder="QTY"></td>
             <td><input type="text" onkeyup="claculation(${Counter})" class="form-control requiredField ActualRate" name="rate[]" id="rate${Counter}" placeholder="RATE"></td>
-            <td><input readonly type="text" class="form-control row_amount_pkr" name="amount[]" id="amount${Counter}" placeholder="AMOUNT"></td>
             <td><input readonly type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount${Counter}" placeholder="AMOUNT"></td>
             <td><input type="text" onkeyup="claculation(${Counter})" class="form-control" value="0" name="tax_per[]" id="tax_per${Counter}" placeholder="Tax %"></td>
             <td><input  readonly type="text" class="form-control row_tax_amount" value="0" name="tax_amount[]" id="tax_amount${Counter}" placeholder="Tax Amount"></td>
             <td><input type="text" onkeyup="discount_percent(this.id)" class="form-control requiredField" value="0" name="discount_percent[]" id="discount_percent${Counter}"></td>
             <td><input type="text" onkeyup="discount_amount(this.id)" class="form-control requiredField row_discount_amount" value="0" name="discount_amount[]" id="discount_amount${Counter}"></td>
             <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" value="0.00"></td>
+            <td><input readonly type="text" class="form-control row_amount_pkr" name="amount[]" id="amount${Counter}" placeholder="AMOUNT(PKR)"></td>
             
             <td class="text-center" style="display: flex; gap: 10px;">
                 <input type="button" class="btn btn-sm btn-primary" onclick="AddMoreDetails()" value="+" />
@@ -898,16 +913,15 @@ $(document).ready(function() {
 
 
 function claculation(number) {
-    var qty = $('#actual_qty' + number).val();
-    var rate = $('#rate' + number).val();
+    var qty = $('#actual_qty' + number).val() || 0;
+    var rate = $('#rate' + number).val() || 0;
+    var currency = $('#currency_rate').val() || 1;
 
-    var amount = parseFloat(qty * rate).toFixed(2);
-
-    $('#amount' + number).val(amount);
-    $('#actual_amount' + number).val(amount);
+    var actual = parseFloat(qty * rate).toFixed(2);
+    $('#actual_amount' + number).val(actual);
 
     var tax_per = $('#tax_per' + number).val() || 0;
-    var tax_amount = (amount * tax_per / 100).toFixed(2);
+    var tax_amount = (actual * tax_per / 100).toFixed(2);
     $('#tax_amount' + number).val(tax_amount);
 
     discount_percent('discount_percent' + number);
@@ -998,12 +1012,22 @@ function get_address() {
     calculate_due_date();
 }
 
-
 function get_rate() {
     var currency_id = $('#curren').val();
-    currency_id = currency_id.split(',');
-    $('#curren_rate').val(currency_id[1]);
+    if(currency_id) {
+        currency_id = currency_id.split(',');
+        $('#currency_rate').val(currency_id[1]);
+        
+        var count = 1;
+        $('.ActualQty').each(function() {
+            claculation(count);
+            count++;
+        });
+    }
 }
+
+
+
 </script>
 <script>
 function open_sales_tax(id) {
@@ -1015,11 +1039,11 @@ function open_sales_tax(id) {
 
 function discount_percent(id) {
     var number = id.replace("discount_percent", "");
-    var amount = parseFloat($('#amount' + number).val()) || 0;
+    var amount = parseFloat($('#actual_amount' + number).val()) || 0;
     var tax_amount = parseFloat($('#tax_amount' + number).val()) || 0;
     var total_with_tax = amount + tax_amount;
 
-    var x = parseFloat($('#' + id).val());
+    var x = parseFloat($('#' + id).val()) || 0;
     if (x > 100) {
         alert('Percentage Cannot Exceed by 100');
         $('#' + id).val(0);
@@ -1031,6 +1055,9 @@ function discount_percent(id) {
     var amount_after_discount = (total_with_tax - discount_amount).toFixed(2);
     $('#after_dis_amount' + number).val(amount_after_discount);
     
+    var currency = $('#currency_rate').val() || 1;
+    $('#amount' + number).val((amount_after_discount * currency).toFixed(2));
+    
     $('#net_amounttd_' + number).val(amount_after_discount);
     $('#cost_center_dept_amount' + number).text(amount_after_discount);
     $('#cost_center_dept_hidden_amount' + number).val(amount_after_discount);
@@ -1040,11 +1067,11 @@ function discount_percent(id) {
 
 function discount_amount(id) {
     var number = id.replace("discount_amount", "");
-    var amount = parseFloat($('#amount' + number).val()) || 0;
+    var amount = parseFloat($('#actual_amount' + number).val()) || 0;
     var tax_amount = parseFloat($('#tax_amount' + number).val()) || 0;
     var total_with_tax = amount + tax_amount;
 
-    var discount_amount = parseFloat($('#' + id).val());
+    var discount_amount = parseFloat($('#' + id).val()) || 0;
     if (discount_amount > total_with_tax) {
         alert('Amount Cannot Exceed by ' + total_with_tax);
         $('#discount_amount' + number).val(0);
@@ -1058,6 +1085,10 @@ function discount_amount(id) {
     $('#discount_percent' + number).val(percent);
     var amount_after_discount = (total_with_tax - discount_amount).toFixed(2);
     $('#after_dis_amount' + number).val(amount_after_discount);
+    
+    var currency = $('#currency_rate').val() || 1;
+    $('#amount' + number).val((amount_after_discount * currency).toFixed(2));
+
     $('#net_amounttd_' + number).val(amount_after_discount);
     $('#net_amount_' + number).val(amount_after_discount);
     sales_tax('sales_taxx');

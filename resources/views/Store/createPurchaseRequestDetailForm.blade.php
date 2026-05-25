@@ -231,10 +231,12 @@ $implodedComparatives = implode(', ', $comparativeNumbers);
                                                 onclick="showDetailModelOneParamerter('pdc/createCurrencyTypeForm')"
                                                 class="">Currency</a></label>
                                         <span class="rflabelsteric"><strong>*</strong></span>
-                                        <select onkeypress="claculation(1);get_rate()" name="curren" id="curren"
+                                        <select onchange="get_rate(); claclation(1);" name="curren" id="curren"
                                             class="form-control select2 requiredField">
-                                            <option value="">Select Currency</option>
-
+                                            <option value="0,1"> PKR</option>
+                                            @foreach(\App\Helpers\CommonHelper::get_all_currency() as $currency)
+                                                <option value="{{ $currency->id }},{{ $currency->rate }}">{{ $currency->name }}</option>
+                                            @endforeach
                                         </select>
 
                                     </div>
@@ -780,12 +782,17 @@ A WITHOLDING AGENT SHALL DEDUCT AN AMOUNT AS PER SRB WITHHOLDING RULES-2014</tex
     });
 
 
+    function claculation(number) { claclation(number); }
+
+    function claclation(number) { claculatiodnbk(number); }
+
     function claculatiodnbk(number) {
 
-        var qty = $('#purchase_approve_qty_' + number).val();
-        var rate = $('#rate_' + number).val();
+        var qty = $('#purchase_approve_qty_' + number).val() || 0;
+        var rate = $('#rate_' + number).val() || 0;
+        var currency = $('#currency_rate').val() || 1;
 
-        var total = parseFloat(qty * rate).toFixed(2);
+        var total = parseFloat(qty * rate * currency).toFixed(2);
 
         $('#amount_' + number).val(total);
 
@@ -967,8 +974,16 @@ A WITHOLDING AGENT SHALL DEDUCT AN AMOUNT AS PER SRB WITHHOLDING RULES-2014</tex
 
     function get_rate() {
         var currency_id = $('#curren').val();
-        currency_id = currency_id.split(',');
-        $('#curren_rate').val(currency_id[1]);
+        if(currency_id) {
+            currency_id = currency_id.split(',');
+            $('#currency_rate').val(currency_id[1]);
+            
+            var count = 1;
+            $('.approveQty').each(function() {
+                claclation(count);
+                count++;
+            });
+        }
     }
     </script>
     <script>

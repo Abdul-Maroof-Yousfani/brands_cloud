@@ -155,6 +155,21 @@ endif;
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                <label class="sf-label"> <a href="#" onclick="showDetailModelOneParamerter('pdc/createCurrencyTypeForm')" class="">Currency</a></label>
+                                                <select onchange="get_rate();" name="curren" id="curren" class="form-control select2 requiredField">
+                                                    <option value="0,1"> PKR</option>
+                                                    @foreach(\App\Helpers\CommonHelper::get_all_currency() as $currency)
+                                                        <option {{ $NewPurchaseVoucher->currency == $currency->id ? 'selected' : '' }} value="{{ $currency->id }},{{ $currency->rate }}">{{ $currency->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                                <label class="sf-label"> Currency Rate</label>
+                                                <input class="form-control" type="text" name="currency_rate" id="currency_rate" value="{{ $NewPurchaseVoucher->currency_rate ?? 1 }}"/>
+                                            </div>
+                                        </div>
                                         <div class="lineHeight">&nbsp;</div>
                                     </div>
                                     <div class="col-lg-12  col-md-12 col-sm-12 col-xs-12">
@@ -183,8 +198,6 @@ endif;
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th class="text-center">Rate<span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
-                                                        <th class="text-center">Amount(PKR)<span
-                                                                class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th class="text-center">Amount<span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th class="text-center">Tax %<span
@@ -196,6 +209,8 @@ endif;
                                                         <th class="text-center">Discount Amount<span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th class="text-center">Net Amount<span
+                                                                class="rflabelsteric"><strong>*</strong></span></th>
+                                                        <th class="text-center">Amount(PKR)<span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
                                                         <th class="text-center">Add / Delete<span
                                                                 class="rflabelsteric"><strong>*</strong></span></th>
@@ -242,9 +257,6 @@ endif;
                                                             <input type="text" onkeyup="claculation('{{ $key+1 }}')" onblur="claculation('{{ $key+1 }}')" class="form-control requiredField ActualRate" name="rate[]" id="rate{{ $key+1 }}" placeholder="RATE" min="1" value="{{ $DFil->rate }}">
                                                         </td>
                                                         <td>
-                                                            <input type="text" class="form-control row_amount_pkr" name="amount[]" id="amount{{ $key+1 }}" placeholder="AMOUNT" min="1" value="{{ $DFil->amount }}" readonly>
-                                                        </td>
-                                                        <td>
                                                             <input type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount{{ $key+1 }}" placeholder="AMOUNT" min="1" value="{{ $DFil->actual_amount ?? $DFil->amount }}" readonly>
                                                         </td>
                                                         <td>
@@ -262,6 +274,9 @@ endif;
                                                         <td>
                                                             <input type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount{{ $key+1 }}" placeholder="NET AMOUNT" min="1" value="{{ $DFil->net_amount }}" readonly>
                                                         </td>
+                                                        <td>
+                                                            <input type="text" class="form-control row_amount_pkr" name="amount[]" id="amount{{ $key+1 }}" placeholder="AMOUNT(PKR)" min="1" value="{{ $DFil->amount }}" readonly>
+                                                        </td>
                                                         <td class="text-center" style="display: flex; gap: 10px;">
                                                             <button type="button" class="btn btn-sm btn-primary" onclick="AddMoreDetails()"> + </button>
                                                             <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection({{ $key+1 }})"> - </button>
@@ -275,13 +290,13 @@ endif;
                                                         <td class="text-center" colspan="7">Total</td>
                                                         <td><input readonly class="form-control" type="text" id="total_qty" /></td>
                                                         <td></td>
-                                                        <td><input readonly class="form-control" type="text" id="total_amount_pkr" /></td>
                                                         <td><input readonly class="form-control" type="text" id="total_amount" /></td>
                                                         <td></td>
                                                         <td><input readonly class="form-control" type="text" id="total_tax_amount" /></td>
                                                         <td></td>
                                                         <td><input readonly class="form-control" type="text" id="total_discount_amount" /></td>
                                                         <td id="" class="text-right" colspan="1"><input readonly class="form-control" type="text" id="net" /> </td>
+                                                        <td><input readonly class="form-control" type="text" id="total_amount_pkr" /></td>
                                                         <td></td>
                                                     </tr>
                                                 </tbody>
@@ -500,13 +515,13 @@ endif;
                     <td><input readonly type="text" class="form-control" name="uom_id[]" id="uom_id${Counter}"></td>
                     <td><input type="text" onkeyup="claculation('${Counter}')" onblur="claculation('${Counter}')" class="form-control requiredField ActualQty" name="actual_qty[]" id="actual_qty${Counter}" placeholder="ACTUAL QTY"></td>
                     <td><input type="text" onkeyup="claculation('${Counter}')" onblur="claculation('${Counter}')" class="form-control requiredField ActualRate" name="rate[]" id="rate${Counter}" placeholder="RATE"></td>
-                    <td><input readonly type="text" class="form-control row_amount_pkr" name="amount[]" id="amount${Counter}" placeholder="AMOUNT"></td>
                     <td><input readonly type="text" class="form-control actual_amount" name="actual_amount[]" id="actual_amount${Counter}" placeholder="AMOUNT"></td>
                     <td><input type="text" onkeyup="claculation('${Counter}')" class="form-control" name="tax_per[]" id="tax_per${Counter}" value="0"></td>
                     <td><input readonly type="text" class="form-control row_tax_amount" name="tax_amount[]" id="tax_amount${Counter}" value="0"></td>
                     <td><input type="text" onkeyup="discount_percent(this.id)" class="form-control" name="discount_percent[]" id="discount_percent${Counter}" value="0"></td>
                     <td><input type="text" onkeyup="discount_amount(this.id)" class="form-control row_discount_amount" name="discount_amount[]" id="discount_amount${Counter}" value="0"></td>
                     <td><input readonly type="text" class="form-control net_amount_dis" name="after_dis_amount[]" id="after_dis_amount${Counter}" value="0.00"></td>
+                    <td><input readonly type="text" class="form-control row_amount_pkr" name="amount[]" id="amount${Counter}" placeholder="AMOUNT(PKR)"></td>
                     <td class="text-center" style="display: flex; gap: 10px;">
                         <button type="button" class="btn btn-sm btn-primary" onclick="AddMoreDetails()"> + </button>
                         <button type="button" class="btn btn-sm btn-danger" onclick="RemoveSection(${Counter})"> - </button>
