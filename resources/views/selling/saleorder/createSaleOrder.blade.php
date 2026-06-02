@@ -1083,9 +1083,10 @@ $(document).on('keydown', '.next-total', function (event) {
         // ✅ Apply final discount
         var discount_amount = (gross_amount * applied_discount) / 100;
         $(this).find('.discount_amount').val(discount_amount.toFixed(2));
-
-        calculation_amount();
     });
+
+    // ✅ Move this outside of loop to prevent N^2 operations and extreme lag
+    calculation_amount();
 }
 
     $(document).ready(function(){
@@ -1951,12 +1952,13 @@ function get_product_by_brand(element, number) {
                 // Loop through the response and append each warehouse as an option
                 $.each(response.company_warehouse, function(index, warehouse) {
                     $(element).closest('.main').find('.from_warehouse').append('<option data-stock="' + warehouse.total_qty + '" value="' + warehouse.id + '">' + warehouse.name + ' ' + '('+warehouse.total_qty+')' + '</option>');
-                    $(element).closest('.main').find('.from_warehouse').select2();
                 });
+                $(element).closest('.main').find('.from_warehouse').select2();
+
                 $.each(response.store_warehouse, function(index, storewarehouse) {
                     $(element).closest('.main').find('.to_warehouse').append('<option data-stock="' + storewarehouse.total_qty + '" value="' + storewarehouse.id + '">' + storewarehouse.name + ' ' + '('+storewarehouse.total_qty+')' + '</option>');
-                    $(element).closest('.main').find('.to_warehouse').select2();
                 });
+                $(element).closest('.main').find('.to_warehouse').select2();
             }
         });
     }
