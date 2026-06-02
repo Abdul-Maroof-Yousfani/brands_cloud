@@ -485,6 +485,12 @@ public function exportCustomers(Request $request)
             continue; // Skip the header row
         }
 
+        if (is_array($row)) {
+            $row = array_map(function($val) {
+                return is_string($val) ? mb_convert_encoding($val, 'UTF-8', 'UTF-8') : $val;
+            }, $row);
+        }
+
         $row = array_pad($row, 47, null); // ensure enough indexes
 
         // city, state, country
