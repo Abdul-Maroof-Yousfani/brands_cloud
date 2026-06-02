@@ -478,6 +478,19 @@ public function exportCustomers(Request $request)
     public function uploadCreditCustomer(Request $request)
 {
     $file = $request->file('import_file');
+
+    if (!$file) {
+        return \Illuminate\Support\Facades\Redirect::back()->with('dataDelete', 'Please select a file to upload.');
+    }
+
+    $extension = strtolower($file->getClientOriginalExtension());
+    $content = file_get_contents($file->getRealPath(), false, null, 0, 2);
+    
+    // Check if it's not a CSV or if it's a binary Excel file masquerading as a CSV
+    if ($extension !== 'csv' || $content === 'PK') {
+        return \Illuminate\Support\Facades\Redirect::back()->with('dataDelete', 'Only CSV files are allowed! Please open your Excel file (.xlsx) and "Save As" a CSV (Comma delimited) file before uploading.');
+    }
+
     $data = array_map('str_getcsv', file($file->getRealPath()));
 
     $inserted = 0;
