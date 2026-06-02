@@ -480,9 +480,18 @@ public function exportCustomers(Request $request)
     $file = $request->file('import_file');
     $data = array_map('str_getcsv', file($file->getRealPath()));
 
+    $inserted = 0;
+    $updated = 0;
+    $skipped = 0;
+    $errors = [];
+
     foreach ($data as $key => $row) {
         if ($key == 0) {
             continue; // Skip the header row
+        }
+
+        if (empty(array_filter($row))) {
+            continue; // Skip trailing empty lines
         }
 
         if (is_array($row)) {
@@ -492,6 +501,12 @@ public function exportCustomers(Request $request)
         }
 
         $row = array_pad($row, 47, null); // ensure enough indexes
+
+        if (empty($row[0])) {
+            $skipped++;
+            $errors[] = "Row " . ($key + 1) . ": Customer Name is missing";
+            continue;
+        }
 
         // city, state, country
         $cityData = CommonHelper::get_city_id_by_name($row[7]);
@@ -563,6 +578,8 @@ public function exportCustomers(Request $request)
             DB::connection('mysql2')->table('customers')
                 ->where('id', $existingCustomer->id)
                 ->update($customerData);
+            
+            $updated++;
 
         } else {
       
@@ -592,7 +609,7 @@ public function exportCustomers(Request $request)
                 $counter++;
             }
             $data1['code'] = $code;
-            $data1['name'] = $row[0];
+            $data1['name'] = $row[0] ?? '';
             $data1['parent_code'] = $sent_code;
             $data1['username'] = Auth::user()->name;
             $data1['date'] = date("Y-m-d");
@@ -639,10 +656,16 @@ public function exportCustomers(Request $request)
                 ];
                 DB::connection('mysql2')->table('bank_detail')->insert($bankData);
             }
+            $inserted++;
         }
     }
 
-    return Redirect::to('sales/viewCreditCustomerList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . Input::get('m') . '#SFR');
+    $message = "Upload Complete! Inserted: $inserted, Updated: $updated.";
+    if ($skipped > 0) {
+        $message .= " Skipped: $skipped. Issues: " . implode(" | ", $errors);
+    }
+
+    return Redirect::to('sales/viewCreditCustomerList?pageType=' . Input::get('pageType') . '&&parentCode=' . Input::get('parentCode') . '&&m=' . Input::get('m') . '#SFR')->with('dataInsert', $message);
 }
 
     // public function uploadProductbkbk(Request $request)
