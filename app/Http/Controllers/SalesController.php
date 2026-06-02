@@ -1343,9 +1343,17 @@ public function uploadProduct(Request $request)
 
         DB::connection('mysql2')->commit();
 
+        if ($skippedRows > 0 && !empty($errors)) {
+            $logPath = storage_path('logs/skipped_products.txt');
+            $logContent = "Skipped Rows Report - " . date('Y-m-d H:i:s') . "\n";
+            $logContent .= "Total Skipped: {$skippedRows}\n\n";
+            $logContent .= implode("\n", $errors);
+            file_put_contents($logPath, $logContent);
+        }
+
         $message = "Products uploaded successfully: {$insertedCount} inserted, {$updatedCount} updated";
         if ($skippedRows > 0) {
-            $message .= ", {$skippedRows} rows skipped (missing required fields)";
+            $message .= ", {$skippedRows} rows skipped (missing required fields). Detailed log saved in storage/logs/skipped_products.txt";
         }
 
         return redirect()->back()->with([
