@@ -181,7 +181,8 @@ class SalesHelper
     {
         $customer = new Customer();
         $customer = $customer->SetConnection('mysql2');
-        return $customer = $customer->where('CustomerType', 3)->select('id', 'name', 'cnic_ntn', 'strn', 'terms_of_payment')->get();
+        // return $customer = $customer->where('CustomerType', 3)->select('id', 'name', 'cnic_ntn', 'strn', 'terms_of_payment')->get();
+        return $customer = $customer->select('id', 'name', 'cnic_ntn', 'strn', 'terms_of_payment')->get();
     }
 
     public static function get_all_employees()
