@@ -258,6 +258,7 @@ class BAFormationController extends Controller
                         'emp_code' => $employeeData['emp_id'],
                         'name' => $employeeData['emp_name'],
                         'email' => $employeeData['professional_email'],
+                        'zone' => $employeeData['zone'],
                     ]
                 );
             }
