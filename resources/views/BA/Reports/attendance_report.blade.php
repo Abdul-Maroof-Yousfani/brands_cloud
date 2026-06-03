@@ -48,7 +48,18 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Select Zone</label>
+                            <select name="zone" id="zone" class="form-control select2">
+                                <option value="">All Zones</option>
+                                @foreach($zones as $z)
+                                    <option value="{{ $z }}">{{ $z }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="control-label">Select BA (Employees)</label>
                             <div class="input-group">

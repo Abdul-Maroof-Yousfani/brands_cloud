@@ -17,6 +17,7 @@ class BaAttendanceReportController extends Controller
     {
         $data['employees'] = Employees::whereIn('emp_id', BAFormation::pluck('employee_id')->unique())->get();
         $data['brands'] = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
+        $data['zones'] = Employees::whereNotNull('zone')->where('zone', '!=', '')->distinct()->pluck('zone');
         return view('BA.Reports.attendance_report', $data);
     }
 
@@ -27,6 +28,7 @@ class BaAttendanceReportController extends Controller
         $employee_ids = $request->employee_ids;
         $brand_id = $request->brand_id;
         $targetType = $request->target_type ?? 'qty';
+        $zone = $request->zone;
 
         $dates = [];
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
@@ -42,6 +44,9 @@ class BaAttendanceReportController extends Controller
         })
             ->when(!empty($employee_ids), function ($query) use ($employee_ids) {
                 $query->whereIn('emp_id', $employee_ids);
+            })
+            ->when(!empty($zone), function ($query) use ($zone) {
+                $query->where('zone', $zone);
             })
             ->get()
             ->sortBy(function ($ba) {
@@ -164,7 +169,7 @@ class BaAttendanceReportController extends Controller
 
             $baData['customer'] = $formation->customer->name ?? 'N/A';
             $baData['city'] = 'N/A';
-            $baData['zone'] = 'N/A';
+            $baData['zone'] = $ba->zone ?? 'N/A';
             $baData['location'] = 'N/A';
 
             $apiAttendance = [];
@@ -275,7 +280,7 @@ class BaAttendanceReportController extends Controller
 
         if ($request->export == 'excel') {
             $exportData = [];
-            $headings = ['BA Code', 'BA Name', 'Customer', 'Brand(s)'];
+            $headings = ['BA Code', 'BA Name', 'Zone', 'Customer', 'Brand(s)'];
 
             foreach ($dates as $date) {
                 $d = \Carbon\Carbon::parse($date)->format('d M Y');
@@ -294,6 +299,7 @@ class BaAttendanceReportController extends Controller
                 $row = [
                     $ba['emp_id'],
                     $ba['name'],
+                    $ba['zone'],
                     $ba['customer'],
                     $ba['brands']
                 ];
