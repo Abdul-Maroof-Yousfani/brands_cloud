@@ -720,7 +720,7 @@ public function viewSubItemListAjax(Request $request)
     $brand_ids = $request->brand_ids; // Assuming brand IDs are passed in the request.
     $creation_date = $request->creation_date; // Assuming brand IDs are passed in the request.
     $product_status = $request->product_status; // Assuming Product Status are passed in the request.
-    $username = $request->username; // Assuming brand IDs are passed in the request.
+    $product_type_id = $request->product_type_id; // Assuming Product Type IDs are passed in the request.
     $search = $request->search;
 
     CommonHelper::companyDatabaseConnection($m);
@@ -786,8 +786,8 @@ $subitems = Subitem::where('subitem.status', 1)
         $query->whereIn('subitem.product_trend_id', $product_trend_id);
     })
 
-    ->when($username, function ($query, $username) {
-        $query->whereIn('subitem.username', $username);
+    ->when($product_type_id, function ($query, $product_type_id) {
+        $query->whereIn('subitem.product_type_id', $product_type_id);
     })
 
     ->when($creation_date, function ($query, $creation_date) {
@@ -837,7 +837,7 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
     $brand_ids = $request->brand_ids;
     $creation_date = $request->creation_date;
     $product_status = $request->product_status;
-    $username = $request->username;
+    $product_type_id = $request->product_type_id;
     $search = $request->search;
 
     CommonHelper::companyDatabaseConnection($m);
@@ -866,8 +866,8 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
             $query->whereIn('subitem.product_trend_id', $product_trend_id);
         })
 
-        ->when($username, function ($query, $username) {
-            $query->whereIn('subitem.username', $username);
+        ->when($product_type_id, function ($query, $product_type_id) {
+            $query->whereIn('subitem.product_type_id', $product_type_id);
         })
 
         ->when($creation_date, function ($query, $creation_date) {

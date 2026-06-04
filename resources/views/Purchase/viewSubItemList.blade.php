@@ -98,26 +98,23 @@ if ($accType == 'client') {
                                                         </div>
                                                         <div class="col-md-2 mb-3">
                                                             <label>Classification </label>
-                                                            <select name="product_classification_id[]" multiple class="form-control select2">
-                                                                <option disabled>Select Product Classification</option>
+                                                            <select name="product_classification_id[]" multiple class="form-control select2" data-placeholder="Select Product Classification">
                                                                 @foreach($product_classification as $key => $i)
                                                                     <option value="{{ $i->id}}">{{ $i->name}}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
-                                                            <label>User </label>
-                                                            <select name="username[]" multiple class="form-control select2">
-                                                                <option disabled>Select User</option>
-                                                                @foreach($username as $item)
-                                                                    <option value="{{ $item->username}}">{{ $item->username}}</option>
+                                                            <label>Product Type </label>
+                                                            <select name="product_type_id[]" multiple class="form-control select2" data-placeholder="Select Product Type">
+                                                                @foreach($product_type as $item)
+                                                                    <option value="{{ $item->product_type_id}}">{{ $item->type}}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
                                                             <label>Trend </label>
-                                                            <select name="product_trend_id[]" multiple class="form-control select2">
-                                                                <option disabled>Select Trend</option>
+                                                            <select name="product_trend_id[]" multiple class="form-control select2" data-placeholder="Select Trend">
                                                                 @foreach($product_trends as $item)
                                                                     <option value="{{ $item->id}}">{{ $item->name}}</option>
                                                                 @endforeach
@@ -125,8 +122,7 @@ if ($accType == 'client') {
                                                         </div>
                                                         <div class="col-md-2 mb-3">
                                                             <label for="brand_ids" class="form-label">Brands</label>
-                                                            <select name="brand_ids[]" id="brand_ids" multiple class="form-control select2">
-                                                                <option  disabled>Select Brands</option>
+                                                            <select name="brand_ids[]" id="brand_ids" multiple class="form-control select2" data-placeholder="Select Brands">
                                                                 @foreach (CommonHelper::get_all_brand() as $brand)
                                                                     <option value="{{ $brand->id }}">
                                                                         {{ $brand->name }}

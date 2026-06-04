@@ -620,8 +620,9 @@ class PurchaseController extends Controller
         $product_classification = ProductClassification::where('status',1)->get();
         $product_trends = ProductTrend::where('status',1)->get();
         $principl_groups = ProductsPrincipalGroup::select("id", "products_principal_group")->get();
+        $product_type = ProductType::where('status',1)->get();
 
-        return view('Purchase.viewSubItemList', compact('product_classification', 'subitem', 'username', 'product_trends', 'principl_groups'));
+        return view('Purchase.viewSubItemList', compact('product_classification', 'subitem', 'username', 'product_trends', 'principl_groups', 'product_type'));
     }
 
     public function viewSubItemListWithoutEditing(){
@@ -630,8 +631,9 @@ class PurchaseController extends Controller
         $product_classification = ProductClassification::where('status',1)->get();
         $product_trends = ProductTrend::where('status',1)->get();
         $principl_groups = ProductsPrincipalGroup::select("id", "products_principal_group")->get();
+        $product_type = ProductType::where('status',1)->get();
 
-        return view('Purchase.viewSubItemListWithoutEditing', compact('product_classification', 'subitem', 'username', 'product_trends', 'principl_groups'));
+        return view('Purchase.viewSubItemListWithoutEditing', compact('product_classification', 'subitem', 'username', 'product_trends', 'principl_groups', 'product_type'));
     }
 
     public function viewSubItemDetail(){
@@ -1004,6 +1006,7 @@ class PurchaseController extends Controller
 
         return view('Purchase.add_item_master');
     }
+
     public function editItemMaster($id)
     {
         $ItemMaster = DB::Connection('mysql2')->table('item_master')->where('status',1)->where('id',$id)->first();
@@ -1031,7 +1034,7 @@ class PurchaseController extends Controller
         return view('Purchase.directPurchaseOrderForm',compact('supplierList','departments'));
     }
 
-    public function editDirectPurchaseOrder($id)
+public function editDirectPurchaseOrder($id)
 {
     $purchaseRequest = DB::connection('mysql2')
         ->table('purchase_request')
