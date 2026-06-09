@@ -36,18 +36,18 @@ class BaAttendanceReportController extends Controller
             $dates[] = $date->format('Y-m-d');
         }
 
-        $bas = Employees::whereIn('emp_id', function ($query) use ($brand_id) {
-            $query->select('employee_id')
-                ->from('b_a_formations')
-                ->when(!empty($brand_id), function ($q) use ($brand_id) {
-                    $q->whereJsonContains('brands_ids', (string) $brand_id);
-                });
-        })
+        $formationQuery = BAFormation::query();
+        if (!empty($brand_id)) {
+            $formationQuery->whereJsonContains('brands_ids', (string) $brand_id);
+        }
+        $baEmployeeIds = $formationQuery->pluck('employee_id')->unique()->toArray();
+
+        $bas = Employees::whereIn('emp_id', $baEmployeeIds)
             ->when(!empty($employee_ids), function ($query) use ($employee_ids) {
                 $query->whereIn('emp_id', $employee_ids);
             })
             ->when(!empty($zone), function ($query) use ($zone) {
-                $query->where('zone', $zone);
+                $query->where('zone', 'like', "%" . trim($zone) . "%");
             })
             ->get()
             ->sortBy(function ($ba) {
