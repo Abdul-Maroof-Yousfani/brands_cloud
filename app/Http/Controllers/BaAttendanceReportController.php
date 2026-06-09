@@ -15,9 +15,10 @@ class BaAttendanceReportController extends Controller
 {
     public function index()
     {
-        $data['employees'] = Employees::whereIn('emp_id', BAFormation::pluck('employee_id')->unique())->get();
+        $baEmployeeIds = BAFormation::pluck('employee_id')->unique();
+        $data['employees'] = Employees::whereIn('emp_id', $baEmployeeIds)->get();
         $data['brands'] = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
-        $data['zones'] = Employees::whereNotNull('zone')->where('zone', '!=', '')->distinct()->pluck('zone');
+        $data['zones'] = Employees::whereIn('emp_id', $baEmployeeIds)->whereNotNull('zone')->where('zone', '!=', '')->distinct()->pluck('zone');
         return view('BA.Reports.attendance_report', $data);
     }
 
