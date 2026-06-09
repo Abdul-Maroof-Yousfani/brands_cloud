@@ -48,7 +48,7 @@ class BaAttendanceReportController extends Controller
                 $query->whereIn('emp_id', $employee_ids);
             })
             ->when(!empty($zone), function ($query) use ($zone) {
-                $query->where('zone', 'like', "%" . trim($zone) . "%");
+                $query->where('zone', $zone);
             })
             ->get()
             ->sortBy(function ($ba) {
