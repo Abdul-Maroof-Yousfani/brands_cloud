@@ -37,6 +37,7 @@ class BaAttendanceReportController extends Controller
         }
 
         $formationQuery = BAFormation::query();
+        $formationQuery = BAFormation::query();
         if (!empty($brand_id)) {
             $formationQuery->whereJsonContains('brands_ids', (string) $brand_id);
         }
@@ -61,6 +62,13 @@ class BaAttendanceReportController extends Controller
                 }
                 return 'zzz'; // BAs without brands at the end
             });
+
+        \Log::info('BA Report Generation Debug', [
+            'zone_filter' => $zone,
+            'ba_count' => $bas->count(),
+            'brand_id' => $brand_id,
+            'employee_ids' => $employee_ids
+        ]);
 
         $reportData = [];
         $client = new \GuzzleHttp\Client();
