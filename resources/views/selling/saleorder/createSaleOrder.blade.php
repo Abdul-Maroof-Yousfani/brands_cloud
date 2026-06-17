@@ -1572,7 +1572,17 @@ function getBranchName(branchId) {
         calculation_amount();
     }
 
+    let calcAmountTimeout = null;
     function calculation_amount() {
+        if (calcAmountTimeout) {
+            clearTimeout(calcAmountTimeout);
+        }
+        calcAmountTimeout = setTimeout(function() {
+            execute_calculation_amount();
+        }, 100); // 100ms debounce to prevent freezing on large tables
+    }
+
+    function execute_calculation_amount() {
         // console.log(":function call");
         var grad_total = 0;
 
@@ -1937,28 +1947,34 @@ function get_product_by_brand(element, number) {
                 item: element.value
             },
             success: function(response) {
-                $(element).closest('.main').find('.c_stock').val(response.company_total_quantity);
-                $(element).closest('.main').find('.s_stock').val(response.store_total_quantity);
-                $(element).closest('.main').find('.r_stock').val(response.total_so ?? 0);
-                // console.log(response.store_total_quantity);
-                $(element).closest('.main').find('.from_warehouse').empty();
-                $(element).closest('.main').find('.to_warehouse').empty();
+                var $row = $(element).closest('.main');
+                $row.find('.c_stock').val(response.company_total_quantity);
+                $row.find('.s_stock').val(response.store_total_quantity);
+                $row.find('.r_stock').val(response.total_so ?? 0);
 
+                var $fromWarehouse = $row.find('.from_warehouse');
+                var $toWarehouse = $row.find('.to_warehouse');
 
-                // Append a default option
-                $(element).closest('.main').find('.from_warehouse').append('<option value="">Select Warehouse</option>');
-                $(element).closest('.main').find('.to_warehouse').append('<option value="">Select Virtual Warehouse</option>');
+                if ($fromWarehouse.hasClass("select2-hidden-accessible")) {
+                    $fromWarehouse.select2('destroy');
+                }
+                if ($toWarehouse.hasClass("select2-hidden-accessible")) {
+                    $toWarehouse.select2('destroy');
+                }
+
+                $fromWarehouse.empty().append('<option value="">Select Warehouse</option>');
+                $toWarehouse.empty().append('<option value="">Select Virtual Warehouse</option>');
 
                 // Loop through the response and append each warehouse as an option
                 $.each(response.company_warehouse, function(index, warehouse) {
-                    $(element).closest('.main').find('.from_warehouse').append('<option data-stock="' + warehouse.total_qty + '" value="' + warehouse.id + '">' + warehouse.name + ' ' + '('+warehouse.total_qty+')' + '</option>');
+                    $fromWarehouse.append('<option data-stock="' + warehouse.total_qty + '" value="' + warehouse.id + '">' + warehouse.name + ' ' + '('+warehouse.total_qty+')' + '</option>');
                 });
-                $(element).closest('.main').find('.from_warehouse').select2();
+                $fromWarehouse.select2();
 
                 $.each(response.store_warehouse, function(index, storewarehouse) {
-                    $(element).closest('.main').find('.to_warehouse').append('<option data-stock="' + storewarehouse.total_qty + '" value="' + storewarehouse.id + '">' + storewarehouse.name + ' ' + '('+storewarehouse.total_qty+')' + '</option>');
+                    $toWarehouse.append('<option data-stock="' + storewarehouse.total_qty + '" value="' + storewarehouse.id + '">' + storewarehouse.name + ' ' + '('+storewarehouse.total_qty+')' + '</option>');
                 });
-                $(element).closest('.main').find('.to_warehouse').select2();
+                $toWarehouse.select2();
             }
         });
     }
