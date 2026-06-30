@@ -15,6 +15,7 @@ class BaAttendanceReportController extends Controller
 {
     public function index()
     {
+      
         $baEmployeeIds = BAFormation::pluck('employee_id')->unique();
         $data['employees'] = Employees::whereIn('emp_id', $baEmployeeIds)->get();
         $data['brands'] = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
@@ -24,12 +25,24 @@ class BaAttendanceReportController extends Controller
 
     public function generateReport(Request $request)
     {
+        set_time_limit(300); // Allow up to 5 minutes for API requests
+
+    
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
         $employee_ids = $request->employee_ids;
+        
         $brand_id = $request->brand_id;
+        if (is_array($brand_id) && in_array('all', $brand_id, true)) {
+            $brand_id = null;
+        }
+
         $targetType = $request->target_type ?? 'qty';
+        
         $zone = $request->zone;
+        if (is_array($zone) && in_array('all', $zone, true)) {
+            $zone = null;
+        }
 
         $dates = [];
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
@@ -37,9 +50,14 @@ class BaAttendanceReportController extends Controller
         }
 
         $formationQuery = BAFormation::query();
-        $formationQuery = BAFormation::query();
-        if (!empty($brand_id)) {
-            $formationQuery->whereJsonContains('brands_ids', (string) $brand_id);
+        if (!empty($brand_id) && is_array($brand_id)) {
+            $formationQuery->where(function($q) use ($brand_id) {
+                foreach($brand_id as $id) {
+                    if (!empty($id)) {
+                        $q->orWhere('brands_ids', 'LIKE', '%"' . $id . '"%');
+                    }
+                }
+            });
         }
         $baEmployeeIds = $formationQuery->pluck('employee_id')->unique()->toArray();
 
@@ -47,8 +65,14 @@ class BaAttendanceReportController extends Controller
             ->when(!empty($employee_ids), function ($query) use ($employee_ids) {
                 $query->whereIn('emp_id', $employee_ids);
             })
-            ->when(!empty($zone), function ($query) use ($zone) {
-                $query->whereRaw('TRIM(zone) = ?', [trim($zone)]);
+            ->when(!empty($zone) && is_array($zone), function ($query) use ($zone) {
+                $query->where(function($q) use ($zone) {
+                    foreach($zone as $z) {
+                        if (!empty($z)) {
+                            $q->orWhereRaw('TRIM(zone) = ?', [trim($z)]);
+                        }
+                    }
+                });
             })
             ->get()
             ->sortBy(function ($ba) {
@@ -63,6 +87,8 @@ class BaAttendanceReportController extends Controller
                 return 'zzz'; // BAs without brands at the end
             });
 
+
+
         \Log::info('BA Report Generation Debug', [
             'zone_filter' => $zone,
             'ba_count' => $bas->count(),
@@ -70,8 +96,34 @@ class BaAttendanceReportController extends Controller
             'employee_ids' => $employee_ids
         ]);
 
+        $handlerStack = \GuzzleHttp\HandlerStack::create();
+        $handlerStack->push(\GuzzleHttp\Middleware::retry(function ($retries, $request, $response, $exception) {
+            // Limit to 3 retries
+            if ($retries >= 3) {
+                return false;
+            }
+            // Retry on connection exceptions or server errors (500, 502, 503, 504, 429)
+            if ($exception instanceof \GuzzleHttp\Exception\ConnectException) {
+                return true;
+            }
+            if ($response) {
+                $statusCode = $response->getStatusCode();
+                if ($statusCode >= 500 || $statusCode == 429) {
+                    return true;
+                }
+            }
+            return false;
+        }, function ($retries) {
+            return $retries * 1000; // 1s, 2s, 3s delay
+        }));
+
         $reportData = [];
-        $client = new \GuzzleHttp\Client();
+        $client = new \GuzzleHttp\Client([
+            'verify' => false,
+            'handler' => $handlerStack,
+            'timeout' => 30, // 30 second timeout per request
+            'connect_timeout' => 10
+        ]);
 
         $grandTotals = [
             'present' => 0,
@@ -96,9 +148,10 @@ class BaAttendanceReportController extends Controller
             };
         }
 
+        
         $allAttendanceData = [];
         $pool = new \GuzzleHttp\Pool($client, $requests, [
-            'concurrency' => 10,
+            'concurrency' => 5, // Reduced concurrency to prevent blocking
             'fulfilled' => function ($response, $emp_id) use (&$allAttendanceData) {
                 $resData = json_decode($response->getBody(), true);
                 if (isset($resData['data'])) {
@@ -106,7 +159,9 @@ class BaAttendanceReportController extends Controller
                 }
             },
             'rejected' => function ($reason, $emp_id) {
-                // Ignore failures for individual BAs
+                \Log::error("BA Attendance API Failed for $emp_id", [
+                    'reason' => $reason->getMessage()
+                ]);
             },
         ]);
 
@@ -124,12 +179,14 @@ class BaAttendanceReportController extends Controller
             }
 
             // If a specific brand is filtered, only process that brand
-            if (!empty($brand_id)) {
-                if (in_array((string) $brand_id, $brandIds)) {
-                    $brandIds = [(string) $brand_id];
-                } else {
-                    $brandIds = []; // BA doesn't belong to filtered brand
+            if (!empty($brand_id) && is_array($brand_id)) {
+                $filteredBrandIds = [];
+                foreach ($brandIds as $bId) {
+                    if (in_array((string)$bId, $brand_id)) {
+                        $filteredBrandIds[] = $bId;
+                    }
                 }
+                $brandIds = $filteredBrandIds;
             }
 
             if (empty($brandIds))
@@ -330,6 +387,11 @@ class BaAttendanceReportController extends Controller
 
             return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\BAReportExport($exportData, $headings), 'BA_Attendance_Report.xlsx');
         }
+
+        \Log::info('BA Report Final Debug', [
+            'reportData_count' => count($reportData),
+            'bas_count' => $bas->count()
+        ]);
 
         return view('BA.Reports.attendance_report_data', compact('reportData', 'dates', 'grandTotals'));
     }

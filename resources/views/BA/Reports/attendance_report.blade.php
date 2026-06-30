@@ -39,8 +39,8 @@
                         <div class="form-group">
                             <label class="control-label">Select Brand</label>
                             <div class="input-group">
-                                <select name="brand_id" id="brand_id" class="form-control select2">
-                                    <option value="">All Brands</option>
+                                <select name="brand_id[]" id="brand_id" class="form-control select2" multiple data-placeholder="All Brands">
+                                    <option value="all">All Brands</option>
                                     @foreach($brands as $brand)
                                         <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                                     @endforeach
@@ -51,8 +51,8 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label class="control-label">Select Zone</label>
-                            <select name="zone" id="zone" class="form-control select2">
-                                <option value="">All Zones</option>
+                            <select name="zone[]" id="zone" class="form-control select2" multiple data-placeholder="All Zones">
+                                <option value="all">All Zones</option>
                                 @foreach($zones as $z)
                                     <option value="{{ $z }}">{{ $z }}</option>
                                 @endforeach
