@@ -25,7 +25,7 @@ class BaAttendanceReportController extends Controller
 
     public function generateReport(Request $request)
     {
-        set_time_limit(300); // Allow up to 5 minutes for API requests
+        set_time_limit(0); // Allow unlimited time for bulk API requests
 
     
         $startDate = Carbon::parse($request->start_date);
@@ -98,8 +98,8 @@ class BaAttendanceReportController extends Controller
 
         $handlerStack = \GuzzleHttp\HandlerStack::create();
         $handlerStack->push(\GuzzleHttp\Middleware::retry(function ($retries, $request, $response, $exception) {
-            // Limit to 3 retries
-            if ($retries >= 3) {
+            // Limit to 5 retries to handle aggressive rate limiting
+            if ($retries >= 5) {
                 return false;
             }
             // Retry on connection exceptions or server errors (500, 502, 503, 504, 429)
@@ -114,7 +114,7 @@ class BaAttendanceReportController extends Controller
             }
             return false;
         }, function ($retries) {
-            return $retries * 1000; // 1s, 2s, 3s delay
+            return $retries * 2000; // 2s, 4s, 6s, 8s delay
         }));
 
         $reportData = [];
@@ -151,7 +151,7 @@ class BaAttendanceReportController extends Controller
         
         $allAttendanceData = [];
         $pool = new \GuzzleHttp\Pool($client, $requests, [
-            'concurrency' => 5, // Reduced concurrency to prevent blocking
+            'concurrency' => 2, // Extremely low concurrency to prevent live server from blocking requests
             'fulfilled' => function ($response, $emp_id) use (&$allAttendanceData) {
                 $resData = json_decode($response->getBody(), true);
                 if (isset($resData['data'])) {
