@@ -121,7 +121,7 @@
             e.preventDefault();
             
             $('#export_type').val(''); // Reset export type
-            $('#reportResult').html('<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Generating Report...</p></div>');
+            $('#reportResult').html('<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Generating Report... Please wait.</p></div>');
 
             $.ajax({
                 url: "{{ route('ba.reports.attendance.generate') }}",

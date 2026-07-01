@@ -84,45 +84,43 @@ class BaAttendanceReportController extends Controller
                         return $firstBrand;
                     }
                 }
-                return 'zzz'; // BAs without brands at the end
+                return 'zzz';
             });
 
+        $reportData = [];
 
+        // Prepare single POST request to the new HRMS API
+        $emp_ids = $bas->pluck('emp_id')->toArray();
+        $allAttendanceData = [];
+
+        if (!empty($emp_ids)) {
+            $client = new \GuzzleHttp\Client([
+                'verify' => false,
+                'timeout' => 60, // Give it 60 seconds to process all IDs
+            ]);
+            
+            try {
+                $response = $client->post("https://brands.smrsoftwares.com/api/viewAttendanceReportBatch", [
+                    'form_params' => [
+                        'emp_ids' => $emp_ids,
+                        'from_date' => $startDate->format('Y-m-d'),
+                        'to_date' => $endDate->format('Y-m-d')
+                    ]
+                ]);
+                $resData = json_decode($response->getBody(), true);
+                if (isset($resData['data'])) {
+                    $allAttendanceData = $resData['data'];
+                }
+            } catch (\Exception $e) {
+                \Log::error("BA Attendance Batch API Failed", ['reason' => $e->getMessage()]);
+            }
+        }
 
         \Log::info('BA Report Generation Debug', [
             'zone_filter' => $zone,
             'ba_count' => $bas->count(),
             'brand_id' => $brand_id,
             'employee_ids' => $employee_ids
-        ]);
-
-        $handlerStack = \GuzzleHttp\HandlerStack::create();
-        $handlerStack->push(\GuzzleHttp\Middleware::retry(function ($retries, $request, $response, $exception) {
-            // Limit to 5 retries to handle aggressive rate limiting
-            if ($retries >= 5) {
-                return false;
-            }
-            // Retry on connection exceptions or server errors (500, 502, 503, 504, 429)
-            if ($exception instanceof \GuzzleHttp\Exception\ConnectException) {
-                return true;
-            }
-            if ($response) {
-                $statusCode = $response->getStatusCode();
-                if ($statusCode >= 500 || $statusCode == 429) {
-                    return true;
-                }
-            }
-            return false;
-        }, function ($retries) {
-            return $retries * 2000; // 2s, 4s, 6s, 8s delay
-        }));
-
-        $reportData = [];
-        $client = new \GuzzleHttp\Client([
-            'verify' => false,
-            'handler' => $handlerStack,
-            'timeout' => 30, // 30 second timeout per request
-            'connect_timeout' => 10
         ]);
 
         $grandTotals = [
@@ -139,34 +137,6 @@ class BaAttendanceReportController extends Controller
                 'ach' => 0
             ];
         }
-
-        // Prepare requests for all BAs
-        $requests = [];
-        foreach ($bas as $ba) {
-            $requests[$ba->emp_id] = function () use ($client, $ba, $startDate, $endDate) {
-                return $client->getAsync("https://brands.smrsoftwares.com/api/viewAttendanceReport?emp_id={$ba->emp_id}&from_date={$startDate->format('Y-m-d')}&to_date={$endDate->format('Y-m-d')}");
-            };
-        }
-
-        
-        $allAttendanceData = [];
-        $pool = new \GuzzleHttp\Pool($client, $requests, [
-            'concurrency' => 2, // Extremely low concurrency to prevent live server from blocking requests
-            'fulfilled' => function ($response, $emp_id) use (&$allAttendanceData) {
-                $resData = json_decode($response->getBody(), true);
-                if (isset($resData['data'])) {
-                    $allAttendanceData[$emp_id] = $resData['data'];
-                }
-            },
-            'rejected' => function ($reason, $emp_id) {
-                \Log::error("BA Attendance API Failed for $emp_id", [
-                    'reason' => $reason->getMessage()
-                ]);
-            },
-        ]);
-
-        $promise = $pool->promise();
-        $promise->wait();
 
         foreach ($bas as $ba) {
             $formation = BAFormation::where('employee_id', $ba->emp_id)->first();
@@ -387,11 +357,6 @@ class BaAttendanceReportController extends Controller
 
             return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\BAReportExport($exportData, $headings), 'BA_Attendance_Report.xlsx');
         }
-
-        \Log::info('BA Report Final Debug', [
-            'reportData_count' => count($reportData),
-            'bas_count' => $bas->count()
-        ]);
 
         return view('BA.Reports.attendance_report_data', compact('reportData', 'dates', 'grandTotals'));
     }
