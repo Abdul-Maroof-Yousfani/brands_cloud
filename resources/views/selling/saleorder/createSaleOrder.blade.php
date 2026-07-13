@@ -1705,7 +1705,7 @@ $('.main').each(function () {
     var mrp_price = parseFloat($(this).find('#mrp_price').val()) || 0;
     var is_tax_apply = parseInt($(this).find('#is_tax_apply').val()) || 0;
     var tax_type_id = parseInt($(this).find('#tax_type_id').val()) || 0;
-    var tax_applied_on = $(this).find('#tax_applied_on').val();
+    var tax_applied_on = ($(this).find('#tax_applied_on').val() || "").toUpperCase();
     var tax_policy = $(this).find('#tax_policy').val();
 
     var actual_rate = parseFloat($(this).find('#sale_price').val()) || 0;
@@ -1728,9 +1728,9 @@ $('.main').each(function () {
     var grand_total = 0;
     var taxper = 100 + sale_tax;
 
-    if (is_tax_apply === 1) {
+    if (is_tax_apply === 1 || is_tax_apply === "1") {
         if (tax_applied_on === "MRP" || tax_applied_on === "SALE") {
-            if (tax_type_id === 1) {
+            if (tax_type_id === 1 || tax_type_id === "1") {
                 if (tax_applied_on === "MRP") {
                     console.log(`${finalQty} * ${mrp_price} * (${sale_tax} / ${taxper})`);
                     sale_tax_amount = finalQty * mrp_price * (sale_tax / taxper);
@@ -1746,7 +1746,7 @@ $('.main').each(function () {
                 $(this).find('#total').val(grand_total.toFixed(2));
                 $(this).find('.total_tax').val(sale_tax_amount.toFixed(2));
             }
-              if (tax_type_id === 2) {
+              if (tax_type_id === 2 || tax_type_id === "2") {
             
                 if (tax_applied_on === "MRP") {
                   sale_tax_amount = (finalQty * mrp_price) * (sale_tax / 100);
