@@ -45,7 +45,7 @@ if($accType == 'client'){
 
                                                             <th class="text-center">Warehouse Name</th>
                                                             <th class="text-center">Territory</th>
-                                                            <th class="text-center">Action</th>
+{{--                                                             <th class="text-center">Action</th> --}}
 
 {{-- warehouse.edit --}}
 
@@ -59,7 +59,7 @@ if($accType == 'client'){
                                                                     <td class="text-center">{{$count++}}</td>
                                                                     <td class="text-center">{{$row->name}}</td>
                                                                     <td class="text-center">{{ App\Helpers\CommonHelper::get_territory_name($row->territory_id) }}</td>
-                                                                    <td class="text-center">
+                                                                    {{-- <td class="text-center">
                                                                         <a href="{{ route('warehouse.edit', ['id' => $row->id, 'm' => request()->get("m"), 'pageType' => "1", 'parentCode' => request()->get("parentCode")]) }}" type="button" class="btn btn-primary">Edit</a>
                                                                         <form style="display: inline-block" method="post" action="{{ route('warehouse.delete', ['id' => $row->id, 'm' => request()->get("m"), 'pageType' => "1", 'parentCode' => request()->get("parentCode")]) }}">
                                                                             {{ csrf_field() }}
@@ -69,7 +69,7 @@ if($accType == 'client'){
                                                                             <input type="hidden" name="parentCode" value="{{ request()->get("parentCode") }}"/>
                                                                             <button type="submit" class="btn btn-danger">Delete</button>
                                                                         </form>
-                                                                    </td>
+                                                                    </td> --}}
                                                                 </tr>
 
                                                             @endforeach
