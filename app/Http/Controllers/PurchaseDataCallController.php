@@ -1629,6 +1629,24 @@ public function viewSubItemListAjaxWithoutEditing(Request $request)
             $goodsReceiptNoteDetail = GoodsReceiptNote::whereBetween('grn_date', [$fromDate, $toDate])->where('status', '=', '1')->where('supplier_id', '=', $selectSupplierId)->where('sub_department_id', '=', $selectSubDepartmentId)->orderBy('id', 'desc')->get();
         }
         endif;
+
+        // Apply territory filter
+        $user = auth()->user();
+        $territory_ids = json_decode($user->territory_id, true);
+        if (!is_array($territory_ids)) {
+            $territory_ids = [$user->territory_id];
+        }
+
+        if (!empty($territory_ids) && count($territory_ids) > 0 && !in_array('all', $territory_ids) && $territory_ids[0] != null && $territory_ids[0] != '') {
+            $territoryWarehouseIds = \DB::connection('mysql2')->table('warehouse')
+                ->whereIn('territory_id', $territory_ids)
+                ->pluck('id')->toArray();
+                
+            if(isset($goodsReceiptNoteDetail) && $goodsReceiptNoteDetail->isNotEmpty()){
+                $goodsReceiptNoteDetail = $goodsReceiptNoteDetail->whereIn('warehouse_id', $territoryWarehouseIds)->values();
+            }
+        }
+
         CommonHelper::reconnectMasterDatabase();
         return view('Purchase.AjaxPages.filterGoodsReceiptNoteList', compact('goodsReceiptNoteDetail'));
     }
