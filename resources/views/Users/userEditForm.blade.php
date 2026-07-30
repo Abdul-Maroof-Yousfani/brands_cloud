@@ -88,8 +88,8 @@
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											<label>Permissions</label>
 											<br>
-											<label for="allowBackDate">Allow Back Date Selection</label>
-											<input id="allowBackDate" type="checkbox" name="allow_back_date" value="1" @if(isset($Users->allow_back_date) && $Users->allow_back_date == 1) checked @endif>
+											<label for="allowBackDate">Back date entry (Days)</label>
+											<input id="allowBackDate" type="number" name="allow_back_date" class="form-control" value="{{ isset($Users->allow_back_date) ? $Users->allow_back_date : 0 }}" min="0" style="width: 150px; display: inline-block; margin-left: 10px;">
 											<br>
 										</div>
 										<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 category">

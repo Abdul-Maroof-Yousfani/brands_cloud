@@ -76,12 +76,12 @@
                                                     <div class="form-group">
                                                         <label class="control-label" style="margin-bottom: 0;">SO Date</label>
                                                         @php
-                                                            // Check if the user has the 'allow_back_date' permission
-                                                            $allowBackDate = (Auth::check() && Auth::user()->allow_back_date == 1); 
+                                                            $backDateDays = (Auth::check() && isset(Auth::user()->allow_back_date)) ? (int)Auth::user()->allow_back_date : 0;
+                                                            $minDate = date('Y-m-d', strtotime("-{$backDateDays} days"));
                                                         @endphp
                                                         <input name="sale_order_date"
                                                                value="{{date('Y-m-d')}}" 
-                                                               @if(!$allowBackDate) min="{{date('Y-m-d')}}" @endif 
+                                                               min="{{ $minDate }}"
                                                                class="form-control"
                                                                type="date">
                                                     </div>
