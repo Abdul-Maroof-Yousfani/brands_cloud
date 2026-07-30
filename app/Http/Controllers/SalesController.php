@@ -3763,19 +3763,20 @@ public function assignDicountList(Request $request)
     $selectedTerritories = $request->input('territory_id', []);
     $selectedStores = $request->input('store_id', []);
 
-    // Filter stores based on selected territories
-    $storesQuery = DB::connection('mysql2')->table('customers')
+    // Filter stores based on selected territories (for dropdown)
+    $allStoresQuery = DB::connection('mysql2')->table('customers')
         ->where('status', 1);
 
     if (!empty($selectedTerritories) && !in_array('all', $selectedTerritories)) {
-        $storesQuery->whereIn('territory_id', $selectedTerritories);
+        $allStoresQuery->whereIn('territory_id', $selectedTerritories);
     }
+    $allStores = $allStoresQuery->get();
 
-    // Filter stores if some stores are specifically selected
+    // Filter stores for report table
+    $storesQuery = clone $allStoresQuery;
     if (!empty($selectedStores) && !in_array('all', $selectedStores)) {
         $storesQuery->whereIn('id', $selectedStores);
     }
-
     $stores = $storesQuery->get();
 
     // Brands list
@@ -3800,6 +3801,7 @@ public function assignDicountList(Request $request)
 
     return view('Sales.BrandDiscount.List', compact(
         'territories',
+        'allStores',
         'stores',
         'brands',
         'specialPrices',

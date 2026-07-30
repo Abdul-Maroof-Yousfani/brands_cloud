@@ -47,7 +47,7 @@
     <label>Store(s)</label>
     <select name="store_id[]" class="form-control select2" multiple>
         <option value="all" {{ in_array('all', request()->input('store_id', [])) ? 'selected' : '' }}>All Stores</option>
-        @foreach($stores as $store)
+        @foreach($allStores as $store)
             <option value="{{ $store->id }}"
                 {{ in_array($store->id, request()->input('store_id', [])) ? 'selected' : '' }}>
                 {{ $store->name }}
