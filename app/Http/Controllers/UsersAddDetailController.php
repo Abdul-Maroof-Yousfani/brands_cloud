@@ -549,6 +549,7 @@ public function editUser(Request $request)
         'role_id' => $request->role_id,
         'crud_rights' => $rights,
         'territory_id' => $territory_json,
+        'allow_back_date' => $request->has('allow_back_date') ? 1 : 0,
     ];
 
     // Update password only if provided

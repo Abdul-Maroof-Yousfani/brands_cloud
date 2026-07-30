@@ -49,12 +49,12 @@
 										</div>
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											<label>Password</label>
-											<input type="password" name="password" id="password" class="form-control" placeholder="Enter new password (leave blank to keep old)" />
+											<input type="password" name="password" id="password" class="form-control" placeholder="Enter new password (leave blank to keep old)" autocomplete="new-password" />
 										</div>
 
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											<label>Confirm Password</label>
-											<input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirm new password" />
+											<input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirm new password" autocomplete="new-password" />
 										</div>
 
 										 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -71,6 +71,7 @@
 												$selectedTerritories = json_decode($Users->territory_id, true); // Convert to array
 											@endphp
 
+
 											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 												<label>Territory</label>
 												<select name="territory_id[]" id="territory_id" multiple class="form-control select2" size="8">
@@ -83,6 +84,14 @@
 													@endforeach
 												</select>
 											</div>
+
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											<label>Permissions</label>
+											<br>
+											<label for="allowBackDate">Allow Back Date Selection</label>
+											<input id="allowBackDate" type="checkbox" name="allow_back_date" value="1" @if(isset($Users->allow_back_date) && $Users->allow_back_date == 1) checked @endif>
+											<br>
+										</div>
 										<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 category">
 											<label>Categories</label>
 												<br>
@@ -127,6 +136,9 @@
 										 	id="checkboxDash3" @if(in_array("dashboard_management", $dashboard_access)) checked @endif  type="checkbox" name="dashboard_access[]" value="dashboard_management">
 										 <br>
 										</div>
+
+
+
 										<div>&nbsp;</div>
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											{{ Form::submit('Submit', ['class' => 'btn btn-success']) }}

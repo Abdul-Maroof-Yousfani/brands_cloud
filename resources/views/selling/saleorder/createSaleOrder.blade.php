@@ -75,8 +75,14 @@
                                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                     <div class="form-group">
                                                         <label class="control-label" style="margin-bottom: 0;">SO Date</label>
+                                                        @php
+                                                            // Check if the user has the 'allow_back_date' permission
+                                                            $allowBackDate = (Auth::check() && Auth::user()->allow_back_date == 1); 
+                                                        @endphp
                                                         <input name="sale_order_date"
-                                                               value="{{date('Y-m-d')}}" min="{{date('Y-m-d')}}" class="form-control"
+                                                               value="{{date('Y-m-d')}}" 
+                                                               @if(!$allowBackDate) min="{{date('Y-m-d')}}" @endif 
+                                                               class="form-control"
                                                                type="date">
                                                     </div>
                                                 </div>
