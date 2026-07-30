@@ -118,7 +118,10 @@ $payable = CommonHelper::get_parent_and_account_amount(Session::get('run_company
                   </ul>
                   @endforeach
                </div>
-               <a href="{{url('/logout')}}" class="btn-b">Sign Out</a>
+               <a href="{{ route('logout') }}" class="btn-b" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign Out</a>
+               <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                   {{ csrf_field() }}
+               </form>
             </div>
          </div>
       </div>
