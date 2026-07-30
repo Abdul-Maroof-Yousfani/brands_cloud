@@ -76,7 +76,7 @@
                                                     <div class="form-group">
                                                         <label class="control-label" style="margin-bottom: 0;">SO Date</label>
                                                         <input name="sale_order_date"
-                                                               value="{{date('Y-m-d')}}" class="form-control"
+                                                               value="{{date('Y-m-d')}}" min="{{date('Y-m-d')}}" class="form-control"
                                                                type="date">
                                                     </div>
                                                 </div>
