@@ -157,6 +157,12 @@ $(document).ready(function() {
     });
 });
 
+    // Remove query parameters from URL so that on refresh it loads without filters
+    if (window.history.replaceState) {
+        var cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+    }
+
 });
 
 
