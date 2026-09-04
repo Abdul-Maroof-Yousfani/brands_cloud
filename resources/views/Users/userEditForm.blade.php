@@ -83,14 +83,16 @@
 														</option>
 													@endforeach
 												</select>
-											</div>
+											</div> 
 
-										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-											<label>Permissions</label>
-											<br>
-											<label for="allowBackDate">Back date entry (Days)</label>
-											<input id="allowBackDate" type="number" name="allow_back_date" class="form-control" value="{{ isset($Users->allow_back_date) ? $Users->allow_back_date : 0 }}" min="0" style="width: 150px; display: inline-block; margin-left: 10px;">
-											<br>
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 15px; margin-bottom: 15px;">
+											<fieldset style="border: 1px solid #ccc; padding: 15px; border-radius: 5px;">
+												<legend style="width: auto; padding: 0 10px; font-size: 16px; border-bottom: none; margin-bottom: 0;">Permissions</legend>
+												<div class="form-group" style="display: flex; align-items: center; margin-top: 10px; margin-bottom: 0;">
+													<label for="allowBackDate" style="margin-right: 15px; margin-bottom: 0;">Back date entry (Days):</label>
+													<input id="allowBackDate" type="number" name="allow_back_date" class="form-control" value="{{ isset($Users->allow_back_date) ? $Users->allow_back_date : 0 }}" min="0" style="width: 150px;">
+												</div>
+											</fieldset>
 										</div>
 										<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 category">
 											<label>Categories</label>
