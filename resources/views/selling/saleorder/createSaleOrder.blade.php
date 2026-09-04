@@ -1735,12 +1735,12 @@ $('.main').each(function () {
     var taxper = 100 + sale_tax;
 
     if (is_tax_apply === 1) {
-        if (tax_applied_on === "MRP" || tax_applied_on === "SALE") {
+        if (tax_applied_on === "MRP" || tax_applied_on === "SALE" || tax_applied_on === "TP") {
             if (tax_type_id === 1) {
                 if (tax_applied_on === "MRP") {
                     console.log(`${finalQty} * ${mrp_price} * (${sale_tax} / ${taxper})`);
                     sale_tax_amount = finalQty * mrp_price * (sale_tax / taxper);
-                } else if (tax_applied_on === "SALE") {
+                } else if (tax_applied_on === "SALE" || tax_applied_on === "TP") {
                    
                       sale_tax_amount = finalQty * actual_rate * (sale_tax / taxper);
                 }
@@ -1760,7 +1760,7 @@ $('.main').each(function () {
             
                 
 
-                } else if (tax_applied_on === "SALE") {
+                } else if (tax_applied_on === "SALE" || tax_applied_on === "TP") {
                    
                       sale_tax_amount = finalQty * actual_rate * (sale_tax / 100);
                 }
