@@ -32,6 +32,13 @@
                 <div class="login-fwrp p1">
                     <form action="{{ url('/login') }}" method="POST" class="form-signin" style="opacity: 0.9;">
                         {{ csrf_field() }}
+						@php
+							$daysLeft = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse('2026-09-11')->startOfDay(), false);
+							$daysLeft = $daysLeft < 0 ? 0 : $daysLeft;
+						@endphp
+						<div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+							<i class="fa fa-exclamation-circle"></i> Reminder: Your subscription expires in {{ $daysLeft }} days on Sep 11, 2026 at 11:59 PM. The system will be suspended automatically.
+						</div>
                         {{--<h3 class="form-signin-heading">Welcome To  <span>Gudia Group</span></h3>--}}
                         <div class="text-center">
                             <!--<h3>Welcome To <span>ERP</span> 👋</h3>-->
