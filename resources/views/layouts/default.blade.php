@@ -382,6 +382,18 @@
             // });
         </script>
 
+        <div class="row noprint" style="margin-top: 10px;">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				@php
+					$daysLeft = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse('2026-09-11')->startOfDay(), false);
+					$daysLeft = $daysLeft < 0 ? 0 : $daysLeft;
+				@endphp
+                <div class="alert alert-danger" style="background-color: #1a1a1a; color: #fff; border: none; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center;">
+                    <i class="fa fa-exclamation-triangle" style="color: #ffcc00;"></i> Reminder: Your subscription expires in {{ $daysLeft }} days on Sep 11, 2026 at 11:59 PM. The system will be suspended automatically.
+                </div>
+            </div>
+        </div>
+
         <div class="row ">
 
 
