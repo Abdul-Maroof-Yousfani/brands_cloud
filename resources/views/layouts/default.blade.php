@@ -1,5 +1,11 @@
+@php
+    $expirationDate = \Carbon\Carbon::parse('2026-09-10 23:59:59');
+    if (\Carbon\Carbon::now()->isAfter($expirationDate)) {
+        echo view('expired')->render();
+        exit;
+    }
+@endphp
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
