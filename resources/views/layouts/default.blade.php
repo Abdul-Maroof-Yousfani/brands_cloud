@@ -1,3 +1,4 @@
+{{--
 @php
     $expirationDate = \Carbon\Carbon::parse('2026-09-10 23:59:59');
     if (\Carbon\Carbon::now()->isAfter($expirationDate)) {
@@ -5,6 +6,7 @@
         exit;
     }
 @endphp
+--}}
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -388,7 +390,8 @@
             // });
         </script>
 
-        <div class="row noprint" style="margin-top: 10px;">
+        {{--
+		<div class="row noprint" style="margin-top: 10px;">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				@php
 					$daysLeft = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse('2026-09-10')->startOfDay(), false);
@@ -399,6 +402,7 @@
                 </div>
             </div>
         </div>
+		--}}
 
         <div class="row ">
 
