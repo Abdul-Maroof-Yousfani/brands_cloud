@@ -15,11 +15,24 @@ class BaAttendanceReportController extends Controller
 {
     public function index()
     {
-      
         $baEmployeeIds = BAFormation::pluck('employee_id')->unique();
-        $data['employees'] = Employees::whereIn('emp_id', $baEmployeeIds)->get();
+        
+        $user = auth()->user();
+        $zonesQuery = Employees::whereIn('emp_id', $baEmployeeIds)->whereNotNull('zone')->where('zone', '!=', '')->distinct();
+        $employeesQuery = Employees::whereIn('emp_id', $baEmployeeIds);
+        
+        if ($user && $user->acc_type !== 'client') {
+            $employee = Employees::where('emp_id', $user->emp_code)->first();
+            if ($employee && !empty($employee->zone)) {
+                $zonesQuery->where('zone', $employee->zone);
+                $employeesQuery->where('zone', $employee->zone);
+            }
+        }
+        
+        $data['employees'] = $employeesQuery->get();
         $data['brands'] = DB::connection('mysql2')->table('brands')->where('status', 1)->orderBy('name')->get();
-        $data['zones'] = Employees::whereIn('emp_id', $baEmployeeIds)->whereNotNull('zone')->where('zone', '!=', '')->distinct()->pluck('zone');
+        $data['zones'] = $zonesQuery->pluck('zone');
+        
         return view('BA.Reports.attendance_report', $data);
     }
 
@@ -42,6 +55,14 @@ class BaAttendanceReportController extends Controller
         $zone = $request->zone;
         if (is_array($zone) && in_array('all', $zone, true)) {
             $zone = null;
+        }
+
+        $user = auth()->user();
+        if ($user && $user->acc_type !== 'client') {
+            $employee = Employees::where('emp_id', $user->emp_code)->first();
+            if ($employee && !empty($employee->zone)) {
+                $zone = [$employee->zone]; // Force their specific zone
+            }
         }
 
         $dates = [];
