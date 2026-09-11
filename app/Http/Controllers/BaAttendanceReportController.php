@@ -22,10 +22,17 @@ class BaAttendanceReportController extends Controller
         $employeesQuery = Employees::whereIn('emp_id', $baEmployeeIds);
         
         if ($user && $user->acc_type !== 'client') {
-            $employee = Employees::where('emp_id', $user->emp_code)->first();
-            if ($employee && !empty($employee->zone)) {
-                $zonesQuery->where('zone', $employee->zone);
-                $employeesQuery->where('zone', $employee->zone);
+            $territoryIds = json_decode($user->territory_id, true);
+            if (is_array($territoryIds) && count($territoryIds) > 0) {
+                $allowedZones = \App\Models\Territory::whereIn('id', $territoryIds)->pluck('name')->toArray();
+                if (!empty($allowedZones)) {
+                    $zonesQuery->whereIn('zone', $allowedZones);
+                    $employeesQuery->whereIn('zone', $allowedZones);
+                }
+            } else {
+                // If they have no territory assigned and aren't client, show nothing
+                $zonesQuery->where('zone', 'impossible_zone_value');
+                $employeesQuery->where('zone', 'impossible_zone_value');
             }
         }
         
@@ -59,9 +66,22 @@ class BaAttendanceReportController extends Controller
 
         $user = auth()->user();
         if ($user && $user->acc_type !== 'client') {
-            $employee = Employees::where('emp_id', $user->emp_code)->first();
-            if ($employee && !empty($employee->zone)) {
-                $zone = [$employee->zone]; // Force their specific zone
+            $territoryIds = json_decode($user->territory_id, true);
+            if (is_array($territoryIds) && count($territoryIds) > 0) {
+                $allowedZones = \App\Models\Territory::whereIn('id', $territoryIds)->pluck('name')->toArray();
+                if (!empty($allowedZones)) {
+                    // If they selected 'all', force it to their allowed zones
+                    // If they selected specific zones, filter them to make sure they're allowed
+                    if ($zone === null) {
+                        $zone = $allowedZones;
+                    } else {
+                        $zone = array_intersect($zone, $allowedZones);
+                    }
+                } else {
+                    $zone = ['impossible_zone_value'];
+                }
+            } else {
+                $zone = ['impossible_zone_value']; // Force no results
             }
         }
 
